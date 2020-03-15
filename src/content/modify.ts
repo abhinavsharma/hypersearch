@@ -5,8 +5,8 @@ import { modifyPageSerp, extractSearchText } from "./modify_serp";
 export function modifyPage(url: URL) {
     debug("function call - modifyPage", url)
     // features to support
-    // search link annotation
-    // readability
+    // search link annotation (TODO)
+    // readability (TODO)
     // highlighting (TODO)
     // article link annotation (TODO)
 

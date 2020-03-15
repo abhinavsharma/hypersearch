@@ -1,10 +1,6 @@
 import { CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER, debug, STYLE_WIDTH_SIDEBAR, STYLE_HEIGHT_DRAWER } from "../shared/constants"
 import { getAPI } from "./content_shared";
-
-interface IDrawerResponse {
-    show_drawer: boolean,
-    url: string
-}
+import { IDrawerResponse } from "../shared/interfaces";
 
 function showDrawer() {
     let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;

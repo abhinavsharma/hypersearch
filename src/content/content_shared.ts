@@ -1,5 +1,6 @@
 import { LUMOS_API_URL, MESSAGES } from '../shared/constants'
 
+// https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes("mobi");
 
 export async function getAPI(api, params = {}) {

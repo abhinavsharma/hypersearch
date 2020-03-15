@@ -11,3 +11,8 @@ export interface ISidebarTab {
     url: URL,
     default: boolean
 }
+
+export interface IDrawerResponse {
+    show_drawer: boolean,
+    url: string
+}

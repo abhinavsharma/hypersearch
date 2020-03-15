@@ -12,7 +12,7 @@
   "author": "Abhinav Sharma",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lumosbrowser/lumos-web.git"
+    "url": "https://github.com/lumosbrowser/lumos-extension.git"
   },
   "dependencies": {
   },

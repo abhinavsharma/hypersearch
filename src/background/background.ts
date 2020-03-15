@@ -1,18 +1,6 @@
-import { QUERY_PARAM_STRING, MESSAGES, debug } from "../shared/constants"
-
-
-var tabIdToPreviousQuery = {};
-
-// Message Receiver
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.request == "getQueryContext") {
-        sendResponse({queryContext: tabIdToPreviousQuery[sender.tab.id]})
-    }
-});
+import { MESSAGES, debug } from "../shared/constants"
 
 debug("installing listener for onUpdated")
-
-
 function onUpdatedListener(tabId, changeInfo, tab){
     debug("function call - onUpdatedListener:", tabId, changeInfo, tab)
     if (changeInfo.url) {

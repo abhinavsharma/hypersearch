@@ -15,9 +15,9 @@ Chrome Extension, TypeScript and Visual Studio Code
 
 ## Includes the following
 
-* TypeScript
-* Webpack
-* Jest
+* TypeScript (typed javascript)
+* Webpack (transpiling ts to js)
+* Jest (testing)
 
 ## Project Structure
 
