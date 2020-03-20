@@ -2,6 +2,7 @@ import { MESSAGES, debug } from "../shared/constants";
 import { loadOrUpdateDrawer } from "./drawer";
 import { loadOrUpdateSidebar } from "./subtabs";
 import { modifyPage } from "./modify";
+import { loadHiddenMessenger } from "./messenger";
 
 debug("executing content script on", location.href)
 function main() {
@@ -10,6 +11,8 @@ function main() {
 
 function handleUrlUpdated(url: URL) {
     debug("function call - handleUrlUpdated:", url)
+    // hidden messenger component to fetch data from react app
+    loadHiddenMessenger(url, document, window)
     // load or update the drawer
     loadOrUpdateDrawer(url)
     // load or update the sidebar

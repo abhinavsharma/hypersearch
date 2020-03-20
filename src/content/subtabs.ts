@@ -4,12 +4,17 @@ import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
 function showSidebar() {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-    sidebarContainer.style.visibility = "visible"
+    sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR
+}
+
+function isVisible() {
+    let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
+    return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
 function hideSidebar() {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-    sidebarContainer.style.visibility = "hidden"
+    sidebarContainer.style.width = "0px";
 }
 
 function isSidebarLoaded(document) {
@@ -26,12 +31,15 @@ function createSidebar(document: Document) {
         position: fixed;
         right: 0;
         top: 0;
-        width: ${STYLE_WIDTH_SIDEBAR};
+        width: 0;
         bottom: 0;
         height: 100%;
         z-index: ${STYLE_ZINDEX_MAX};
         background: white;
         border-left: 1px solid ${STYLE_COLOR_BORDER};
+        transition-property: all;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
     `)
     document.body.appendChild(sidebarContainer);
     hideSidebar()
@@ -90,9 +98,10 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
         })
 
         if (sidebarTab.default) {
-            contentIframe.style.visibility = 'visible'
+            contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
             tabElement.style.backgroundColor = 'white'
+            contentIframe.addEventListener("load", function() {showSidebar()})
         } else {
             contentIframe.style.visibility = 'hidden'
         }
@@ -111,7 +120,7 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
             var clickedTab = <HTMLElement> (e.target || e.srcElement);
             
             clickedTab.style.backgroundColor = 'white'
-            contentIframe.style.visibility = 'visible'
+            contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
         })
 
@@ -129,7 +138,11 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
         cursor: pointer;
     `)
     dismissButton.addEventListener("click", function(e) {
-        hideSidebar()
+        if (isVisible()) {
+            hideSidebar()
+        } else {
+            showSidebar()
+        }
     })
     tabsContainer.appendChild(dismissButton)
 
@@ -168,7 +181,6 @@ function handleSubtabResponse(response_json: Array<ISidebarResponseArrayObject>)
     }
 
     populateSidebar(sidebarTabs)
-    showSidebar()
 }
 
 function updateSidebarUrl(document: Document, url: URL) {

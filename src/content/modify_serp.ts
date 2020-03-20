@@ -1,12 +1,34 @@
-import { debug, INTERCEPTIBLE_SEARCH_HOST_PARAMS, STYLE_COLOR_LUMOS_GOLD } from "../shared/constants";
-import { isGoogleSerp, getGoogleBlueLinks } from "./google";
+import { debug, INTERCEPTIBLE_SEARCH_HOST_PARAMS, STYLE_COLOR_LUMOS_GOLD, STYLE_PADDING_PILL, STYLE_BORDER_RADIUS_PILL } from "../shared/constants";
+import { isGoogleSerp, getGoogleBlueLinks, insertPill } from "./google";
+import { postMessageToReactApp, addReactAppListener } from "./messenger";
 
-function createSerpPill(networkIcon: URL, networkName: string, reactionEmoji: string, reactionText: string) {
-    let pill = document.createElement("span");
+function createSerpPill(networkIcon: URL, networkName: string, reactionEmoji: string, reactionText: string, reactionExtra: string) {
+    let pill = document.createElement("div");
     pill.setAttribute("style", `
         background: ${STYLE_COLOR_LUMOS_GOLD};
-        border-radius: 50%;
+        border-radius: ${STYLE_BORDER_RADIUS_PILL};
+        padding: ${STYLE_PADDING_PILL};
+        display: inline-block;
     `)
+    let networkIconImg = document.createElement("img")
+    networkIconImg.src = networkIcon.href
+    networkIconImg.setAttribute("style", `
+        width: 15px;
+        height: 15px;
+        position: relative;
+        top: 2px;
+        left: -1px;
+    `)
+
+    pill.appendChild(networkIconImg)
+    pill.appendChild(document.createTextNode(networkName))
+    pill.appendChild(document.createTextNode(" • "))
+    pill.appendChild(document.createTextNode(reactionEmoji))
+    pill.appendChild(document.createTextNode(reactionText))
+    pill.appendChild(document.createTextNode(" • "))
+    pill.appendChild(document.createTextNode(reactionExtra))
+
+    return pill
 }
 
 export function extractSearchText(url: URL) {
@@ -30,8 +52,35 @@ function getSearchResultLinks(document: Document) {
     }
 }
 
-export function modifyPageSerp(document: Document) {
-    const serpLinks = getSearchResultLinks(document)
+export function modifyPageSerp(window: Window, document: Document) {
+    const serpHrefs = getSearchResultLinks(document)
+
+    // wait for isMessengerReady
+    // get link info
+    // create pills
+    // insert pills
+    serpHrefs.forEach(function(serpHref) {
+        postMessageToReactApp("getLinkInfo", {link: serpHref})
+        addReactAppListener(window, "newLinkData", function(msg) {
+            debugger;
+            return null
+        })
+
+        postMessageToReactApp("getPublicationInfo", {link: serpHref})
+        addReactAppListener(window, "newPublicationData", function(msg) {
+            debugger;
+            return null
+        })
+
+        // create pill
+        // let pill = createSerpPill(
+        //     new URL("https://identity.stanford.edu/img/seal-dark-red.png"),
+        //     "Stanford",
+        //     "😷",
+        //     "Good for patients",
+        //     "by Uptodate"
+        // )
+    })
     // TODO send up to api
     // TODO generate pills locally
     // attach pill to link
