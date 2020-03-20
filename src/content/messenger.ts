@@ -48,7 +48,7 @@ function listenToReactApp(window: Window) {
     );
 }
 
-export function addReactAppListener(message: string, fn) {
+export function addReactAppListener(window: Window, message: string, fn) {
     window.addEventListener(
         'message',
         msg => {

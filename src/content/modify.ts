@@ -14,6 +14,6 @@ export function modifyPage(url: URL) {
     // search link annotation
     const searchText = extractSearchText(url);
     if (searchText) {
-        modifyPageSerp(document)
+        modifyPageSerp(window, document)
     }
 }

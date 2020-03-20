@@ -52,7 +52,7 @@ function getSearchResultLinks(document: Document) {
     }
 }
 
-export function modifyPageSerp(document: Document) {
+export function modifyPageSerp(window: Window, document: Document) {
     const serpHrefs = getSearchResultLinks(document)
 
     // wait for isMessengerReady
@@ -61,13 +61,13 @@ export function modifyPageSerp(document: Document) {
     // insert pills
     serpHrefs.forEach(function(serpHref) {
         postMessageToReactApp("getLinkInfo", {link: serpHref})
-        addReactAppListener("newLinkData", function(msg) {
+        addReactAppListener(window, "newLinkData", function(msg) {
             debugger;
             return null
         })
 
         postMessageToReactApp("getPublicationInfo", {link: serpHref})
-        addReactAppListener("newPublicationData", function(msg) {
+        addReactAppListener(window, "newPublicationData", function(msg) {
             debugger;
             return null
         })
