@@ -1,5 +1,13 @@
-import { debug, INTERCEPTIBLE_SEARCH_HOST_PARAMS } from "../shared/constants";
+import { debug, INTERCEPTIBLE_SEARCH_HOST_PARAMS, STYLE_COLOR_LUMOS_GOLD } from "../shared/constants";
 import { isGoogleSerp, getGoogleBlueLinks } from "./google";
+
+function createSerpPill(networkIcon: URL, networkName: string, reactionEmoji: string, reactionText: string) {
+    let pill = document.createElement("span");
+    pill.setAttribute("style", `
+        background: ${STYLE_COLOR_LUMOS_GOLD};
+        border-radius: 50%;
+    `)
+}
 
 export function extractSearchText(url: URL) {
     debug("function call - isInterceptibleSearchPage", url);

@@ -1,4 +1,4 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK } from "../shared/constants"
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, CONTENT_PAGE_SUBTAB_IFRAME_STYLE_OVERRIDES, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK } from "../shared/constants"
 import { getAPI } from "./content_shared";
 import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
@@ -52,7 +52,7 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
 
     let tabsContainer = document.createElement("div")
     tabsContainer.setAttribute("style", `
-        background-color: #efefef;
+        background-color: ${STYLE_COLOR_BORDER};
     `)
     let contentContainer = document.createElement("div")
     contentContainer.setAttribute("style", `
@@ -79,8 +79,19 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
             height: 100%;
             border: none;
         `)
+
+        // override the css of the iframe's content
+        tabElement.addEventListener("click",  function() {
+            // TODO this isn't working -- contentDocument returns null
+            let iframeDocument = contentIframe.contentDocument;
+            let overrideCss = iframeDocument.createElement("style");
+            overrideCss.innerHTML = CONTENT_PAGE_SUBTAB_IFRAME_STYLE_OVERRIDES;
+            iframeDocument.body.appendChild(overrideCss);
+        })
+
         if (sidebarTab.default) {
-            contentIframe.style.visibility = 'inherit'
+            contentIframe.style.visibility = 'visible'
+            contentIframe.style.height = '100%'
             tabElement.style.backgroundColor = 'white'
         } else {
             contentIframe.style.visibility = 'hidden'
@@ -88,10 +99,20 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
         
         //  toggling click handler
         tabElement.addEventListener("click", function(e) { 
-            var clickedTab = e.target || e.srcElement;
-            // TODO iterate over children of contentContainer and hide
-            // show corresponding contentiframe
+            for(let child = tabsContainer.firstChild; child !== null; child = child.nextSibling) {
+                let castedChild = <HTMLElement> child;
+                castedChild.style.backgroundColor = STYLE_COLOR_BORDER
+            }
+            for(let child = contentContainer.firstChild; child !== null; child = child.nextSibling) {
+                let castedChild = <HTMLElement> child;
+                castedChild.style.visibility = 'hidden'
+                castedChild.style.height = '0'
+            }
+            var clickedTab = <HTMLElement> (e.target || e.srcElement);
+            
+            clickedTab.style.backgroundColor = 'white'
             contentIframe.style.visibility = 'visible'
+            contentIframe.style.height = '100%'
         })
 
         tabsContainer.appendChild(tabElement)

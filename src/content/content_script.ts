@@ -1,10 +1,9 @@
 import { MESSAGES, debug } from "../shared/constants";
 import { loadOrUpdateDrawer } from "./drawer";
-import { loadOrUpdateSidebar } from "./sidebar";
+import { loadOrUpdateSidebar } from "./subtabs";
 import { modifyPage } from "./modify";
 
 debug("executing content script on", location.href)
-
 function main() {
     handleUrlUpdated(new URL(location.href))
 }

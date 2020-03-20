@@ -18,6 +18,8 @@
 
   "permissions": [
     "storage",
-    "<all_urls>"
+    "<all_urls>",
+    "webRequest", 
+    "webRequestBlocking"
   ]
 }
