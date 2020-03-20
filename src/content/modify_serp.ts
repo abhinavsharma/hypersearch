@@ -73,15 +73,13 @@ export function modifyPageSerp(window: Window, document: Document) {
         })
 
         // create pill
-        let pill = createSerpPill(
-            new URL("https://identity.stanford.edu/img/seal-dark-red.png"),
-            "Stanford",
-            "😷",
-            "Good for patients",
-            "by Uptodate"
-        )
-        insertPill(new URL(serpHref), pill)
-        insertPill(new URL(serpHref), pill)
+        // let pill = createSerpPill(
+        //     new URL("https://identity.stanford.edu/img/seal-dark-red.png"),
+        //     "Stanford",
+        //     "😷",
+        //     "Good for patients",
+        //     "by Uptodate"
+        // )
     })
     // TODO send up to api
     // TODO generate pills locally

@@ -24,15 +24,13 @@ export function postMessageToReactApp(command: string, data: any) {
     iframe.contentWindow.postMessage({
         command: command,
         ...data
-    }, "*");
+    }, LUMOS_APP_URL);
 }
 
 function listenToReactApp(window: Window) {
-    debug("function call - listenToReactApp")
     window.addEventListener(
       'message',
       msg => {
-        debug("listenToReactApp - recd message", msg)
         if (msg.data && msg.data.command) {
           switch (msg.data.command) {
             case 'readyConsumerBar':
@@ -52,8 +50,9 @@ export function addReactAppListener(window: Window, message: string, fn) {
     window.addEventListener(
         'message',
         msg => {
-          debug("addReactAppListener - recd message", msg)
+          
           if (msg.data && msg.data.command && msg.data.command === message) {
+            debug("addReactAppListener - recd message", msg)
             fn(msg)
           }
         },
