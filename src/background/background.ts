@@ -1,6 +1,9 @@
 import { MESSAGES, debug } from "../shared/constants"
 
 debug("installing listener for header interception")
+// https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
+// this is to get around loading pages in iframes that otherwise
+// don't want to be loaded in iframes
 chrome.webRequest.onHeadersReceived.addListener(
     function (details) {
       for (var i = 0; i < details.responseHeaders.length; ++i) {
