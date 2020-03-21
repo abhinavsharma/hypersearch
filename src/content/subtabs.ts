@@ -1,4 +1,4 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, CONTENT_PAGE_SUBTAB_IFRAME_STYLE_OVERRIDES, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK } from "../shared/constants"
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK } from "../shared/constants"
 import { getAPI } from "./content_shared";
 import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
@@ -87,15 +87,6 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
             height: 100%;
             border: none;
         `)
-
-        // override the css of the iframe's content
-        tabElement.addEventListener("click",  function() {
-            // TODO this isn't working -- contentDocument returns null
-            let iframeDocument = contentIframe.contentDocument;
-            let overrideCss = iframeDocument.createElement("style");
-            overrideCss.innerHTML = CONTENT_PAGE_SUBTAB_IFRAME_STYLE_OVERRIDES;
-            iframeDocument.body.appendChild(overrideCss);
-        })
 
         if (sidebarTab.default) {
             contentIframe.style.visibility = 'inherit'

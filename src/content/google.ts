@@ -31,7 +31,7 @@ export function insertPill(url: URL, pill: HTMLElement) {
             } else {
                 pill.style.marginRight = '5px'
             }
-            pill.style.marginBottom = '10px;'
+            pill.style.marginBottom = '5px'
         }
     })
 }

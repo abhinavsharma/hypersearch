@@ -10,20 +10,13 @@ export const CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR = 'lumos_sidebar'
 export const CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER = 'lumos_drawer'
 export const CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN = 'lumos_hidden'
 
-export const CONTENT_PAGE_SUBTAB_IFRAME_STYLE_OVERRIDES = `
-    // google custom search engines width
-    .gs-webResult {
-        width: inherit !important;
-    }
-`
-
 export function debug(...args: any[]) {
     console.log("LUMOS DEBUG: ", ...args);
 }
 
 export const STYLE_COLOR_BORDER = '#efefef';
 export const STYLE_COLOR_LINK = 'blue';
-export const STYLE_COLOR_LUMOS_GOLD = '#F9EC69'
+export const STYLE_COLOR_LUMOS_GOLD = 'rgb(249, 236, 105, 0.3)'
 
 export const STYLE_PADDING_PILL = '2px 5px';
 export const STYLE_PADDING_SMALL = '5px';

@@ -9,6 +9,11 @@
       {
           "matches": ["<all_urls>"],
           "js": ["js/content_script.js"]
+      },
+      {
+        "matches": ["https://cse.google.com/*"],
+        "all_frames": true,
+        "css": ["google_cse.css"]
       }
   ],
 
