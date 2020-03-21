@@ -14,8 +14,7 @@
     "type": "git",
     "url": "https://github.com/lumosbrowser/lumos-extension.git"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/chrome": "0.0.100",
     "@types/jest": "^25.1.4",
