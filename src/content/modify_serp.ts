@@ -54,34 +54,20 @@ function getSearchResultLinks(document: Document) {
 
 export function modifyPageSerp(window: Window, document: Document) {
     const serpHrefs = getSearchResultLinks(document)
-
-    // wait for isMessengerReady
-    // get link info
-    // create pills
-    // insert pills
     serpHrefs.forEach(function(serpHref) {
-        postMessageToReactApp("getLinkInfo", {link: serpHref})
-        addReactAppListener(window, "newLinkData", function(msg) {
-            debugger;
-            return null
-        })
-
-        postMessageToReactApp("getPublicationInfo", {link: serpHref})
-        addReactAppListener(window, "newPublicationData", function(msg) {
-            debugger;
-            return null
-        })
-
-        // create pill
-        // let pill = createSerpPill(
-        //     new URL("https://identity.stanford.edu/img/seal-dark-red.png"),
-        //     "Stanford",
-        //     "😷",
-        //     "Good for patients",
-        //     "by Uptodate"
-        // )
+        postMessageToReactApp("getPublicationInformation", {link: serpHref})
     })
-    // TODO send up to api
-    // TODO generate pills locally
-    // attach pill to link
+    addReactAppListener(window, "newPublicationInformation", function(msg) {
+        msg.data.publicationData.forEach((publicationDatum : any) => {
+            let pill = createSerpPill(
+                new URL(publicationDatum.networkIcon),
+                publicationDatum.networkName,
+                publicationDatum.reactionIcon,
+                publicationDatum.reaction,
+                publicationDatum.opinionator,
+            )
+            insertPill(new URL(msg.data.link), pill)
+        });
+        return null
+    })
 }
