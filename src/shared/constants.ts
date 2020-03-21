@@ -1,5 +1,5 @@
 export const LUMOS_API_URL = "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/prod/";
-export const LUMOS_APP_URL = "https://localhost:3000/messenger/";
+export const LUMOS_APP_URL = "https://app.lumosbrowser.com/messenger/";
 export const QUERY_PARAM_STRING = "q";
 
 export const MESSAGES = {
