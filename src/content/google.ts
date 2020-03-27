@@ -4,7 +4,7 @@ function getSearchContainers() {
     if (isMobileDevice) {
         return document.querySelectorAll('.KJDcUb')
     } else {
-        return document.querySelectorAll('.srg .g .rc')
+        return document.querySelectorAll('.g .rc')
     }
 }
 
