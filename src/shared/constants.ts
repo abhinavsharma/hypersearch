@@ -24,6 +24,8 @@ export const STYLE_PADDING_SMALL = '5px';
 export const STYLE_BORDER_RADIUS_PILL = '10px'
 
 export const STYLE_WIDTH_SIDEBAR = '300px'
+export const STYLE_WIDTH_SIDEBAR_TAB = '100px'
+
 export const STYLE_HEIGHT_DRAWER = '50px'
 
 export const STYLE_ZINDEX_MAX = '2147483648'

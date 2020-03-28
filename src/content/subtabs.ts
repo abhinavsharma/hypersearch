@@ -1,4 +1,4 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK } from "../shared/constants"
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK, STYLE_WIDTH_SIDEBAR_TAB } from "../shared/constants"
 import { getAPI } from "./content_shared";
 import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
@@ -61,6 +61,7 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
     let tabsContainer = document.createElement("div")
     tabsContainer.setAttribute("style", `
         background-color: ${STYLE_COLOR_BORDER};
+        border-bottom: 1px solid ${STYLE_COLOR_BORDER};
     `)
     let contentContainer = document.createElement("div")
     contentContainer.setAttribute("style", `
@@ -75,8 +76,10 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
         tabElement.setAttribute("style", `
             display: inline-block;
             padding: ${STYLE_PADDING_SMALL};
+            text-align: center;
             border-right: 1px solid ${STYLE_COLOR_BORDER};
             color: ${STYLE_COLOR_LINK};
+            width: ${STYLE_WIDTH_SIDEBAR_TAB};
             cursor: pointer
         `)
         
