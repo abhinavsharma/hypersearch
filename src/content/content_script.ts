@@ -7,30 +7,38 @@ import { sharedFunction } from "lumos-shared-js";
 
 debug("executing content script on", location.href)
 function main() {
-    handleUrlUpdated(new URL(location.href))
+    handleUrlUpdated(window, document, new URL(location.href))
 }
 
-function handleUrlUpdated(url: URL) {
+function handleUrlUpdated(window: Window, document: Document, url: URL) {
     debug("function call - handleUrlUpdated:", url)
-    // hidden messenger component to fetch data from react app
-    loadHiddenMessenger(url, document, window)
+    
     // load or update the drawer
-    loadOrUpdateDrawer(url)
+    loadOrUpdateDrawer(document, url)
     // load or update the sidebar
-    loadOrUpdateSidebar(url)
-    // load or update inline content
-    modifyPage(url)
+    loadOrUpdateSidebar(document, url)
 
-    sharedFunction(() => {
-        console.log("Hello from extension");
-    });
+    document.addEventListener("DOMContentLoaded", () => { 
+        debug("DOMContentLoaded:", url)
+        // hidden messenger component to fetch data from react app
+        loadHiddenMessenger(url, document, window)
+
+        // load or update inline content
+        modifyPage(url)
+
+        sharedFunction(() => {
+            console.log("Hello from extension");
+        });
+
+    }, false)
+    
 }
 
 debug("messages - setting up listener for bg messages")
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     debug("message received from background: ", msg.message)
     if (msg.message === MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED) {
-        handleUrlUpdated(new URL(msg.data.url))
+        handleUrlUpdated(window, document, new URL(msg.data.url))
     } else {
         sendResponse('Color message is none.');
     }
