@@ -4,7 +4,10 @@
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
-        "rootDir": "src",
+        "rootDirs": [
+            "src",
+            "lumos-shared-js"
+        ],
         "outDir": "dist/js",
         "noEmitOnError": true,
         "typeRoots": [ "node_modules/@types" ]
