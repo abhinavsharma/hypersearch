@@ -1,20 +1,61 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK, STYLE_WIDTH_SIDEBAR_TAB } from "../shared/constants"
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_COLOR_LINK, STYLE_WIDTH_SIDEBAR_TAB, STYLE_SIDEBAR_HIDER_X_OFFSET, STYLE_SIDEBAR_HIDER_Y_OFFSET, STYLE_SIDEBAR_TOGGLER_WIDTH, STYLE_FONT_SIZE_SMALL, STYLE_COLOR_LUMOS_GOLD, STYLE_BORDER_RADIUS_PILL, STYLE_COLOR_LUMOS_GOLD_SOLID, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE, STYLE_SIDEBAR_SHOWER_X_OFFSET, STYLE_FONT_SIZE_MEDIUM, STYLE_FONT_SIZE_LARGE, STYLE_PADDING_MEDIUM, STYLE_COLOR_TEXT, STYLE_SIDEBAR_SHOWER_Y_OFFSET, STYLE_PADDING_LARGE, LUMOS_LOGO_SVG_URL, STYLE_WIDTH_SIDEBAR_TAB_LEFT, STYLE_WIDTH_SIDEBAR_TAB_RIGHT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS } from "../shared/constants"
 import { getAPI } from "./content_shared";
 import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
-function showSidebar() {
-    let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-    sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR
-}
-
-function isVisible() {
+function isVisible(document: Document) {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
-function hideSidebar() {
+function showSidebar(document: Document) {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
+    let sidebarOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
+    let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+    let hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
+    let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS)
+    let contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT)
+    
+    
+    sidebarContainer.style.visibility = "visible";
+    showButton.style.visibility = "hidden";
+    // hideButton.style.visibility = "visible";
+    sidebarOverlayContainer.style.display = "block"
+    sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR;
+    if (tabsContainer && contentContainer) {
+        setTimeout(() => {
+            tabsContainer.style.visibility = "visible"
+            contentContainer.style.visibility = "visible"   
+        }, 350)
+    }
+}
+
+function hideSidebar(document: Document) {
+    let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
+    let sidebarOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
+    let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+    let hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
+    let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS)
+    let contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT)
+    
+    if (tabsContainer && contentContainer) {
+        tabsContainer.style.visibility = "hidden"
+        contentContainer.style.visibility = "hidden"    
+    }
+    
+    sidebarContainer.style.visibility = "hidden";
+    showButton.style.visibility = "visible";
+    hideButton.style.visibility = "hidden";
     sidebarContainer.style.width = "0px";
+    sidebarOverlayContainer.style.display = "none"
+
+}
+
+function flipSidebar(document: Document) {
+    if (isVisible(document)) {
+        hideSidebar(document)
+    } else {
+        showSidebar(document)
+    }
 }
 
 function isSidebarLoaded(document) {
@@ -24,25 +65,123 @@ function isSidebarLoaded(document) {
 
 function createSidebar(document: Document) {
     debug("function call - createSidebar")
+
+    let sidebarOverlayContainer = document.createElement('div');
+    sidebarOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
+    sidebarOverlayContainer.setAttribute("style", `
+        position: fixed;
+        z-index: ${STYLE_ZINDEX_MAX};
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: black;
+        opacity: 0.75;
+        transition: opacity 0.5s ease;
+        display: none;
+    `)
+    sidebarOverlayContainer.addEventListener("click", () => {flipSidebar(document)})
+    document.body.appendChild(sidebarOverlayContainer)
     let sidebarContainer = document.createElement('div');
     sidebarContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR;
 
     sidebarContainer.setAttribute("style", `
         position: fixed;
-        right: 0;
+
+        /* side  of screen */
+        left: 0;
+        border-right: 1px solid ${STYLE_COLOR_BORDER};
+
         top: 0;
         width: 0;
         bottom: 0;
         height: 100%;
         z-index: ${STYLE_ZINDEX_MAX};
         background: white;
-        border-left: 1px solid ${STYLE_COLOR_BORDER};
         transition-property: all;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
     `)
+
+    // For dismissing the sidebar
+    let sidebarToggler = document.createElement("div");
+    let sidebarTogglerWhenHidden = document.createElement("div");
+    let lumosLogoTitle = document.createElement("div")
+    let lumosLogo = document.createElement("img")
+    lumosLogo.src = LUMOS_LOGO_SVG_URL
+    lumosLogoTitle.setAttribute("style", `
+        border-bottom: 0.5px solid #bbb;
+    `)
+    lumosLogo.setAttribute("style", `
+        display: inline-block;
+        margin-left: ${STYLE_PADDING_SMALL};
+        width: ${STYLE_WIDTH_SIDEBAR_TAB_LEFT};
+    `)
+    let lumosTitle = document.createElement("div")
+    lumosTitle.setAttribute("style", `
+        display: inline-block;
+        vertical-align: super;
+        max-width: ${STYLE_WIDTH_SIDEBAR_TAB_RIGHT};
+    `)
+    lumosTitle.appendChild(document.createTextNode("Alternatives (press L)"))
+    lumosLogoTitle.appendChild(lumosLogo)
+    lumosLogoTitle.appendChild(lumosTitle)
+
+    sidebarTogglerWhenHidden.appendChild(lumosLogoTitle)
+    sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW
+
+    let sidebarTogglerWhenVisible = document.createElement("div");
+    sidebarTogglerWhenVisible.appendChild(document.createTextNode("×"));
+    sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE
+
+    sidebarToggler.setAttribute("style", `
+        cursor: pointer;
+    `)
+
+    sidebarTogglerWhenHidden.setAttribute("style", `
+        position: fixed;
+        left: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
+        bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
+        max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
+        padding: ${STYLE_PADDING_SMALL} ${STYLE_PADDING_LARGE};
+        background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
+        border-radius: ${STYLE_BORDER_RADIUS_PILL};
+        font-size: ${STYLE_FONT_SIZE_SMALL};
+        z-index: ${STYLE_ZINDEX_MAX};
+        cursor: pointer;
+    `)
+    sidebarTogglerWhenVisible.setAttribute("style", `
+        position: absolute;
+        right: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
+        top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
+        
+        border: 1px solid ${STYLE_COLOR_BORDER};
+        background: white;
+        border-radius: 50%;
+        font-size: ${STYLE_FONT_SIZE_LARGE};
+        padding: ${STYLE_PADDING_MEDIUM}
+    `)
+    
+    sidebarTogglerWhenHidden.addEventListener("click", function(e) {
+        flipSidebar(document)
+    })
+    sidebarTogglerWhenVisible.addEventListener("click", function(e) {
+        flipSidebar(document)
+    })
+
+    sidebarToggler.appendChild(sidebarTogglerWhenVisible)
+    document.body.appendChild(sidebarTogglerWhenHidden)
+
+    document.onkeypress = function (e: KeyboardEvent) {
+        if (e.key === "l" || e.key === "L") {
+            flipSidebar(document)
+        }
+    };
+
+    sidebarContainer.appendChild(sidebarToggler)
+
     document.body.appendChild(sidebarContainer);
-    hideSidebar()
+    hideSidebar(document)
 }
 
 function getSidebarUrl(url: URL) {
@@ -51,7 +190,7 @@ function getSidebarUrl(url: URL) {
     return url;
 }
 
-function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
+function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
     debug("function call - populateSidebar: ", sidebarTabs)
     let container = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR)
     if (!container) {
@@ -59,26 +198,41 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
     }
 
     let tabsContainer = document.createElement("div")
+    tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
     tabsContainer.setAttribute("style", `
         background-color: ${STYLE_COLOR_BORDER};
         border-bottom: 1px solid ${STYLE_COLOR_BORDER};
     `)
     let contentContainer = document.createElement("div")
+    contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT
     contentContainer.setAttribute("style", `
         height: 100%;
     `)
 
     sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
+
+        // build a little preview
+        let sidebarPreviewItem = document.createElement("div");
+        sidebarPreviewItem.appendChild(document.createTextNode(sidebarTab.title));
+        sidebarPreviewItem.setAttribute("style", `
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: ${STYLE_PADDING_SMALL} 0;
+        `)
+        let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
+        sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
         
         // switcher element
         let tabElement = document.createElement("span");
         tabElement.innerText = sidebarTab.title
         tabElement.setAttribute("style", `
             display: inline-block;
+            font-size: ${STYLE_FONT_SIZE_SMALL};
             padding: ${STYLE_PADDING_SMALL};
             text-align: center;
             border-right: 1px solid ${STYLE_COLOR_BORDER};
-            color: ${STYLE_COLOR_LINK};
+            color: ${STYLE_COLOR_TEXT};
             width: ${STYLE_WIDTH_SIDEBAR_TAB};
             cursor: pointer
         `)
@@ -95,7 +249,7 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
             contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
             tabElement.style.backgroundColor = 'white'
-            contentIframe.addEventListener("load", function() {showSidebar()})
+            // contentIframe.addEventListener("load", function() {showSidebar(document)})
         } else {
             contentIframe.style.visibility = 'hidden'
         }
@@ -122,23 +276,7 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
         contentContainer.appendChild(contentIframe)
     })
 
-    // For dismissing the sidebar
-    let dismissButton = document.createElement("div");
-    dismissButton.appendChild(document.createTextNode("×"));
-    dismissButton.setAttribute("style", `
-        float: right;
-        padding-top: ${STYLE_PADDING_SMALL};
-        padding-right: ${STYLE_PADDING_SMALL};
-        cursor: pointer;
-    `)
-    dismissButton.addEventListener("click", function(e) {
-        if (isVisible()) {
-            hideSidebar()
-        } else {
-            showSidebar()
-        }
-    })
-    tabsContainer.appendChild(dismissButton)
+    
 
     container.appendChild(tabsContainer)
     container.appendChild(contentContainer)
@@ -180,7 +318,7 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
         sidebarTabs[0].default = true
     }
 
-    populateSidebar(sidebarTabs)
+    populateSidebar(document, sidebarTabs)
 }
 
 export function loadOrUpdateSidebar(document: Document, url: URL) {
