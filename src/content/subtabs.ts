@@ -141,7 +141,13 @@ function populateSidebar(sidebarTabs: Array<ISidebarTab>) {
     container.appendChild(contentContainer)
 }
 
-function handleSubtabResponse(response_json: Array<ISidebarResponseArrayObject>) {
+function handleSubtabResponse(url: URL, document: Document, response_json: Array<ISidebarResponseArrayObject>) {
+    debug("function call - handleSubtabResponse", url)
+
+    if (!isSidebarLoaded(document)) {
+        createSidebar(document)
+    }
+
     // setup as many tabs as in response
     if (!(response_json && response_json.length > 1)) {
         debug("handleSubtabResponse - response json is invalid")
@@ -174,20 +180,9 @@ function handleSubtabResponse(response_json: Array<ISidebarResponseArrayObject>)
     populateSidebar(sidebarTabs)
 }
 
-function updateSidebarUrl(document: Document, url: URL) {
-    debug("function call - updateSidebarUrl:", url)
-    let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR) as HTMLIFrameElement;
-    if (!sidebarContainer) {
-        debug("sidebar iframe not found in document", document)
-        return;
-    }
+export function loadOrUpdateSidebar(document: Document, url: URL) {
+    getAPI('subtabs', {url: url.href}).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
+        handleSubtabResponse(url, document, response_json)
+    })
     
-    getAPI('subtabs', {url: url.href}).then(handleSubtabResponse)
-}
-
-export function loadOrUpdateSidebar(url: URL) {
-    if (!isSidebarLoaded(document)) {
-        createSidebar(document)
-    }
-    updateSidebarUrl(document, url)
 }

@@ -30,17 +30,11 @@ function getDrawerUrl(url: URL) {
     return url;
 }
 
-function handleDrawerResponse(response_json: IDrawerResponse) {
-    if (response_json && response_json.show_drawer) {
-        let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
-        let drawerHref = response_json.url
-        showDrawer();
-        drawerIframe.src = drawerHref
+function handleDrawerResponse(url: URL, document: Document, response_json: IDrawerResponse) {
+    if (!isDrawerLoaded(document)) {
+        createDrawer(document)
     }
-}
 
-function updateDrawerUrl(document: Document, url: URL) {
-    debug("function call - updateDrawerUrl:", url)
     const drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
     if (!drawerIframe) {
         debug("drawer iframe not found in document", document)
@@ -58,14 +52,16 @@ function updateDrawerUrl(document: Document, url: URL) {
     `)
     hideDrawer()
 
-    // send an async request for the drawer url, once it has returned, check if valid then change source and show
-    getAPI('drawer', {url: url.href}).then(handleDrawerResponse)
+    if (response_json && response_json.show_drawer) {
+        let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
+        let drawerHref = response_json.url
+        showDrawer();
+        drawerIframe.src = drawerHref
+    }
 }
 
-export function loadOrUpdateDrawer(url: URL) {
-    if (!isDrawerLoaded(document)) {
-        createDrawer(document)
-    }
-
-    updateDrawerUrl(document, url)
+export function loadOrUpdateDrawer(document: Document, url: URL) {
+    getAPI('drawer', {url: url.href}).then(function(response_json) {
+        handleDrawerResponse(url, document, response_json)
+    })
 }
