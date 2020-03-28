@@ -9,20 +9,14 @@ Chrome Extension, TypeScript and Visual Studio Code
 
 * [node + npm](https://nodejs.org/) (Current Version)
 
-## Option
-
-* [Visual Studio Code](https://code.visualstudio.com/)
-
-## Includes the following
-
 * TypeScript (typed javascript)
 * Webpack (transpiling ts to js)
 * Jest (testing)
 
 ## Project Structure
 
-* src/typescript: TypeScript source files
-* src/assets: static files
+* src/: TypeScript source files
+* public/: static files
 * dist: Chrome Extension directory
 * dist/js: Generated JavaScript files
 
@@ -30,29 +24,27 @@ Chrome Extension, TypeScript and Visual Studio Code
 
 ```
 npm install
+git submodule update --init
+cd lumos-shared-js
+sudo npm link
+cd ..
+sudo npm link lumos-shared-js
 ```
 
 ## Import as Visual Studio Code project
 
 ...
 
-## Build
 
-```
-npm run build
-```
+## Dev: Build in watch mode
 
-## Build in watch mode
-
-### terminal
+terminal
 
 ```
 npm run watch
 ```
 
-### Visual Studio Code
-
-Run watch mode.
+Run watch mode in Visual Studio Code.
 
 type `Ctrl + Shift + B`
 
@@ -60,5 +52,11 @@ type `Ctrl + Shift + B`
 
 Load `dist` directory
 
-## Test
+## Unit Tests
 `npx jest` or `npm run test`
+
+## Production: Build
+
+```
+npm run build
+```
