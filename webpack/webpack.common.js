@@ -6,11 +6,10 @@ const srcDir = '../src/';
 module.exports = {
     entry: {
         background: path.join(__dirname, srcDir + 'background/background.ts'),
-        content_script: path.join(__dirname, srcDir + 'content/content_script.ts'),
+        content_script: path.join(__dirname, srcDir + 'content/content_script.ts')
     },
     output: {
         path: path.join(__dirname, '../dist/js'),
-        publicPath: '/public/',
         filename: '[name].js'
     },
     module: {
