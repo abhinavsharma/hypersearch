@@ -1,0 +1,3 @@
+[submodule "lumos-shared-js"]
+	path = lumos-shared-js
+	url = git@github.com:lumosbrowser/lumos-shared-js.git

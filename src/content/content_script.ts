@@ -3,6 +3,7 @@ import { loadOrUpdateDrawer } from "./drawer";
 import { loadOrUpdateSidebar } from "./subtabs";
 import { modifyPage } from "./modify";
 import { loadHiddenMessenger } from "./messenger";
+import { sharedFunction } from "lumos-shared-js";
 
 debug("executing content script on", location.href)
 function main() {
@@ -19,6 +20,10 @@ function handleUrlUpdated(url: URL) {
     loadOrUpdateSidebar(url)
     // load or update inline content
     modifyPage(url)
+
+    sharedFunction(() => {
+        console.log("Hello from extension");
+    });
 }
 
 debug("messages - setting up listener for bg messages")
