@@ -9,6 +9,16 @@ function isVisible(document: Document) {
     return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
+function hideShowButton(document: Document) {
+    let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+    showButton.style.visibility = "hidden";
+}
+
+function showShowButotn(document: Document) {
+    let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+    showButton.style.visibility = "visible";
+}
+
 function flipSidebar(document: Document, force?: string) {
 
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -136,6 +146,7 @@ function createSidebar(document: Document) {
         font-size: ${STYLE_FONT_SIZE_SMALL};
         z-index: ${STYLE_ZINDEX_MAX};
         cursor: pointer;
+        visibility: hidden;
     `)
     sidebarTogglerWhenVisible.setAttribute("style", `
         position: absolute;
@@ -194,11 +205,12 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
         height: 100%;
     `)
 
-    // clean up preview area
+    // clean up preview area and show it
     let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
     Array.from(sidebarTogglerWhenHidden.getElementsByClassName("sidebar_preview_item")).forEach((e) => {
         e.parentNode.removeChild(e);
     })
+    sidebarTogglerWhenHidden.style.visibility = 'visible'
 
     sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
 
