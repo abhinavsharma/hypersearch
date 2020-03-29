@@ -209,6 +209,12 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
         height: 100%;
     `)
 
+    // clean up preview area
+    let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
+    Array.from(sidebarTogglerWhenHidden.getElementsByClassName("sidebar_preview_item")).forEach((e) => {
+        e.parentNode.removeChild(e);
+    })
+
     sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
 
         // build a little preview
@@ -220,7 +226,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             text-overflow: ellipsis;
             padding: ${STYLE_PADDING_SMALL} 0;
         `)
-        let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
+        sidebarPreviewItem.classList.add('sidebar_preview_item')
         sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
         
         // switcher element
@@ -249,7 +255,6 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
             tabElement.style.backgroundColor = 'white'
-            // contentIframe.addEventListener("load", function() {showSidebar(document)})
         } else {
             contentIframe.style.visibility = 'hidden'
         }
