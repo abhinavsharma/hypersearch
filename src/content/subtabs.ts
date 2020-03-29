@@ -2,59 +2,46 @@ import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE
 import { getAPI } from "./content_shared";
 import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
+const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
+
 function isVisible(document: Document) {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
-function showSidebar(document: Document) {
+function flipSidebar(document: Document, force?: string) {
+
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     let sidebarOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
     let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
     let hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
     let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS)
     let contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT)
-    
-    
-    sidebarContainer.style.visibility = "visible";
-    showButton.style.visibility = "hidden";
-    // hideButton.style.visibility = "visible";
-    sidebarOverlayContainer.style.display = "block"
-    sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR;
-    if (tabsContainer && contentContainer) {
-        setTimeout(() => {
-            tabsContainer.style.visibility = "visible"
-            contentContainer.style.visibility = "visible"   
-        }, 350)
-    }
-}
 
-function hideSidebar(document: Document) {
-    let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-    let sidebarOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
-    let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
-    let hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
-    let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS)
-    let contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT)
-    
-    if (tabsContainer && contentContainer) {
-        tabsContainer.style.visibility = "hidden"
-        contentContainer.style.visibility = "hidden"    
-    }
-    
-    sidebarContainer.style.visibility = "hidden";
-    showButton.style.visibility = "visible";
-    hideButton.style.visibility = "hidden";
-    sidebarContainer.style.width = "0px";
-    sidebarOverlayContainer.style.display = "none"
-
-}
-
-function flipSidebar(document: Document) {
-    if (isVisible(document)) {
-        hideSidebar(document)
+    if ((force && force == 'hide') || isVisible(document)) {
+        // hide sidebar
+        if (tabsContainer && contentContainer) {
+            tabsContainer.style.visibility = "hidden"
+            contentContainer.style.visibility = "hidden"    
+        }
+        
+        sidebarContainer.style.visibility = "hidden";
+        showButton.style.visibility = "visible";
+        hideButton.style.visibility = "hidden";
+        sidebarContainer.style.width = "0px";
+        sidebarOverlayContainer.style.display = "none"
     } else {
-        showSidebar(document)
+        // show sidebar
+        sidebarContainer.style.visibility = "visible";
+        showButton.style.visibility = "hidden";
+        sidebarOverlayContainer.style.display = "block"
+        sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR;
+        if (tabsContainer && contentContainer) {
+            setTimeout(() => {
+                tabsContainer.style.visibility = "visible"
+                contentContainer.style.visibility = "visible"   
+            }, ANIMATE_TIME_SHOW_CONTENT_DELAY)
+        }
     }
 }
 
@@ -174,20 +161,18 @@ function createSidebar(document: Document) {
 
     document.onkeypress = function (e: KeyboardEvent) {
         if (e.key === "l" || e.key === "L") {
-            flipSidebar(document)
+            if (!(document.activeElement.nodeName == 'TEXTAREA'
+                || document.activeElement.nodeName == 'INPUT'
+                || (document.activeElement.nodeName == 'DIV'))) {
+                flipSidebar(document)
+            }
         }
     };
 
     sidebarContainer.appendChild(sidebarToggler)
 
     document.body.appendChild(sidebarContainer);
-    hideSidebar(document)
-}
-
-function getSidebarUrl(url: URL) {
-    debug("function call - getSidebarUrl", url);
-    // TODO
-    return url;
+    flipSidebar(document, 'hide')
 }
 
 function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
@@ -211,7 +196,6 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
 
     sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
 
-        // build a little preview
         let sidebarPreviewItem = document.createElement("div");
         sidebarPreviewItem.appendChild(document.createTextNode(sidebarTab.title));
         sidebarPreviewItem.setAttribute("style", `
@@ -249,7 +233,6 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
             tabElement.style.backgroundColor = 'white'
-            // contentIframe.addEventListener("load", function() {showSidebar(document)})
         } else {
             contentIframe.style.visibility = 'hidden'
         }
