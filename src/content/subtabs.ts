@@ -136,6 +136,7 @@ function createSidebar(document: Document) {
         font-size: ${STYLE_FONT_SIZE_SMALL};
         z-index: ${STYLE_ZINDEX_MAX};
         cursor: pointer;
+        visibility: hidden;
     `)
     sidebarTogglerWhenVisible.setAttribute("style", `
         position: absolute;
@@ -173,6 +174,10 @@ function createSidebar(document: Document) {
 
     document.body.appendChild(sidebarContainer);
     flipSidebar(document, 'hide')
+
+    // special case: by default hiding the sidebar will show this toggle but wem hide it until
+    // content is populated
+    sidebarTogglerWhenHidden.style.visibility = 'hidden'
 }
 
 function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
@@ -194,11 +199,13 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
         height: 100%;
     `)
 
-    // clean up preview area
+    // clean up preview area and show it
     let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
     Array.from(sidebarTogglerWhenHidden.getElementsByClassName("sidebar_preview_item")).forEach((e) => {
         e.parentNode.removeChild(e);
     })
+    // special case: we only show this once we are sure there are alternative pages
+    sidebarTogglerWhenHidden.style.visibility = 'visible'
 
     sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
 
@@ -224,7 +231,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             border-right: 1px solid ${STYLE_COLOR_BORDER};
             color: ${STYLE_COLOR_TEXT};
             width: ${STYLE_WIDTH_SIDEBAR_TAB};
-            cursor: pointer
+            cursor: pointer;
         `)
         
         // content element
