@@ -29,6 +29,9 @@ Chrome Extension, TypeScript and Visual Studio Code
 ## Setup
 
 ```
+
+# run the following after running the setup from https://github.com/lumosbrowser/lumos-shared-js
+sudo npm link lumos-shared-js
 npm install
 ```
 
