@@ -1,4 +1,4 @@
-import { LUMOS_API_URL, MESSAGES } from '../shared/constants'
+import { LUMOS_API_URL } from 'lumos-shared-js'
 
 // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes("mobi");

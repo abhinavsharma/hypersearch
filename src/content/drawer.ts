@@ -1,5 +1,5 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER, debug, STYLE_WIDTH_SIDEBAR, STYLE_HEIGHT_DRAWER } from "../shared/constants"
-import { getAPI } from "./content_shared";
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER, debug, STYLE_WIDTH_SIDEBAR, STYLE_HEIGHT_DRAWER } from "lumos-shared-js"
+import { getAPI } from "./helpers";
 import { IDrawerResponse } from "../shared/interfaces";
 
 function showDrawer() {

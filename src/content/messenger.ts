@@ -1,4 +1,4 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL } from "../shared/constants";
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL } from "lumos-shared-js";
 
 let IS_READY = false;
 let MESSENGER_IFRAME = null;

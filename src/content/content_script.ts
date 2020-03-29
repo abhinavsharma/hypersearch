@@ -1,9 +1,8 @@
-import { MESSAGES, debug } from "../shared/constants";
+import { debug, MESSAGES } from "lumos-shared-js";
 import { loadOrUpdateDrawer } from "./drawer";
 import { loadOrUpdateSidebar } from "./subtabs";
 import { modifyPage } from "./modify";
 import { loadHiddenMessenger } from "./messenger";
-import { sharedFunction } from "lumos-shared-js";
 
 debug("executing content script on", location.href)
 function main() {
@@ -24,11 +23,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL) {
         loadHiddenMessenger(url, document, window)
 
         // load or update inline content
-        modifyPage(url)
-
-        sharedFunction(() => {
-            console.log("Hello from extension");
-        });
+        modifyPage(url, window, document)
 
     }, false)
     
