@@ -1,36 +1,30 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER, debug, STYLE_WIDTH_SIDEBAR, STYLE_HEIGHT_DRAWER } from "../shared/constants"
-import { getAPI } from "./content_shared";
-import { IDrawerResponse } from "../shared/interfaces";
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER, debug, STYLE_WIDTH_SIDEBAR, STYLE_HEIGHT_DRAWER, IDrawerResponse } from "lumos-shared-js"
+import { getAPI } from "./helpers";
 
-function showDrawer() {
+function showDrawer(document): void {
     let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
     drawerIframe.style.visibility = "visible"
 }
 
-function hideDrawer() {
+function hideDrawer(document): void {
     let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
     drawerIframe.style.visibility = "hidden"
 }
 
-function isDrawerLoaded(document) {
+function isDrawerLoaded(document): boolean {
     debug("function call - isDrawerLoaded", document)
     return !!document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER);
 }
 
-function createDrawer(document: Document) {
+function createDrawer(document: Document): void {
     debug("function call - createDrawer")
     let iframe = document.createElement('iframe');
     iframe.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER;
     document.body.appendChild(iframe);
 }
 
-function getDrawerUrl(url: URL) {
-    debug("function call - getDrawerUrl", url);
-    // TODO
-    return url;
-}
-
-function handleDrawerResponse(url: URL, document: Document, response_json: IDrawerResponse) {
+function handleDrawerResponse(document: Document, response_json: IDrawerResponse): void {
+    // mutates drawer
     if (!isDrawerLoaded(document)) {
         createDrawer(document)
     }
@@ -50,18 +44,18 @@ function handleDrawerResponse(url: URL, document: Document, response_json: IDraw
         border: none
         z-index: 2147483648;
     `)
-    hideDrawer()
+    hideDrawer(document)
 
     if (response_json && response_json.show_drawer) {
         let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
         let drawerHref = response_json.url
-        showDrawer();
+        showDrawer(document);
         drawerIframe.src = drawerHref
     }
 }
 
-export function loadOrUpdateDrawer(document: Document, url: URL) {
+export function loadOrUpdateDrawer(document: Document, url: URL): void {
     getAPI('drawer', {url: url.href}).then(function(response_json) {
-        handleDrawerResponse(url, document, response_json)
+        handleDrawerResponse(document, response_json)
     })
 }

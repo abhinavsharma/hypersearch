@@ -1,16 +1,16 @@
-import { MESSAGES, debug } from "../shared/constants";
+import { debug, MESSAGES } from "lumos-shared-js";
 import { loadOrUpdateDrawer } from "./drawer";
-import { loadOrUpdateSidebar } from "./subtabs";
+import { loadOrUpdateSidebar } from "./sidebar";
 import { modifyPage } from "./modify";
 import { loadHiddenMessenger } from "./messenger";
-import { sharedFunction } from "lumos-shared-js";
 
 debug("executing content script on", location.href)
-function main() {
+function main(window: Window, document: Document, location: Location): void {
+    // mutates document
     handleUrlUpdated(window, document, new URL(location.href))
 }
 
-function handleUrlUpdated(window: Window, document: Document, url: URL) {
+function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     debug("function call - handleUrlUpdated:", url)
     
     // load or update the drawer
@@ -24,11 +24,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL) {
         loadHiddenMessenger(url, document, window)
 
         // load or update inline content
-        modifyPage(url)
-
-        sharedFunction(() => {
-            console.log("Hello from extension");
-        });
+        modifyPage(url, window, document)
 
     }, false)
     
@@ -51,4 +47,4 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 // Whenever the url changes (sync or async), calls APIs drawer and sidebar
 // When sidebar API returns true, 
 
-main();
+main(window, document, location);

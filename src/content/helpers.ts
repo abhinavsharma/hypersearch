@@ -1,10 +1,10 @@
-import { LUMOS_API_URL, MESSAGES } from '../shared/constants'
+import { LUMOS_API_URL, IDrawerResponse } from 'lumos-shared-js'
 
 // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes("mobi");
 
-export async function getAPI(api, params = {}) {
-    let url = new URL(LUMOS_API_URL + api);
+export async function getAPI(api: string, params = {}): Promise<any> {
+    let url: URL = new URL(LUMOS_API_URL + api);
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
     
     const response = await fetch(url.href, {

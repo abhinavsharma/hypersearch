@@ -1,4 +1,4 @@
-import { MESSAGES, debug } from "../shared/constants"
+import { MESSAGES, debug } from "lumos-shared-js"
 
 debug("installing listener for header interception")
 // https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
