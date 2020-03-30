@@ -1,15 +1,14 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_WIDTH_SIDEBAR_TAB, STYLE_SIDEBAR_HIDER_X_OFFSET, STYLE_SIDEBAR_HIDER_Y_OFFSET, STYLE_SIDEBAR_TOGGLER_WIDTH, STYLE_FONT_SIZE_SMALL, STYLE_BORDER_RADIUS_PILL, STYLE_COLOR_LUMOS_GOLD_SOLID, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE, STYLE_SIDEBAR_SHOWER_X_OFFSET, STYLE_FONT_SIZE_LARGE, STYLE_PADDING_MEDIUM, STYLE_COLOR_TEXT, STYLE_SIDEBAR_SHOWER_Y_OFFSET, STYLE_PADDING_LARGE, STYLE_WIDTH_SIDEBAR_TAB_LEFT, STYLE_WIDTH_SIDEBAR_TAB_RIGHT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS } from "lumos-shared-js"
+import { ISidebarResponseArrayObject, ISidebarTab, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_WIDTH_SIDEBAR_TAB, STYLE_SIDEBAR_HIDER_X_OFFSET, STYLE_SIDEBAR_HIDER_Y_OFFSET, STYLE_SIDEBAR_TOGGLER_WIDTH, STYLE_FONT_SIZE_SMALL, STYLE_BORDER_RADIUS_PILL, STYLE_COLOR_LUMOS_GOLD_SOLID, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE, STYLE_SIDEBAR_SHOWER_X_OFFSET, STYLE_FONT_SIZE_LARGE, STYLE_PADDING_MEDIUM, STYLE_COLOR_TEXT, STYLE_SIDEBAR_SHOWER_Y_OFFSET, STYLE_PADDING_LARGE, STYLE_WIDTH_SIDEBAR_TAB_LEFT, STYLE_WIDTH_SIDEBAR_TAB_RIGHT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS } from "lumos-shared-js"
 import { getAPI } from "./helpers";
-import { ISidebarResponseArrayObject, ISidebarTab } from '../shared/interfaces'
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 
-function isVisible(document: Document) {
+function isVisible(document: Document): boolean {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
-function flipSidebar(document: Document, force?: string) {
+function flipSidebar(document: Document, force?: string): void {
 
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     let sidebarOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
@@ -45,7 +44,7 @@ function flipSidebar(document: Document, force?: string) {
     }
 }
 
-function isSidebarLoaded(document) {
+function isSidebarLoaded(document): boolean {
     debug("function call - isSidebarLoaded", document)
     return !!document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
 }
@@ -180,13 +179,17 @@ function createSidebar(document: Document) {
     sidebarTogglerWhenHidden.style.visibility = 'hidden'
 }
 
-function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
+function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>): void {
+    // mutates document
+
+    // check if sidebar has been created
     debug("function call - populateSidebar: ", sidebarTabs)
     let container = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR)
     if (!container) {
         debug("did not find sidebar element")
     }
 
+    // build a ui to switch between sub-tabs within the sidebar
     let tabsContainer = document.createElement("div")
     tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
     tabsContainer.setAttribute("style", `
@@ -199,7 +202,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
         height: 100%;
     `)
 
-    // clean up preview area and show it
+    // create a ui to preview the sidebar when it is hidden
     let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
     Array.from(sidebarTogglerWhenHidden.getElementsByClassName("sidebar_preview_item")).forEach((e) => {
         e.parentNode.removeChild(e);
@@ -207,8 +210,10 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
     // special case: we only show this once we are sure there are alternative pages
     sidebarTogglerWhenHidden.style.visibility = 'visible'
 
+    // populate the sidebar and preview UIs with content from the response
     sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
 
+        // preview element that lives outside the sidebar
         let sidebarPreviewItem = document.createElement("div");
         sidebarPreviewItem.appendChild(document.createTextNode(sidebarTab.title));
         sidebarPreviewItem.setAttribute("style", `
@@ -220,7 +225,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
         sidebarPreviewItem.classList.add('sidebar_preview_item')
         sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
         
-        // switcher element
+        // tabs that switch between different subtabs
         let tabElement = document.createElement("span");
         tabElement.innerText = sidebarTab.title
         tabElement.setAttribute("style", `
@@ -234,7 +239,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             cursor: pointer;
         `)
         
-        // content element
+        // load the urls of the subtabs into iframes
         let contentIframe = document.createElement("iframe")
         contentIframe.src = sidebarTab.url.href
         contentIframe.setAttribute("style", `
@@ -242,6 +247,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             border: none;
         `)
 
+        // set the default subtab
         if (sidebarTab.default) {
             contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
@@ -250,7 +256,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             contentIframe.style.visibility = 'hidden'
         }
         
-        //  toggling click handler
+        //  enable switching between tabs
         tabElement.addEventListener("click", function(e) { 
             for(let child = tabsContainer.firstChild; child !== null; child = child.nextSibling) {
                 let castedChild = <HTMLElement> child;
@@ -268,6 +274,7 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
             contentIframe.style.height = '100%'
         })
 
+        // insert tab and content into container
         tabsContainer.appendChild(tabElement)
         contentContainer.appendChild(contentIframe)
     })
@@ -278,7 +285,8 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>) {
     container.appendChild(contentContainer)
 }
 
-function handleSubtabResponse(url: URL, document: Document, response_json: Array<ISidebarResponseArrayObject>) {
+function handleSubtabResponse(url: URL, document: Document, response_json: Array<ISidebarResponseArrayObject>): void {
+    // mutates document
     debug("function call - handleSubtabResponse", url)
 
     if (!isSidebarLoaded(document)) {
@@ -317,7 +325,8 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     populateSidebar(document, sidebarTabs)
 }
 
-export function loadOrUpdateSidebar(document: Document, url: URL) {
+export function loadOrUpdateSidebar(document: Document, url: URL): void {
+    // mutates document
     getAPI('subtabs', {url: url.href}).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
         handleSubtabResponse(url, document, response_json)
     })

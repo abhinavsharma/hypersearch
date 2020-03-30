@@ -3,11 +3,11 @@ import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL } from "lumo
 let IS_READY = false;
 let MESSENGER_IFRAME = null;
 
-export function isMessengerReady() {
+export function isMessengerReady(): boolean {
     return IS_READY && MESSENGER_IFRAME;
 }
 
-export function postMessageToReactApp(command: string, data: any) {
+export function postMessageToReactApp(command: string, data: any): void {
     debug("function call - postMessageToReactApp")
     let iframe = MESSENGER_IFRAME
     let RETRY_TIME = 100;
@@ -27,7 +27,7 @@ export function postMessageToReactApp(command: string, data: any) {
     }, LUMOS_APP_URL);
 }
 
-function listenToReactApp(window: Window) {
+function listenToReactApp(window: Window): void {
     window.addEventListener(
       'message',
       msg => {
@@ -46,7 +46,7 @@ function listenToReactApp(window: Window) {
     );
 }
 
-export function addReactAppListener(window: Window, message: string, fn) {
+export function addReactAppListener(window: Window, message: string, fn): void {
     window.addEventListener(
         'message',
         msg => {
@@ -60,7 +60,7 @@ export function addReactAppListener(window: Window, message: string, fn) {
       );
 }
 
-export function loadHiddenMessenger(url: URL, document: Document, window: Window) {
+export function loadHiddenMessenger(url: URL, document: Document, window: Window): void {
 
     // 1. load iframe
     let iframe = document.createElement('iframe');
