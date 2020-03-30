@@ -1,8 +1,7 @@
-import { debug, MESSAGES } from "lumos-shared-js";
+import { debug, MESSAGES, modifyPage } from "lumos-shared-js";
 import { loadOrUpdateDrawer } from "./drawer";
 import { loadOrUpdateSidebar } from "./sidebar";
-import { modifyPage } from "./modify";
-import { loadHiddenMessenger } from "./messenger";
+import {loadHiddenMessenger, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger";
 
 debug("executing content script on", location.href)
 function main(window: Window, document: Document, location: Location): void {
@@ -24,7 +23,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
         loadHiddenMessenger(url, document, window)
 
         // load or update inline content
-        modifyPage(url, window, document)
+        modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
 
     }, false)
     

@@ -1,4 +1,4 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL } from "lumos-shared-js";
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL, INativeAddReactAppListener, INativePostMessageToReactApp } from "lumos-shared-js";
 
 let IS_READY = false;
 let MESSENGER_IFRAME = null;
@@ -7,20 +7,20 @@ export function isMessengerReady(): boolean {
     return IS_READY && MESSENGER_IFRAME;
 }
 
-export function postMessageToReactApp(command: string, data: any): void {
-    debug("function call - postMessageToReactApp")
+export function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
+    debug("function call - nativeBrowserPostMessageToReactApp")
     let iframe = MESSENGER_IFRAME
     let RETRY_TIME = 100;
 
     if (!isMessengerReady()) {
         debug("React App is not ready, delaying message")
         setTimeout(function() {
-            postMessageToReactApp(command, data)
+            nativeBrowserPostMessageToReactApp({"command": command, "data": data})
         }, RETRY_TIME)
         return;
     }
 
-    debug("postMessageToReactApp - posting", command, data)
+    debug("nativeBrowserPostMessageToReactApp - posting", command, data)
     iframe.contentWindow.postMessage({
         command: command,
         ...data
@@ -46,14 +46,14 @@ function listenToReactApp(window: Window): void {
     );
 }
 
-export function addReactAppListener(window: Window, message: string, fn): void {
+export function nativeBrowserAddReactAppListener({window, message, callback}: INativeAddReactAppListener): void {
     window.addEventListener(
         'message',
         msg => {
           
           if (msg.data && msg.data.command && msg.data.command === message) {
-            debug("addReactAppListener - recd message", msg)
-            fn(msg)
+            debug("nativeBrowserAddReactAppListener - recd message", msg)
+            callback(msg)
           }
         },
         false,
