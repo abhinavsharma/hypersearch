@@ -21,10 +21,19 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
         debug("DOMContentLoaded:", url)
         // hidden messenger component to fetch data from react app
         loadHiddenMessenger(url, document, window)
-
-        // load or update inline content
+        // load or update inline content            
+        nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {}})
+        nativeBrowserAddReactAppListener({
+            "window": window,
+            "message": "isUserLoggedIn",
+            "callback": (msg) => {
+                let data = msg.data;
+                console.log('isUserLoggedIn', data)
+                localStorage.setItem('user', data.user);
+                localStorage.setItem('userMemberships', data.memberships);
+            }
+        })
         modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
-
     }, false)
     
 }

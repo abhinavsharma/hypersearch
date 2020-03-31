@@ -50,7 +50,6 @@ export function nativeBrowserAddReactAppListener({window, message, callback}: IN
     window.addEventListener(
         'message',
         msg => {
-          
           if (msg.data && msg.data.command && msg.data.command === message) {
             debug("nativeBrowserAddReactAppListener - recd message", msg)
             callback(msg)
