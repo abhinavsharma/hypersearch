@@ -8,12 +8,11 @@ export function isMessengerReady(): boolean {
 }
 
 export function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
-    debug("function call - nativeBrowserPostMessageToReactApp")
+    // debug("function call - nativeBrowserPostMessageToReactApp")
     let iframe = MESSENGER_IFRAME
     let RETRY_TIME = 100;
 
     if (!isMessengerReady()) {
-        debug("React App is not ready, delaying message")
         setTimeout(function() {
             nativeBrowserPostMessageToReactApp({"command": command, "data": data})
         }, RETRY_TIME)
