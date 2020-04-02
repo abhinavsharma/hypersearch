@@ -1,7 +1,10 @@
 import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL, INativeAddReactAppListener, INativePostMessageToReactApp } from "lumos-shared-js";
+import queryString = require('query-string');
+import uuidv1 = require('uuid/v1');
 
 let IS_READY = false;
 let MESSENGER_IFRAME = null;
+let MESSENGER_ID = uuidv1(); 
 
 export function isMessengerReady(): boolean {
     return IS_READY && MESSENGER_IFRAME;
@@ -33,8 +36,12 @@ function listenToReactApp(window: Window): void {
         if (msg.data && msg.data.command) {
           switch (msg.data.command) {
             case 'readyConsumerBar':
-              debug("readyConsumeBar");
-              IS_READY = true
+              let messengerUrl = msg.data.messengerUrl;
+              let messengerId = new URLSearchParams(new URL(messengerUrl).search).get('messengerId')
+              if (messengerId === MESSENGER_ID) {
+                debug("Messenger Ready", messengerId);
+                IS_READY = true
+              }
               break;
             default:
               break;
@@ -62,7 +69,7 @@ export function loadHiddenMessenger(url: URL, document: Document, window: Window
 
     // 1. load iframe
     let iframe = document.createElement('iframe');
-    iframe.src = LUMOS_APP_URL  + '?src=' + encodeURIComponent(url.href);;
+    iframe.src = LUMOS_APP_URL  + '?messengerId=' + MESSENGER_ID  + '&src=' + encodeURIComponent(url.href);
     iframe.setAttribute('id', CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN);
     iframe.setAttribute('style', `
         height: 1px;
