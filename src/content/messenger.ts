@@ -36,8 +36,14 @@ function listenToReactApp(window: Window): void {
         if (msg.data && msg.data.command) {
           switch (msg.data.command) {
             case 'readyConsumerBar':
-              let messengerUrl = msg.data.messengerUrl;
-              let messengerId = new URLSearchParams(new URL(messengerUrl).search).get('messengerId')
+              let messengerHref = msg.data.messengerUrl;
+              if (!messengerHref) return
+              let messengerUrl = new URL(messengerHref)
+              if (!messengerUrl) return
+              let searchParams = new URLSearchParams(messengerUrl.search)
+              if (!searchParams) return
+              let messengerId = searchParams.get('messengerId')
+              if (!messengerId) return
               if (messengerId === MESSENGER_ID) {
                 debug("Messenger Ready", messengerId);
                 IS_READY = true
