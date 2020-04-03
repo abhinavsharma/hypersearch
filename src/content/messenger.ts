@@ -1,5 +1,4 @@
 import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL, INativeAddReactAppListener, INativePostMessageToReactApp } from "lumos-shared-js";
-import queryString = require('query-string');
 import uuidv1 = require('uuid/v1');
 
 let IS_READY = false;
