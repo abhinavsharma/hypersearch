@@ -71,6 +71,8 @@ export function nativeBrowserAddReactAppListener({window, message, callback}: IN
 }
 
 export function loadHiddenMessenger(url: URL, document: Document, window: Window): void {
+    IS_READY = false;
+    MESSENGER_IFRAME = null;
 
     // 1. load iframe
     let iframe = document.createElement('iframe');

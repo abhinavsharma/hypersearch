@@ -37,22 +37,11 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     }, false)
     
 }
-
-debug("messages - setting up listener for bg messages")
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
-    debug("message received from background: ", msg.message)
-    if (msg.message === MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED) {
-        handleUrlUpdated(window, document, new URL(msg.data.url))
-    } else {
-        sendResponse('Color message is none.');
-    }
-});
-
 // Structure of the content script
 // Loads a sidebar hidden
 // Loads a drawer hidden
 
-// Whenever the url changes (sync or async), calls APIs drawer and sidebar
+// Whenever the url changes (sync or async), script is rerun
 // When sidebar API returns true, 
 
 main(window, document, location);
