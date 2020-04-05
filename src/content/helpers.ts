@@ -1,4 +1,4 @@
-import { LUMOS_API_URL, IDrawerResponse } from 'lumos-shared-js'
+import { LUMOS_API_URL, IDrawerResponse, debug } from 'lumos-shared-js'
 
 // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes("mobi");
@@ -49,11 +49,16 @@ export async function postAPI(api: string, params = {}, body = {}): Promise<any>
 }
 
 export const runFunctionWhenDocumentReady = (document: Document, callback: Function): void => {
-  if (document.readyState === "complete"
-     || document.readyState === "interactive") {
-      document.addEventListener("DOMContentLoaded", () => { callback() }, false)
+  if ((document.readyState === "complete"
+     || document.readyState === "interactive")) {
+      debug("runFunctionWhenDocumentReady - document is ready right now")
+      callback()
   } else {
-    callback()
+    debug("runFunctionWhenDocumentReady - document is not ready")
+    document.addEventListener("DOMContentLoaded", () => { 
+      debug("runFunctionWhenDocumentReady - document was not ready but DOMContentLoaded now")
+      callback()
+    }, false)
   }
   return;
 }
