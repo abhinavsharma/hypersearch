@@ -43,7 +43,6 @@ function listenToReactApp(window: Window): void {
               if (!searchParams) return
               let messengerId = searchParams.get('messengerId')
               if (!messengerId) return
-              console.log(msg)
               if (messengerId === MESSENGER_ID) {
                 debug("Messenger Ready", messengerId);
                 IS_READY = true
