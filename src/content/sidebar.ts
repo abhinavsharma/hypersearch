@@ -1,5 +1,5 @@
 import { ISidebarResponseArrayObject, ISidebarTab, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR, debug, STYLE_COLOR_BORDER, STYLE_PADDING_SMALL, STYLE_WIDTH_SIDEBAR, STYLE_ZINDEX_MAX, STYLE_WIDTH_SIDEBAR_TAB, STYLE_SIDEBAR_HIDER_X_OFFSET, STYLE_SIDEBAR_HIDER_Y_OFFSET, STYLE_SIDEBAR_TOGGLER_WIDTH, STYLE_FONT_SIZE_SMALL, STYLE_BORDER_RADIUS_PILL, STYLE_COLOR_LUMOS_GOLD_SOLID, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE, STYLE_SIDEBAR_SHOWER_X_OFFSET, STYLE_FONT_SIZE_LARGE, STYLE_PADDING_MEDIUM, STYLE_COLOR_TEXT, STYLE_SIDEBAR_SHOWER_Y_OFFSET, STYLE_PADDING_LARGE, STYLE_WIDTH_SIDEBAR_TAB_LEFT, STYLE_WIDTH_SIDEBAR_TAB_RIGHT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT, CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS } from "lumos-shared-js"
-import { postAPI } from "./helpers";
+import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 
@@ -330,6 +330,8 @@ export function loadOrUpdateSidebar(document: Document, url: URL): void {
     }
     let userMemberships = localStorage.getItem('userMemberships').split(",")
     postAPI('subtabs', {url: url.href}, {networks: userMemberships}).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
-        handleSubtabResponse(url, document, response_json)
+        runFunctionWhenDocumentReady(document, () => {
+            handleSubtabResponse(url, document, response_json)
+        })
     })
 }

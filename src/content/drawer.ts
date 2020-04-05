@@ -1,5 +1,5 @@
 import { CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER, debug, STYLE_WIDTH_SIDEBAR, STYLE_HEIGHT_DRAWER, IDrawerResponse } from "lumos-shared-js"
-import { getAPI } from "./helpers";
+import { getAPI, runFunctionWhenDocumentReady } from "./helpers";
 
 function showDrawer(document): void {
     let drawerIframe = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_DRAWER) as HTMLIFrameElement;
@@ -56,6 +56,8 @@ function handleDrawerResponse(document: Document, response_json: IDrawerResponse
 
 export function loadOrUpdateDrawer(document: Document, url: URL): void {
     getAPI('drawer', {url: url.href}).then(function(response_json) {
-        handleDrawerResponse(document, response_json)
+        runFunctionWhenDocumentReady(document, () => {
+            handleDrawerResponse(document, response_json)
+        })
     })
 }

@@ -47,3 +47,13 @@ export async function postAPI(api: string, params = {}, body = {}): Promise<any>
     return response_json
   }
 }
+
+export const runFunctionWhenDocumentReady = (document: Document, callback: Function): void => {
+  if (document.readyState === "complete"
+     || document.readyState === "interactive") {
+      document.addEventListener("DOMContentLoaded", () => { callback() }, false)
+  } else {
+    callback()
+  }
+  return;
+}
