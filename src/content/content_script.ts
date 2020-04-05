@@ -1,7 +1,7 @@
 import { debug, MESSAGES, modifyPage } from "lumos-shared-js";
 import { loadOrUpdateDrawer } from "./drawer";
 import { loadOrUpdateSidebar } from "./sidebar";
-import {loadHiddenMessenger, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger";
+import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
 
 debug("executing content script on", location.href)
 function main(window: Window, document: Document, location: Location): void {
@@ -19,9 +19,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
 
     document.addEventListener("DOMContentLoaded", () => { 
         debug("DOMContentLoaded:", url)
-        // hidden messenger component to fetch data from react app
-        loadHiddenMessenger(url, document, window)
-        // load or update inline content            
+        // check if user is logged in
         nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {}})
         nativeBrowserAddReactAppListener({
             "window": window,
@@ -33,6 +31,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 localStorage.setItem('userMemberships', data.memberships);
             }
         })
+        // load or update inline content
         modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
     }, false)
     

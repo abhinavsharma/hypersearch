@@ -1,4 +1,7 @@
 import { MESSAGES, debug } from "lumos-shared-js"
+import {loadHiddenMessenger, setupMessagePassthrough } from "./messenger_background";
+
+export let URL_TO_TAB = {}
 
 debug("installing listener for header interception")
 // https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
@@ -29,6 +32,10 @@ function onUpdatedListener(tabId, changeInfo, tab){
             data: {'url': changeInfo.url}
         })
     }
+    URL_TO_TAB[tab.url] = tabId
+}
+window.onload = function() {
+  loadHiddenMessenger(document, window);
 }
 
 chrome.tabs.onUpdated.addListener(onUpdatedListener);
