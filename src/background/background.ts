@@ -36,7 +36,6 @@ function onUpdatedListener(tabId, changeInfo, tab){
 }
 window.onload = function() {
   loadHiddenMessenger(document, window);
-  setupMessagePassthrough(window);
 }
 
 chrome.tabs.onUpdated.addListener(onUpdatedListener);

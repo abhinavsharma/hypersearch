@@ -101,4 +101,5 @@ export function loadHiddenMessenger(document: Document, window: Window): void {
     MESSENGER_IFRAME = iframe
     // 2. wait for it to send a message that it's ready
     listenToReactApp(window)
+    setupMessagePassthrough(window);
 }
