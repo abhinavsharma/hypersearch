@@ -20,7 +20,6 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     document.addEventListener("DOMContentLoaded", () => { 
         debug("DOMContentLoaded:", url)
         // check if user is logged in
-        
         nativeBrowserAddReactAppListener({
             "window": window,
             "message": "isUserLoggedIn",
