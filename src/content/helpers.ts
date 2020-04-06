@@ -1,7 +1,14 @@
-import { LUMOS_API_URL, IDrawerResponse, debug } from 'lumos-shared-js'
+import { LUMOS_API_URL, debug, IN_DEBUG_MODE, LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG } from 'lumos-shared-js'
 
 // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes("mobi");
+
+function swapUrlsForDebuggingInJsonResponse(json: object) : object {
+  if (IN_DEBUG_MODE) {
+    return JSON.parse(JSON.stringify(json).replace(LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG))
+  }
+  return json
+}
 
 export async function getAPI(api: string, params = {}): Promise<any> {
     let url: URL = new URL(LUMOS_API_URL + api);
@@ -21,7 +28,7 @@ export async function getAPI(api: string, params = {}): Promise<any> {
     const response_json = await response.json();
 
     if (response_json) {
-      return response_json
+      return swapUrlsForDebuggingInJsonResponse(response_json)
     }
   }
 
@@ -44,7 +51,7 @@ export async function postAPI(api: string, params = {}, body = {}): Promise<any>
   const response_json = await response.json();
 
   if (response_json) {
-    return response_json
+    return swapUrlsForDebuggingInJsonResponse(response_json)
   }
 }
 
