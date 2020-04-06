@@ -20,7 +20,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     document.addEventListener("DOMContentLoaded", () => { 
         debug("DOMContentLoaded:", url)
         // check if user is logged in
-        nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {}})
+        
         nativeBrowserAddReactAppListener({
             "window": window,
             "message": "isUserLoggedIn",
@@ -31,6 +31,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 localStorage.setItem('userMemberships', data.memberships);
             }
         })
+        nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {}})
         // load or update inline content
         modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
     }, false)

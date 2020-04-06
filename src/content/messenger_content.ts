@@ -12,7 +12,7 @@ export function nativeBrowserPostMessageToReactApp({command, data}: INativePostM
 export function nativeBrowserAddReactAppListener({window, message, callback}: INativeAddReactAppListener): void {
     chrome.runtime.onMessage.addListener(function(msg) {	
         if (msg.data && msg.data.command && msg.data.command === message) {
-            debug("nativeBrowserAddReactAppListener - recd message", msg)
+            debug("nativeBrowserAddReactAppListener - received message from background into content", msg)
             callback(msg)
         }
     });
