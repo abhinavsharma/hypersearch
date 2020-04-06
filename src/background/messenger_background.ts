@@ -74,7 +74,7 @@ export function setupMessagePassthrough(window: Window): void {
     'message',
     msg => {
       if (msg.data && msg.data.command && msg.data.origin && msg.data.origin in URL_TO_TAB) {
-        debug("nativeBrowserAddReactAppListener - recd message", msg, URL_TO_TAB[msg.data.origin])
+        debug("nativeBrowserAddReactAppListener - received message from react into bg", msg, URL_TO_TAB[msg.data.origin])
         chrome.tabs.sendMessage(URL_TO_TAB[msg.data.origin], {
           data: msg.data
       })
