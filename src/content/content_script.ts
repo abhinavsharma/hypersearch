@@ -13,7 +13,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     debug("function call - handleUrlUpdated:", url)
     
     // load or update the drawer
-    loadOrUpdateDrawer(document, url)
+    // loadOrUpdateDrawer(document, url)
     // load or update the sidebar
     loadOrUpdateSidebar(document, url)
 
