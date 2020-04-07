@@ -326,13 +326,12 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     populateSidebar(document, sidebarTabs)
 }
 
-export function loadOrUpdateSidebar(document: Document, url: URL): void {
+export function loadOrUpdateSidebar(document: Document, url: URL, userMemberships: string[]): void {
     // mutates document
     if (localStorage.getItem('userMemberships') === null) {
         // TODO: handle logged out case
         return
     }
-    let userMemberships = localStorage.getItem('userMemberships').split(",")
     postAPI('subtabs', {url: url.href}, {networks: userMemberships}).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
         runFunctionWhenDocumentReady(document, () => {
             handleSubtabResponse(url, document, response_json)
