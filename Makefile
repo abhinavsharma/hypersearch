@@ -7,5 +7,6 @@ dev:
 	npm run watch
 ship:
 	json-bump public/manifest.json --patch
-	zip -r `date +'%Y-%m-%d-%H-%M'.zip` public/
+	zip -r `date +'%Y-%m-%d-%H-%M'.zip` dist/
 	mv `date +'%Y-%m-%d-%H-%M'.zip` releases/
+	open releases
