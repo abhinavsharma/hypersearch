@@ -1,5 +1,4 @@
 import { debug, MESSAGES, modifyPage } from "lumos-shared-js";
-import { loadOrUpdateDrawer } from "./drawer";
 import { loadOrUpdateSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
 
@@ -10,12 +9,12 @@ function main(window: Window, document: Document, location: Location): void {
 }
 
 function handleUrlUpdated(window: Window, document: Document, url: URL): void {
+    var user = null;
+    var userMemberships = [];
     debug("function call - handleUrlUpdated:", url)
     
     // load or update the drawer
     // loadOrUpdateDrawer(document, url)
-    // load or update the sidebar
-    loadOrUpdateSidebar(document, url)
 
     document.addEventListener("DOMContentLoaded", () => { 
         debug("DOMContentLoaded:", url)
@@ -26,13 +25,15 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             "callback": (msg) => {
                 let data = msg.data;
                 console.log('isUserLoggedIn', data)
-                localStorage.setItem('user', data.user);
-                localStorage.setItem('userMemberships', data.memberships);
+                user = data.user
+                userMemberships = data.memberships
+                // load or update the sidebar
+                loadOrUpdateSidebar(document, url, userMemberships);
+                modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
             }
         })
-        nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {}})
+        nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
         // load or update inline content
-        modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
     }, false)
     
 }
