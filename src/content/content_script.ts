@@ -24,7 +24,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             "message": "isUserLoggedIn",
             "callback": (msg) => {
                 let data = msg.data;
-                console.log('isUserLoggedIn', data)
+                debug('isUserLoggedIn', data)
                 user = data.user
                 userMemberships = data.memberships
                 // load or update the sidebar
