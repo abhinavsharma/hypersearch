@@ -303,7 +303,7 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     // if not, since this is web, we will choose the first as a default
     let wasThereADefault = false;
     response_json.forEach(function(responseTab: ISidebarResponseArrayObject) {
-        if (responseTab.url === document.location.href) {
+        if (responseTab.url === document.location.href || responseTab.url === null) {
             return;
         }
         if(responseTab.default) {
@@ -316,6 +316,10 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
         }
         sidebarTabs.push(sidebarTab);
     })
+
+    if (sidebarTabs.length === 0) {
+        return;
+    }
     if (!wasThereADefault) {
         sidebarTabs[0].default = true
     }
