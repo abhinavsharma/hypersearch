@@ -29,7 +29,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 userMemberships = data.memberships
                 // load or update the sidebar
                 loadOrUpdateSidebar(document, url, userMemberships);
-                modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener)
+                modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships);
             }
         })
         nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
