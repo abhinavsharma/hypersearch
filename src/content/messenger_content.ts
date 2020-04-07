@@ -2,7 +2,7 @@ import { debug, INativeAddReactAppListener, INativePostMessageToReactApp } from 
 
 
 export function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
-    debug("nativeBrowserPostMessageToReactApp - posting", command, data)
+    debug("function call - foreground nativeBrowserPostMessageToReactApp - posting", command, data)
     chrome.runtime.sendMessage({
         command: command,
         data: data

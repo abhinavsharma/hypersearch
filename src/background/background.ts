@@ -1,5 +1,5 @@
 import { MESSAGES, debug } from "lumos-shared-js"
-import {loadHiddenMessenger, setupMessagePassthrough } from "./messenger_background";
+import {loadHiddenMessenger } from "./messenger_background";
 
 export let URL_TO_TAB = {}
 

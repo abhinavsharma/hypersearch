@@ -11,8 +11,8 @@ export function isMessengerReady(): boolean {
     return IS_READY && MESSENGER_IFRAME;
 }
 
-export function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
-    // debug("function call - nativeBrowserPostMessageToReactApp")
+function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
+    debug("function call - background nativeBrowserPostMessageToReactApp")
     let iframe = MESSENGER_IFRAME
     let RETRY_TIME = 100;
 
@@ -60,7 +60,10 @@ function listenToReactApp(window: Window): void {
 }
 
 export function setupMessagePassthrough(window: Window): void {
+  debug("function call - setupMessagePassthrough")
+  debug("setting up listening to messages from tabs")
   chrome.runtime.onMessage.addListener(({command, data}, sender) => {
+    debug("message from tab to background", command, data, sender)
     nativeBrowserPostMessageToReactApp(
       {
         command: command,
@@ -70,9 +73,12 @@ export function setupMessagePassthrough(window: Window): void {
         }
       })
   })
+
+  debug("setting up listening to messages from react app in bg")
   window.addEventListener(
     'message',
     msg => {
+      debug("message from react app to background script", msg)
       if (msg.data && msg.data.command && msg.data.origin && msg.data.origin in URL_TO_TAB) {
         debug("nativeBrowserAddReactAppListener - received message from react into bg", msg, URL_TO_TAB[msg.data.origin])
         chrome.tabs.sendMessage(URL_TO_TAB[msg.data.origin], {
