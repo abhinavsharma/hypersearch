@@ -13,16 +13,46 @@ function swapUrlsForDebuggingInJsonResponse(json: object) : object {
 export async function getAPI(api: string, params = {}): Promise<any> {
     let url: URL = new URL(LUMOS_API_URL + api);
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+    try {
+      const response = await fetch(url.href, {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        // body: JSON.stringify(params) // TODO: may move to this later
+      });
+  
+      const response_json = await response.json();
+  
+      if (response_json) {
+        return swapUrlsForDebuggingInJsonResponse(response_json)
+      }
+    } catch (err) {
+      debug("getAPI error", err)
+      return null
+    }
+    
+  }
+
+
+export async function postAPI(api: string, params = {}, body = {}): Promise<any> {
+
+  try {
+    let url: URL = new URL(LUMOS_API_URL + api);
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
     
     const response = await fetch(url.href, {
-      method: 'GET',
+      method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
       headers: {
         'Content-Type': 'application/json'
       },
       redirect: 'follow',
-      // body: JSON.stringify(params) // TODO: may move to this later
+      body: JSON.stringify(body) // TODO: may move to this later
     });
 
     const response_json = await response.json();
@@ -30,29 +60,11 @@ export async function getAPI(api: string, params = {}): Promise<any> {
     if (response_json) {
       return swapUrlsForDebuggingInJsonResponse(response_json)
     }
+  } catch (err) {
+    debug("postAPI error", err)
+    return null
   }
-
-
-export async function postAPI(api: string, params = {}, body = {}): Promise<any> {
-  let url: URL = new URL(LUMOS_API_URL + api);
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
   
-  const response = await fetch(url.href, {
-    method: 'POST',
-    mode: 'cors',
-    cache: 'no-cache',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    redirect: 'follow',
-    body: JSON.stringify(body) // TODO: may move to this later
-  });
-
-  const response_json = await response.json();
-
-  if (response_json) {
-    return swapUrlsForDebuggingInJsonResponse(response_json)
-  }
 }
 
 export const runFunctionWhenDocumentReady = (document: Document, callback: Function): void => {
