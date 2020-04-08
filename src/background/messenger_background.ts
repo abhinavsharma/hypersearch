@@ -137,9 +137,10 @@ export function monitorLoginState(window: Window): void {
     }
 
     let newTimeoutId = setTimeout(function() {
-      debug('waiting for user login', TIME_SINCE_MESSAGE, LOGIN_PROMPTED)
       TIME_SINCE_MESSAGE += RETRY_TIME
-      if (!isUserLoggedIn()) {
+      let isLoggedIn = isUserLoggedIn()
+      debug('login state and crash monitor, login set to:', isLoggedIn, "time since message", TIME_SINCE_MESSAGE, 'prompted', LOGIN_PROMPTED)
+      if (!isLoggedIn) {
         if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
           if (LOGIN_PROMPTED) {
             setTimeout(reloadMessengerIframe, RETRY_TIME)
