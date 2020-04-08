@@ -11,6 +11,7 @@ function main(window: Window, document: Document, location: Location): void {
 function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     var user = null;
     var userMemberships = [];
+    let lastModifiedHref: string = null;
     debug("function call - handleUrlUpdated:", url)
     
     // load or update the drawer
@@ -28,8 +29,11 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 user = data.user
                 userMemberships = data.memberships
                 // load or update the sidebar
-                loadOrUpdateSidebar(document, url, userMemberships);
-                modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships);
+                if (url.href !== lastModifiedHref) {
+                    lastModifiedHref = url.href
+                    loadOrUpdateSidebar(document, url, userMemberships);
+                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships);
+                }
             }
         })
         nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
