@@ -284,6 +284,9 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>): v
 }
 
 function handleSubtabResponse(url: URL, document: Document, response_json: Array<ISidebarResponseArrayObject>): void {
+    if (!(url && document && response_json)) {
+        return;
+    }
     // mutates document
     debug("function call - handleSubtabResponse", url)
 
