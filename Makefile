@@ -6,9 +6,10 @@ setup:
 dev:
 	npm run watch
 ship:
+	sed -i '' -e "s/IN_DEBUG_MODE = true/IN_DEBUG_MODE = false/g" ../lumos-shared-js/src/content/constants.ts
 	npm run build
 	json-bump public/manifest.json --patch
 	zip -r `date +'%Y-%m-%d-%H-%M'.zip` dist/
 	mv `date +'%Y-%m-%d-%H-%M'.zip` releases/
-	echo "Make sure to have set IN_DEBUG_MODE=false in lumos-shared-js/src/content/constants.ts"
+	sed -i '' -e "s/IN_DEBUG_MODE = false/IN_DEBUG_MODE = true/g" ../lumos-shared-js/src/content/constants.ts
 	open releases
