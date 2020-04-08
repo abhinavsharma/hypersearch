@@ -127,7 +127,7 @@ export function monitorLoginState(window: Window): void {
 
   
 
-  function waitForLoginRecusrive(lastTimeoutId: number | null): void {
+  function waitForLoginRecursive(lastTimeoutId: number | null): void {
     if (lastTimeoutId !== null) {
       clearTimeout(lastTimeoutId)
     }
@@ -150,12 +150,12 @@ export function monitorLoginState(window: Window): void {
         LOGIN_PROMPTED = false;
         fixIframeIfCrashed()
       }
-      waitForLoginRecusrive(newTimeoutId)
+      waitForLoginRecursive(newTimeoutId)
     }, RETRY_TIME)
     return;
   }
 
-  waitForLoginRecusrive(null);
+  waitForLoginRecursive(null);
 }
 
 export function loadHiddenMessenger(document: Document, window: Window): void {
