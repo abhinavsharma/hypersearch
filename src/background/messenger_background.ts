@@ -18,14 +18,17 @@ export function isUserLoggedIn(): boolean {
   return !REACT_APP_LOADED || !!user;
 }
 
-function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
+function nativeBrowserPostMessageToReactApp({command, data, timeoutId}: INativePostMessageToReactApp): void {
+    if (timeoutId && timeoutId !== null) {
+      clearTimeout(timeoutId)
+    }
     debug("function call - background nativeBrowserPostMessageToReactApp")
     let iframe = MESSENGER_IFRAME
     let RETRY_TIME = 100;
 
     if (!isMessengerReady()) {
-        setTimeout(function() {
-            nativeBrowserPostMessageToReactApp({"command": command, "data": data})
+        let newTimeoutId = setTimeout(function() {
+            nativeBrowserPostMessageToReactApp({"command": command, "data": data, "timeoutId": newTimeoutId})
         }, RETRY_TIME)
         return;
     }
@@ -37,7 +40,7 @@ function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageT
     }, LUMOS_APP_URL);
 }
 
-function listenToReactApp(window: Window): void {
+function monitorMessengerState(window: Window): void {
     window.addEventListener(
       'message',
       msg => {
@@ -82,7 +85,8 @@ export function setupMessagePassthrough(window: Window): void {
       data: {
         origin: sender.url,
         ...data
-      }
+      },
+      timeoutId: null
     })
   })
 
@@ -173,7 +177,7 @@ export function loadHiddenMessenger(document: Document, window: Window): void {
     document.body.appendChild(iframe);
     MESSENGER_IFRAME = iframe
     // 2. wait for it to send a message that it's ready
-    listenToReactApp(window)
+    monitorMessengerState(window)
     // 3. Setup message passthrough for tabs
     setupMessagePassthrough(window);
     // 4. Monitor user login state
