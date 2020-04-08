@@ -110,6 +110,13 @@ function reloadMessengerIframe(): void {
   MESSENGER_IFRAME.src = MESSENGER_IFRAME.src
 }
 
+function fixIframeIfCrashed(): void {
+  // reset iframe if the document inside has crashed
+  if (MESSENGER_IFRAME.src && !MESSENGER_IFRAME.document) {
+    MESSENGER_IFRAME.src == MESSENGER_IFRAME.src
+  }
+}
+
 export function monitorLoginState(window: Window): void {
   debug("function call monitorLoginState")
   nativeBrowserPostMessageToReactApp({command: "isUserLoggedIn", data: {}})
@@ -118,8 +125,14 @@ export function monitorLoginState(window: Window): void {
   let TIME_SINCE_MESSAGE = 0;
   let LOGIN_PROMPTED = false;
 
-  function waitForLogin(): void {
-    setTimeout(function() {
+  
+
+  function waitForLoginRecusrive(lastTimeoutId: number | null): void {
+    if (lastTimeoutId !== null) {
+      clearTimeout(lastTimeoutId)
+    }
+
+    let newTimeoutId = setTimeout(function() {
       debug('waiting for user login', TIME_SINCE_MESSAGE, LOGIN_PROMPTED)
       TIME_SINCE_MESSAGE += RETRY_TIME
       if (!isUserLoggedIn()) {
@@ -132,14 +145,17 @@ export function monitorLoginState(window: Window): void {
           }
         }
       } else {
+        //  user las logged in, just monitor for crashes
         TIME_SINCE_MESSAGE = 0;
         LOGIN_PROMPTED = false;
+        fixIframeIfCrashed()
       }
-      waitForLogin()
+      waitForLoginRecusrive(newTimeoutId)
     }, RETRY_TIME)
     return;
   }
-  waitForLogin();
+
+  waitForLoginRecusrive(null);
 }
 
 export function loadHiddenMessenger(document: Document, window: Window): void {
