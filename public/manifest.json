@@ -22,6 +22,15 @@
         },
         {
             "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "js": [
+                "content_frames.js"
+            ]
+        },
+        {
+            "matches": [
                 "https://cse.google.com/*"
             ],
             "all_frames": true,
