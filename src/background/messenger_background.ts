@@ -108,6 +108,7 @@ export function setupMessagePassthrough(window: Window): void {
 
 function reloadMessengerIframe(): void {
   MESSENGER_IFRAME.src = MESSENGER_IFRAME.src
+  nativeBrowserPostMessageToReactApp({command: "isUserLoggedIn", data: {}})
 }
 
 function fixIframeIfCrashed(): void {
@@ -132,6 +133,7 @@ export function monitorLoginState(window: Window): void {
     if (!isLoggedIn) {
       if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
         if (LOGIN_PROMPTED) {
+          console.log('reloading iframe')
           setTimeout(reloadMessengerIframe, RETRY_TIME)
         } else {
           window.open(LUMOS_APP_BASE_URL)
