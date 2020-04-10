@@ -18,17 +18,14 @@ export function isUserLoggedIn(): boolean {
   return !REACT_APP_LOADED || !!user;
 }
 
-function nativeBrowserPostMessageToReactApp({command, data, timeoutId}: INativePostMessageToReactApp): void {
-    if (timeoutId && timeoutId !== null) {
-      clearTimeout(timeoutId)
-    }
+function nativeBrowserPostMessageToReactApp({command, data}: INativePostMessageToReactApp): void {
     debug("function call - background nativeBrowserPostMessageToReactApp")
     let iframe = MESSENGER_IFRAME
     let RETRY_TIME = 100;
 
     if (!isMessengerReady()) {
-        let newTimeoutId = setTimeout(function() {
-            nativeBrowserPostMessageToReactApp({"command": command, "data": data, "timeoutId": newTimeoutId})
+        setTimeout(function() {
+            nativeBrowserPostMessageToReactApp({"command": command, "data": data})
         }, RETRY_TIME)
         return;
     }
@@ -86,7 +83,6 @@ export function setupMessagePassthrough(window: Window): void {
         origin: sender.url,
         ...data
       },
-      timeoutId: null
     })
   })
 
@@ -129,38 +125,26 @@ export function monitorLoginState(window: Window): void {
   let TIME_SINCE_MESSAGE = 0;
   let LOGIN_PROMPTED = false;
 
-  
-
-  function waitForLoginRecursive(lastTimeoutId: number | null): void {
-    if (lastTimeoutId !== null) {
-      clearTimeout(lastTimeoutId)
-    }
-
-    let newTimeoutId = setTimeout(function() {
-      TIME_SINCE_MESSAGE += RETRY_TIME
-      let isLoggedIn = isUserLoggedIn()
-      debug('login state and crash monitor, login set to:', isLoggedIn, "time since message", TIME_SINCE_MESSAGE, 'prompted', LOGIN_PROMPTED)
-      if (!isLoggedIn) {
-        if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
-          if (LOGIN_PROMPTED) {
-            setTimeout(reloadMessengerIframe, RETRY_TIME)
-          } else {
-            window.open(LUMOS_APP_BASE_URL)
-            LOGIN_PROMPTED = true
-          }
+  setInterval(function() {
+    TIME_SINCE_MESSAGE += RETRY_TIME
+    let isLoggedIn = isUserLoggedIn()
+    debug('login state and crash monitor, login set to:', isLoggedIn, "time since message", TIME_SINCE_MESSAGE, 'prompted', LOGIN_PROMPTED)
+    if (!isLoggedIn) {
+      if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
+        if (LOGIN_PROMPTED) {
+          setTimeout(reloadMessengerIframe, RETRY_TIME)
+        } else {
+          window.open(LUMOS_APP_BASE_URL)
+          LOGIN_PROMPTED = true
         }
-      } else {
-        //  user las logged in, just monitor for crashes
-        TIME_SINCE_MESSAGE = 0;
-        LOGIN_PROMPTED = false;
-        fixIframeIfCrashed()
       }
-      waitForLoginRecursive(newTimeoutId)
-    }, RETRY_TIME)
-    return;
-  }
-
-  waitForLoginRecursive(null);
+    } else {
+      //  user las logged in, just monitor for crashes
+      TIME_SINCE_MESSAGE = 0;
+      LOGIN_PROMPTED = false;
+      fixIframeIfCrashed()
+    }
+  }, RETRY_TIME)
 }
 
 export function loadHiddenMessenger(document: Document, window: Window): void {
