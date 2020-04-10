@@ -1,25 +1,44 @@
 import { MESSAGES, debug } from "lumos-shared-js"
 import {loadHiddenMessenger } from "./messenger_background";
+import { hostnames_to_opensearch } from "lumos-shared-js/src/content/hostnames_to_opensearch";
+let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(hostnames_to_opensearch).map(s => s.replace('{searchTerms}', ''))
 
 export let URL_TO_TAB = {}
 
-debug("installing listener for header interception")
+debug("installing listener override response headers")
 // https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
 // this is to get around loading pages in iframes that otherwise
 // don't want to be loaded in iframes
 chrome.webRequest.onHeadersReceived.addListener(
     function (details) {
-      for (var i = 0; i < details.responseHeaders.length; ++i) {
-        if (details.responseHeaders[i].name.toLowerCase() == 'x-frame-options') {
-          details.responseHeaders.splice(i, 1);
-          return {
-            responseHeaders: details.responseHeaders
-          };
-        }
+      let strippedHeaders = [
+        'x-frame-options',
+        'content-security-policy'
+      ]
+      return {
+        responseHeaders: details.responseHeaders.filter((responseHeader) => !strippedHeaders.includes(responseHeader.name.toLowerCase()))
       }
     }, {
       urls: ["<all_urls>"]
     }, ["blocking", "responseHeaders"]
+);
+
+
+
+debug("installing listener for overriding request headers")
+chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
+    return {
+      requestHeaders: details.requestHeaders.map((requestHeader) => {
+        // this is for the search result iframes loaded in the sidebar, we pretend the browser is mobile for them
+        let urlMatchesSearchPattern = USER_AGENT_REWRITE_URL_SUBSTRINGS.filter((substring) => details.url.includes(substring)).length > 0
+        if (urlMatchesSearchPattern && details.frameId > 0 && requestHeader.name.toLowerCase() === 'user-agent') {
+          requestHeader.value = 'Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36'          
+        }
+        return requestHeader
+      })}
+  },
+  { urls: ["<all_urls>"] },
+  ["blocking", "requestHeaders"]
 );
 
 debug("installing listener for onUpdated")

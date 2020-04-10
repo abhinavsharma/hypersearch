@@ -80,7 +80,7 @@ function isSidebarLoaded(document): boolean {
     return !!document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
 }
 
-function createSidebar(document: Document) {
+export function createSidebar(document: Document) {
     debug("function call - createSidebar")
 
     let sidebarOverlayContainer = document.createElement('div');
@@ -210,7 +210,7 @@ function createSidebar(document: Document) {
     sidebarTogglerWhenHidden.style.visibility = 'hidden'
 }
 
-function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>): void {
+export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>): void {
     // mutates document
 
     // check if sidebar has been created
@@ -277,6 +277,9 @@ function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>): v
             height: 100%;
             border: none;
         `)
+        contentIframe.addEventListener("load", (e) => {
+            debug('iframe loaded')
+        })
 
         // set the default subtab
         if (sidebarTab.default) {
