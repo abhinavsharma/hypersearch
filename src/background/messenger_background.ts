@@ -133,7 +133,6 @@ export function monitorLoginState(window: Window): void {
     if (!isLoggedIn) {
       if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
         if (LOGIN_PROMPTED) {
-          console.log('reloading iframe')
           setTimeout(reloadMessengerIframe, RETRY_TIME)
         } else {
           window.open(LUMOS_APP_BASE_URL)
