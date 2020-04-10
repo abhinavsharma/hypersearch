@@ -5,7 +5,7 @@ let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(hostnames_to_opensearch).m
 
 export let URL_TO_TAB = {}
 
-debug("installing listener overrind response headers")
+debug("installing listener override response headers")
 // https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
 // this is to get around loading pages in iframes that otherwise
 // don't want to be loaded in iframes
@@ -29,6 +29,7 @@ debug("installing listener for overriding request headers")
 chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
     return {
       requestHeaders: details.requestHeaders.map((requestHeader) => {
+        // this is for the search result iframes loaded in the sidebar, we pretend the browser is mobile for them
         let urlMatchesSearchPattern = USER_AGENT_REWRITE_URL_SUBSTRINGS.filter((substring) => details.url.includes(substring)).length > 0
         if (urlMatchesSearchPattern && details.frameId > 0 && requestHeader.name.toLowerCase() === 'user-agent') {
           requestHeader.value = 'Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36'          
