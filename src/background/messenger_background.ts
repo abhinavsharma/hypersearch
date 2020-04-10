@@ -108,6 +108,7 @@ export function setupMessagePassthrough(window: Window): void {
 
 function reloadMessengerIframe(): void {
   MESSENGER_IFRAME.src = MESSENGER_IFRAME.src
+  nativeBrowserPostMessageToReactApp({command: "isUserLoggedIn", data: {}})
 }
 
 function fixIframeIfCrashed(): void {
