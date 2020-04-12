@@ -1,7 +1,7 @@
 import { MESSAGES, debug } from "lumos-shared-js"
 import {loadHiddenMessenger } from "./messenger_background";
-import { hostnames_to_opensearch } from "lumos-shared-js/src/content/hostnames_to_opensearch";
-let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(hostnames_to_opensearch).map(s => s.replace('{searchTerms}', ''))
+import { HOSTNAME_TO_PATTERN } from "lumos-shared-js/src/content/constants_altsearch";
+let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map(s => s.replace('{searchTerms}', ''))
 
 export let URL_TO_TAB = {}
 
