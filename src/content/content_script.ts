@@ -1,7 +1,7 @@
 import { debug, MESSAGES, modifyPage } from "lumos-shared-js";
 import { loadOrUpdateSidebar, populateSidebar, createSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
-import { getAlternateSearchEnginesFromSerp } from "lumos-shared-js/src/content/modify_serp";
+import { getAlternateSearchEnginesFromSerp, serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
 
 debug("executing content script on", location.href)
 function main(window: Window, document: Document, location: Location): void {
@@ -32,11 +32,13 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 // load or update the sidebar
                 if (url.href !== lastModifiedHref) {
                     lastModifiedHref = url.href
-                    // loadOrUpdateSidebar(document, url, userMemberships);
-                    getAlternateSearchEnginesFromSerp(document).then((altSearch) => {
-                        createSidebar(document)
-                        populateSidebar(document, altSearch)
-                    })
+                    const searchText = serpUrlToSearchText(url);
+                    if (searchText) {
+                        getAlternateSearchEnginesFromSerp(document).then((altSearch) => {
+                            createSidebar(document)
+                            populateSidebar(document, altSearch)
+                        })
+                    }
                     modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships);
                 }
             }
