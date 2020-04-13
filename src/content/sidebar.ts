@@ -144,6 +144,16 @@ export function createSidebar(document: Document) {
     lumosLogoTitle.appendChild(lumosLogo)
     lumosLogoTitle.appendChild(lumosTitle)
 
+    let sidebarTogglerLeftBorder = document.createElement("div")
+    sidebarTogglerWhenHidden.appendChild(sidebarTogglerLeftBorder)
+    sidebarTogglerLeftBorder.setAttribute("style", `
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
+        background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
+        left: 0;
+    `)
     sidebarTogglerWhenHidden.appendChild(lumosLogoTitle)
     sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW
 
@@ -162,7 +172,7 @@ export function createSidebar(document: Document) {
         max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
         padding: ${STYLE_PADDING_SMALL} ${STYLE_PADDING_LARGE};
         background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
-        border-radius: ${STYLE_BORDER_RADIUS_PILL};
+        border-radius: 0 ${STYLE_BORDER_RADIUS_PILL} ${STYLE_BORDER_RADIUS_PILL} 0;
         font-size: ${STYLE_FONT_SIZE_SMALL};
         z-index: ${STYLE_ZINDEX_MAX};
         cursor: pointer;
@@ -252,6 +262,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
             overflow: hidden;
             text-overflow: ellipsis;
             padding: ${STYLE_PADDING_SMALL} 0;
+            font-weight: bold;
         `)
         sidebarPreviewItem.classList.add('sidebar_preview_item')
         sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
