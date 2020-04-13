@@ -36,7 +36,9 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                     if (searchText) {
                         getAlternateSearchEnginesFromSerp(document).then((altSearch) => {
                             createSidebar(document)
-                            populateSidebar(document, altSearch)
+                            if (altSearch.length > 0) {
+                                populateSidebar(document, altSearch)
+                            }
                         })
                     }
                     modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships);
