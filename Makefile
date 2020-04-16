@@ -12,6 +12,7 @@ ship:
 	zip -r `date +'%Y-%m-%d-%H-%M'.zip` dist/
 	mv `date +'%Y-%m-%d-%H-%M'.zip` releases/
 	sed -i '' -e "s/IN_DEBUG_MODE = false/IN_DEBUG_MODE = true/g" ../lumos-shared-js/src/content/constants.ts
+	git add releases/*
 	git commit -am 'version bump'
 	git push origin master
 	open releases
