@@ -10,6 +10,7 @@ function main(window: Window, document: Document, location: Location): void {
 }
 
 function handleUrlUpdated(window: Window, document: Document, url: URL): void {
+    var name = null;
     var user = null;
     var userMemberships = [];
     let lastModifiedHref: string = null;
@@ -27,6 +28,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             "callback": (msg) => {
                 let data = msg.data;
                 debug('isUserLoggedIn', data)
+                name = data.name
                 user = data.user
                 userMemberships = data.memberships
                 // load or update the sidebar
@@ -41,7 +43,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                             }
                         })
                     }
-                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships);
+                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
                 }
             }
         })
