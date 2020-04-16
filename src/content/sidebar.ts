@@ -140,7 +140,7 @@ export function createSidebar(document: Document) {
         vertical-align: super;
         max-width: ${STYLE_WIDTH_SIDEBAR_TAB_RIGHT};
     `)
-    lumosTitle.appendChild(document.createTextNode("Alternatives (press L)"))
+    lumosTitle.appendChild(document.createTextNode("Alternatives (press A)"))
     lumosLogoTitle.appendChild(lumosLogo)
     lumosLogoTitle.appendChild(lumosTitle)
 
@@ -201,11 +201,44 @@ export function createSidebar(document: Document) {
     document.body.appendChild(sidebarTogglerWhenHidden)
 
     document.onkeypress = function (e: KeyboardEvent) {
-        if (e.key === "l" || e.key === "L") {
+        if (e.key === "a" || e.key === "A") {
             if (!(document.activeElement.nodeName == 'TEXTAREA'
                 || document.activeElement.nodeName == 'INPUT'
                 || (document.activeElement.nodeName == 'DIV'))) {
                 flipSidebar(document)
+            }
+        }
+    };
+    document.onkeydown = function (e: KeyboardEvent) {
+        if (sidebarContainer.style.visibility === "visible" && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+            let tabContainer = document.getElementById("lumos_sidebar_tabs")
+            if (tabContainer) {
+                let selectedChild: HTMLElement;
+                let next: Element;
+                let prev: Element;
+
+                function triggerEvent( elem, event ) {
+                    var clickEvent = new Event( event ); // Create the event.
+                    elem.dispatchEvent( clickEvent );    // Dispatch the event.
+                  }
+
+                tabContainer.childNodes.forEach((child, i) => {
+                    let c = child as HTMLElement;
+                    if (c.style.backgroundColor == 'white') {
+                        selectedChild = c;
+                        prev = c.previousElementSibling ? c.previousElementSibling: tabContainer.lastElementChild;
+                        next = c.nextElementSibling ? c.nextElementSibling : tabContainer.firstElementChild;
+                    }
+                })
+
+                if (selectedChild && prev && next) {
+                    if (e.key === 'ArrowLeft') {
+                        triggerEvent(prev, "click")
+                    } else if (e.key === 'ArrowRight') {
+                        triggerEvent(next, "click")
+                    }
+                }
+
             }
         }
     };
@@ -234,6 +267,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     let tabsContainer = document.createElement("div")
     tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
     tabsContainer.setAttribute("style", `
+        display: flex;
         background-color: ${STYLE_COLOR_BORDER};
         border-bottom: 1px solid ${STYLE_COLOR_BORDER};
     `)
@@ -271,7 +305,9 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         let tabElement = document.createElement("span");
         tabElement.innerText = sidebarTab.title
         tabElement.setAttribute("style", `
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: ${STYLE_FONT_SIZE_SMALL};
             padding: ${STYLE_PADDING_SMALL};
             text-align: center;
