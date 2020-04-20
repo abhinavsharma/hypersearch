@@ -93,7 +93,7 @@ export function createSidebar(document: Document) {
         right: 0;
         bottom: 0;
         background-color: black;
-        opacity: 0.75;
+        opacity: 0.6;
         transition: opacity 0.5s ease;
         display: none;
     `)
@@ -106,7 +106,7 @@ export function createSidebar(document: Document) {
         position: fixed;
 
         /* side  of screen */
-        left: 0;
+        right: 0;
         border-right: 1px solid ${STYLE_COLOR_BORDER};
 
         top: 0;
@@ -168,7 +168,7 @@ export function createSidebar(document: Document) {
     sidebarTogglerWhenHidden.setAttribute("style", `
         position: fixed;
         left: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
-        bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
+        top: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
         max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
         padding: ${STYLE_PADDING_SMALL} ${STYLE_PADDING_LARGE};
         background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
