@@ -408,6 +408,10 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
         sidebarTabs[0].default = true
     }
     populateSidebar(document, sidebarTabs)
+
+    if (wasThereADefault) {
+        flipSidebar(document, 'show');
+    }
 }
 
 export function loadOrUpdateSidebar(document: Document, url: URL, userMemberships: INetworks): void {
