@@ -22,13 +22,13 @@ import {
     STYLE_PADDING_MEDIUM,
     STYLE_COLOR_TEXT,
     STYLE_SIDEBAR_SHOWER_Y_OFFSET,
-    STYLE_PADDING_LARGE,
     STYLE_WIDTH_SIDEBAR_TAB_LEFT,
     STYLE_WIDTH_SIDEBAR_TAB_RIGHT,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
-    INetwork
+    INetwork,
+    STYLE_PADDING_XLARGE
 } from "lumos-shared-js";
 import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
@@ -170,7 +170,7 @@ export function createSidebar(document: Document) {
         right: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
         bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
         max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
-        padding: ${STYLE_PADDING_SMALL} ${STYLE_PADDING_LARGE};
+        padding: ${STYLE_PADDING_XLARGE};
         background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
         border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL};
         font-size: ${STYLE_FONT_SIZE_SMALL};
