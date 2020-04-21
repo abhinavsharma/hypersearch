@@ -144,15 +144,15 @@ export function createSidebar(document: Document) {
     lumosLogoTitle.appendChild(lumosLogo)
     lumosLogoTitle.appendChild(lumosTitle)
 
-    let sidebarTogglerLeftBorder = document.createElement("div")
-    sidebarTogglerWhenHidden.appendChild(sidebarTogglerLeftBorder)
-    sidebarTogglerLeftBorder.setAttribute("style", `
+    let sidebarTogglerEdgeBorder = document.createElement("div")
+    sidebarTogglerWhenHidden.appendChild(sidebarTogglerEdgeBorder)
+    sidebarTogglerEdgeBorder.setAttribute("style", `
         position: fixed;
         top: 0;
         bottom: 0;
         width: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
         background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
-        left: 0;
+        right: 0;
     `)
     sidebarTogglerWhenHidden.appendChild(lumosLogoTitle)
     sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW
@@ -167,12 +167,12 @@ export function createSidebar(document: Document) {
 
     sidebarTogglerWhenHidden.setAttribute("style", `
         position: fixed;
-        left: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
-        top: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
+        right: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
+        bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
         max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
         padding: ${STYLE_PADDING_SMALL} ${STYLE_PADDING_LARGE};
         background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
-        border-radius: 0 ${STYLE_BORDER_RADIUS_PILL} ${STYLE_BORDER_RADIUS_PILL} 0;
+        border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL};
         font-size: ${STYLE_FONT_SIZE_SMALL};
         z-index: ${STYLE_ZINDEX_MAX};
         cursor: pointer;
