@@ -43,13 +43,6 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
         }
     })
     nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
-
-    document.addEventListener("DOMContentLoaded", () => { 
-        debug("DOMContentLoaded:", url)
-        // check if user is logged in
-        
-        // load or update inline content
-    }, false)
     
 }
 // Structure of the content script
