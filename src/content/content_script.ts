@@ -35,10 +35,15 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 if (searchText) {
                     loadOrUpdateSidebar(document, url, userMemberships);
                 }
-                document.addEventListener("DOMContentLoaded", () => { 
-                    debug("DOMContentLoaded:", url)
+                if (document.readyState === 'loading') {
+                    document.addEventListener("DOMContentLoaded", () => { 
+                        debug("DOMContentLoaded:", url)
+                        modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
+                    }, false)
+                } else {
+                    debug("DOM Content already Loaded:", url)
                     modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
-                }, false)
+                }
             }
         }
     })
