@@ -19,30 +19,35 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     // load or update the drawer
     // loadOrUpdateDrawer(document, url)
 
+    nativeBrowserAddReactAppListener({
+        "window": window,
+        "message": "isUserLoggedIn",
+        "callback": (msg) => {
+            let data = msg.data;
+            debug('isUserLoggedIn', data)
+            name = data.name
+            user = data.user
+            userMemberships = data.memberships
+            // load or update the sidebar
+            if (url.href !== lastModifiedHref) {
+                lastModifiedHref = url.href
+                const searchText = serpUrlToSearchText(url);
+                if (searchText) {
+                    loadOrUpdateSidebar(document, url, userMemberships);
+                }
+                document.addEventListener("DOMContentLoaded", () => { 
+                    debug("DOMContentLoaded:", url)
+                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
+                }, false)
+            }
+        }
+    })
+    nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
+
     document.addEventListener("DOMContentLoaded", () => { 
         debug("DOMContentLoaded:", url)
         // check if user is logged in
-        nativeBrowserAddReactAppListener({
-            "window": window,
-            "message": "isUserLoggedIn",
-            "callback": (msg) => {
-                let data = msg.data;
-                debug('isUserLoggedIn', data)
-                name = data.name
-                user = data.user
-                userMemberships = data.memberships
-                // load or update the sidebar
-                if (url.href !== lastModifiedHref) {
-                    lastModifiedHref = url.href
-                    const searchText = serpUrlToSearchText(url);
-                    if (searchText) {
-                        loadOrUpdateSidebar(document, url, userMemberships);
-                    }
-                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
-                }
-            }
-        })
-        nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
+        
         // load or update inline content
     }, false)
     
