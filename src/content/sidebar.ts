@@ -33,6 +33,7 @@ import {
 import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
+const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
 
 function isVisible(document: Document): boolean {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -42,7 +43,7 @@ function isVisible(document: Document): boolean {
 function flipSidebar(document: Document, force?: string): void {
 
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-    let sidebarOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
+    let serpOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
     let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
     let hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
     let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS)
@@ -59,12 +60,12 @@ function flipSidebar(document: Document, force?: string): void {
         showButton.style.visibility = "visible";
         hideButton.style.visibility = "hidden";
         sidebarContainer.style.width = "0px";
-        sidebarOverlayContainer.style.display = "none"
+        // serpOverlayContainer.style.display = "none"
     } else {
         // show sidebar
         sidebarContainer.style.visibility = "visible";
         showButton.style.visibility = "hidden";
-        sidebarOverlayContainer.style.display = "block"
+        // serpOverlayContainer.style.display = "block"
         sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR;
         if (tabsContainer && contentContainer) {
             setTimeout(() => {
@@ -83,9 +84,9 @@ function isSidebarLoaded(document): boolean {
 export function createSidebar(document: Document) {
     debug("function call - createSidebar")
 
-    let sidebarOverlayContainer = document.createElement('div');
-    sidebarOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
-    sidebarOverlayContainer.setAttribute("style", `
+    let serpOverlayContainer = document.createElement('div');
+    serpOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
+    serpOverlayContainer.setAttribute("style", `
         position: fixed;
         z-index: ${STYLE_ZINDEX_MAX};
         top: 0;
@@ -97,8 +98,8 @@ export function createSidebar(document: Document) {
         transition: opacity 0.5s ease;
         display: none;
     `)
-    sidebarOverlayContainer.addEventListener("click", () => {flipSidebar(document)})
-    document.body.appendChild(sidebarOverlayContainer)
+    serpOverlayContainer.addEventListener("click", () => {flipSidebar(document)})
+    document.body.appendChild(serpOverlayContainer)
     let sidebarContainer = document.createElement('div');
     sidebarContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR;
 
@@ -118,6 +119,7 @@ export function createSidebar(document: Document) {
         transition-property: all;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        border-left: 1px solid ${STYLE_COLOR_BORDER};
     `)
 
     // For dismissing the sidebar
@@ -263,6 +265,19 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         debug("did not find sidebar element")
     }
 
+    let sidebarOverlayContainer = document.createElement("div")
+    sidebarOverlayContainer.setAttribute("style", `
+        z-index: ${STYLE_ZINDEX_MAX};
+        background: #f7f7f7;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        opacity: .55;
+    `)
+
+
     // build a ui to switch between sub-tabs within the sidebar
     let tabsContainer = document.createElement("div")
     tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
@@ -326,6 +341,9 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         `)
         contentIframe.addEventListener("load", (e) => {
             debug('iframe loaded')
+            if (sidebarTab.default && document.body.clientWidth > MIN_CLIENT_WIDTH_AUTOSHOW) {
+                flipSidebar(document, 'show');
+            }
         })
 
         // set the default subtab
@@ -360,6 +378,11 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         contentContainer.appendChild(contentIframe)
     })
 
+    container.appendChild(sidebarOverlayContainer)
+    container.addEventListener("mouseover", () => {
+        sidebarOverlayContainer.style.right = null
+        sidebarOverlayContainer.style.bottom = null
+    })
     container.appendChild(tabsContainer)
     container.appendChild(contentContainer)
 }
@@ -408,10 +431,6 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
         sidebarTabs[0].default = true
     }
     populateSidebar(document, sidebarTabs)
-
-    if (wasThereADefault) {
-        flipSidebar(document, 'show');
-    }
 }
 
 export function loadOrUpdateSidebar(document: Document, url: URL, userMemberships: INetworks): void {
