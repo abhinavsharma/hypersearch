@@ -1,7 +1,9 @@
-import { debug, MESSAGES, modifyPage } from "lumos-shared-js";
-import { loadOrUpdateSidebar, populateSidebar, createSidebar } from "./sidebar";
+import { debug, modifyPage } from "lumos-shared-js";
+import { loadOrUpdateSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
-import { getAlternateSearchEnginesFromSerp, serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
+import { serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
+import { postAPI } from "./helpers";
+import uuidv1 = require('uuid/v1');
 
 debug("executing content script on", location.href)
 function main(window: Window, document: Document, location: Location): void {
@@ -44,11 +46,26 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                     debug("DOM Content already Loaded:", url)
                     modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
                 }
+                logPageVisit(userMemberships, url).then(() => {
+                    debug("loggedPageVisit: ", url)
+                })
             }
         }
     })
     nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
-    
+}
+
+async function logPageVisit(userMemberships: any, url: URL) {
+    for (const network of userMemberships) {
+        let log_id = uuidv1(); 
+        await postAPI('logger', {url: url.href}, {
+            'id': log_id,
+            'url': url.href,
+            'publisher': url.hostname,
+            'timestamp': Date.now(),
+            'network': network.id
+        })
+    }
 }
 // Structure of the content script
 // Loads a sidebar hidden
