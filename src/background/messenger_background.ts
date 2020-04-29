@@ -168,4 +168,14 @@ export function loadHiddenMessenger(document: Document, window: Window): void {
     setupMessagePassthrough(window);
     // 4. Monitor user login state
     monitorLoginState(window);
+    // 5. Reload iFrame after certain amount of time
+    reloadIframeInterval()
+}
+
+export function reloadIframeInterval() {
+  const reloadIntervalTime = 2 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+
+  setInterval(() => {
+    reloadMessengerIframe()
+  }, reloadIntervalTime)
 }
