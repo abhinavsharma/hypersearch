@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Lumos",
     "description": "Lumos extends your browser.",
-    "version": "0.0.31",
+    "version": "0.0.32",
     "web_accessible_resources": [
         "*.png",
         "*.svg"
