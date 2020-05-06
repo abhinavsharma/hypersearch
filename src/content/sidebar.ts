@@ -65,6 +65,7 @@ function flipSidebar(document: Document, force?: string): void {
         // show sidebar
         sidebarContainer.style.visibility = "visible";
         showButton.style.visibility = "hidden";
+        hideButton.style.visibility = "visible";
         // serpOverlayContainer.style.display = "block"
         sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR;
         if (tabsContainer && contentContainer) {
@@ -178,11 +179,10 @@ export function createSidebar(document: Document) {
         font-size: ${STYLE_FONT_SIZE_SMALL};
         z-index: ${STYLE_ZINDEX_MAX};
         cursor: pointer;
-        visibility: hidden;
     `)
     sidebarTogglerWhenVisible.setAttribute("style", `
         position: absolute;
-        right: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
+        left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
         top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
         
         border: 1px solid ${STYLE_COLOR_BORDER};
@@ -277,6 +277,18 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         opacity: .55;
     `)
 
+    const selectTabElement = (tabElement: HTMLElement): void => {
+        tabElement.style.backgroundColor = 'white'
+        tabElement.style.fontWeight = 'bold'
+        tabElement.style.borderColor = 'white'
+    }
+
+    const unselectTabElement = (tabElement: HTMLElement): void => {
+        tabElement.style.backgroundColor = STYLE_COLOR_BORDER
+        tabElement.style.fontWeight = 'normal'
+        tabElement.style.borderColor = STYLE_COLOR_BORDER
+    }
+
 
     // build a ui to switch between sub-tabs within the sidebar
     let tabsContainer = document.createElement("div")
@@ -284,7 +296,6 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     tabsContainer.setAttribute("style", `
         display: flex;
         background-color: ${STYLE_COLOR_BORDER};
-        border-bottom: 1px solid ${STYLE_COLOR_BORDER};
     `)
     let contentContainer = document.createElement("div")
     contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT
@@ -301,7 +312,8 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     sidebarTogglerWhenHidden.style.visibility = 'visible'
 
     // populate the sidebar and preview UIs with content from the response
-    sidebarTabs.forEach(function (sidebarTab: ISidebarTab) {
+    let isThereADefault = sidebarTabs.some((sidebarTab) => sidebarTab.default)
+    sidebarTabs.forEach(function (sidebarTab: ISidebarTab, idx) {
 
         // preview element that lives outside the sidebar
         let sidebarPreviewItem = document.createElement("div");
@@ -324,12 +336,13 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
             align-items: center;
             justify-content: center;
             font-size: ${STYLE_FONT_SIZE_SMALL};
-            padding: ${STYLE_PADDING_SMALL};
+            padding: ${STYLE_PADDING_MEDIUM} ${STYLE_PADDING_SMALL};
             text-align: center;
             border-right: 1px solid ${STYLE_COLOR_BORDER};
             color: ${STYLE_COLOR_TEXT};
             width: ${STYLE_WIDTH_SIDEBAR_TAB};
             cursor: pointer;
+            border-bottom: 1px solid ${STYLE_COLOR_BORDER};
         `)
         
         // load the urls of the subtabs into iframes
@@ -347,10 +360,11 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         })
 
         // set the default subtab
-        if (sidebarTab.default) {
+        if (sidebarTab.default || (idx === 0 && !isThereADefault)) {
             contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
-            tabElement.style.backgroundColor = 'white'
+            selectTabElement(tabElement)
+            
         } else {
             contentIframe.style.visibility = 'hidden'
         }
@@ -359,7 +373,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         tabElement.addEventListener("click", function(e) { 
             for(let child = tabsContainer.firstChild; child !== null; child = child.nextSibling) {
                 let castedChild = <HTMLElement> child;
-                castedChild.style.backgroundColor = STYLE_COLOR_BORDER
+                unselectTabElement(castedChild)
             }
             for(let child = contentContainer.firstChild; child !== null; child = child.nextSibling) {
                 let castedChild = <HTMLElement> child;
@@ -368,7 +382,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
             }
             var clickedTab = <HTMLElement> (e.target || e.srcElement);
             
-            clickedTab.style.backgroundColor = 'white'
+            selectTabElement(clickedTab)
             contentIframe.style.visibility = 'inherit'
             contentIframe.style.height = '100%'
         })
