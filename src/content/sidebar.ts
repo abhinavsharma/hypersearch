@@ -28,7 +28,8 @@ import {
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
     INetwork,
-    STYLE_PADDING_XLARGE
+    STYLE_PADDING_XLARGE,
+    STYLE_COLOR_LUMOS_DARK_ORANGE
 } from "lumos-shared-js";
 import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
@@ -146,17 +147,6 @@ export function createSidebar(document: Document) {
     lumosTitle.appendChild(document.createTextNode("Alternatives (press A)"))
     lumosLogoTitle.appendChild(lumosLogo)
     lumosLogoTitle.appendChild(lumosTitle)
-
-    let sidebarTogglerEdgeBorder = document.createElement("div")
-    sidebarTogglerWhenHidden.appendChild(sidebarTogglerEdgeBorder)
-    sidebarTogglerEdgeBorder.setAttribute("style", `
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        width: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
-        background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
-        right: 0;
-    `)
     sidebarTogglerWhenHidden.appendChild(lumosLogoTitle)
     sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW
 
@@ -170,11 +160,13 @@ export function createSidebar(document: Document) {
 
     sidebarTogglerWhenHidden.setAttribute("style", `
         position: fixed;
-        right: ${STYLE_SIDEBAR_SHOWER_X_OFFSET};
+        right: 0;
         bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
         max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
         padding: ${STYLE_PADDING_XLARGE};
-        background: ${STYLE_COLOR_LUMOS_GOLD_SOLID};
+        border: 3px solid ${STYLE_COLOR_LUMOS_DARK_ORANGE};
+        background: white;
+        border-right: none;
         border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL};
         font-size: ${STYLE_FONT_SIZE_SMALL};
         z-index: ${STYLE_ZINDEX_MAX};
