@@ -405,16 +405,9 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     }
 
     let sidebarTabs: Array<ISidebarTab> = []
-
-    // sometimes the api specifies a default tab
-    // if not, since this is web, we will choose the first as a default
-    let wasThereADefault = false;
     response_json.forEach(function(responseTab: ISidebarResponseArrayObject) {
         if (responseTab.url === document.location.href || responseTab.url === null) {
             return;
-        }
-        if(responseTab.default) {
-            wasThereADefault = true;
         }
         let sidebarTab: ISidebarTab = {
             title: responseTab.title,
@@ -426,9 +419,6 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
 
     if (sidebarTabs.length === 0) {
         return;
-    }
-    if (!wasThereADefault) {
-        sidebarTabs[0].default = true
     }
     populateSidebar(document, sidebarTabs)
 }
