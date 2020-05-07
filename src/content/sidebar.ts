@@ -405,7 +405,7 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     }
 
     // setup as many tabs as in response
-    if (!(response_json && response_json.length > 1)) {
+    if (!(response_json && response_json.length > 0)) {
         debug("handleSubtabResponse - response json is invalid")
         return;
     }
