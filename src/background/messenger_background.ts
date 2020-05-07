@@ -121,7 +121,7 @@ function fixIframeIfCrashed(): void {
 export function monitorLoginState(window: Window): void {
   debug("function call monitorLoginState")
   nativeBrowserPostMessageToReactApp({command: "isUserLoggedIn", data: {}})
-  let RETRY_TIME = 1000;
+  let RETRY_TIME = 5000;
   let LOGIN_TIMEOUT = 3000;
   let TIME_SINCE_MESSAGE = 0;
   let LOGIN_PROMPTED = false;
