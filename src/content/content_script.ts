@@ -34,9 +34,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             if (url.href !== lastModifiedHref) {
                 lastModifiedHref = url.href
                 const searchText = serpUrlToSearchText(url);
-                if (searchText) {
-                    loadOrUpdateSidebar(document, url, userMemberships);
-                }
+                loadOrUpdateSidebar(document, url, userMemberships);
                 if (document.readyState === 'loading') {
                     document.addEventListener("DOMContentLoaded", () => { 
                         debug("DOMContentLoaded:", url)
