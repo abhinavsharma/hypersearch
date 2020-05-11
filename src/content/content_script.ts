@@ -2,6 +2,7 @@ import { debug, modifyPage } from "lumos-shared-js";
 import { loadOrUpdateSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
 import { serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
+import { MESSAGES } from "lumos-web/src/components/Constants";
 import { postAPI } from "./helpers";
 import uuidv1 = require('uuid/v1');
 
@@ -12,9 +13,7 @@ function main(window: Window, document: Document, location: Location): void {
 }
 
 function handleUrlUpdated(window: Window, document: Document, url: URL): void {
-    var name = null;
     var user = null;
-    var userMemberships = [];
     let lastModifiedHref: string = null;
     debug("function call - handleUrlUpdated:", url)
     
@@ -23,26 +22,24 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
 
     nativeBrowserAddReactAppListener({
         "window": window,
-        "message": "isUserLoggedIn",
+        "message": MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN,
         "callback": (msg) => {
             let data = msg.data;
-            debug('isUserLoggedIn', data)
-            name = data.name
+            debug(MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN, data)
             user = data.user
-            userMemberships = data.memberships
             // load or update the sidebar
             if (url.href !== lastModifiedHref) {
                 lastModifiedHref = url.href
                 const searchText = serpUrlToSearchText(url);
-                loadOrUpdateSidebar(document, url, userMemberships);
+                loadOrUpdateSidebar(document, url, user);
                 if (document.readyState === 'loading') {
                     document.addEventListener("DOMContentLoaded", () => { 
                         debug("DOMContentLoaded:", url)
-                        modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
+                        modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
                     }, false)
                 } else {
                     debug("DOM Content already Loaded:", url)
-                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, userMemberships, name);
+                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
                 }
                 logPageVisit(userMemberships, url).then(() => {
                     debug("loggedPageVisit: ", url)
@@ -50,7 +47,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             }
         }
     })
-    nativeBrowserPostMessageToReactApp({"command": "isUserLoggedIn", "data": {origin: url.href}})
+    nativeBrowserPostMessageToReactApp({"command": MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN, "data": {origin: url.href}})
 }
 
 async function logPageVisit(userMemberships: any, url: URL) {

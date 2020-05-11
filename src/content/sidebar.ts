@@ -1,7 +1,7 @@
 import {
     ISidebarResponseArrayObject,
     ISidebarTab,
-    INetworks,
+    User,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR,
     debug,
     STYLE_COLOR_BORDER,
@@ -27,6 +27,7 @@ import {
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
+    STYLE_PADDING_XLARGE,
     INetwork,
     STYLE_PADDING_XLARGE,
     STYLE_COLOR_LUMOS_DARK_ORANGE
@@ -429,9 +430,9 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     populateSidebar(document, sidebarTabs)
 }
 
-export function loadOrUpdateSidebar(document: Document, url: URL, userMemberships: INetworks): void {
+export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
     // mutates document
-    const networkIDs = userMemberships.map((userMembership: INetwork) => userMembership.id);
+    const networkIDs = user?.memberships?.items?.map(userMembership => userMembership.id);
     postAPI('subtabs', {url: url.href}, { networks: networkIDs }).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
         runFunctionWhenDocumentReady(document, () => {
             handleSubtabResponse(url, document, response_json)
