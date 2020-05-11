@@ -41,6 +41,9 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                     debug("DOM Content already Loaded:", url)
                     modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
                 }
+                const userMemberships = user.memberships.items.map((item: any) => ({
+                    network: item.network,
+                }));
                 logPageVisit(userMemberships, url).then(() => {
                     debug("loggedPageVisit: ", url)
                 })

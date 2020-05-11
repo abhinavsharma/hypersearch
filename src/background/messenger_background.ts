@@ -8,7 +8,6 @@ let REACT_APP_LOADED = false;
 let MESSENGER_ID = uuidv1(); 
 let MESSENGER_IFRAME = null;
 let user = null;
-let userMemberships = null;
 
 export function isMessengerReady(): boolean {
     return REACT_APP_LOADED && IS_READY && MESSENGER_IFRAME;
@@ -93,7 +92,6 @@ export function setupMessagePassthrough(window: Window): void {
       debug("message from react app to background script", msg)
       if (msg.data && msg.data.command === "isUserLoggedIn") {
         user = msg.data.user
-        userMemberships = msg.data.memberships
       } 
       if (msg.data && msg.data.command && msg.data.origin && msg.data.origin in URL_TO_TAB) {
         debug("nativeBrowserAddReactAppListener - received message from react into bg", msg, URL_TO_TAB[msg.data.origin])
