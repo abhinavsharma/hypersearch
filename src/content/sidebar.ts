@@ -28,8 +28,6 @@ import {
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
     STYLE_PADDING_XLARGE,
-    INetwork,
-    STYLE_PADDING_XLARGE,
     STYLE_COLOR_LUMOS_DARK_ORANGE
 } from "lumos-shared-js";
 import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
