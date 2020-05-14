@@ -430,7 +430,7 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
 
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
     // mutates document
-    const networkIDs = user?.memberships?.items?.map(userMembership => userMembership.id);
+    const networkIDs = user?.memberships?.items?.map(userMembership => userMembership.network.id);
     postAPI('subtabs', {url: url.href}, { networks: networkIDs }).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
         runFunctionWhenDocumentReady(document, () => {
             handleSubtabResponse(url, document, response_json)
