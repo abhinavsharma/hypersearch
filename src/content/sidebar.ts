@@ -143,7 +143,7 @@ export function createSidebar(document: Document) {
         vertical-align: super;
         max-width: ${STYLE_WIDTH_SIDEBAR_TAB_RIGHT};
     `)
-    lumosTitle.appendChild(document.createTextNode("Alternatives (press A)"))
+    lumosTitle.appendChild(document.createTextNode("Alternatives (press \\)"))
     lumosLogoTitle.appendChild(lumosLogo)
     lumosLogoTitle.appendChild(lumosTitle)
     sidebarTogglerWhenHidden.appendChild(lumosLogoTitle)
@@ -194,7 +194,7 @@ export function createSidebar(document: Document) {
     document.body.appendChild(sidebarTogglerWhenHidden)
 
     document.onkeypress = function (e: KeyboardEvent) {
-        if (e.key === "a" || e.key === "A") {
+        if (e.key === "\\") {
             if (!(document.activeElement.nodeName == 'TEXTAREA'
                 || document.activeElement.nodeName == 'INPUT'
                 || (document.activeElement.nodeName == 'DIV'))) {
