@@ -265,7 +265,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         right: 0;
         top: 0;
         bottom: 0;
-        opacity: .55;
+        opacity: 0;
     `)
 
     const selectTabElement = (tabElement: HTMLElement): void => {
