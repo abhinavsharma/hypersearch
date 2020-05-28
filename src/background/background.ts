@@ -1,4 +1,4 @@
-import { MESSAGES, debug } from "lumos-shared-js"
+import { MESSAGES, debug, CLIENT_MESSAGES } from "lumos-shared-js"
 import {loadHiddenMessenger } from "./messenger_background";
 import { HOSTNAME_TO_PATTERN } from "lumos-shared-js/src/content/constants_altsearch";
 let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map(s => s.replace('{searchTerms}', ''))
@@ -58,3 +58,14 @@ window.onload = function() {
 }
 
 chrome.tabs.onUpdated.addListener(onUpdatedListener);
+
+chrome.browserAction.onClicked.addListener(function (tab) {
+  debug("message from background to content script", CLIENT_MESSAGES.BROWSER_CONTENT_FLIP_NON_SERP_CONTAINER)
+  chrome.tabs.sendMessage(tab.id, {
+    data: {
+      command: CLIENT_MESSAGES.BROWSER_CONTENT_FLIP_NON_SERP_CONTAINER,
+    }
+  })
+});
+
+chrome.browserAction.setBadgeBackgroundColor({ color: "black" });

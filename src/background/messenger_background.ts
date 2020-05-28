@@ -1,4 +1,4 @@
-import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL, INativeAddReactAppListener, INativePostMessageToReactApp, LUMOS_APP_BASE_URL } from "lumos-shared-js";
+import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL, INativeAddReactAppListener, INativePostMessageToReactApp, LUMOS_APP_BASE_URL, CLIENT_MESSAGES } from "lumos-shared-js";
 import {URL_TO_TAB} from './background';
 
 import uuidv1 = require('uuid/v1');
@@ -75,14 +75,36 @@ export function setupMessagePassthrough(window: Window): void {
   debug("function call - setupMessagePassthrough")
   debug("setting up listening to messages from tabs")
   chrome.runtime.onMessage.addListener(({command, data}, sender) => {
-    debug("message from tab to background", command, data, sender)
-    nativeBrowserPostMessageToReactApp({
-      command: command,
-      data: {
-        origin: sender.url,
-        ...data
-      },
-    })
+    if (command === CLIENT_MESSAGES.CONTENT_BROWSER_BADGE_UPDATE) {
+      debug("message from browser to background", command, data, sender)
+      // https://stackoverflow.com/questions/32168449/how-can-i-get-different-badge-value-for-every-tab-on-chrome/32168534
+      chrome.tabs.get(sender.tab.id, function(tab) {
+        if (chrome.runtime.lastError) {
+          return; // the prerendered tab has been nuked, happens in omnibox search
+        }
+        const { emoji } = data;
+        if (tab.index >= 0) { // tab is visible
+          chrome.browserAction.setBadgeText({ text: emoji, tabId: tab.id });
+        } else { // prerendered tab, invisible yet, happens quite rarely
+          const tabId = sender.tab.id;
+          chrome.webNavigation.onCommitted.addListener(function update(details) {
+            if (details.tabId == tabId) {
+              chrome.browserAction.setBadgeText({ text: emoji, tabId: tabId});
+              chrome.webNavigation.onCommitted.removeListener(update);
+            }
+          });
+        }
+      });
+    } else {
+      debug("message from tab to background", command, data, sender)
+      nativeBrowserPostMessageToReactApp({
+        command: command,
+        data: {
+          origin: sender.url,
+          ...data
+        },
+      })
+    }
   })
 
   debug("setting up listening to messages from react app in bg")

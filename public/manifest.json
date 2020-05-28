@@ -44,6 +44,9 @@
             "js/background.js"
         ]
     },
+    "browser_action": {
+        "default_title": "Lumos"
+    },
     "permissions": [
         "storage",
         "<all_urls>",
