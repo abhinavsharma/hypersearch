@@ -1,4 +1,5 @@
 import { CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN, debug, LUMOS_APP_URL, INativeAddReactAppListener, INativePostMessageToReactApp, LUMOS_APP_BASE_URL, CLIENT_MESSAGES } from "lumos-shared-js";
+import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants'
 import {URL_TO_TAB} from './background';
 
 import uuidv1 = require('uuid/v1');
@@ -100,8 +101,8 @@ export function setupMessagePassthrough(window: Window): void {
       nativeBrowserPostMessageToReactApp({
         command: command,
         data: {
-          origin: sender.url,
-          ...data
+          ...data,
+          origin: sender.tab.url,
         },
       })
     }
@@ -112,14 +113,21 @@ export function setupMessagePassthrough(window: Window): void {
     'message',
     msg => {
       debug("message from react app to background script", msg)
-      if (msg.data && msg.data.command === "isUserLoggedIn") {
+      if (msg.data && msg.data.command === LUMOS_WEB_MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN) {
         user = msg.data.user
       } 
-      if (msg.data && msg.data.command && msg.data.origin && msg.data.origin in URL_TO_TAB) {
-        debug("nativeBrowserAddReactAppListener - received message from react into bg", msg, URL_TO_TAB[msg.data.origin])
-        chrome.tabs.sendMessage(URL_TO_TAB[msg.data.origin], {
-          data: msg.data
-        })
+      if (msg.data && msg.data.command) {
+        if (msg.data?.href in URL_TO_TAB) {
+          debug("nativeBrowserAddReactAppListener - received message from react into bg", msg, URL_TO_TAB[msg.data.href])
+          chrome.tabs.sendMessage(URL_TO_TAB[msg.data.href], {
+            data: msg.data
+          })
+        } else if (msg.data?.origin in URL_TO_TAB) {
+          debug("nativeBrowserAddReactAppListener - received message from react into bg", msg, URL_TO_TAB[msg.data.origin])
+          chrome.tabs.sendMessage(URL_TO_TAB[msg.data.origin], {
+            data: msg.data
+          })
+        }
       }
     },
     false,
@@ -128,7 +136,7 @@ export function setupMessagePassthrough(window: Window): void {
 
 function reloadMessengerIframe(): void {
   MESSENGER_IFRAME.src = MESSENGER_IFRAME.src
-  nativeBrowserPostMessageToReactApp({command: "isUserLoggedIn", data: {}})
+  nativeBrowserPostMessageToReactApp({command: LUMOS_WEB_MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN, data: {}})
 }
 
 function fixIframeIfCrashed(): void {
@@ -140,7 +148,7 @@ function fixIframeIfCrashed(): void {
 
 export function monitorLoginState(window: Window): void {
   debug("function call monitorLoginState")
-  nativeBrowserPostMessageToReactApp({command: "isUserLoggedIn", data: {}})
+  nativeBrowserPostMessageToReactApp({command: LUMOS_WEB_MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN, data: {}})
   let RETRY_TIME = 2500;
   let LOGIN_TIMEOUT = 5000;
   let TIME_SINCE_MESSAGE = 0;
