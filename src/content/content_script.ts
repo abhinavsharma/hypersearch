@@ -2,7 +2,7 @@ import { debug, modifyPage } from "lumos-shared-js";
 import { loadOrUpdateSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
 import { serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
-import { MESSAGES } from "lumos-web/src/components/Constants";
+import { MESSAGES, PUBLIC_NETWORK_ID } from "lumos-web/src/components/Constants";
 import { postAPI } from "./helpers";
 import uuidv1 = require('uuid/v1');
 
@@ -41,9 +41,19 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                     debug("DOM Content already Loaded:", url)
                     modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
                 }
-                const userMemberships = user.memberships.items.map((item: any) => ({
-                    network: item.network,
-                }));
+
+                let userMemberships = [];
+                if (user) {
+                    userMemberships = user.memberships.items.map((item: any) => ({
+                        network: item.network,
+                    }));
+                }
+                else {
+                    userMemberships = [{
+                        id: PUBLIC_NETWORK_ID,
+                    }];
+                }
+
                 logPageVisit(userMemberships, url).then(() => {
                     debug("loggedPageVisit: ", url)
                 })

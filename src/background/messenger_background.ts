@@ -8,6 +8,7 @@ let IS_READY = false;
 let REACT_APP_LOADED = false;
 let MESSENGER_ID = uuidv1(); 
 let MESSENGER_IFRAME = null;
+let RECEIVED_LOGIN_RESPONSE = false;
 let user = null;
 
 export function isMessengerReady(): boolean {
@@ -114,6 +115,7 @@ export function setupMessagePassthrough(window: Window): void {
     msg => {
       debug("message from react app to background script", msg)
       if (msg.data && msg.data.command === LUMOS_WEB_MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN) {
+        RECEIVED_LOGIN_RESPONSE = true;
         user = msg.data.user
       } 
       if (msg.data && msg.data.command) {
@@ -151,6 +153,7 @@ export function monitorLoginState(window: Window): void {
   nativeBrowserPostMessageToReactApp({command: LUMOS_WEB_MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN, data: {}})
   let RETRY_TIME = 2500;
   let LOGIN_TIMEOUT = 5000;
+  let LOGIN_ASK_TIME = 30 * 60 * 1000;
   let TIME_SINCE_MESSAGE = 0;
   let LOGIN_PROMPTED = false;
 
@@ -158,20 +161,29 @@ export function monitorLoginState(window: Window): void {
     TIME_SINCE_MESSAGE += RETRY_TIME
     let isLoggedIn = isUserLoggedIn()
     debug('login state and crash monitor, login set to:', isLoggedIn, "time since message", TIME_SINCE_MESSAGE, 'prompted', LOGIN_PROMPTED)
-    if (!isLoggedIn) {
+    // Response not received, if timeout reached reload iframe
+    console.log(RECEIVED_LOGIN_RESPONSE, isLoggedIn, LOGIN_PROMPTED)
+    if (!RECEIVED_LOGIN_RESPONSE) {
       if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
-        if (LOGIN_PROMPTED) {
-          setTimeout(reloadMessengerIframe, RETRY_TIME)
-        } else {
-          window.open(LUMOS_APP_BASE_URL)
-          LOGIN_PROMPTED = true
-        }
+        setTimeout(reloadMessengerIframe, RETRY_TIME)
       }
-    } else {
-      //  user las logged in, just monitor for crashes
-      TIME_SINCE_MESSAGE = 0;
-      LOGIN_PROMPTED = false;
-      fixIframeIfCrashed()
+    }
+    else {
+      // If response received and use is logged out, ask for loggin if needed
+      if (!isLoggedIn && !LOGIN_PROMPTED) {
+        window.open(LUMOS_APP_BASE_URL)
+        LOGIN_PROMPTED = true
+
+        // Ask for login again after some time
+        setTimeout(() => {
+          LOGIN_PROMPTED = false;
+        }, LOGIN_ASK_TIME)
+      }
+      else {
+        // just monitor for crashes
+        TIME_SINCE_MESSAGE = 0;
+        fixIframeIfCrashed()
+      }
     }
   }, RETRY_TIME)
 }
