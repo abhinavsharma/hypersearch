@@ -411,7 +411,7 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
 
     let sidebarTabs: Array<ISidebarTab> = []
     response_json.forEach(function(responseTab: ISidebarResponseArrayObject) {
-        if (responseTab.url === document.location.href || responseTab.url === null) {
+        if (responseTab.url === document.location.href || responseTab.url === document.location.origin || responseTab.url === document.location.origin + '/' || responseTab.url === null) {
             return;
         }
         let sidebarTab: ISidebarTab = {
