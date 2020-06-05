@@ -28,12 +28,14 @@ import {
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
     STYLE_PADDING_XLARGE,
-    STYLE_COLOR_LUMOS_DARK_ORANGE
+    STYLE_COLOR_LUMOS_DARK_ORANGE,
+    LUMOS_APP_BASE_URL
 } from "lumos-shared-js";
 import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
+const SHOW_SUBTABS_RETRY = 100;
 
 function isVisible(document: Document): boolean {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -428,12 +430,46 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     populateSidebar(document, sidebarTabs)
 }
 
+function showLoginSubtabs(document: Document, url: URL) {
+    const tabs: Array<ISidebarResponseArrayObject> = [
+        {
+            url: url.href,
+            preview_url: null,
+            default: false,
+            title: null,
+            readable_content: null,
+        },
+        {
+            url: LUMOS_APP_BASE_URL,
+            preview_url: null,
+            default: false,
+            title: 'Lumos',
+            readable_content: null,
+        }
+    ];
+
+    if (document.body) {
+        handleSubtabResponse(url, document, tabs)
+    }
+    else {
+        // If body was not ready try again after some time
+        setTimeout(() => {
+            showLoginSubtabs(document, url);
+        }, SHOW_SUBTABS_RETRY)
+    }
+}
+
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
     // mutates document
-    const networkIDs = user?.memberships?.items?.map(userMembership => userMembership.network.id);
-    postAPI('subtabs', {url: url.href}, { networks: networkIDs, client: "desktop" }).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
-        runFunctionWhenDocumentReady(document, () => {
-            handleSubtabResponse(url, document, response_json)
+    if (user) {
+        const networkIDs = user?.memberships?.items?.map(userMembership => userMembership.network.id);
+        postAPI('subtabs', {url: url.href}, { networks: networkIDs, client: "desktop" }).then(function(response_json: Array<ISidebarResponseArrayObject>) { 
+            runFunctionWhenDocumentReady(document, () => {
+                handleSubtabResponse(url, document, response_json)
+            })
         })
-    })
+    }
+    else {
+        showLoginSubtabs(document, url);
+    }
 }

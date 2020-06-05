@@ -153,37 +153,22 @@ export function monitorLoginState(window: Window): void {
   nativeBrowserPostMessageToReactApp({command: LUMOS_WEB_MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN, data: {}})
   let RETRY_TIME = 2500;
   let LOGIN_TIMEOUT = 5000;
-  let LOGIN_ASK_TIME = 30 * 60 * 1000;
   let TIME_SINCE_MESSAGE = 0;
-  let LOGIN_PROMPTED = false;
 
   setInterval(function() {
     TIME_SINCE_MESSAGE += RETRY_TIME
     let isLoggedIn = isUserLoggedIn()
-    debug('login state and crash monitor, login set to:', isLoggedIn, "time since message", TIME_SINCE_MESSAGE, 'prompted', LOGIN_PROMPTED)
+    debug('login state and crash monitor, login set to:', isLoggedIn, "time since message", TIME_SINCE_MESSAGE)
     // Response not received, if timeout reached reload iframe
-    console.log(RECEIVED_LOGIN_RESPONSE, isLoggedIn, LOGIN_PROMPTED)
     if (!RECEIVED_LOGIN_RESPONSE) {
       if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
         setTimeout(reloadMessengerIframe, RETRY_TIME)
       }
     }
     else {
-      // If response received and use is logged out, ask for loggin if needed
-      if (!isLoggedIn && !LOGIN_PROMPTED) {
-        window.open(LUMOS_APP_BASE_URL)
-        LOGIN_PROMPTED = true
-
-        // Ask for login again after some time
-        setTimeout(() => {
-          LOGIN_PROMPTED = false;
-        }, LOGIN_ASK_TIME)
-      }
-      else {
-        // just monitor for crashes
-        TIME_SINCE_MESSAGE = 0;
-        fixIframeIfCrashed()
-      }
+      // just monitor for crashes
+      TIME_SINCE_MESSAGE = 0;
+      fixIframeIfCrashed()
     }
   }, RETRY_TIME)
 }
