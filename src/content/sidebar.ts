@@ -42,7 +42,7 @@ function isVisible(document: Document): boolean {
     return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
-function flipSidebar(document: Document, force?: string): void {
+export function flipSidebar(document: Document, force?: string): void {
 
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     let serpOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
@@ -155,6 +155,19 @@ export function createSidebar(document: Document) {
     sidebarTogglerWhenVisible.appendChild(document.createTextNode("×"));
     sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE
 
+    // build a ui to switch between sub-tabs within the sidebar
+    let tabsContainer = document.createElement("div")
+    tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
+    tabsContainer.setAttribute("style", `
+        display: flex;
+        background-color: ${STYLE_COLOR_BORDER};
+    `)
+    let contentContainer = document.createElement("div")
+    contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT
+    contentContainer.setAttribute("style", `
+        height: 100%;
+    `)
+
     sidebarToggler.setAttribute("style", `
         cursor: pointer;
     `)
@@ -239,6 +252,8 @@ export function createSidebar(document: Document) {
     };
 
     sidebarContainer.appendChild(sidebarToggler)
+    sidebarContainer.appendChild(tabsContainer);
+    sidebarContainer.appendChild(contentContainer);
 
     document.body.appendChild(sidebarContainer);
     flipSidebar(document, 'hide')
@@ -282,19 +297,18 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         tabElement.style.borderColor = STYLE_COLOR_BORDER
     }
 
-
     // build a ui to switch between sub-tabs within the sidebar
-    let tabsContainer = document.createElement("div")
-    tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
-    tabsContainer.setAttribute("style", `
-        display: flex;
-        background-color: ${STYLE_COLOR_BORDER};
-    `)
-    let contentContainer = document.createElement("div")
-    contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT
-    contentContainer.setAttribute("style", `
-        height: 100%;
-    `)
+    const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+    const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
+
+    // Cleaning old content
+    while (tabsContainer.firstChild) {
+        tabsContainer.removeChild(tabsContainer.firstChild);
+    }
+
+    while (contentContainer.firstChild) {
+        contentContainer.removeChild(contentContainer.firstChild);
+    }
 
     // create a ui to preview the sidebar when it is hidden
     let sidebarTogglerWhenHidden = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW)
@@ -390,8 +404,6 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
         sidebarOverlayContainer.style.right = null
         sidebarOverlayContainer.style.bottom = null
     })
-    container.appendChild(tabsContainer)
-    container.appendChild(contentContainer)
 }
 
 function handleSubtabResponse(url: URL, document: Document, response_json: Array<ISidebarResponseArrayObject>): void {
@@ -430,7 +442,7 @@ function handleSubtabResponse(url: URL, document: Document, response_json: Array
     populateSidebar(document, sidebarTabs)
 }
 
-function showLoginSubtabs(document: Document, url: URL) {
+function showLoginSubtabs(document: Document, url: URL): void {
     const tabs: Array<ISidebarResponseArrayObject> = [
         {
             url: url.href,
@@ -448,15 +460,7 @@ function showLoginSubtabs(document: Document, url: URL) {
         }
     ];
 
-    if (document.body) {
-        handleSubtabResponse(url, document, tabs)
-    }
-    else {
-        // If body was not ready try again after some time
-        setTimeout(() => {
-            showLoginSubtabs(document, url);
-        }, SHOW_SUBTABS_RETRY)
-    }
+    handleSubtabResponse(url, document, tabs)
 }
 
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
@@ -470,6 +474,8 @@ export function loadOrUpdateSidebar(document: Document, url: URL, user: User): v
         })
     }
     else {
-        showLoginSubtabs(document, url);
+        runFunctionWhenDocumentReady(document, () => {
+            showLoginSubtabs(document, url)
+        });
     }
 }
