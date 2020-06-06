@@ -1,5 +1,5 @@
 import { debug, modifyPage } from "lumos-shared-js";
-import { loadOrUpdateSidebar, flipSidebar } from "./sidebar";
+import { loadOrUpdateSidebar, reloadSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
 import { serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
 import { MESSAGES, PUBLIC_NETWORK_ID } from "lumos-web/src/components/Constants";
@@ -62,7 +62,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     })
     nativeBrowserPostMessageToReactApp({"command": MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN, "data": {origin: url.href}})
 
-    // Listen for front messages
+    // Listen for front content messages
     window.addEventListener("message", (msg) => {
         if (msg.data?.command) {
             switch (msg.data?.command) {
@@ -71,9 +71,9 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 user = msg.data.user
                 
                 if (previousUser?.id !== user?.id) {
-                    flipSidebar(document, "hide");
-                    loadOrUpdateSidebar(document, url, user)
+                    reloadSidebar(document, url, user)
                 }
+
                 break;
             }
         }

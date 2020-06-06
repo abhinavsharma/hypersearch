@@ -463,6 +463,16 @@ function showLoginSubtabs(document: Document, url: URL): void {
     handleSubtabResponse(url, document, tabs)
 }
 
+export function reloadSidebar(document: Document, url: URL, user: User): void {
+    flipSidebar(document, "hide")
+
+    // Making sure showButton is hidden before reloading sidebar
+    const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+    showButton.style.visibility = "hidden";
+
+    loadOrUpdateSidebar(document, url, user);
+}
+
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
     // mutates document
     if (user) {
