@@ -65,7 +65,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
     // Listen for front content messages
     window.addEventListener("message", (msg) => {
         if (msg.data?.command) {
-            switch (msg.data?.command) {
+            switch (msg.data.command) {
                 case MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN:
                 let previousUser = user
                 user = msg.data.user

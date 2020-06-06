@@ -35,14 +35,13 @@ import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
-const SHOW_SUBTABS_RETRY = 100;
 
 function isVisible(document: Document): boolean {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
-export function flipSidebar(document: Document, force?: string): void {
+function flipSidebar(document: Document, force?: string): void {
 
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
     let serpOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY)
@@ -301,7 +300,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
     const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
 
-    // Cleaning old content
+    // Cleaning old content before adding new
     while (tabsContainer.firstChild) {
         tabsContainer.removeChild(tabsContainer.firstChild);
     }
@@ -467,6 +466,7 @@ export function reloadSidebar(document: Document, url: URL, user: User): void {
     flipSidebar(document, "hide")
 
     // Making sure showButton is hidden before reloading sidebar
+    // in case it should not appear anymore
     const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
     showButton.style.visibility = "hidden";
 
