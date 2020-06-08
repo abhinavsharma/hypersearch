@@ -16,7 +16,6 @@
   },
   "dependencies": {},
   "eslintIgnore": [
-    "src/__test__/",
     "public/",
     "releases/"
   ],
