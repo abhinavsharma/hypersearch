@@ -122,11 +122,6 @@ export function setupMessagePassthrough(window: Window): void {
       debug("message from react app to background script", msg)
       if (msg.data && msg.data.command === LUMOS_WEB_MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN) {
         RECEIVED_LOGIN_RESPONSE = true;
-
-        if (user?.id != msg.data.user?.id) {
-          reloadMessengerIframe();
-        }
-
         user = msg.data.user
       } 
       if (msg.data && msg.data.command) {
