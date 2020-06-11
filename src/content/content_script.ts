@@ -3,6 +3,7 @@ import { loadOrUpdateSidebar, reloadSidebar } from "./sidebar";
 import {nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener } from "./messenger_content";
 import { serpUrlToSearchText } from "lumos-shared-js/src/content/modify_serp";
 import { MESSAGES, PUBLIC_NETWORK_ID } from "lumos-web/src/components/Constants";
+import { CLIENT_MESSAGES } from "lumos-shared-js"
 import { postAPI } from "./helpers";
 import uuidv1 = require('uuid/v1');
 
@@ -71,7 +72,13 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
                 user = msg.data.user
                 
                 if (previousUser?.id !== user?.id) {
-                    reloadSidebar(document, url, user)
+                    chrome.runtime.sendMessage({
+                       command: CLIENT_MESSAGES.CONTENT_BROWSER_USER_UPDATE,
+                       data: user,
+                    });
+
+                    modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
+                    reloadSidebar(document, url, user);
                 }
 
                 break;

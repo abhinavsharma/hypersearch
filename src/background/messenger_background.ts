@@ -97,6 +97,12 @@ export function setupMessagePassthrough(window: Window): void {
           });
         }
       });
+    } else if (command === CLIENT_MESSAGES.CONTENT_BROWSER_USER_UPDATE) {
+      if (user?.id != data?.id) {
+        reloadMessengerIframe();
+      }
+
+      user = data;
     } else {
       debug("message from tab to background", command, data, sender)
       nativeBrowserPostMessageToReactApp({
