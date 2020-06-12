@@ -35,6 +35,7 @@ import { postAPI, runFunctionWhenDocumentReady } from "./helpers";
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
+const LUMOS_SUBTAB_TITLE = 'Lumos';
 
 function isVisible(document: Document): boolean {
     let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -454,7 +455,7 @@ function showLoginSubtabs(document: Document, url: URL): void {
             url: LUMOS_APP_BASE_URL,
             preview_url: null,
             default: false,
-            title: 'Lumos',
+            title: LUMOS_SUBTAB_TITLE,
             readable_content: null,
         }
     ];
