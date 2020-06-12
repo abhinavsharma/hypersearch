@@ -29,7 +29,7 @@ import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
   STYLE_PADDING_XLARGE,
   STYLE_COLOR_LUMOS_DARK_ORANGE,
-    LUMOS_APP_BASE_URL
+  LUMOS_APP_BASE_URL,
 } from 'lumos-shared-js';
 import { postAPI, runFunctionWhenDocumentReady } from './helpers';
 
@@ -171,18 +171,24 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenVisible.appendChild(document.createTextNode('×'));
   sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
 
-    // build a ui to switch between sub-tabs within the sidebar
-    let tabsContainer = document.createElement("div")
-    tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS
-    tabsContainer.setAttribute("style", `
+  // build a ui to switch between sub-tabs within the sidebar
+  let tabsContainer = document.createElement('div');
+  tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS;
+  tabsContainer.setAttribute(
+    'style', 
+    `
         display: flex;
         background-color: ${STYLE_COLOR_BORDER};
-    `)
-    let contentContainer = document.createElement("div")
-    contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT
-    contentContainer.setAttribute("style", `
+    `
+  );
+  let contentContainer = document.createElement('div');
+  contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT;
+  contentContainer.setAttribute(
+    'style',
+    `
         height: 100%;
-    `)
+    `
+  );
 
   sidebarToggler.setAttribute(
     'style',
@@ -284,7 +290,7 @@ export function createSidebar(document: Document) {
     }
   };
 
-  sidebarContainer.appendChild(sidebarToggler)
+  sidebarContainer.appendChild(sidebarToggler);
   sidebarContainer.appendChild(tabsContainer);
   sidebarContainer.appendChild(contentContainer);
 
@@ -333,18 +339,18 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     tabElement.style.borderColor = STYLE_COLOR_BORDER;
   };
 
-    // build a ui to switch between sub-tabs within the sidebar
-    const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
-    const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
+  // build a ui to switch between sub-tabs within the sidebar
+  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+  const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
 
-    // Cleaning old content before adding new
-    while (tabsContainer.firstChild) {
-        tabsContainer.removeChild(tabsContainer.firstChild);
-    }
+  // Cleaning old content before adding new
+  while (tabsContainer.firstChild) {
+    tabsContainer.removeChild(tabsContainer.firstChild);
+  }
 
-    while (contentContainer.firstChild) {
-        contentContainer.removeChild(contentContainer.firstChild);
-    }
+  while (contentContainer.firstChild) {
+    contentContainer.removeChild(contentContainer.firstChild);
+  }
 
   // create a ui to preview the sidebar when it is hidden
   let sidebarTogglerWhenHidden = document.getElementById(
@@ -501,35 +507,35 @@ function handleSubtabResponse(
 }
 
 function showLoginSubtabs(document: Document, url: URL): void {
-    const tabs: Array<ISidebarResponseArrayObject> = [
-        {
-            url: url.href,
-            preview_url: null,
-            default: false,
-            title: null,
-            readable_content: null,
-        },
-        {
-            url: LUMOS_APP_BASE_URL,
-            preview_url: null,
-            default: false,
-            title: LUMOS_SUBTAB_TITLE,
-            readable_content: null,
-        }
-    ];
+  const tabs: Array<ISidebarResponseArrayObject> = [
+    {
+      url: url.href,
+      preview_url: null,
+      default: false,
+      title: null,
+      readable_content: null,
+    },
+    {
+      url: LUMOS_APP_BASE_URL,
+      preview_url: null,
+      default: false,
+      title: LUMOS_SUBTAB_TITLE,
+      readable_content: null,
+    }
+  ];
 
-    handleSubtabResponse(url, document, tabs)
+  handleSubtabResponse(url, document, tabs)
 }
 
 export function reloadSidebar(document: Document, url: URL, user: User): void {
-    flipSidebar(document, "hide")
+  flipSidebar(document, "hide");
 
-    // Making sure showButton is hidden before reloading sidebar
-    // in case it should not appear anymore
-    const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
-    showButton.style.visibility = "hidden";
+  // Making sure showButton is hidden before reloading sidebar
+  // in case it should not appear anymore
+  const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+  showButton.style.visibility = "hidden";
 
-    loadOrUpdateSidebar(document, url, user);
+  loadOrUpdateSidebar(document, url, user);
 }
 
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {

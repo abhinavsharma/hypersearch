@@ -1,5 +1,5 @@
 import { debug, modifyPage, CLIENT_MESSAGES } from 'lumos-shared-js';
-import { loadOrUpdateSidebar, reloadSidebar } from "./sidebar";
+import { loadOrUpdateSidebar, reloadSidebar } from './sidebar';
 import {
   nativeBrowserPostMessageToReactApp,
   nativeBrowserAddReactAppListener,
@@ -67,8 +67,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
           userMemberships = user.memberships.items.map((item: any) => ({
             network: item.network,
           }));
-        }
-        else {
+        } else {
           userMemberships = [{
             id: PUBLIC_NETWORK_ID,
           }];

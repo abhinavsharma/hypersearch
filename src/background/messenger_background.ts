@@ -202,7 +202,7 @@ export function monitorLoginState(window: Window): void {
     // Response not received, if timeout reached reload iframe
     if (!RECEIVED_LOGIN_RESPONSE) {
       if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
-        setTimeout(reloadMessengerIframe, RETRY_TIME)
+        setTimeout(reloadMessengerIframe, RETRY_TIME);
       }
     }
     else {
