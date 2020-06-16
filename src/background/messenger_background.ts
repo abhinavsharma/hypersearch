@@ -16,6 +16,7 @@ let IS_READY = false;
 let REACT_APP_LOADED = false;
 let MESSENGER_ID = uuidv1();
 let MESSENGER_IFRAME = null;
+let RECEIVED_LOGIN_RESPONSE = false;
 let user = null;
 
 export function isMessengerReady(): boolean {
@@ -109,6 +110,12 @@ export function setupMessagePassthrough(window: Window): void {
           });
         }
       });
+    } else if (command === CLIENT_MESSAGES.CONTENT_BROWSER_USER_UPDATE) {
+      if (user?.id != data?.id) {
+        reloadMessengerIframe();
+      }
+
+      user = data;
     } else {
       debug('message from tab to background', command, data, sender);
       nativeBrowserPostMessageToReactApp({
@@ -127,6 +134,7 @@ export function setupMessagePassthrough(window: Window): void {
     (msg) => {
       debug('message from react app to background script', msg);
       if (msg.data && msg.data.command === LUMOS_WEB_MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN) {
+        RECEIVED_LOGIN_RESPONSE = true;
         user = msg.data.user;
       }
       if (msg.data && msg.data.command) {
@@ -156,6 +164,8 @@ export function setupMessagePassthrough(window: Window): void {
 }
 
 function reloadMessengerIframe(): void {
+  REACT_APP_LOADED = false;
+  IS_READY = false;
   MESSENGER_IFRAME.src = MESSENGER_IFRAME.src;
   nativeBrowserPostMessageToReactApp({
     command: LUMOS_WEB_MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN,
@@ -179,7 +189,6 @@ export function monitorLoginState(window: Window): void {
   let RETRY_TIME = 2500;
   let LOGIN_TIMEOUT = 5000;
   let TIME_SINCE_MESSAGE = 0;
-  let LOGIN_PROMPTED = false;
 
   setInterval(function () {
     TIME_SINCE_MESSAGE += RETRY_TIME;
@@ -189,22 +198,16 @@ export function monitorLoginState(window: Window): void {
       isLoggedIn,
       'time since message',
       TIME_SINCE_MESSAGE,
-      'prompted',
-      LOGIN_PROMPTED,
     );
-    if (!isLoggedIn) {
+    // Response not received, if timeout reached reload iframe
+    if (!RECEIVED_LOGIN_RESPONSE) {
       if (TIME_SINCE_MESSAGE >= LOGIN_TIMEOUT) {
-        if (LOGIN_PROMPTED) {
-          setTimeout(reloadMessengerIframe, RETRY_TIME);
-        } else {
-          window.open(LUMOS_APP_BASE_URL);
-          LOGIN_PROMPTED = true;
-        }
+        setTimeout(reloadMessengerIframe, RETRY_TIME);
       }
-    } else {
-      //  user las logged in, just monitor for crashes
+    }
+    else {
+      // just monitor for crashes
       TIME_SINCE_MESSAGE = 0;
-      LOGIN_PROMPTED = false;
       fixIframeIfCrashed();
     }
   }, RETRY_TIME);

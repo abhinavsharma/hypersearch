@@ -29,11 +29,13 @@ import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
   STYLE_PADDING_XLARGE,
   STYLE_COLOR_LUMOS_DARK_ORANGE,
+  LUMOS_APP_BASE_URL,
 } from 'lumos-shared-js';
 import { postAPI, runFunctionWhenDocumentReady } from './helpers';
 
 const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
+const LUMOS_SUBTAB_TITLE = 'Lumos';
 
 function isVisible(document: Document): boolean {
   let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -169,6 +171,25 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenVisible.appendChild(document.createTextNode('×'));
   sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
 
+  // build a ui to switch between sub-tabs within the sidebar
+  let tabsContainer = document.createElement('div');
+  tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS;
+  tabsContainer.setAttribute(
+    'style', 
+    `
+        display: flex;
+        background-color: ${STYLE_COLOR_BORDER};
+    `
+  );
+  let contentContainer = document.createElement('div');
+  contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT;
+  contentContainer.setAttribute(
+    'style',
+    `
+        height: 100%;
+    `
+  );
+
   sidebarToggler.setAttribute(
     'style',
     `
@@ -270,6 +291,8 @@ export function createSidebar(document: Document) {
   };
 
   sidebarContainer.appendChild(sidebarToggler);
+  sidebarContainer.appendChild(tabsContainer);
+  sidebarContainer.appendChild(contentContainer);
 
   document.body.appendChild(sidebarContainer);
   flipSidebar(document, 'hide');
@@ -317,23 +340,17 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
   };
 
   // build a ui to switch between sub-tabs within the sidebar
-  let tabsContainer = document.createElement('div');
-  tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS;
-  tabsContainer.setAttribute(
-    'style',
-    `
-        display: flex;
-        background-color: ${STYLE_COLOR_BORDER};
-    `,
-  );
-  let contentContainer = document.createElement('div');
-  contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT;
-  contentContainer.setAttribute(
-    'style',
-    `
-        height: 100%;
-    `,
-  );
+  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+  const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
+
+  // Cleaning old content before adding new
+  while (tabsContainer.firstChild) {
+    tabsContainer.removeChild(tabsContainer.firstChild);
+  }
+
+  while (contentContainer.firstChild) {
+    contentContainer.removeChild(contentContainer.firstChild);
+  }
 
   // create a ui to preview the sidebar when it is hidden
   let sidebarTogglerWhenHidden = document.getElementById(
@@ -489,14 +506,52 @@ function handleSubtabResponse(
   populateSidebar(document, sidebarTabs);
 }
 
+function showLoginSubtabs(document: Document, url: URL): void {
+  const tabs: Array<ISidebarResponseArrayObject> = [
+    {
+      url: url.href,
+      preview_url: null,
+      default: false,
+      title: null,
+      readable_content: null,
+    },
+    {
+      url: LUMOS_APP_BASE_URL,
+      preview_url: null,
+      default: false,
+      title: LUMOS_SUBTAB_TITLE,
+      readable_content: null,
+    }
+  ];
+
+  handleSubtabResponse(url, document, tabs)
+}
+
+export function reloadSidebar(document: Document, url: URL, user: User): void {
+  flipSidebar(document, "hide");
+
+  // Making sure showButton is hidden before reloading sidebar
+  // in case it should not appear anymore
+  const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+  showButton.style.visibility = "hidden";
+
+  loadOrUpdateSidebar(document, url, user);
+}
+
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
   // mutates document
-  const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id);
-  postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' }).then(function (
-    response_json: Array<ISidebarResponseArrayObject>,
-  ) {
-    runFunctionWhenDocumentReady(document, () => {
-      handleSubtabResponse(url, document, response_json);
+  if (user) {
+    const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id);
+    postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' }).then(function (
+      response_json: Array<ISidebarResponseArrayObject>,
+    ) {
+      runFunctionWhenDocumentReady(document, () => {
+        handleSubtabResponse(url, document, response_json);
+      });
     });
-  });
+  } else {
+    runFunctionWhenDocumentReady(document, () => {
+      showLoginSubtabs(document, url)
+    });
+  }
 }

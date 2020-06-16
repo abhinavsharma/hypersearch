@@ -1,11 +1,11 @@
-import { debug, modifyPage } from 'lumos-shared-js';
-import { loadOrUpdateSidebar } from './sidebar';
+import { debug, modifyPage, CLIENT_MESSAGES } from 'lumos-shared-js';
+import { loadOrUpdateSidebar, reloadSidebar } from './sidebar';
 import {
   nativeBrowserPostMessageToReactApp,
   nativeBrowserAddReactAppListener,
 } from './messenger_content';
 import { serpUrlToSearchText } from 'lumos-shared-js/src/content/modify_serp';
-import { MESSAGES } from 'lumos-web/src/components/Constants';
+import { MESSAGES, PUBLIC_NETWORK_ID } from 'lumos-web/src/components/Constants';
 import { postAPI } from './helpers';
 import uuidv1 = require('uuid/v1');
 
@@ -62,9 +62,16 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             user,
           );
         }
-        const userMemberships = user.memberships.items.map((item: any) => ({
-          network: item.network,
-        }));
+        let userMemberships = [];
+        if (user) {
+          userMemberships = user.memberships.items.map((item: any) => ({
+            network: item.network,
+          }));
+        } else {
+          userMemberships = [{
+            id: PUBLIC_NETWORK_ID,
+          }];
+        }
         logPageVisit(userMemberships, url).then(() => {
           debug('loggedPageVisit: ', url);
         });
@@ -74,6 +81,29 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
   nativeBrowserPostMessageToReactApp({
     command: MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN,
     data: { origin: url.href },
+  });
+
+// Listen for front content messages
+  window.addEventListener("message", (msg) => {
+    if (msg.data?.command) {
+      switch (msg.data.command) {
+        case MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN:
+        let previousUser = user;
+        user = msg.data.user;
+        
+        if (previousUser?.id !== user?.id) {
+          chrome.runtime.sendMessage({
+            command: CLIENT_MESSAGES.CONTENT_BROWSER_USER_UPDATE,
+            data: user,
+          });
+
+          modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
+          reloadSidebar(document, url, user);
+        }
+
+        break;
+      }
+    }
   });
 }
 
