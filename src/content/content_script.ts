@@ -1,4 +1,4 @@
-import { debug, modifyPage, CLIENT_MESSAGES } from 'lumos-shared-js';
+import { debug, modifyPage, fetchInformationForModifiedPage, CLIENT_MESSAGES } from 'lumos-shared-js';
 import { loadOrUpdateSidebar, reloadSidebar } from './sidebar';
 import {
   nativeBrowserPostMessageToReactApp,
@@ -97,7 +97,7 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
             data: user,
           });
 
-          modifyPage(url, window, document, nativeBrowserPostMessageToReactApp, nativeBrowserAddReactAppListener, user);
+          fetchInformationForModifiedPage(url, nativeBrowserPostMessageToReactApp);
           reloadSidebar(document, url, user);
         }
 
