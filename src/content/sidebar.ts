@@ -30,6 +30,7 @@ import {
   STYLE_PADDING_XLARGE,
   STYLE_COLOR_LUMOS_DARK_ORANGE,
   LUMOS_APP_BASE_URL,
+  STYLE_COLOR_UNSELECTED_TAB,
 } from 'lumos-shared-js';
 import { postAPI, runFunctionWhenDocumentReady } from './helpers';
 
@@ -128,7 +129,7 @@ export function createSidebar(document: Document) {
         transition-property: all;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-        border-left: 1px solid ${STYLE_COLOR_BORDER};
+        border-left: 3px solid ${STYLE_COLOR_LUMOS_DARK_ORANGE};
     `,
   );
 
@@ -168,7 +169,13 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW;
 
   let sidebarTogglerWhenVisible = document.createElement('div');
-  sidebarTogglerWhenVisible.appendChild(document.createTextNode('×'));
+  let xNode = document.createElement("div")
+  xNode.appendChild(document.createTextNode('×'))
+  xNode.setAttribute("style", `
+    top: 6px;
+    position: absolute;
+  `)
+  sidebarTogglerWhenVisible.appendChild(xNode);
   sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
 
   // build a ui to switch between sub-tabs within the sidebar
@@ -178,7 +185,8 @@ export function createSidebar(document: Document) {
     'style', 
     `
         display: flex;
-        background-color: ${STYLE_COLOR_BORDER};
+        background-color: #f7f7f7;  /* custom color */
+        padding: 5px 0 0 20px;
     `
   );
   let contentContainer = document.createElement('div');
@@ -220,12 +228,13 @@ export function createSidebar(document: Document) {
         position: absolute;
         left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
         top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
-        
-        border: 1px solid ${STYLE_COLOR_BORDER};
+        height: 10px;
+        width: 10px;
+        border: 3px solid ${STYLE_COLOR_LUMOS_DARK_ORANGE};
         background: white;
         border-radius: 50%;
         font-size: ${STYLE_FONT_SIZE_LARGE};
-        padding: ${STYLE_PADDING_MEDIUM}
+        padding: ${STYLE_PADDING_MEDIUM};
     `,
   );
 
@@ -334,9 +343,9 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
   };
 
   const unselectTabElement = (tabElement: HTMLElement): void => {
-    tabElement.style.backgroundColor = STYLE_COLOR_BORDER;
+    tabElement.style.backgroundColor = STYLE_COLOR_UNSELECTED_TAB;
     tabElement.style.fontWeight = 'normal';
-    tabElement.style.borderColor = STYLE_COLOR_BORDER;
+    tabElement.style.borderColor = STYLE_COLOR_UNSELECTED_TAB;
   };
 
   // build a ui to switch between sub-tabs within the sidebar
@@ -395,11 +404,11 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
             font-size: ${STYLE_FONT_SIZE_SMALL};
             padding: ${STYLE_PADDING_MEDIUM} ${STYLE_PADDING_SMALL};
             text-align: center;
-            border-right: 1px solid ${STYLE_COLOR_BORDER};
             color: ${STYLE_COLOR_TEXT};
+            background: ${STYLE_COLOR_UNSELECTED_TAB};
             width: ${STYLE_WIDTH_SIDEBAR_TAB};
             cursor: pointer;
-            border-bottom: 1px solid ${STYLE_COLOR_BORDER};
+            border-radius: 10px 10px 0 0;
         `,
     );
 
@@ -409,6 +418,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     contentIframe.setAttribute(
       'style',
       `
+            width: 100%;
             height: 100%;
             border: none;
         `,
