@@ -33,10 +33,32 @@ import {
   STYLE_COLOR_UNSELECTED_TAB,
 } from 'lumos-shared-js';
 import { postAPI, runFunctionWhenDocumentReady } from './helpers';
+import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants';
 
-const ANIMATE_TIME_SHOW_CONTENT_DELAY = 350;
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
 const LUMOS_SUBTAB_TITLE = 'Lumos';
+
+let mostRecentLumosUrl = null;
+let currentPinnedTab = null;
+
+chrome.storage.sync.get(['pinnedTab'], (result) => {
+  currentPinnedTab = result.pinnedTab;
+})
+
+function getInitialTabs(): ISidebarTab[] {
+  let sidebarTabs = []
+  let pinnedTabUrl = currentPinnedTab;
+  if (pinnedTabUrl && pinnedTabUrl !== null && pinnedTabUrl !== '') {
+    let pinnedSidebarTab: ISidebarTab = {
+      title: 'Pinned',
+      url: new URL(pinnedTabUrl),
+      default: true,
+      isPinnedTab: true,
+    };
+    sidebarTabs.push(pinnedSidebarTab);
+  }
+  return sidebarTabs;
+}
 
 function isVisible(document: Document): boolean {
   let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -51,7 +73,7 @@ function flipSidebar(document: Document, force?: string): void {
   let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
   let contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
 
-  if ((force && force == 'hide') || isVisible(document)) {
+  if ((force && force == 'hide') || (isVisible(document) && force !== 'show')) {
     // hide sidebar
     if (tabsContainer && contentContainer) {
       tabsContainer.style.visibility = 'hidden';
@@ -71,10 +93,8 @@ function flipSidebar(document: Document, force?: string): void {
     // serpOverlayContainer.style.display = "block"
     sidebarContainer.style.width = STYLE_WIDTH_SIDEBAR;
     if (tabsContainer && contentContainer) {
-      setTimeout(() => {
-        tabsContainer.style.visibility = 'visible';
-        contentContainer.style.visibility = 'visible';
-      }, ANIMATE_TIME_SHOW_CONTENT_DELAY);
+      tabsContainer.style.visibility = 'visible';
+      contentContainer.style.visibility = 'visible';
     }
   }
 }
@@ -86,6 +106,21 @@ function isSidebarLoaded(document): boolean {
 
 export function createSidebar(document: Document) {
   debug('function call - createSidebar');
+
+  window.addEventListener(
+    'message',
+    (msg) => {
+      if (msg.data && msg.data.command) {
+        const { data } = msg;
+        switch (data.command) {
+          case LUMOS_WEB_MESSAGES.WEB_CONTENT_URL_UPDATED:
+            mostRecentLumosUrl = data.updatedUrl;
+            break;
+        }
+      }
+    },
+    false,
+  );
 
   let serpOverlayContainer = document.createElement('div');
   serpOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
@@ -394,7 +429,52 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
 
     // tabs that switch between different subtabs
     let tabElement = document.createElement('span');
-    tabElement.innerText = sidebarTab.title;
+    let contentIframe = document.createElement('iframe');
+
+    let pinElement = document.createElement("span")
+    pinElement.appendChild(document.createTextNode('📌'))
+    pinElement.setAttribute('style', `
+      margin-left: 5px;
+    `)
+    pinElement.addEventListener('click', () => {
+      
+      currentPinnedTab = mostRecentLumosUrl ? mostRecentLumosUrl : contentIframe.src
+      chrome.storage.sync.set({'pinnedTab': currentPinnedTab})
+
+      populateSidebar(document, getInitialTabs().concat(sidebarTabs.map((sidebarTab) => {
+        sidebarTab.default = true;
+        return sidebarTab;
+      })));
+      
+    })
+    
+    let unpinElement = document.createElement("span")
+    unpinElement.appendChild(document.createTextNode('❌'))
+    unpinElement.setAttribute('style', `
+      margin-left: 5px;
+    `)
+    unpinElement.addEventListener('click', () => {
+      localStorage.setItem('pinnedTab', '');
+      currentPinnedTab = ''
+      chrome.storage.sync.set({'pinnedTab': currentPinnedTab});
+      populateSidebar(document, sidebarTabs.slice(1).map((sidebarTab, idx) => {
+        if (idx === 0) {
+          sidebarTab.default = true;
+          return sidebarTab;
+        } else {
+          sidebarTab.default = false;
+          return sidebarTab
+        }
+      }))
+    })
+
+    tabElement.appendChild(document.createTextNode(sidebarTab.title));
+    if (sidebarTab.isPinnedTab) {
+      tabElement.appendChild(unpinElement);
+
+    } else if (sidebarTab.url.host === new URL(LUMOS_APP_BASE_URL).host) {
+      tabElement.appendChild(pinElement);
+    }
     tabElement.setAttribute(
       'style',
       `
@@ -413,7 +493,7 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
     );
 
     // load the urls of the subtabs into iframes
-    let contentIframe = document.createElement('iframe');
+    
     contentIframe.src = sidebarTab.url.href;
     contentIframe.setAttribute(
       'style',
@@ -482,17 +562,15 @@ function handleSubtabResponse(
   // mutates document
   debug('function call - handleSubtabResponse', url);
 
-  if (!isSidebarLoaded(document)) {
-    createSidebar(document);
-  }
-
   // setup as many tabs as in response
   if (!(response_json && response_json.length > 1)) {
     debug('handleSubtabResponse - response json is invalid');
     return;
   }
 
-  let sidebarTabs: Array<ISidebarTab> = [];
+  let tabsFromPinning = getInitialTabs();
+  let sidebarTabs: Array<ISidebarTab> = tabsFromPinning;
+
   response_json.forEach(function (responseTab: ISidebarResponseArrayObject) {
     if (
       responseTab.url === document.location.href ||
@@ -502,10 +580,11 @@ function handleSubtabResponse(
     ) {
       return;
     }
+  
     let sidebarTab: ISidebarTab = {
       title: responseTab.title,
       url: new URL(responseTab.url),
-      default: responseTab.default,
+      default: (tabsFromPinning.length === 0) && responseTab.default,
     };
     sidebarTabs.push(sidebarTab);
   });
@@ -513,6 +592,7 @@ function handleSubtabResponse(
   if (sidebarTabs.length === 0) {
     return;
   }
+
   populateSidebar(document, sidebarTabs);
 }
 
@@ -550,12 +630,31 @@ export function reloadSidebar(document: Document, url: URL, user: User): void {
 
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
   // mutates document
+
+  
+
   if (user) {
+    
+    runFunctionWhenDocumentReady(document, () => {
+      let sidebarTabs = getInitialTabs();
+      if (sidebarTabs && sidebarTabs.length > 0) {
+        if (!isSidebarLoaded(document)) {
+          createSidebar(document);
+        }
+        populateSidebar(document, sidebarTabs);
+        flipSidebar(document, 'show');
+      }
+    })
+
     const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id);
     postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' }).then(function (
       response_json: Array<ISidebarResponseArrayObject>,
     ) {
       runFunctionWhenDocumentReady(document, () => {
+        if (!isSidebarLoaded(document)) {
+          createSidebar(document);
+        }
+
         handleSubtabResponse(url, document, response_json);
       });
     });

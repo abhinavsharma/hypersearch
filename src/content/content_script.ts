@@ -33,7 +33,6 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
       // load or update the sidebar
       if (url.href !== lastModifiedHref) {
         lastModifiedHref = url.href;
-        const searchText = serpUrlToSearchText(url);
         loadOrUpdateSidebar(document, url, user);
         if (document.readyState === 'loading') {
           document.addEventListener(
