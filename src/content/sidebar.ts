@@ -1,5 +1,4 @@
 import {
-  ISidebarResponseArrayObject,
   ISidebarTab,
   User,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR,
@@ -14,10 +13,8 @@ import {
   STYLE_SIDEBAR_TOGGLER_WIDTH,
   STYLE_FONT_SIZE_SMALL,
   STYLE_BORDER_RADIUS_PILL,
-  STYLE_COLOR_LUMOS_GOLD_SOLID,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE,
-  STYLE_SIDEBAR_SHOWER_X_OFFSET,
   STYLE_FONT_SIZE_LARGE,
   STYLE_PADDING_MEDIUM,
   STYLE_COLOR_TEXT,
@@ -32,33 +29,16 @@ import {
   LUMOS_APP_BASE_URL,
   STYLE_COLOR_UNSELECTED_TAB,
 } from 'lumos-shared-js';
-import { postAPI, runFunctionWhenDocumentReady } from './helpers';
+import { runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants';
+import SidebarTabsManager from './sidebarTabsManager';
 
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
-const LUMOS_SUBTAB_TITLE = 'Lumos';
 
 let mostRecentLumosUrl = null;
-let currentPinnedTab = null;
 
-chrome.storage.sync.get(['pinnedTab'], (result) => {
-  currentPinnedTab = result.pinnedTab;
-})
-
-function getInitialTabs(): ISidebarTab[] {
-  let sidebarTabs = []
-  let pinnedTabUrl = currentPinnedTab;
-  if (pinnedTabUrl && pinnedTabUrl !== null && pinnedTabUrl !== '') {
-    let pinnedSidebarTab: ISidebarTab = {
-      title: 'Pinned',
-      url: new URL(pinnedTabUrl),
-      default: true,
-      isPinnedTab: true,
-    };
-    sidebarTabs.push(pinnedSidebarTab);
-  }
-  return sidebarTabs;
-}
+const sidebarTabsManager = new SidebarTabsManager();
+const sidebarIframes = [];
 
 function isVisible(document: Document): boolean {
   let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
@@ -334,9 +314,29 @@ export function createSidebar(document: Document) {
     }
   };
 
+  const sidebarOverlayContainer = document.createElement('div');
+  sidebarOverlayContainer.setAttribute(
+    'style',
+    `
+        z-index: ${STYLE_ZINDEX_MAX};
+        background: #f7f7f7;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        opacity: 0;
+    `,
+  );
+
   sidebarContainer.appendChild(sidebarToggler);
   sidebarContainer.appendChild(tabsContainer);
   sidebarContainer.appendChild(contentContainer);
+  sidebarContainer.appendChild(sidebarOverlayContainer);
+  sidebarContainer.addEventListener('mouseover', () => {
+    sidebarOverlayContainer.style.right = null;
+    sidebarOverlayContainer.style.bottom = null;
+  });
 
   document.body.appendChild(sidebarContainer);
   flipSidebar(document, 'hide');
@@ -355,33 +355,6 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
   if (!container) {
     debug('did not find sidebar element');
   }
-
-  let sidebarOverlayContainer = document.createElement('div');
-  sidebarOverlayContainer.setAttribute(
-    'style',
-    `
-        z-index: ${STYLE_ZINDEX_MAX};
-        background: #f7f7f7;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        opacity: 0;
-    `,
-  );
-
-  const selectTabElement = (tabElement: HTMLElement): void => {
-    tabElement.style.backgroundColor = 'white';
-    tabElement.style.fontWeight = 'bold';
-    tabElement.style.borderColor = 'white';
-  };
-
-  const unselectTabElement = (tabElement: HTMLElement): void => {
-    tabElement.style.backgroundColor = STYLE_COLOR_UNSELECTED_TAB;
-    tabElement.style.fontWeight = 'normal';
-    tabElement.style.borderColor = STYLE_COLOR_UNSELECTED_TAB;
-  };
 
   // build a ui to switch between sub-tabs within the sidebar
   const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
@@ -409,212 +382,193 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
   sidebarTogglerWhenHidden.style.visibility = 'visible';
 
   // populate the sidebar and preview UIs with content from the response
-  let isThereADefault = sidebarTabs.some((sidebarTab) => sidebarTab.default);
+  const defaultIndex = sidebarTabs.findIndex(sidebarTab => sidebarTab.default);
   sidebarTabs.forEach(function (sidebarTab: ISidebarTab, idx) {
-    // preview element that lives outside the sidebar
-    let sidebarPreviewItem = document.createElement('div');
-    sidebarPreviewItem.appendChild(document.createTextNode(sidebarTab.title));
-    sidebarPreviewItem.setAttribute(
-      'style',
-      `
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: ${STYLE_PADDING_SMALL} 0;
-            font-weight: bold;
-        `,
-    );
-    sidebarPreviewItem.classList.add('sidebar_preview_item');
-    sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
+    const tab = addSubtab(document, sidebarTab);
 
-    // tabs that switch between different subtabs
-    let tabElement = document.createElement('span');
-    let contentIframe = document.createElement('iframe');
-
-    let pinElement = document.createElement("span")
-    pinElement.appendChild(document.createTextNode('📌'))
-    pinElement.setAttribute('style', `
-      margin-left: 5px;
-    `)
-    pinElement.addEventListener('click', () => {
-      
-      currentPinnedTab = mostRecentLumosUrl ? mostRecentLumosUrl : contentIframe.src
-      chrome.storage.sync.set({'pinnedTab': currentPinnedTab})
-
-      populateSidebar(document, getInitialTabs().concat(sidebarTabs.map((sidebarTab) => {
-        sidebarTab.default = true;
-        return sidebarTab;
-      })));
-      
-    })
-    
-    let unpinElement = document.createElement("span")
-    unpinElement.appendChild(document.createTextNode('❌'))
-    unpinElement.setAttribute('style', `
-      margin-left: 5px;
-    `)
-    unpinElement.addEventListener('click', () => {
-      localStorage.setItem('pinnedTab', '');
-      currentPinnedTab = ''
-      chrome.storage.sync.set({'pinnedTab': currentPinnedTab});
-      populateSidebar(document, sidebarTabs.slice(1).map((sidebarTab, idx) => {
-        if (idx === 0) {
-          sidebarTab.default = true;
-          return sidebarTab;
-        } else {
-          sidebarTab.default = false;
-          return sidebarTab
-        }
-      }))
-    })
-
-    tabElement.appendChild(document.createTextNode(sidebarTab.title));
-    if (sidebarTab.isPinnedTab) {
-      tabElement.appendChild(unpinElement);
-
-    } else if (sidebarTab.url.host === new URL(LUMOS_APP_BASE_URL).host) {
-      tabElement.appendChild(pinElement);
+    if (defaultIndex !== -1 || idx === 0) {
+      selectTabElement(tab);
     }
-    tabElement.setAttribute(
-      'style',
-      `
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: ${STYLE_FONT_SIZE_SMALL};
-            padding: ${STYLE_PADDING_MEDIUM} ${STYLE_PADDING_SMALL};
-            text-align: center;
-            color: ${STYLE_COLOR_TEXT};
-            background: ${STYLE_COLOR_UNSELECTED_TAB};
-            width: ${STYLE_WIDTH_SIDEBAR_TAB};
-            cursor: pointer;
-            border-radius: 10px 10px 0 0;
-        `,
-    );
-
-    // load the urls of the subtabs into iframes
-    
-    contentIframe.src = sidebarTab.url.href;
-    contentIframe.setAttribute(
-      'style',
-      `
-            width: 100%;
-            height: 100%;
-            border: none;
-        `,
-    );
-    contentIframe.addEventListener('load', (e) => {
-      debug('iframe loaded');
-      if (sidebarTab.default && document.body.clientWidth > MIN_CLIENT_WIDTH_AUTOSHOW) {
-        flipSidebar(document, 'show');
-      }
-    });
-
-    // set the default subtab
-    if (sidebarTab.default || (idx === 0 && !isThereADefault)) {
-      contentIframe.style.visibility = 'inherit';
-      contentIframe.style.height = '100%';
-      selectTabElement(tabElement);
-    } else {
-      contentIframe.style.visibility = 'hidden';
-    }
-
-    //  enable switching between tabs
-    tabElement.addEventListener('click', function (e) {
-      for (let child = tabsContainer.firstChild; child !== null; child = child.nextSibling) {
-        let castedChild = <HTMLElement>child;
-        unselectTabElement(castedChild);
-      }
-      for (let child = contentContainer.firstChild; child !== null; child = child.nextSibling) {
-        let castedChild = <HTMLElement>child;
-        castedChild.style.visibility = 'hidden';
-        castedChild.style.height = '0';
-      }
-      var clickedTab = <HTMLElement>(e.target || e.srcElement);
-
-      selectTabElement(clickedTab);
-      contentIframe.style.visibility = 'inherit';
-      contentIframe.style.height = '100%';
-    });
-
-    // insert tab and content into container
-    tabsContainer.appendChild(tabElement);
-    contentContainer.appendChild(contentIframe);
   });
-
-  container.appendChild(sidebarOverlayContainer);
-  container.addEventListener('mouseover', () => {
-    sidebarOverlayContainer.style.right = null;
-    sidebarOverlayContainer.style.bottom = null;
-  });
-  container.appendChild(tabsContainer);
-  container.appendChild(contentContainer);
 }
 
-function handleSubtabResponse(
-  url: URL,
-  document: Document,
-  response_json: Array<ISidebarResponseArrayObject>,
-): void {
-  if (!(url && document && response_json)) {
-    return;
+const tabElementIndex = (tabElement: HTMLElement) => {
+  const elements = Array.from(tabElement.parentElement.children);
+  return elements.indexOf(tabElement);
+};
+
+const selectTabElement = (tabElement: HTMLElement) => {
+  tabElement.style.backgroundColor = 'white';
+  tabElement.style.fontWeight = 'bold';
+  tabElement.style.borderColor = 'white';
+
+  const index = tabElementIndex(tabElement);
+
+  if (index >= 0) {
+    sidebarIframes[index].style.visibility = 'inherit';
+    sidebarIframes[index].style.height = '100%';
   }
-  // mutates document
-  debug('function call - handleSubtabResponse', url);
+};
 
-  // setup as many tabs as in response
-  if (!(response_json && response_json.length > 1)) {
-    debug('handleSubtabResponse - response json is invalid');
-    return;
+const unselectTabElement = (tabElement: HTMLElement) => {
+  tabElement.style.backgroundColor = STYLE_COLOR_UNSELECTED_TAB;
+  tabElement.style.fontWeight = 'normal';
+  tabElement.style.borderColor = STYLE_COLOR_UNSELECTED_TAB;
+};
+
+const unselectAllTabs = (tabsContainer: HTMLElement, contentContainer: HTMLElement) => {
+  for (let child = tabsContainer.firstChild; child !== null; child = child.nextSibling) {
+    let castedChild = <HTMLElement>child;
+    unselectTabElement(castedChild);
   }
 
-  let tabsFromPinning = getInitialTabs();
-  let sidebarTabs: Array<ISidebarTab> = tabsFromPinning;
+  for (let child = contentContainer.firstChild; child !== null; child = child.nextSibling) {
+    let castedChild = <HTMLElement>child;
+    castedChild.style.visibility = 'hidden';
+    castedChild.style.height = '0';
+  }
+};
 
-  response_json.forEach(function (responseTab: ISidebarResponseArrayObject) {
-    if (
-      responseTab.url === document.location.href ||
-      responseTab.url === document.location.origin ||
-      responseTab.url === document.location.origin + '/' ||
-      responseTab.url === null
-    ) {
-      return;
-    }
+const removeSidebarTab = (tabElement: HTMLElement) => {
+  const index = tabElementIndex(tabElement);
+
+  if (index >= 0) {
+    tabElement.remove();
+    sidebarIframes.splice(index, 1)?.[0].remove();
+  }
+};
+
+function addSubtab(document: HTMLDocument, sidebarTab: ISidebarTab, index: number = -1) {
+  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+  const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
+  let sidebarTogglerWhenHidden = document.getElementById(
+    CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW,
+  );
+
+  // preview element that lives outside the sidebar
+  let sidebarPreviewItem = document.createElement('div');
+  sidebarPreviewItem.appendChild(document.createTextNode(sidebarTab.title));
+  sidebarPreviewItem.setAttribute(
+    'style',
+    `
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: ${STYLE_PADDING_SMALL} 0;
+          font-weight: bold;
+      `,
+  );
+  sidebarPreviewItem.classList.add('sidebar_preview_item');
+  sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
   
-    let sidebarTab: ISidebarTab = {
-      title: responseTab.title,
-      url: new URL(responseTab.url),
-      default: (tabsFromPinning.length === 0) && responseTab.default,
-    };
-    sidebarTabs.push(sidebarTab);
+  let tabElement = document.createElement('span');
+  let contentIframe = document.createElement('iframe');
+
+  let pinElement = document.createElement("span")
+  pinElement.appendChild(document.createTextNode('📌'))
+  pinElement.setAttribute('style', `
+    margin-left: 5px;
+  `)
+  pinElement.addEventListener('click', () => {
+    const pinnedTab = sidebarTabsManager.pinSidebarTab(mostRecentLumosUrl ? mostRecentLumosUrl : contentIframe.src);
+    unselectAllTabs(tabsContainer, contentContainer);
+    selectTabElement(addSubtab(document, pinnedTab, 0));
+  })
+  
+  let unpinElement = document.createElement("span")
+  unpinElement.appendChild(document.createTextNode('❌'))
+  unpinElement.setAttribute('style', `
+    margin-left: 5px;
+  `);
+  unpinElement.addEventListener('click', () => {
+    const index = tabElementIndex(tabElement);
+    sidebarTabsManager.unpinSidebarTab(index);
+    removeSidebarTab(tabElement);
+    selectTabElement(<HTMLElement>tabsContainer.firstElementChild);
   });
 
-  if (sidebarTabs.length === 0) {
-    return;
-  }
+  tabElement.appendChild(document.createTextNode(sidebarTab.title));
+  if (sidebarTab.isPinnedTab) {
+    tabElement.appendChild(unpinElement);
 
-  populateSidebar(document, sidebarTabs);
+  } else if (sidebarTab.url.host === new URL(LUMOS_APP_BASE_URL).host) {
+    tabElement.appendChild(pinElement);
+  }
+  tabElement.setAttribute(
+    'style',
+    `
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: ${STYLE_FONT_SIZE_SMALL};
+          padding: ${STYLE_PADDING_MEDIUM} ${STYLE_PADDING_SMALL};
+          text-align: center;
+          color: ${STYLE_COLOR_TEXT};
+          background: ${STYLE_COLOR_UNSELECTED_TAB};
+          width: ${STYLE_WIDTH_SIDEBAR_TAB};
+          cursor: pointer;
+          border-radius: 10px 10px 0 0;
+      `,
+  );
+
+  // load the urls of the subtabs into iframes
+  
+  contentIframe.src = sidebarTab.url.href;
+  contentIframe.setAttribute(
+    'style',
+    `
+          width: 100%;
+          height: 100%;
+          border: none;
+      `,
+  );
+  contentIframe.addEventListener('load', (e) => {
+    debug('iframe loaded');
+    if (sidebarTab.default && document.body.clientWidth > MIN_CLIENT_WIDTH_AUTOSHOW) {
+      flipSidebar(document, 'show');
+    }
+  });
+
+  // set the default subtab
+  // if (sidebarTab.default || (idx === 0 && !isThereADefault)) {
+  //   contentIframe.style.visibility = 'inherit';
+  //   contentIframe.style.height = '100%';
+  //   selectTabElement(tabElement);
+  // } else {
+  //   contentIframe.style.visibility = 'hidden';
+  // }
+
+  //  enable switching between tabs
+  tabElement.addEventListener('click', function (e) {
+    const clickSrc = <HTMLElement>(e.target || e.srcElement);
+
+    if (clickSrc !== tabElement) {
+      return;
+    }
+    
+    unselectAllTabs(tabsContainer, contentContainer);
+    selectTabElement(clickSrc);
+  });
+
+  // insert tab and content into container
+  const children = tabsContainer.children;
+  const insertIndex = children.length > index ? index : -1;
+
+  if (index === -1) {
+    tabsContainer.appendChild(tabElement);
+    sidebarIframes.push(contentIframe);
+  } else {
+    tabsContainer.insertBefore(tabElement, children[insertIndex]);
+    sidebarIframes.splice(insertIndex, 0, contentIframe);
+  }
+  contentContainer.appendChild(contentIframe);
+
+  return tabElement;
 }
 
 function showLoginSubtabs(document: Document, url: URL): void {
-  const tabs: Array<ISidebarResponseArrayObject> = [
-    {
-      url: url.href,
-      preview_url: null,
-      default: false,
-      title: null,
-      readable_content: null,
-    },
-    {
-      url: LUMOS_APP_BASE_URL,
-      preview_url: null,
-      default: false,
-      title: LUMOS_SUBTAB_TITLE,
-      readable_content: null,
-    }
-  ];
-
-  handleSubtabResponse(url, document, tabs)
+  const tabs = sidebarTabsManager.loginSubtabs(url);
+  populateSidebar(document, tabs);
 }
 
 export function reloadSidebar(document: Document, url: URL, user: User): void {
@@ -631,33 +585,28 @@ export function reloadSidebar(document: Document, url: URL, user: User): void {
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
   // mutates document
 
-  
-
   if (user) {
-    
+    const sidebarTabs = sidebarTabsManager.getPinnedTabs();
     runFunctionWhenDocumentReady(document, () => {
-      let sidebarTabs = getInitialTabs();
-      if (sidebarTabs && sidebarTabs.length > 0) {
+      if (sidebarTabs?.length > 0) {
         if (!isSidebarLoaded(document)) {
           createSidebar(document);
         }
         populateSidebar(document, sidebarTabs);
         flipSidebar(document, 'show');
       }
-    })
-
-    const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id);
-    postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' }).then(function (
-      response_json: Array<ISidebarResponseArrayObject>,
-    ) {
-      runFunctionWhenDocumentReady(document, () => {
-        if (!isSidebarLoaded(document)) {
-          createSidebar(document);
-        }
-
-        handleSubtabResponse(url, document, response_json);
-      });
     });
+
+    sidebarTabsManager.fetchSubtabs(user, url, sidebarTabs.length !== 0)
+      .then(sidebarTabs => {
+        runFunctionWhenDocumentReady(document, () => {
+          if (!isSidebarLoaded(document)) {
+            createSidebar(document);
+          }
+
+          sidebarTabs.forEach(sidebarTab => addSubtab(document, sidebarTab));
+        });
+      });
   } else {
     runFunctionWhenDocumentReady(document, () => {
       showLoginSubtabs(document, url)
