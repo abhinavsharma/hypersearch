@@ -7,6 +7,7 @@ import {
 import { postAPI } from './helpers';
 
 const APP_SUBTAB_TITLE = 'Insight';
+const PINNED_TABS_KEY = 'pinnedTabs';
 const MAX_PINNED_TABS = 2;
 
 const handleSubtabResponse = (
@@ -60,12 +61,17 @@ const pinnedTabWirhURL = (url: string) => ({
   isPinnedTab: true,
 });
 
+const syncPinnedTabs = (tabs: string[]) => {
+  chrome.storage.sync.set({[PINNED_TABS_KEY]: tabs})
+};
+
 export default class SidebarTabsManager {
   currentPinnedTabs: string[];
 
   constructor() {
-    chrome.storage.sync.get(['pinnedTab'], (result) => {
-      this.currentPinnedTabs = Array.isArray(result.pinnedTab) ? result.pinnedTab : [result.pinnedTab];
+    chrome.storage.sync.get([PINNED_TABS_KEY], (result) => {
+      const pinnedTabs = result[PINNED_TABS_KEY] ?? [];
+      this.currentPinnedTabs = Array.isArray(pinnedTabs) ? pinnedTabs : [pinnedTabs];
     })
   }
 
@@ -96,13 +102,17 @@ export default class SidebarTabsManager {
     return handleSubtabResponse(url, document, tabs, false)
   }
 
+  hasMaxPinnedTabs() {
+    return this.currentPinnedTabs.length === MAX_PINNED_TABS;
+  }
+
   pinSidebarTab(url: string) {
     if (this.currentPinnedTabs.length >= MAX_PINNED_TABS) {
       return;
     }
 
     this.currentPinnedTabs.unshift(url);
-    chrome.storage.sync.set({'pinnedTab': this.currentPinnedTabs})
+    syncPinnedTabs(this.currentPinnedTabs);
 
     if (url) {
       return pinnedTabWirhURL(url);
@@ -115,6 +125,7 @@ export default class SidebarTabsManager {
     }
 
     this.currentPinnedTabs.splice(index, 1);
+    syncPinnedTabs(this.currentPinnedTabs);
   }
 
   getPinnedTabs(): ISidebarTab[] {

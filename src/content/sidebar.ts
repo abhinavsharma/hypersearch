@@ -184,12 +184,8 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW;
 
   let sidebarTogglerWhenVisible = document.createElement('div');
-  let xNode = document.createElement("div")
+  let xNode = document.createElement('div')
   xNode.appendChild(document.createTextNode('×'))
-  xNode.setAttribute("style", `
-    top: 6px;
-    position: absolute;
-  `)
   sidebarTogglerWhenVisible.appendChild(xNode);
   sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
 
@@ -217,6 +213,7 @@ export function createSidebar(document: Document) {
     'style',
     `
         cursor: pointer;
+        z-index: 1;
     `,
   );
 
@@ -240,6 +237,8 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenVisible.setAttribute(
     'style',
     `
+        display: flex;
+        align-items: center;
         position: absolute;
         left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
         top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
@@ -384,9 +383,9 @@ export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarT
   // populate the sidebar and preview UIs with content from the response
   const defaultIndex = sidebarTabs.findIndex(sidebarTab => sidebarTab.default);
   sidebarTabs.forEach(function (sidebarTab: ISidebarTab, idx) {
-    const tab = addSubtab(document, sidebarTab);
+    const tab = addSidebarTab(document, sidebarTab);
 
-    if (defaultIndex !== -1 || idx === 0) {
+    if (defaultIndex === idx || (defaultIndex === -1 && idx === 0)) {
       selectTabElement(tab);
     }
   });
@@ -438,7 +437,7 @@ const removeSidebarTab = (tabElement: HTMLElement) => {
   }
 };
 
-function addSubtab(document: HTMLDocument, sidebarTab: ISidebarTab, index: number = -1) {
+function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: number = -1) {
   const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
   const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
   let sidebarTogglerWhenHidden = document.getElementById(
@@ -471,8 +470,13 @@ function addSubtab(document: HTMLDocument, sidebarTab: ISidebarTab, index: numbe
   `)
   pinElement.addEventListener('click', () => {
     const pinnedTab = sidebarTabsManager.pinSidebarTab(mostRecentLumosUrl ? mostRecentLumosUrl : contentIframe.src);
+
+    if (!pinnedTab) {
+      return;
+    }
+
     unselectAllTabs(tabsContainer, contentContainer);
-    selectTabElement(addSubtab(document, pinnedTab, 0));
+    selectTabElement(addSidebarTab(document, pinnedTab, 0));
   })
   
   let unpinElement = document.createElement("span")
@@ -604,7 +608,7 @@ export function loadOrUpdateSidebar(document: Document, url: URL, user: User): v
             createSidebar(document);
           }
 
-          sidebarTabs.forEach(sidebarTab => addSubtab(document, sidebarTab));
+          sidebarTabs.forEach(sidebarTab => addSidebarTab(document, sidebarTab));
         });
       });
   } else {
