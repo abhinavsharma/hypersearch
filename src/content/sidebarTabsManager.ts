@@ -8,7 +8,7 @@ import { postAPI } from './helpers';
 
 const APP_SUBTAB_TITLE = 'Insight';
 const PINNED_TABS_KEY = 'pinnedTabs';
-const MAX_PINNED_TABS = 2;
+const MAX_PINNED_TABS = 1;
 
 const handleSubtabResponse = (
   url: URL,
@@ -39,7 +39,7 @@ const handleSubtabResponse = (
       return;
     }
   
-    let sidebarTab: ISidebarTab = {
+    const sidebarTab: ISidebarTab = {
       title: responseTab.title,
       url: new URL(responseTab.url),
       default: !hasInitialSubtabs && responseTab.default,
@@ -47,14 +47,10 @@ const handleSubtabResponse = (
     sidebarTabs.push(sidebarTab);
   });
 
-  if (sidebarTabs.length === 0) {
-    return;
-  }
-
   return sidebarTabs;
 }
 
-const pinnedTabWirhURL = (url: string) => ({
+const pinnedTabWithURL = (url: string) => ({
   title: 'Pinned',
   url: new URL(url),
   default: true,
@@ -115,7 +111,7 @@ export default class SidebarTabsManager {
     syncPinnedTabs(this.currentPinnedTabs);
 
     if (url) {
-      return pinnedTabWirhURL(url);
+      return pinnedTabWithURL(url);
     }
   }
 
@@ -129,9 +125,9 @@ export default class SidebarTabsManager {
   }
 
   getPinnedTabs(): ISidebarTab[] {
-    let pinnedTabUrl = this.currentPinnedTabs;
+    const pinnedTabUrl = this.currentPinnedTabs;
     if (pinnedTabUrl?.length > 0) {
-      return this.currentPinnedTabs.map(url => pinnedTabWirhURL(url));
+      return this.currentPinnedTabs.map(url => pinnedTabWithURL(url));
     }
     return [];
   }

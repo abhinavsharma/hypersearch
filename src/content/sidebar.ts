@@ -28,6 +28,7 @@ import {
   STYLE_COLOR_LUMOS_DARK_ORANGE,
   LUMOS_APP_BASE_URL,
   STYLE_COLOR_UNSELECTED_TAB,
+  CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER,
 } from 'lumos-shared-js';
 import { runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants';
@@ -36,22 +37,21 @@ import SidebarTabsManager from './sidebarTabsManager';
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
 
 let mostRecentLumosUrl = null;
-
 const sidebarTabsManager = new SidebarTabsManager();
 const sidebarIframes = [];
 
 function isVisible(document: Document): boolean {
-  let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
+  const sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
   return sidebarContainer.style.width == STYLE_WIDTH_SIDEBAR ? true : false;
 }
 
 function flipSidebar(document: Document, force?: string): void {
-  let sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-  let serpOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY);
-  let showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
-  let hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
-  let tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
-  let contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
+  const sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
+  const serpOverlayContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY);
+  const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+  const hideButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE);
+  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+  const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
 
   if ((force && force == 'hide') || (isVisible(document) && force !== 'show')) {
     // hide sidebar
@@ -102,7 +102,7 @@ export function createSidebar(document: Document) {
     false,
   );
 
-  let serpOverlayContainer = document.createElement('div');
+  const serpOverlayContainer = document.createElement('div');
   serpOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
   serpOverlayContainer.setAttribute(
     'style',
@@ -123,7 +123,7 @@ export function createSidebar(document: Document) {
     flipSidebar(document);
   });
   document.body.appendChild(serpOverlayContainer);
-  let sidebarContainer = document.createElement('div');
+  const sidebarContainer = document.createElement('div');
   sidebarContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR;
 
   sidebarContainer.setAttribute(
@@ -149,10 +149,11 @@ export function createSidebar(document: Document) {
   );
 
   // For dismissing the sidebar
-  let sidebarToggler = document.createElement('div');
-  let sidebarTogglerWhenHidden = document.createElement('div');
-  let lumosLogoTitle = document.createElement('div');
-  let lumosLogo = document.createElement('img');
+  const sidebarToggler = document.createElement('div');
+  const sidebarTogglerWhenHidden = document.createElement('div');
+  const sidebarTogglerPreviewContainer = document.createElement('div');
+  const lumosLogoTitle = document.createElement('div');
+  const lumosLogo = document.createElement('img');
   lumosLogo.src = chrome.extension.getURL('logo128.png');
   lumosLogoTitle.setAttribute(
     'style',
@@ -168,7 +169,7 @@ export function createSidebar(document: Document) {
         width: ${STYLE_WIDTH_SIDEBAR_TAB_LEFT};
     `,
   );
-  let lumosTitle = document.createElement('div');
+  const lumosTitle = document.createElement('div');
   lumosTitle.setAttribute(
     'style',
     `
@@ -181,16 +182,18 @@ export function createSidebar(document: Document) {
   lumosLogoTitle.appendChild(lumosLogo);
   lumosLogoTitle.appendChild(lumosTitle);
   sidebarTogglerWhenHidden.appendChild(lumosLogoTitle);
+  sidebarTogglerWhenHidden.appendChild(sidebarTogglerPreviewContainer);
   sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW;
+  sidebarTogglerPreviewContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER;
 
-  let sidebarTogglerWhenVisible = document.createElement('div');
-  let xNode = document.createElement('div')
+  const sidebarTogglerWhenVisible = document.createElement('div');
+  const xNode = document.createElement('div')
   xNode.appendChild(document.createTextNode('×'))
   sidebarTogglerWhenVisible.appendChild(xNode);
   sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
 
   // build a ui to switch between sub-tabs within the sidebar
-  let tabsContainer = document.createElement('div');
+  const tabsContainer = document.createElement('div');
   tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS;
   tabsContainer.setAttribute(
     'style', 
@@ -200,7 +203,7 @@ export function createSidebar(document: Document) {
         padding: 5px 0 0 20px;
     `
   );
-  let contentContainer = document.createElement('div');
+  const contentContainer = document.createElement('div');
   contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT;
   contentContainer.setAttribute(
     'style',
@@ -280,7 +283,7 @@ export function createSidebar(document: Document) {
       sidebarContainer.style.visibility === 'visible' &&
       (e.key === 'ArrowRight' || e.key === 'ArrowLeft')
     ) {
-      let tabContainer = document.getElementById('lumos_sidebar_tabs');
+      const tabContainer = document.getElementById('lumos_sidebar_tabs');
       if (tabContainer) {
         let selectedChild: HTMLElement;
         let next: Element;
@@ -292,7 +295,7 @@ export function createSidebar(document: Document) {
         }
 
         tabContainer.childNodes.forEach((child, i) => {
-          let c = child as HTMLElement;
+          const c = child as HTMLElement;
           if (c.style.backgroundColor == 'white') {
             selectedChild = c;
             prev = c.previousElementSibling
@@ -345,53 +348,16 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenHidden.style.visibility = 'hidden';
 }
 
-export function populateSidebar(document: Document, sidebarTabs: Array<ISidebarTab>): void {
-  // mutates document
-
-  // check if sidebar has been created
-  debug('function call - populateSidebar: ', sidebarTabs);
-  let container = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-  if (!container) {
-    debug('did not find sidebar element');
+function addElementAt(container: HTMLElement, element: HTMLElement, index: number) {
+  const children = container.children;
+  if (children.length === 0 || index === -1) {
+    container.appendChild(element);
+  } else {
+    container.insertBefore(element, children[index]);
   }
+};
 
-  // build a ui to switch between sub-tabs within the sidebar
-  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
-  const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
-
-  // Cleaning old content before adding new
-  while (tabsContainer.firstChild) {
-    tabsContainer.removeChild(tabsContainer.firstChild);
-  }
-
-  while (contentContainer.firstChild) {
-    contentContainer.removeChild(contentContainer.firstChild);
-  }
-
-  // create a ui to preview the sidebar when it is hidden
-  let sidebarTogglerWhenHidden = document.getElementById(
-    CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW,
-  );
-  Array.from(sidebarTogglerWhenHidden.getElementsByClassName('sidebar_preview_item')).forEach(
-    (e) => {
-      e.parentNode.removeChild(e);
-    },
-  );
-  // special case: we only show this once we are sure there are alternative pages
-  sidebarTogglerWhenHidden.style.visibility = 'visible';
-
-  // populate the sidebar and preview UIs with content from the response
-  const defaultIndex = sidebarTabs.findIndex(sidebarTab => sidebarTab.default);
-  sidebarTabs.forEach(function (sidebarTab: ISidebarTab, idx) {
-    const tab = addSidebarTab(document, sidebarTab);
-
-    if (defaultIndex === idx || (defaultIndex === -1 && idx === 0)) {
-      selectTabElement(tab);
-    }
-  });
-}
-
-const tabElementIndex = (tabElement: HTMLElement) => {
+function tabElementIndex(tabElement: HTMLElement) {
   const elements = Array.from(tabElement.parentElement.children);
   return elements.indexOf(tabElement);
 };
@@ -417,12 +383,12 @@ const unselectTabElement = (tabElement: HTMLElement) => {
 
 const unselectAllTabs = (tabsContainer: HTMLElement, contentContainer: HTMLElement) => {
   for (let child = tabsContainer.firstChild; child !== null; child = child.nextSibling) {
-    let castedChild = <HTMLElement>child;
+    const castedChild = <HTMLElement>child;
     unselectTabElement(castedChild);
   }
 
   for (let child = contentContainer.firstChild; child !== null; child = child.nextSibling) {
-    let castedChild = <HTMLElement>child;
+    const castedChild = <HTMLElement>child;
     castedChild.style.visibility = 'hidden';
     castedChild.style.height = '0';
   }
@@ -437,15 +403,34 @@ const removeSidebarTab = (tabElement: HTMLElement) => {
   }
 };
 
+function loadSidebarTabs(sidebarTabs: ISidebarTab[]) {
+  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+  const selectDefault = tabsContainer.children.length === 0;
+  const defaultIndex = selectDefault && sidebarTabs.findIndex(sidebarTab => sidebarTab.default);
+
+  sidebarTabs.forEach(function (sidebarTab: ISidebarTab, idx) {
+    const tab = addSidebarTab(document, sidebarTab);
+
+    if (selectDefault) {
+      if (defaultIndex === idx || (defaultIndex === -1 && idx === 0)) {
+        selectTabElement(tab);
+      }
+    }
+  });
+}
+
 function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: number = -1) {
   const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
   const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
-  let sidebarTogglerWhenHidden = document.getElementById(
+  const sidebarTogglerPreviewContainer = document.getElementById(
+    CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER,
+  );
+  const sidebarTogglerWhenHidden = document.getElementById(
     CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW,
   );
 
   // preview element that lives outside the sidebar
-  let sidebarPreviewItem = document.createElement('div');
+  const sidebarPreviewItem = document.createElement('div');
   sidebarPreviewItem.appendChild(document.createTextNode(sidebarTab.title));
   sidebarPreviewItem.setAttribute(
     'style',
@@ -458,12 +443,11 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
       `,
   );
   sidebarPreviewItem.classList.add('sidebar_preview_item');
-  sidebarTogglerWhenHidden.appendChild(sidebarPreviewItem);
+  addElementAt(sidebarTogglerPreviewContainer, sidebarPreviewItem, index );
   
-  let tabElement = document.createElement('span');
-  let contentIframe = document.createElement('iframe');
-
-  let pinElement = document.createElement("span")
+  const tabElement = document.createElement('span');
+  const contentIframe = document.createElement('iframe');
+  const pinElement = document.createElement('span')
   pinElement.appendChild(document.createTextNode('📌'))
   pinElement.setAttribute('style', `
     margin-left: 5px;
@@ -479,7 +463,7 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
     selectTabElement(addSidebarTab(document, pinnedTab, 0));
   })
   
-  let unpinElement = document.createElement("span")
+  const unpinElement = document.createElement('span')
   unpinElement.appendChild(document.createTextNode('❌'))
   unpinElement.setAttribute('style', `
     margin-left: 5px;
@@ -487,8 +471,15 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
   unpinElement.addEventListener('click', () => {
     const index = tabElementIndex(tabElement);
     sidebarTabsManager.unpinSidebarTab(index);
+    sidebarPreviewItem.remove();
     removeSidebarTab(tabElement);
-    selectTabElement(<HTMLElement>tabsContainer.firstElementChild);
+    
+    if (tabsContainer.children.length === 0) {  
+      flipSidebar(document, 'hide');
+      sidebarTogglerWhenHidden.style.visibility = 'hidden';
+    } else {
+      selectTabElement(<HTMLElement>tabsContainer.firstElementChild);
+    }
   });
 
   tabElement.appendChild(document.createTextNode(sidebarTab.title));
@@ -526,21 +517,6 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
           border: none;
       `,
   );
-  contentIframe.addEventListener('load', (e) => {
-    debug('iframe loaded');
-    if (sidebarTab.default && document.body.clientWidth > MIN_CLIENT_WIDTH_AUTOSHOW) {
-      flipSidebar(document, 'show');
-    }
-  });
-
-  // set the default subtab
-  // if (sidebarTab.default || (idx === 0 && !isThereADefault)) {
-  //   contentIframe.style.visibility = 'inherit';
-  //   contentIframe.style.height = '100%';
-  //   selectTabElement(tabElement);
-  // } else {
-  //   contentIframe.style.visibility = 'hidden';
-  // }
 
   //  enable switching between tabs
   tabElement.addEventListener('click', function (e) {
@@ -554,35 +530,56 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
     selectTabElement(clickSrc);
   });
 
-  // insert tab and content into container
-  const children = tabsContainer.children;
-  const insertIndex = children.length > index ? index : -1;
-
-  if (index === -1) {
-    tabsContainer.appendChild(tabElement);
-    sidebarIframes.push(contentIframe);
-  } else {
-    tabsContainer.insertBefore(tabElement, children[insertIndex]);
-    sidebarIframes.splice(insertIndex, 0, contentIframe);
-  }
+  // insert tab and content into containers
+  addElementAt(tabsContainer, tabElement, index);
+  sidebarIframes.splice(index !== -1 ? index : sidebarIframes.length, 0, contentIframe);
   contentContainer.appendChild(contentIframe);
 
   return tabElement;
 }
 
 function showLoginSubtabs(document: Document, url: URL): void {
-  const tabs = sidebarTabsManager.loginSubtabs(url);
-  populateSidebar(document, tabs);
+  loadSidebarIfNeeded(document);
+  loadSidebarTabs(sidebarTabsManager.loginSubtabs(url));
+  flipSidebar(document, 'show');
+}
+
+function loadSidebarIfNeeded(document: Document) {
+  if (!isSidebarLoaded(document)) {
+    createSidebar(document);
+  };
+}
+
+function removeAllSidebarTabs(document: Document) {
+  const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
+  const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
+  const sidebarTogglerPreviewContainer = document.getElementById(
+    CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER,
+  );
+
+  // Cleaning old content before adding new
+  while (tabsContainer.firstChild) {
+    tabsContainer.removeChild(tabsContainer.firstChild);
+  }
+
+  while (contentContainer.firstChild) {
+    contentContainer.removeChild(contentContainer.firstChild);
+  }
+
+  while (sidebarTogglerPreviewContainer.firstChild) {
+    sidebarTogglerPreviewContainer.removeChild(sidebarTogglerPreviewContainer.firstChild);
+  }
 }
 
 export function reloadSidebar(document: Document, url: URL, user: User): void {
-  flipSidebar(document, "hide");
-
+  flipSidebar(document, 'hide');
+  
   // Making sure showButton is hidden before reloading sidebar
   // in case it should not appear anymore
   const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
-  showButton.style.visibility = "hidden";
+  showButton.style.visibility = 'hidden';
 
+  removeAllSidebarTabs(document);
   loadOrUpdateSidebar(document, url, user);
 }
 
@@ -590,25 +587,32 @@ export function loadOrUpdateSidebar(document: Document, url: URL, user: User): v
   // mutates document
 
   if (user) {
-    const sidebarTabs = sidebarTabsManager.getPinnedTabs();
+    const loadSidebarTabsAndShowSidebar = (
+      document: HTMLDocument,
+      tabs: ISidebarTab[],
+      showSidebar: boolean
+    ) => {
+      loadSidebarIfNeeded(document);
+      loadSidebarTabs(tabs);
+      showSidebar && flipSidebar(document, 'show');
+    };
+
+    const initialTabs = sidebarTabsManager.getPinnedTabs();
     runFunctionWhenDocumentReady(document, () => {
-      if (sidebarTabs?.length > 0) {
-        if (!isSidebarLoaded(document)) {
-          createSidebar(document);
-        }
-        populateSidebar(document, sidebarTabs);
-        flipSidebar(document, 'show');
+      if (initialTabs?.length > 0) {
+        loadSidebarTabsAndShowSidebar(document, initialTabs, true);
       }
     });
 
-    sidebarTabsManager.fetchSubtabs(user, url, sidebarTabs.length !== 0)
+    const hasInitialTabs = initialTabs.length !== 0;
+    sidebarTabsManager.fetchSubtabs(user, url, hasInitialTabs)
       .then(sidebarTabs => {
-        runFunctionWhenDocumentReady(document, () => {
-          if (!isSidebarLoaded(document)) {
-            createSidebar(document);
-          }
+        if (!sidebarTabs?.length) {
+          return;
+        }
 
-          sidebarTabs.forEach(sidebarTab => addSidebarTab(document, sidebarTab));
+        runFunctionWhenDocumentReady(document, () => {
+          loadSidebarTabsAndShowSidebar(document, sidebarTabs, !hasInitialTabs);
         });
       });
   } else {
