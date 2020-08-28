@@ -102,6 +102,11 @@ export default class SidebarTabsManager {
     return this.currentPinnedTabs.length === MAX_PINNED_TABS;
   }
 
+  updatedPinnedTabUrl(url: string, index: number) {
+    this.currentPinnedTabs[index] = url;
+    syncPinnedTabs(this.currentPinnedTabs);
+  }
+
   pinSidebarTab(url: string) {
     if (this.currentPinnedTabs.length >= MAX_PINNED_TABS) {
       return;

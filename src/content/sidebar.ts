@@ -87,21 +87,6 @@ function isSidebarLoaded(document): boolean {
 export function createSidebar(document: Document) {
   debug('function call - createSidebar');
 
-  window.addEventListener(
-    'message',
-    (msg) => {
-      if (msg.data && msg.data.command) {
-        const { data } = msg;
-        switch (data.command) {
-          case LUMOS_WEB_MESSAGES.WEB_CONTENT_URL_UPDATED:
-            mostRecentLumosUrl = data.updatedUrl;
-            break;
-        }
-      }
-    },
-    false,
-  );
-
   const serpOverlayContainer = document.createElement('div');
   serpOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
   serpOverlayContainer.setAttribute(
@@ -461,7 +446,33 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
 
     unselectAllTabs(tabsContainer, contentContainer);
     selectTabElement(addSidebarTab(document, pinnedTab, 0));
-  })
+  });
+
+  const listenUrlUpdate = (msg: MessageEvent) => {
+    if (msg.data && msg.data.command) {
+      const { data } = msg;
+      switch (data.command) {
+        case LUMOS_WEB_MESSAGES.WEB_CONTENT_URL_UPDATED:
+          if (msg.source as any !== contentIframe.contentWindow) {
+            return;
+          }
+
+          const index = tabElementIndex(tabElement);
+          if (sidebarTab.isPinnedTab) {
+            sidebarTabsManager.updatedPinnedTabUrl(data.updatedUrl, index);
+          } else {
+            mostRecentLumosUrl = data.updatedUrl;
+          }
+          break;
+      }
+    }
+  };
+
+  window.addEventListener(
+    'message',
+    listenUrlUpdate,
+    false,
+  );
   
   const unpinElement = document.createElement('span')
   unpinElement.appendChild(document.createTextNode('❌'))
@@ -473,13 +484,15 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
     sidebarTabsManager.unpinSidebarTab(index);
     sidebarPreviewItem.remove();
     removeSidebarTab(tabElement);
-    
+
     if (tabsContainer.children.length === 0) {  
       flipSidebar(document, 'hide');
       sidebarTogglerWhenHidden.style.visibility = 'hidden';
     } else {
       selectTabElement(<HTMLElement>tabsContainer.firstElementChild);
     }
+
+    window.removeEventListener('message', listenUrlUpdate);
   });
 
   tabElement.appendChild(document.createTextNode(sidebarTab.title));
@@ -517,6 +530,12 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, index: n
           border: none;
       `,
   );
+  contentIframe.addEventListener('load', () => {
+    debug('iframe loaded');
+    if (sidebarTab.default && document.body.clientWidth > MIN_CLIENT_WIDTH_AUTOSHOW) {
+      flipSidebar(document, 'show');
+    }
+  });
 
   //  enable switching between tabs
   tabElement.addEventListener('click', function (e) {
@@ -604,15 +623,14 @@ export function loadOrUpdateSidebar(document: Document, url: URL, user: User): v
       }
     });
 
-    const hasInitialTabs = initialTabs.length !== 0;
-    sidebarTabsManager.fetchSubtabs(user, url, hasInitialTabs)
+    sidebarTabsManager.fetchSubtabs(user, url, initialTabs.length !== 0)
       .then(sidebarTabs => {
         if (!sidebarTabs?.length) {
           return;
         }
 
         runFunctionWhenDocumentReady(document, () => {
-          loadSidebarTabsAndShowSidebar(document, sidebarTabs, !hasInitialTabs);
+          loadSidebarTabsAndShowSidebar(document, sidebarTabs, false);
         });
       });
   } else {
