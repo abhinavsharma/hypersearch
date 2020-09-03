@@ -105,7 +105,7 @@ export function createSidebar(document: Document) {
     `,
   );
   serpOverlayContainer.addEventListener('click', () => {
-    flipSidebar(document);
+    flipSidebar(document, 'hide');
   });
   document.body.appendChild(serpOverlayContainer);
   const sidebarContainer = document.createElement('div');
@@ -241,28 +241,14 @@ export function createSidebar(document: Document) {
   );
 
   sidebarTogglerWhenHidden.addEventListener('click', function (e) {
-    flipSidebar(document);
+    flipSidebar(document, 'show');
   });
   sidebarTogglerWhenVisible.addEventListener('click', function (e) {
-    flipSidebar(document);
+    flipSidebar(document, 'hide');
   });
 
   sidebarToggler.appendChild(sidebarTogglerWhenVisible);
   document.body.appendChild(sidebarTogglerWhenHidden);
-
-  document.onkeypress = function (e: KeyboardEvent) {
-    if (e.key === '\\') {
-      if (
-        !(
-          document.activeElement.nodeName == 'TEXTAREA' ||
-          document.activeElement.nodeName == 'INPUT' ||
-          document.activeElement.nodeName == 'DIV'
-        )
-      ) {
-        flipSidebar(document);
-      }
-    }
-  };
   document.onkeydown = function (e: KeyboardEvent) {
     if (
       sidebarContainer.style.visibility === 'visible' &&
