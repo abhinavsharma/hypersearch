@@ -25,10 +25,11 @@ import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS,
   STYLE_PADDING_XLARGE,
-  STYLE_COLOR_LUMOS_DARK_ORANGE,
   LUMOS_APP_BASE_URL,
   STYLE_COLOR_UNSELECTED_TAB,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER,
+  RESET_CSS,
+  STYLE_COLOR_TEXT_MEDIUM,
 } from 'lumos-shared-js';
 import { runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants';
@@ -129,7 +130,7 @@ export function createSidebar(document: Document) {
         transition-property: all;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-        border-left: 3px solid ${STYLE_COLOR_LUMOS_DARK_ORANGE};
+        border-left: 3px solid ${STYLE_COLOR_TEXT_MEDIUM};
     `,
   );
 
@@ -173,6 +174,11 @@ export function createSidebar(document: Document) {
 
   const sidebarTogglerWhenVisible = document.createElement('div');
   const xNode = document.createElement('div')
+  xNode.setAttribute('style', `
+    position: absolute;
+    left: 5px;
+    top: -2px;
+  `)
   xNode.appendChild(document.createTextNode('×'))
   sidebarTogglerWhenVisible.appendChild(xNode);
   sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
@@ -208,35 +214,35 @@ export function createSidebar(document: Document) {
   sidebarTogglerWhenHidden.setAttribute(
     'style',
     `
-        position: fixed;
-        right: 0;
-        bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
-        max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
-        padding: ${STYLE_PADDING_XLARGE};
-        border: 3px solid ${STYLE_COLOR_LUMOS_DARK_ORANGE};
-        background: white;
-        border-right: none;
-        border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL};
-        font-size: ${STYLE_FONT_SIZE_SMALL};
-        z-index: ${STYLE_ZINDEX_MAX};
-        cursor: pointer;
+      ${RESET_CSS}
+      position: fixed;
+      right: 0;
+      bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
+      max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
+      padding: ${STYLE_PADDING_XLARGE};
+      border: 3px solid ${STYLE_COLOR_TEXT_MEDIUM};
+      background: white;
+      border-right: none;
+      border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL};
+      font-size: ${STYLE_FONT_SIZE_SMALL};
+      z-index: ${STYLE_ZINDEX_MAX};
+      cursor: pointer;
     `,
   );
   sidebarTogglerWhenVisible.setAttribute(
     'style',
     `
-        display: flex;
-        align-items: center;
-        position: absolute;
-        left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
-        top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
-        height: 10px;
-        width: 10px;
-        border: 3px solid ${STYLE_COLOR_LUMOS_DARK_ORANGE};
-        background: white;
-        border-radius: 50%;
-        font-size: ${STYLE_FONT_SIZE_LARGE};
-        padding: ${STYLE_PADDING_MEDIUM};
+      ${RESET_CSS}
+      display: flex;
+      align-items: center;
+      position: absolute;
+      left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
+      top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
+      border: 3px solid ${STYLE_COLOR_TEXT_MEDIUM};
+      background: white;
+      border-radius: 50%;
+      font-size: ${STYLE_FONT_SIZE_LARGE};
+      padding: ${STYLE_PADDING_MEDIUM};
     `,
   );
 
