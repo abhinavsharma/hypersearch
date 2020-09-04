@@ -115,8 +115,8 @@ export function createSidebar(document: Document) {
   sidebarContainer.setAttribute(
     'style',
     `
+        ${RESET_CSS}
         position: fixed;
-
         /* side  of screen */
         right: 0;
         border-right: 1px solid ${STYLE_COLOR_BORDER};
@@ -140,19 +140,10 @@ export function createSidebar(document: Document) {
   const sidebarTogglerPreviewContainer = document.createElement('div');
   const lumosLogoTitle = document.createElement('div');
   const lumosLogo = document.createElement('img');
-  lumosLogo.src = chrome.extension.getURL('logo128.png');
   lumosLogoTitle.setAttribute(
     'style',
     `
         border-bottom: 0.5px solid #bbb;
-    `,
-  );
-  lumosLogo.setAttribute(
-    'style',
-    `
-        display: inline-block;
-        margin-left: ${STYLE_PADDING_SMALL};
-        width: ${STYLE_WIDTH_SIDEBAR_TAB_LEFT};
     `,
   );
   const lumosTitle = document.createElement('div');
@@ -164,8 +155,7 @@ export function createSidebar(document: Document) {
         max-width: ${STYLE_WIDTH_SIDEBAR_TAB_RIGHT};
     `,
   );
-  lumosTitle.appendChild(document.createTextNode('Alternatives (press \\)'));
-  lumosLogoTitle.appendChild(lumosLogo);
+  lumosTitle.appendChild(document.createTextNode('Alternatives'));
   lumosLogoTitle.appendChild(lumosTitle);
   sidebarTogglerWhenHidden.appendChild(lumosLogoTitle);
   sidebarTogglerWhenHidden.appendChild(sidebarTogglerPreviewContainer);
