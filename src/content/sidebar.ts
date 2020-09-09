@@ -30,6 +30,7 @@ import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER,
   RESET_CSS,
   STYLE_COLOR_TEXT_MEDIUM,
+  serpUrlToSearchText,
 } from 'lumos-shared-js';
 import { runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
@@ -375,13 +376,16 @@ function loadSidebarTabs(sidebarTabs: ISidebarTab[]) {
   const contentContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT);
   const selectDefault = tabsContainer.children.length === 0;
   const defaultIndex = selectDefault && sidebarTabs.findIndex(sidebarTab => sidebarTab.default);
+  const isNotSerp = !serpUrlToSearchText(new URL(window.location.href));
 
   sidebarTabs.forEach(function (sidebarTab: ISidebarTab, idx) {
     const isDefault = selectDefault && defaultIndex === idx;
-    const isRecentlyVisited = sidebarTabsManager.isTabRecentlyVisited(sidebarTab.url.href);
+    const isRecentlyVisited = isNotSerp && sidebarTabsManager.isTabRecentlyVisited(sidebarTab.url.href);
     const tab = addSidebarTab(document, sidebarTab, isDefault && !isRecentlyVisited);
 
-    sidebarTabsManager.tabVisited(sidebarTab.url.href);
+    if (isNotSerp) {
+      sidebarTabsManager.tabVisited(sidebarTab.url.href);
+    }
 
     if (isDefault || (defaultIndex === -1 && idx === 0)) {
       unselectAllTabs(tabsContainer, contentContainer);
