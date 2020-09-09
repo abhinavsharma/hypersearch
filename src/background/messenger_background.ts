@@ -8,7 +8,7 @@ import {
   CLIENT_MESSAGES,
   LUMOS_SERP_CONFIG,
 } from 'lumos-shared-js';
-import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants';
+import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
 import { URL_TO_TAB } from './background';
 
 import uuidv1 = require('uuid/v1');
