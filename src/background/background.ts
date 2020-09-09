@@ -57,8 +57,10 @@ function onUpdatedListener(tabId, changeInfo, tab) {
   if (changeInfo.url) {
     debug('changeInfo has URL:', changeInfo.url);
     chrome.tabs.sendMessage(tabId, {
-      message: MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED,
-      data: { url: changeInfo.url },
+      data: {
+        command: MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED,
+        url: changeInfo.url
+      },
     });
   }
   URL_TO_TAB[tab.url] = tabId;

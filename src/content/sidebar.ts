@@ -30,13 +30,16 @@ import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER,
   RESET_CSS,
   STYLE_COLOR_TEXT_MEDIUM,
+  MESSAGES,
 } from 'lumos-shared-js';
 import { runFunctionWhenDocumentReady } from './helpers';
-import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/components/Constants';
+import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
 import SidebarTabsManager from './sidebarTabsManager';
+import { nativeBrowserAddReactAppListener } from './messenger_content';
 
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
 
+let currentUser = null;
 let mostRecentLumosUrl = null;
 const sidebarTabsManager = new SidebarTabsManager();
 const sidebarIframes = [];
@@ -313,6 +316,18 @@ export function createSidebar(document: Document) {
   // special case: by default hiding the sidebar will show this toggle but wem hide it until
   // content is populated
   sidebarTogglerWhenHidden.style.visibility = 'hidden';
+
+  nativeBrowserAddReactAppListener({
+    window,
+    message: MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED,
+    callback: (msg) => {
+      try {
+        reloadSidebar(document, new URL(msg.data.url), currentUser);
+      } catch {
+        reloadSidebar(document, new URL(window.location.href), currentUser);
+      }
+    },
+  });
 }
 
 function addElementAt(container: HTMLElement, element: HTMLElement, index: number) {
@@ -586,6 +601,8 @@ export function reloadSidebar(document: Document, url: URL, user: User): void {
 
 export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
   // mutates document
+
+  currentUser = user;
 
   if (user) {
     const loadSidebarTabsAndShowSidebar = (
