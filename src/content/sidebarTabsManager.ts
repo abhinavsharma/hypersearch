@@ -8,6 +8,8 @@ import { postAPI } from './helpers';
 
 const APP_SUBTAB_TITLE = 'Insight';
 const PINNED_TABS_KEY = 'pinnedTabs';
+const VISITED_TABS_KEY = 'visitedTabs';
+const VISITED_TABS_LIMIT = 1000 * 60 * 60 * 24 * 180;
 const MAX_PINNED_TABS = 1;
 
 const handleSubtabResponse = (
@@ -57,17 +59,25 @@ const pinnedTabWithURL = (url: string) => ({
   isPinnedTab: true,
 });
 
-const syncPinnedTabs = (tabs: string[]) => {
-  chrome.storage.sync.set({[PINNED_TABS_KEY]: tabs})
+const syncPinnedTabs = (storage: chrome.storage.StorageArea, tabs: string[]) => {
+  storage.set({[PINNED_TABS_KEY]: tabs});
+};
+
+const syncVisitedTabs = (storage: chrome.storage.StorageArea, tabs: Object) => {
+  storage.set({[VISITED_TABS_KEY]: tabs});
 };
 
 export default class SidebarTabsManager {
   currentPinnedTabs: string[];
+  visitedTabs: Object;
+  storage: chrome.storage.StorageArea;
 
   constructor() {
-    chrome.storage.sync.get([PINNED_TABS_KEY], (result) => {
+    this.storage = chrome.storage.sync;
+    this.storage.get([PINNED_TABS_KEY, VISITED_TABS_KEY], (result) => {
       const pinnedTabs = result[PINNED_TABS_KEY] ?? [];
       this.currentPinnedTabs = Array.isArray(pinnedTabs) ? pinnedTabs : [pinnedTabs];
+      this.visitedTabs = result[VISITED_TABS_KEY] ?? {};
     })
   }
 
@@ -104,7 +114,7 @@ export default class SidebarTabsManager {
 
   updatedPinnedTabUrl(url: string, index: number) {
     this.currentPinnedTabs[index] = url;
-    syncPinnedTabs(this.currentPinnedTabs);
+    syncPinnedTabs(this.storage, this.currentPinnedTabs);
   }
 
   pinSidebarTab(url: string) {
@@ -113,7 +123,7 @@ export default class SidebarTabsManager {
     }
 
     this.currentPinnedTabs.unshift(url);
-    syncPinnedTabs(this.currentPinnedTabs);
+    syncPinnedTabs(this.storage, this.currentPinnedTabs);
 
     if (url) {
       return pinnedTabWithURL(url);
@@ -126,7 +136,7 @@ export default class SidebarTabsManager {
     }
 
     this.currentPinnedTabs.splice(index, 1);
-    syncPinnedTabs(this.currentPinnedTabs);
+    syncPinnedTabs(this.storage, this.currentPinnedTabs);
   }
 
   getPinnedTabs(): ISidebarTab[] {
@@ -135,5 +145,20 @@ export default class SidebarTabsManager {
       return this.currentPinnedTabs.map(url => pinnedTabWithURL(url));
     }
     return [];
+  }
+
+  isTabRecentlyVisited(url: string): boolean {
+    const lastVisit = this.visitedTabs[url];
+
+    if (!lastVisit) {
+      return false;
+    }
+
+    return VISITED_TABS_LIMIT - (Date.now() - lastVisit) > 0;
+  }
+
+  tabVisited(url: string) {
+    this.visitedTabs[url] = Date.now();
+    syncVisitedTabs(this.storage, this.visitedTabs);
   }
 }
