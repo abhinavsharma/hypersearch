@@ -5,7 +5,7 @@ import {
   nativeBrowserAddReactAppListener,
 } from './messenger_content';
 import { serpUrlToSearchText } from 'lumos-shared-js/src/content/modify_serp';
-import { MESSAGES, PUBLIC_NETWORK_ID } from 'lumos-web/src/components/Constants';
+import { MESSAGES, PUBLIC_NETWORK_ID } from 'lumos-web/src/Constants';
 import { postAPI } from './helpers';
 import uuidv1 = require('uuid/v1');
 
