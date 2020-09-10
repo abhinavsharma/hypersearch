@@ -171,7 +171,7 @@ export function createSidebar(document: Document) {
   xNode.setAttribute('style', `
     position: absolute;
     left: 5px;
-    top: -2px;
+    top: 0;
   `)
   xNode.appendChild(document.createTextNode('×'))
   sidebarTogglerWhenVisible.appendChild(xNode);
