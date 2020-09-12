@@ -19,7 +19,6 @@ import {
   STYLE_PADDING_MEDIUM,
   STYLE_COLOR_TEXT,
   STYLE_SIDEBAR_SHOWER_Y_OFFSET,
-  STYLE_WIDTH_SIDEBAR_TAB_LEFT,
   STYLE_WIDTH_SIDEBAR_TAB_RIGHT,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY,
   CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT,
@@ -563,12 +562,6 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, isDefaul
   return tabElement;
 }
 
-function showLoginSubtabs(document: Document, url: URL): void {
-  loadSidebarIfNeeded(document);
-  loadSidebarTabs(sidebarTabsManager.loginSubtabs(url));
-  flipSidebar(document, 'show');
-}
-
 function loadSidebarIfNeeded(document: Document) {
   if (!isSidebarLoaded(document)) {
     createSidebar(document);
@@ -594,6 +587,8 @@ function removeAllSidebarTabs(document: Document) {
   while (sidebarTogglerPreviewContainer.firstChild) {
     sidebarTogglerPreviewContainer.removeChild(sidebarTogglerPreviewContainer.firstChild);
   }
+
+  sidebarIframes.splice(0, sidebarIframes.length);
 }
 
 export function reloadSidebar(document: Document, url: URL, user: User): void {
@@ -613,47 +608,41 @@ export function loadOrUpdateSidebar(document: Document, url: URL, user: User): v
 
   currentUser = user;
 
-  if (user) {
-    const loadSidebarTabsAndShowSidebar = (
-      document: HTMLDocument,
-      tabs: ISidebarTab[],
-      showSidebar: boolean
-    ) => {
-      loadSidebarIfNeeded(document);
-      loadSidebarTabs(tabs);
+  const loadSidebarTabsAndShowSidebar = (
+    document: HTMLDocument,
+    tabs: ISidebarTab[],
+    showSidebar: boolean
+  ) => {
+    loadSidebarIfNeeded(document);
+    loadSidebarTabs(tabs);
 
-      if (showSidebar) {
-        flipSidebar(document, 'show');
-      } else {
-        const sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
-        const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+    if (showSidebar) {
+      flipSidebar(document, 'show');
+    } else {
+      const sidebarContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR);
+      const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
 
-        if (sidebarContainer.style.visibility === 'hidden') {
-          showButton.style.visibility = 'visible';
-        }
+      if (sidebarContainer.style.visibility === 'hidden') {
+        showButton.style.visibility = 'visible';
       }
-    };
+    }
+  };
 
-    const initialTabs = sidebarTabsManager.getPinnedTabs();
-    runFunctionWhenDocumentReady(document, () => {
-      if (initialTabs?.length > 0) {
-        loadSidebarTabsAndShowSidebar(document, initialTabs, true);
+  const initialTabs = sidebarTabsManager.getPinnedTabs();
+  runFunctionWhenDocumentReady(document, () => {
+    if (initialTabs?.length > 0) {
+      loadSidebarTabsAndShowSidebar(document, initialTabs, true);
+    }
+  });
+
+  sidebarTabsManager.fetchSubtabs(user, url, initialTabs.length !== 0)
+    .then(sidebarTabs => {
+      if (!sidebarTabs?.length) {
+        return;
       }
-    });
 
-    sidebarTabsManager.fetchSubtabs(user, url, initialTabs.length !== 0)
-      .then(sidebarTabs => {
-        if (!sidebarTabs?.length) {
-          return;
-        }
-
-        runFunctionWhenDocumentReady(document, () => {
-          loadSidebarTabsAndShowSidebar(document, sidebarTabs, false);
-        });
+      runFunctionWhenDocumentReady(document, () => {
+        loadSidebarTabsAndShowSidebar(document, sidebarTabs, false);
       });
-  } else {
-    runFunctionWhenDocumentReady(document, () => {
-      showLoginSubtabs(document, url)
     });
-  }
 }
