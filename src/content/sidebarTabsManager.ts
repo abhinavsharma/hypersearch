@@ -82,7 +82,7 @@ export default class SidebarTabsManager {
   }
 
   async fetchSubtabs(user: any, url: URL, hasInitialSubtabs: boolean) {
-    const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id);
+    const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id) ?? [];
     const response_json = await postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' });
     return handleSubtabResponse(url, document, response_json, hasInitialSubtabs);
   }
