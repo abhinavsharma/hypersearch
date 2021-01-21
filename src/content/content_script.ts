@@ -20,90 +20,94 @@ function handleUrlUpdated(window: Window, document: Document, url: URL): void {
   let lastModifiedHref: string = null;
   debug('function call - handleUrlUpdated:', url);
 
+  fetchInformationForModifiedPage(url, nativeBrowserPostMessageToReactApp);
+  reloadSidebar(document, url);
+
   // load or update the drawer
   // loadOrUpdateDrawer(document, url)
 
-  nativeBrowserAddReactAppListener({
-    window: window,
-    message: MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN,
-    callback: (msg) => {
-      let data = msg.data;
-      debug(MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN, data);
-      user = data.user;
-      // load or update the sidebar
-      if (url.href !== lastModifiedHref) {
-        lastModifiedHref = url.href;
-        loadOrUpdateSidebar(document, url, user);
-        if (document.readyState === 'loading') {
-          document.addEventListener(
-            'DOMContentLoaded',
-            () => {
-              debug('DOMContentLoaded:', url);
-              modifyPage(
-                url,
-                window,
-                document,
-                nativeBrowserPostMessageToReactApp,
-                nativeBrowserAddReactAppListener,
-                user,
-              );
-            },
-            false,
-          );
-        } else {
-          debug('DOM Content already Loaded:', url);
-          modifyPage(
-            url,
-            window,
-            document,
-            nativeBrowserPostMessageToReactApp,
-            nativeBrowserAddReactAppListener,
-            user,
-          );
-        }
-        let userMemberships = [];
-        if (user) {
-          userMemberships = user.memberships.items.map((item: any) => ({
-            network: item.network,
-          }));
-        } else {
-          userMemberships = [{
-            id: PUBLIC_NETWORK_ID,
-          }];
-        }
-        logPageVisit(userMemberships, url).then(() => {
-          debug('loggedPageVisit: ', url);
-        });
-      }
-    },
-  });
-  nativeBrowserPostMessageToReactApp({
-    command: MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN,
-    data: { origin: url.href },
-  });
+  // nativeBrowserAddReactAppListener({
+  //   window: window,
+  //   message: MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN,
+  //   callback: (msg) => {
+  //     let data = msg.data;
+  //     debug(MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN, data);
+  //     user = data.user;
+  //     // load or update the sidebar
+  //     if (url.href !== lastModifiedHref) {
+  //       lastModifiedHref = url.href;
+  //       loadOrUpdateSidebar(document, url, user);
+  //       if (document.readyState === 'loading') {
+  //         document.addEventListener(
+  //           'DOMContentLoaded',
+  //           () => {
+  //             debug('DOMContentLoaded:', url);
+  //             modifyPage(
+  //               url,
+  //               window,
+  //               document,
+  //               nativeBrowserPostMessageToReactApp,
+  //               nativeBrowserAddReactAppListener,
+  //               user,
+  //             );
+  //           },
+  //           false,
+  //         );
+  //       } else {
+  //         debug('DOM Content already Loaded:', url);
+  //         modifyPage(
+  //           url,
+  //           window,
+  //           document,
+  //           nativeBrowserPostMessageToReactApp,
+  //           nativeBrowserAddReactAppListener,
+  //           user,
+  //         );
+  //       }
+  //       let userMemberships = [];
+  //       if (user) {
+  //         userMemberships = user.memberships.items.map((item: any) => ({
+  //           network: item.network,
+  //         }));
+  //       } else {
+  //         userMemberships = [{
+  //           id: PUBLIC_NETWORK_ID,
+  //         }];
+  //       }
+  //       logPageVisit(userMemberships, url).then(() => {
+  //         debug('loggedPageVisit: ', url);
+  //       });
+  //     }
+  //   },
+  // });
+  // nativeBrowserPostMessageToReactApp({
+  //   command: MESSAGES.CONTENT_WEB_USER_IS_USER_LOGGED_IN,
+  //   data: { origin: url.href },
+  // });
+
 
 // Listen for front content messages
-  window.addEventListener("message", (msg) => {
-    if (msg.data?.command) {
-      switch (msg.data.command) {
-        case MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN:
-        let previousUser = user;
-        user = msg.data.user;
+  // window.addEventListener("message", (msg) => {
+  //   if (msg.data?.command) {
+  //     switch (msg.data.command) {
+  //       case MESSAGES.WEB_CONTENT_USER_IS_USER_LOGGED_IN:
+  //       let previousUser = user;
+  //       user = msg.data.user;
         
-        if (previousUser?.id !== user?.id) {
-          chrome.runtime.sendMessage({
-            command: CLIENT_MESSAGES.CONTENT_BROWSER_USER_UPDATE,
-            data: user,
-          });
+  //       if (previousUser?.id !== user?.id) {
+  //         chrome.runtime.sendMessage({
+  //           command: CLIENT_MESSAGES.CONTENT_BROWSER_USER_UPDATE,
+  //           data: user,
+  //         });
 
-          fetchInformationForModifiedPage(url, nativeBrowserPostMessageToReactApp);
-          reloadSidebar(document, url, user);
-        }
+  //         fetchInformationForModifiedPage(url, nativeBrowserPostMessageToReactApp);
+  //         reloadSidebar(document, url, user);
+  //       }
 
-        break;
-      }
-    }
-  });
+  //       break;
+  //     }
+  //   }
+  // });
 }
 
 async function logPageVisit(userMemberships: any, url: URL) {

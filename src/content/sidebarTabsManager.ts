@@ -3,6 +3,7 @@ import {
   ISidebarResponseArrayObject,
   debug,
   LUMOS_APP_BASE_URL,
+  ISuggestedAugmentationObject,
 } from 'lumos-shared-js';
 import { postAPI } from './helpers';
 
@@ -15,23 +16,24 @@ const MAX_PINNED_TABS = 1;
 const handleSubtabResponse = (
   url: URL,
   document: Document,
-  response_json: Array<ISidebarResponseArrayObject>,
+  response_json: Record<string, Array<ISidebarResponseArrayObject> | Array<ISuggestedAugmentationObject>>,
   hasInitialSubtabs: boolean,
 ) => {
   if (!(url && document && response_json)) {
     return;
   }
-  debug('function call - handleSubtabResponse', url);
+  debug('function call - handleSubtabResponse', url, response_json);
 
   // setup as many tabs as in response
-  if (!(response_json && response_json.length > 1)) {
+  if (!(response_json && response_json.subtabs)) {
     debug('handleSubtabResponse - response json is invalid');
     return;
   }
 
   const sidebarTabs: Array<ISidebarTab> = [];
+  const subtabsResponse = response_json.subtabs as Array<ISidebarResponseArrayObject>;
 
-  response_json.forEach(function (responseTab: ISidebarResponseArrayObject) {
+  subtabsResponse.forEach(function (responseTab: ISidebarResponseArrayObject) {
     if (
       responseTab.url === document.location.href ||
       responseTab.url === document.location.origin ||
@@ -105,7 +107,7 @@ export default class SidebarTabsManager {
       }
     ];
   
-    return handleSubtabResponse(url, document, tabs, false)
+    return handleSubtabResponse(url, document, {"subtabs": tabs}, false)
   }
 
   hasMaxPinnedTabs() {

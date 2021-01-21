@@ -563,6 +563,7 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, isDefaul
 }
 
 function loadSidebarIfNeeded(document: Document) {
+  debug('function call - loadSidebarIfNeeded', document);
   if (!isSidebarLoaded(document)) {
     createSidebar(document);
   };
@@ -591,19 +592,20 @@ function removeAllSidebarTabs(document: Document) {
   sidebarIframes.splice(0, sidebarIframes.length);
 }
 
-export function reloadSidebar(document: Document, url: URL, user: User): void {
-  flipSidebar(document, 'hide');
+export function reloadSidebar(document: Document, url: URL, user?: User): void {
+  loadOrUpdateSidebar(document, url, user);
+  // flipSidebar(document, 'hide');
   
   // Making sure showButton is hidden before reloading sidebar
   // in case it should not appear anymore
-  const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
-  showButton.style.visibility = 'hidden';
+  // const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
+  // showButton.style.visibility = 'hidden';
 
-  removeAllSidebarTabs(document);
-  loadOrUpdateSidebar(document, url, user);
+  // removeAllSidebarTabs(document);
+  // loadOrUpdateSidebar(document, url, user);
 }
 
-export function loadOrUpdateSidebar(document: Document, url: URL, user: User): void {
+export function loadOrUpdateSidebar(document: Document, url: URL, user?: User): void {
   // mutates document
 
   currentUser = user;
