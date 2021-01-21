@@ -31,6 +31,8 @@ import {
   STYLE_COLOR_TEXT_MEDIUM,
   MESSAGES,
   serpUrlToSearchText,
+  STYLE_FONT_SIZE_MEDIUM,
+  STYLE_COLOR_TEXT_LIGHT,
 } from 'lumos-shared-js';
 import { runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
@@ -133,7 +135,7 @@ export function createSidebar(document: Document) {
         transition-property: all;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-        border-left: 3px solid ${STYLE_COLOR_TEXT_MEDIUM};
+        border-left: 3px solid ${STYLE_COLOR_TEXT_LIGHT};
     `,
   );
 
@@ -233,7 +235,7 @@ export function createSidebar(document: Document) {
       position: absolute;
       left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
       top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
-      border: 3px solid ${STYLE_COLOR_TEXT_MEDIUM};
+      border: 3px solid ${STYLE_COLOR_TEXT_LIGHT};
       background: white;
       border-radius: 50%;
       font-size: ${STYLE_FONT_SIZE_LARGE};
@@ -514,8 +516,8 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, isDefaul
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: ${STYLE_FONT_SIZE_SMALL};
-          padding: ${STYLE_PADDING_MEDIUM} ${STYLE_PADDING_SMALL};
+          font-size: ${STYLE_FONT_SIZE_MEDIUM};
+          padding: ${STYLE_PADDING_MEDIUM};
           text-align: center;
           color: ${STYLE_COLOR_TEXT};
           background: ${STYLE_COLOR_UNSELECTED_TAB};
