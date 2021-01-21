@@ -221,6 +221,7 @@ export function createSidebar(document: Document) {
       font-size: ${STYLE_FONT_SIZE_SMALL};
       z-index: ${STYLE_ZINDEX_MAX};
       cursor: pointer;
+      min-width: 150px;
     `,
   );
   sidebarTogglerWhenVisible.setAttribute(
@@ -530,9 +531,10 @@ function addSidebarTab(document: HTMLDocument, sidebarTab: ISidebarTab, isDefaul
   contentIframe.setAttribute(
     'style',
     `
-          width: 100%;
-          height: 100%;
-          border: none;
+      max-width: ${STYLE_WIDTH_SIDEBAR};
+      width: 100%;
+      height: 100%;
+      border: none;
       `,
   );
   contentIframe.addEventListener('load', () => {
@@ -607,6 +609,7 @@ export function reloadSidebar(document: Document, url: URL, user?: User): void {
 
 export function loadOrUpdateSidebar(document: Document, url: URL, user?: User): void {
   // mutates document
+  debug('function call - loadOrUpdateSidebar', document, url, user);
 
   currentUser = user;
 
@@ -615,6 +618,7 @@ export function loadOrUpdateSidebar(document: Document, url: URL, user?: User): 
     tabs: ISidebarTab[],
     showSidebar: boolean
   ) => {
+    debug('function call - loadSidebarTabsAndShowSidebar', document, tabs, showSidebar);
     loadSidebarIfNeeded(document);
     loadSidebarTabs(tabs);
 

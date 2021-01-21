@@ -4,6 +4,8 @@ import {
   debug,
   LUMOS_APP_BASE_URL,
   ISuggestedAugmentationObject,
+  serpDocumentToLinks,
+  SPECIAL_URL_JUNK_STRING,
 } from 'lumos-shared-js';
 import { postAPI } from './helpers';
 
@@ -13,7 +15,7 @@ const VISITED_TABS_KEY = 'visitedTabs';
 const VISITED_TABS_LIMIT = 1000 * 60 * 60 * 24 * 180;
 const MAX_PINNED_TABS = 1;
 
-const handleSubtabResponse = (
+const handleSubtabApiResponse = (
   url: URL,
   document: Document,
   response_json: Record<string, Array<ISidebarResponseArrayObject> | Array<ISuggestedAugmentationObject>>,
@@ -22,34 +24,79 @@ const handleSubtabResponse = (
   if (!(url && document && response_json)) {
     return;
   }
-  debug('function call - handleSubtabResponse', url, response_json);
+  debug('function call - handleSubtabApiResponse', url, response_json);
 
   // setup as many tabs as in response
   if (!(response_json && response_json.subtabs)) {
-    debug('handleSubtabResponse - response json is invalid');
+    debug('handleSubtabApiResponse - response json is invalid');
     return;
   }
 
   const sidebarTabs: Array<ISidebarTab> = [];
   const subtabsResponse = response_json.subtabs as Array<ISidebarResponseArrayObject>;
+  const suggestedAugmentationResponse = response_json.suggested_augmentations as Array<ISuggestedAugmentationObject>;
 
-  subtabsResponse.forEach(function (responseTab: ISidebarResponseArrayObject) {
-    if (
-      responseTab.url === document.location.href ||
-      responseTab.url === document.location.origin ||
-      responseTab.url === document.location.origin + '/' ||
-      responseTab.url === null
-    ) {
-      return;
+
+  function removeWww(s : string) : string {
+    if (s.startsWith('www.')) { 
+        return s.slice(4) 
     }
+    return s
+  }
+
+  const serpDomains = Array.from(document.querySelectorAll('.g .tF2Cxc a cite')).map((e) => removeWww(e.textContent.split(' ')[0]))
+
+  var isFirst = true;
+  suggestedAugmentationResponse.forEach(function(augmentation: ISuggestedAugmentationObject) {
+    if (augmentation.id.startsWith("cse-")) {
+      const domainsToLookFor = augmentation.conditions.condition_list.map(e => e.value[0]) as Array<string>;
+      console.log(serpDomains)
+      if (serpDomains.filter(value => domainsToLookFor.includes(value)).length > 0) {
+        if (augmentation.actions.action_list?.[0].key == "search_domains") {
+          const domainsToSearch = augmentation.actions.action_list?.[0]?.value as Array<string>
+          const query = new URLSearchParams(document.location.search).get('q')
+          const appendage: string = '(' + domainsToSearch.map((x) => "site:" + x).join(' OR ') + ')'
+          var customSearchUrl = new URL("https://www.google.com/search")
+          customSearchUrl.searchParams.append('q', query + ' ' + appendage)
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING)
+          sidebarTabs.push({
+            title: augmentation.name,
+            url: customSearchUrl,
+            default: isFirst
+          })
+          isFirst = false;
+        }
+
+        
+      }
+
+      // if (augmentation.id === 'cse-frontenddev') {
+      //   debugger
+      // }
+      
+    }
+
+    
+  })
+
+
+  // subtabsResponse.forEach(function (responseTab: ISidebarResponseArrayObject) {
+  //   if (
+  //     responseTab.url === document.location.href ||
+  //     responseTab.url === document.location.origin ||
+  //     responseTab.url === document.location.origin + '/' ||
+  //     responseTab.url === null
+  //   ) {
+  //     return;
+  //   }
   
-    const sidebarTab: ISidebarTab = {
-      title: responseTab.title,
-      url: new URL(responseTab.url),
-      default: !hasInitialSubtabs && responseTab.default,
-    };
-    sidebarTabs.push(sidebarTab);
-  });
+  //   const sidebarTab: ISidebarTab = {
+  //     title: responseTab.title,
+  //     url: new URL(responseTab.url),
+  //     default: !hasInitialSubtabs && responseTab.default,
+  //   };
+  //   sidebarTabs.push(sidebarTab);
+  // });
 
   return sidebarTabs;
 }
@@ -84,9 +131,10 @@ export default class SidebarTabsManager {
   }
 
   async fetchSubtabs(user: any, url: URL, hasInitialSubtabs: boolean) {
+    debug('function call - fetchSubtabs', user, url, hasInitialSubtabs);
     const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id) ?? [];
     const response_json = await postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' });
-    return handleSubtabResponse(url, document, response_json, hasInitialSubtabs);
+    return handleSubtabApiResponse(url, document, response_json, hasInitialSubtabs);
   }
 
   loginSubtabs(url: URL) {
@@ -107,7 +155,7 @@ export default class SidebarTabsManager {
       }
     ];
   
-    return handleSubtabResponse(url, document, {"subtabs": tabs}, false)
+    return handleSubtabApiResponse(url, document, {"subtabs": tabs}, false)
   }
 
   hasMaxPinnedTabs() {

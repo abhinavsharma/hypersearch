@@ -1,4 +1,4 @@
-import { MESSAGES, debug, CLIENT_MESSAGES } from 'lumos-shared-js';
+import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { loadHiddenMessenger } from './messenger_background';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
@@ -32,7 +32,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     return {
       requestHeaders: details.requestHeaders.map((requestHeader) => {
         // this is for the search result iframes loaded in the sidebar, we pretend the browser is mobile for them
-        let urlMatchesSearchPattern =
+        const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
+        let urlMatchesSearchPattern = specialUrl ||
           USER_AGENT_REWRITE_URL_SUBSTRINGS.filter((substring) => details.url.includes(substring))
             .length > 0;
         if (
