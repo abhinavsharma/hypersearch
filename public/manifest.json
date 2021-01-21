@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Insight",
-    "description": "Insight supercharges search.",
+    "description": "Insight supercharges Google search with results from expert and community trusted sources for any field.",
     "version": "0.0.47",
     "web_accessible_resources": [
         "*.png",

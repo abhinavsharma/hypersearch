@@ -44,7 +44,7 @@ const handleSubtabApiResponse = (
     return s
   }
 
-  const serpDomains = Array.from(document.querySelectorAll('.g .tF2Cxc a cite')).map((e) => removeWww(e.textContent.split(' ')[0]))
+  const serpDomains = Array.from(document.querySelectorAll('.g .tF2Cxc a cite')).map((e) => removeWww(e.textContent.split(' ')[0])).slice(3)
 
   var isFirst = true;
   suggestedAugmentationResponse.forEach(function(augmentation: ISuggestedAugmentationObject) {
