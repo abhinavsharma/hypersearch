@@ -33,5 +33,5 @@ Right now so long as there is at least 1 valid subtab we expand the extension.
 ### Login
 In a past version we required login to use the extension. We might bring this back but for now the extension is focused on search only
 
-## Rendering `subtabs`
+### Rendering `subtabs`
 The subtabs API also returns a key `subtabs` used to just return URLs to render in the sidebar. We don't want to use these any more
