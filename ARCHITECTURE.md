@@ -1,4 +1,4 @@
-## Lumos extension architecture
+# Lumos extension architecture
 
 ## User facing components
 
@@ -28,6 +28,15 @@ There are 2 main keys to care about
 **When is the sidebar default expanded vs default collapsed?**
 Right now so long as there is at least 1 valid subtab we expand the extension.
 
+## Lifecycle of a request
+1. When a page starts to load, then `content_script.js` is injected
+
+### FAQs
+Why is `content_script.js` injected at the beginning of the request instead of at the end?
+???
+
+
+
 ## Legacy Parts that need to be removed
 
 ### Login
@@ -35,3 +44,6 @@ In a past version we required login to use the extension. We might bring this ba
 
 ### Rendering `subtabs`
 The subtabs API also returns a key `subtabs` used to just return URLs to render in the sidebar. We don't want to use these any more
+
+### `drawer`
+This used to be another part of the UI that used to come in from the bottom like the sidebar comes in from the side. We want to remove this as well.
