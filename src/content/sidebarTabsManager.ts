@@ -18,8 +18,10 @@ const MAX_PINNED_TABS = 1;
 const handleSubtabApiResponse = (
   url: URL,
   document: Document,
-  response_json: Record<string, Array<ISidebarResponseArrayObject> | Array<ISuggestedAugmentationObject>>,
-  hasInitialSubtabs: boolean,
+  response_json: Record<
+    string,
+    Array<ISidebarResponseArrayObject> | Array<ISuggestedAugmentationObject>
+  >,
 ) => {
   if (!(url && document && response_json)) {
     return;
@@ -27,79 +29,59 @@ const handleSubtabApiResponse = (
   debug('function call - handleSubtabApiResponse', url, response_json);
 
   // setup as many tabs as in response
-  if (!(response_json && response_json.subtabs)) {
+  if (!response_json) {
     debug('handleSubtabApiResponse - response json is invalid');
     return;
   }
 
   const sidebarTabs: Array<ISidebarTab> = [];
-  const subtabsResponse = response_json.subtabs as Array<ISidebarResponseArrayObject>;
+
   const suggestedAugmentationResponse = response_json.suggested_augmentations as Array<ISuggestedAugmentationObject>;
 
-
-  function removeWww(s : string) : string {
-    if (s.startsWith('www.')) { 
-        return s.slice(4) 
+  function removeWww(s: string): string {
+    if (s.startsWith('www.')) {
+      return s.slice(4);
     }
-    return s
+    return s;
   }
 
-  const serpDomains = Array.from(document.querySelectorAll('.g a cite')).map((e) => removeWww(e.textContent.split(' ')[0]))
+  const serpDomains = Array.from(document.querySelectorAll('.g a cite')).map((e) =>
+    removeWww(e.textContent.split(' ')[0]),
+  );
 
   var isFirst = true;
-  suggestedAugmentationResponse.forEach(function(augmentation: ISuggestedAugmentationObject) {
-    if (augmentation.id.startsWith("cse-")) {
-      const domainsToLookFor = augmentation.conditions.condition_list.map(e => e.value[0]) as Array<string>;
-      console.log(serpDomains)
-      if (serpDomains.filter(value => domainsToLookFor.includes(value)).length > 0) {
-        if (augmentation.actions.action_list?.[0].key == "search_domains") {
-          const domainsToSearch = augmentation.actions.action_list?.[0]?.value as Array<string>
-          const query = new URLSearchParams(document.location.search).get('q')
-          const appendage: string = '(' + domainsToSearch.map((x) => "site:" + x).join(' OR ') + ')'
-          var customSearchUrl = new URL("https://www.google.com/search")
-          customSearchUrl.searchParams.append('q', query + ' ' + appendage)
-          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING)
+  suggestedAugmentationResponse.forEach(function (augmentation: ISuggestedAugmentationObject) {
+    if (augmentation.id.startsWith('cse-')) {
+      const domainsToLookFor = augmentation.conditions.condition_list.map(
+        (e) => e.value[0],
+      ) as Array<string>;
+      console.log(serpDomains);
+      if (serpDomains.filter((value) => domainsToLookFor.includes(value)).length > 0) {
+        if (augmentation.actions.action_list?.[0].key == 'search_domains') {
+          const domainsToSearch = augmentation.actions.action_list?.[0]?.value as Array<string>;
+          const query = new URLSearchParams(document.location.search).get('q');
+          const appendage: string =
+            '(' + domainsToSearch.map((x) => 'site:' + x).join(' OR ') + ')';
+          var customSearchUrl = new URL('https://www.google.com/search');
+          customSearchUrl.searchParams.append('q', query + ' ' + appendage);
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           sidebarTabs.push({
             title: augmentation.name,
             url: customSearchUrl,
-            default: isFirst
-          })
+            default: isFirst,
+          });
           isFirst = false;
         }
-
-        
       }
 
       // if (augmentation.id === 'cse-frontenddev') {
       //   debugger
       // }
-      
     }
-
-    
-  })
-
-
-  // subtabsResponse.forEach(function (responseTab: ISidebarResponseArrayObject) {
-  //   if (
-  //     responseTab.url === document.location.href ||
-  //     responseTab.url === document.location.origin ||
-  //     responseTab.url === document.location.origin + '/' ||
-  //     responseTab.url === null
-  //   ) {
-  //     return;
-  //   }
-  
-  //   const sidebarTab: ISidebarTab = {
-  //     title: responseTab.title,
-  //     url: new URL(responseTab.url),
-  //     default: !hasInitialSubtabs && responseTab.default,
-  //   };
-  //   sidebarTabs.push(sidebarTab);
-  // });
+  });
 
   return sidebarTabs;
-}
+};
 
 const pinnedTabWithURL = (url: string) => ({
   title: 'Pinned',
@@ -109,11 +91,11 @@ const pinnedTabWithURL = (url: string) => ({
 });
 
 const syncPinnedTabs = (storage: chrome.storage.StorageArea, tabs: string[]) => {
-  storage.set({[PINNED_TABS_KEY]: tabs});
+  storage.set({ [PINNED_TABS_KEY]: tabs });
 };
 
 const syncVisitedTabs = (storage: chrome.storage.StorageArea, tabs: Object) => {
-  storage.set({[VISITED_TABS_KEY]: tabs});
+  storage.set({ [VISITED_TABS_KEY]: tabs });
 };
 
 export default class SidebarTabsManager {
@@ -127,14 +109,13 @@ export default class SidebarTabsManager {
       const pinnedTabs = result[PINNED_TABS_KEY] ?? [];
       this.currentPinnedTabs = Array.isArray(pinnedTabs) ? pinnedTabs : [pinnedTabs];
       this.visitedTabs = result[VISITED_TABS_KEY] ?? {};
-    })
+    });
   }
 
-  async fetchSubtabs(user: any, url: URL, hasInitialSubtabs: boolean) {
-    debug('function call - fetchSubtabs', user, url, hasInitialSubtabs);
-    const networkIDs = user?.memberships?.items?.map((userMembership) => userMembership.network.id) ?? [];
-    const response_json = await postAPI('subtabs', { url: url.href }, { networks: networkIDs, client: 'desktop' });
-    return handleSubtabApiResponse(url, document, response_json, hasInitialSubtabs);
+  async fetchSubtabs(url: URL) {
+    debug('function call - fetchSubtabs', url);
+    const response_json = await postAPI('subtabs', { url: url.href }, { client: 'desktop' });
+    return handleSubtabApiResponse(url, document, response_json);
   }
 
   loginSubtabs(url: URL) {
@@ -152,10 +133,10 @@ export default class SidebarTabsManager {
         default: false,
         title: APP_SUBTAB_TITLE,
         readable_content: null,
-      }
+      },
     ];
-  
-    return handleSubtabApiResponse(url, document, {"subtabs": tabs}, false)
+
+    return handleSubtabApiResponse(url, document, { subtabs: tabs });
   }
 
   hasMaxPinnedTabs() {
@@ -192,7 +173,7 @@ export default class SidebarTabsManager {
   getPinnedTabs(): ISidebarTab[] {
     const pinnedTabUrl = this.currentPinnedTabs;
     if (pinnedTabUrl?.length > 0) {
-      return this.currentPinnedTabs.map(url => pinnedTabWithURL(url));
+      return this.currentPinnedTabs.map((url) => pinnedTabWithURL(url));
     }
     return [];
   }
