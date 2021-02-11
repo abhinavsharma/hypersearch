@@ -84,7 +84,9 @@ const handleSubtabApiResponse = async (
           const query = new URLSearchParams(document.location.search).get('q');
           const appendage: string =
             '(' + domainsToSearch.map((x) => 'site:' + x).join(' OR ') + ')';
-          var customSearchUrl = new URL(`https://${customSearchEngine.required_prefix}`);
+          const customSearchUrl = new URL(
+            `https://${customSearchEngine.search_engine_json.required_prefix}`,
+          );
           customSearchUrl.searchParams.append('q', query + ' ' + appendage);
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           sidebarTabs.push({
