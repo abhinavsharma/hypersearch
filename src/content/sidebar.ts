@@ -572,7 +572,7 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
   sidebarTabsManager.fetchSubtabs(url).then((sidebarTabs) => {
     if (!sidebarTabs?.length) return;
     runFunctionWhenDocumentReady(document, () => {
-      loadSidebarTabsAndShowSidebar(document, sidebarTabs, false);
+      loadSidebarTabsAndShowSidebar(document, sidebarTabs, true);
     });
   });
 };
