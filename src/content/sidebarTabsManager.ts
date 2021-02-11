@@ -27,10 +27,11 @@ const getCustomSearchEngine = async (url: string) => {
     const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
     const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
     Object.values(results).forEach((customSearchEngine) => {
-      const hasAllMatchinParams = !customSearchEngine.required_params.filter(
+      const hasAllMatchinParams = !customSearchEngine.search_engine_json.required_params.filter(
         (i) => !params.includes(i),
       ).length;
-      const hasRequiredPrefix = !!url.match(customSearchEngine.required_prefix)?.length;
+      const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
+        ?.length;
       if (hasAllMatchinParams && hasRequiredPrefix)
         Object.assign(result, { ...customSearchEngine });
     });

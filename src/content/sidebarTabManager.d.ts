@@ -11,8 +11,10 @@ declare type CustomSearchEngine = {
     pad: string;
     desktop: string;
   };
-  required_params: string[];
-  required_prefix: string;
+  search_engine_json: {
+    required_params: string[];
+    required_prefix: string;
+  };
 };
 
 declare module 'serp.json';
