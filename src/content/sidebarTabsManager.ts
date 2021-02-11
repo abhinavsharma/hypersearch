@@ -17,26 +17,29 @@ const CUSTOM_SEARCH_ENGINES =
   'https://raw.githubusercontent.com/insightbrowser/augmentations/main/serp_query_selectors.json';
 
 const getCustomSearchEngine = async (url: string) => {
-  let storedValue: CustomSearchEngine & { lastUpdated: Date };
-  const storageKey = extractHostnameFromUrl(url).replace(/\./g, '_'); // Be safe using `_` instead dots
+  let storedValue: Record<string, CustomSearchEngine>;
+  const { hostname, params } = extractHostnameFromUrl(url);
+  if (!hostname) return null;
+  const storageKey = hostname.replace(/\./g, '_'); // Be safe using `_` instead dots
   storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
-  const validUntil = new Date(storedValue?.lastUpdated.getTime() + 3 * 60000).getTime();
-  const shouldInvalidate = Date.now() - validUntil <= 0;
-  if (!storedValue || shouldInvalidate) {
-    if (shouldInvalidate)
-      await new Promise((resolve) =>
-        chrome.storage.sync.remove(storageKey, () => resolve('Invalidation Successful')),
-      );
-    const result: CustomSearchEngine & { lastUpdated: Date } = Object.create({});
+  if (!storedValue) {
+    const result: CustomSearchEngine = Object.create({});
     const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
     const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
-    Object.values(results).forEach(
-      (customSearchEngine) =>
-        url.match(customSearchEngine.check_url_prefix)?.length &&
-        Object.assign(result, { ...customSearchEngine, lastUpdated: Date.now() }),
+    Object.values(results).forEach((customSearchEngine) => {
+      const hasAllMatchinParams = !customSearchEngine.required_params.filter(
+        (i) => !params.includes(i),
+      ).length;
+      const hasRequiredPrefix = !!url.match(customSearchEngine.required_prefix)?.length;
+      if (hasAllMatchinParams && hasRequiredPrefix)
+        Object.assign(result, { ...customSearchEngine });
+    });
+    await new Promise((resolve) =>
+      chrome.storage.sync.set({ [storageKey]: result }, () => resolve('Stored successfully')),
     );
-    chrome.storage.sync.set({ [storageKey]: result });
-    storedValue = result;
+    storedValue = {
+      storageKey: result,
+    };
   }
   return storedValue[storageKey];
 };
@@ -64,9 +67,10 @@ const handleSubtabApiResponse = async (
   const sidebarTabs: SidebarTab[] = [];
   const suggestedAugmentationResponse = response_json.suggested_augmentations as Array<ISuggestedAugmentationObject>;
   const customSearchEngine = await getCustomSearchEngine(url.href);
+  if (!customSearchEngine?.querySelector) return null;
   const serpDomains = Array.from(
     document.querySelectorAll(customSearchEngine.querySelector.desktop),
-  ).map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]));
+  ).map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
 
   suggestedAugmentationResponse.forEach((augmentation: ISuggestedAugmentationObject) => {
     if (augmentation.id.startsWith('cse-')) {
@@ -79,7 +83,7 @@ const handleSubtabApiResponse = async (
           const query = new URLSearchParams(document.location.search).get('q');
           const appendage: string =
             '(' + domainsToSearch.map((x) => 'site:' + x).join(' OR ') + ')';
-          var customSearchUrl = new URL(`https://${customSearchEngine.check_url_prefix}`);
+          var customSearchUrl = new URL(`https://${customSearchEngine.required_prefix}`);
           customSearchUrl.searchParams.append('q', query + ' ' + appendage);
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           sidebarTabs.push({
@@ -91,7 +95,6 @@ const handleSubtabApiResponse = async (
       }
     }
   });
-
   return sidebarTabs;
 };
 
