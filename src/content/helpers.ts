@@ -88,3 +88,15 @@ export const runFunctionWhenDocumentReady = (document: Document, callback: Funct
   }
   return;
 };
+
+export const loadPublicFile: (path: string) => Promise<string> = async (path) =>
+  new Promise((resolve) => {
+    const request = new XMLHttpRequest();
+    request.open('GET', chrome.extension.getURL(path));
+    request.onload = function () {
+      if (request.status >= 200 && request.status <= 400) {
+        resolve(request.responseText);
+      }
+    };
+    request.send();
+  });

@@ -32,7 +32,7 @@ import {
   STYLE_FONT_SIZE_MEDIUM,
   STYLE_COLOR_TEXT_LIGHT,
 } from 'lumos-shared-js';
-import { runFunctionWhenDocumentReady } from './helpers';
+import { loadPublicFile, runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
 import SidebarTabsManager from './sidebarTabsManager';
 import { nativeBrowserAddReactAppListener } from './messenger_content';
@@ -330,12 +330,12 @@ function addSidebarTab(
   return tabElement;
 }
 
-function loadSidebarIfNeeded(document: Document) {
+const loadSidebarIfNeeded = async (document: Document) => {
   debug('function call - loadSidebarIfNeeded', document);
   if (!isSidebarLoaded(document)) {
-    createSidebar(document);
+    await createSidebar(document);
   }
-}
+};
 
 function removeAllSidebarTabs(document: Document) {
   const tabsContainer = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS);
@@ -360,171 +360,119 @@ function removeAllSidebarTabs(document: Document) {
   sidebarIframes.splice(0, sidebarIframes.length);
 }
 
-export function createSidebar(document: Document) {
+const loadSidebarCss = () => {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = chrome.extension.getURL('styles/sidebar.css');
+  link.type = 'text/css';
+  document.head.appendChild(link);
+};
+
+/**
+ * Generate the DOM layout of the extension. This will load markup and style
+ * files from the public folder as its defined in `manifest.json`.
+ * See: `web_accessible_resources`
+ *
+ * @param document The document object
+ */
+export const createSidebar = async (document: Document) => {
   debug('function call - createSidebar');
 
-  const serpOverlayContainer = document.createElement('div');
-  serpOverlayContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
-  serpOverlayContainer.setAttribute(
-    'style',
-    `
-        position: fixed;
-        z-index: ${STYLE_ZINDEX_MAX};
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: black;
-        opacity: 0.6;
-        transition: opacity 0.5s ease;
-        display: none;
-    `,
-  );
-  serpOverlayContainer.addEventListener('click', () => {
-    flipSidebar(document, 'hide');
-  });
-  document.body.appendChild(serpOverlayContainer);
-  const sidebarContainer = document.createElement('div');
-  sidebarContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR;
+  // Initialization
+  const wrapper = document.createElement('div');
+  const result: string = await loadPublicFile('./markup/sidebar.html');
+  wrapper.innerHTML = result;
+  document.body.appendChild(wrapper);
+  loadSidebarCss();
 
+  // Serp Overlay
+  const serpOverlay: HTMLDivElement = wrapper.querySelector('.serp-overlay');
+  serpOverlay.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_OVERLAY;
+  serpOverlay.addEventListener('click', () => flipSidebar(document, 'hide'));
+
+  // Sidebar Container
+  const sidebarContainer: HTMLDivElement = wrapper.querySelector('.sidebar-container');
+  sidebarContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR;
+  sidebarContainer.addEventListener('mouseover', () => {
+    sidebarOverlayContainer.style.right = null;
+    sidebarOverlayContainer.style.bottom = null;
+  });
   sidebarContainer.setAttribute(
     'style',
     `
         ${RESET_CSS}
-        position: fixed;
-        /* side  of screen */
-        right: 0;
-        border-right: 1px solid ${STYLE_COLOR_BORDER};
-
-        top: 0;
-        width: 0;
-        bottom: 0;
-        height: 100%;
-        z-index: ${STYLE_ZINDEX_MAX};
-        background: white;
-        transition-property: all;
-        transition-duration: .5s;
-        transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-        border-left: 3px solid ${STYLE_COLOR_TEXT_LIGHT};
+        z-index: ${Number(STYLE_ZINDEX_MAX) - 1} !important;
+        border-right-color: ${STYLE_COLOR_BORDER} !important;
+        border-left-color: ${STYLE_COLOR_TEXT_LIGHT} !important;
     `,
   );
 
-  // For dismissing the sidebar
-  const sidebarToggler = document.createElement('div');
-  const sidebarTogglerWhenHidden = document.createElement('div');
-  const sidebarTogglerPreviewContainer = document.createElement('div');
-  const lumosLogoTitle = document.createElement('div');
-  const lumosLogo = document.createElement('img');
-  lumosLogoTitle.setAttribute(
-    'style',
-    `
-        border-bottom: 0.5px solid #bbb;
-    `,
+  // Sidebar Toggle Preview Container
+  const sidebarTogglerPreviewContainer = wrapper.querySelector(
+    '.sidebar-toggler-preview-container',
   );
-  const lumosTitle = document.createElement('div');
-  lumosTitle.setAttribute(
-    'style',
-    `
-        display: inline-block;
-        vertical-align: super;
-        max-width: ${STYLE_WIDTH_SIDEBAR_TAB_RIGHT};
-    `,
-  );
-  lumosTitle.appendChild(document.createTextNode('Alternatives'));
-  lumosLogoTitle.appendChild(lumosTitle);
-  // sidebarTogglerWhenHidden.appendChild(lumosLogoTitle);
-  sidebarTogglerWhenHidden.appendChild(sidebarTogglerPreviewContainer);
-  sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW;
   sidebarTogglerPreviewContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_PREVIEW_CONTAINER;
 
-  const sidebarTogglerWhenVisible = document.createElement('div');
-  const xNode = document.createElement('div');
-  xNode.setAttribute(
-    'style',
-    `
-    position: absolute;
-    left: 5px;
-    top: 0;
-  `,
+  //Sidebar Toggler When Hidden
+  const sidebarTogglerWhenHidden: HTMLDivElement = wrapper.querySelector(
+    '.sidebar-toggler-when-hidden',
   );
-  xNode.appendChild(document.createTextNode('×'));
-  sidebarTogglerWhenVisible.appendChild(xNode);
-  sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
-
-  // build a ui to switch between sub-tabs within the sidebar
-  const tabsContainer = document.createElement('div');
-  tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS;
-  tabsContainer.setAttribute(
-    'style',
-    `
-        display: flex;
-        background-color: #f7f7f7;  /* custom color */
-        padding: 5px 0 0 20px;
-    `,
-  );
-  const contentContainer = document.createElement('div');
-  contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT;
-  contentContainer.setAttribute(
-    'style',
-    `
-        height: 100%;
-    `,
-  );
-
-  sidebarToggler.setAttribute(
-    'style',
-    `
-        cursor: pointer;
-        z-index: 1;
-    `,
-  );
-
+  sidebarTogglerWhenHidden.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW;
+  sidebarTogglerWhenHidden.addEventListener('click', function (e) {
+    flipSidebar(document, 'show');
+  });
   sidebarTogglerWhenHidden.setAttribute(
     'style',
     `
       ${RESET_CSS}
-      position: fixed;
-      right: 0;
-      bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET};
-      max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH};
-      padding: ${STYLE_PADDING_XLARGE};
-      border: 3px solid rgba(0,0,0,0.5);
-      background: rgba(0,0,0,0.4);
-      color: white !important;
-      border-right: none;
-      border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL};
-      font-size: ${STYLE_FONT_SIZE_SMALL};
-      z-index: ${STYLE_ZINDEX_MAX};
-      cursor: pointer;
-      min-width: 150px;
+      bottom: ${STYLE_SIDEBAR_SHOWER_Y_OFFSET} !important;
+      max-width: ${STYLE_SIDEBAR_TOGGLER_WIDTH} !important;
+      padding: ${STYLE_PADDING_XLARGE} !important;
+      border-radius: ${STYLE_BORDER_RADIUS_PILL} 0 0 ${STYLE_BORDER_RADIUS_PILL} !important;
+      font-size: ${STYLE_FONT_SIZE_SMALL} !important;
+      z-index: ${STYLE_ZINDEX_MAX} !important;
     `,
   );
+
+  // Sidebar Toggler When Visible
+  const sidebarTogglerWhenVisible = wrapper.querySelector('.sidebar-toggler-when-visible');
+  sidebarTogglerWhenVisible.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_HIDE;
+  sidebarTogglerWhenVisible.addEventListener('click', function (e) {
+    flipSidebar(document, 'hide');
+  });
   sidebarTogglerWhenVisible.setAttribute(
     'style',
     `
       ${RESET_CSS}
-      display: flex;
-      align-items: center;
-      position: absolute;
-      left: ${STYLE_SIDEBAR_HIDER_X_OFFSET};
-      top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET};
-      border: 3px solid ${STYLE_COLOR_TEXT_LIGHT};
-      background: white;
-      border-radius: 50%;
-      font-size: ${STYLE_FONT_SIZE_LARGE};
-      padding: ${STYLE_PADDING_MEDIUM};
+      left: ${STYLE_SIDEBAR_HIDER_X_OFFSET} !important;
+      top: ${STYLE_SIDEBAR_HIDER_Y_OFFSET} !important;
+      border: 3px solid ${STYLE_COLOR_TEXT_LIGHT} !important;
+      font-size: ${STYLE_FONT_SIZE_LARGE} !important;
+      padding: ${STYLE_PADDING_MEDIUM} !important;
+      z-index: ${STYLE_ZINDEX_MAX} !important;
     `,
   );
 
-  sidebarTogglerWhenHidden.addEventListener('click', function (e) {
-    flipSidebar(document, 'show');
-  });
-  sidebarTogglerWhenVisible.addEventListener('click', function (e) {
-    flipSidebar(document, 'hide');
-  });
+  // Tabs Container
+  const tabsContainer = wrapper.querySelector('.tabs-container');
+  tabsContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_TABS;
 
-  sidebarToggler.appendChild(sidebarTogglerWhenVisible);
-  document.body.appendChild(sidebarTogglerWhenHidden);
+  // Content Container
+  const contentContainer = wrapper.querySelector('.content-container');
+  contentContainer.id = CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_CONTENT;
+
+  // Sidebar Overlay Container
+  const sidebarOverlayContainer: HTMLDivElement = wrapper.querySelector(
+    '.sidebar-overlay-container',
+  );
+  sidebarOverlayContainer.setAttribute('style', `z-index: ${STYLE_ZINDEX_MAX} !important;`);
+
+  flipSidebar(document, 'hide');
+
+  // special case: by default hiding the sidebar will show this toggle but wem hide it until
+  // content is populated
+  sidebarTogglerWhenHidden.style.visibility = 'hidden';
+
   document.onkeydown = function (e: KeyboardEvent) {
     if (
       sidebarContainer.style.visibility === 'visible' &&
@@ -563,37 +511,6 @@ export function createSidebar(document: Document) {
     }
   };
 
-  const sidebarOverlayContainer = document.createElement('div');
-  sidebarOverlayContainer.setAttribute(
-    'style',
-    `
-        z-index: ${STYLE_ZINDEX_MAX};
-        background: #f7f7f7;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        opacity: 0;
-    `,
-  );
-
-  sidebarContainer.appendChild(sidebarToggler);
-  sidebarContainer.appendChild(tabsContainer);
-  sidebarContainer.appendChild(contentContainer);
-  sidebarContainer.appendChild(sidebarOverlayContainer);
-  sidebarContainer.addEventListener('mouseover', () => {
-    sidebarOverlayContainer.style.right = null;
-    sidebarOverlayContainer.style.bottom = null;
-  });
-
-  document.body.appendChild(sidebarContainer);
-  flipSidebar(document, 'hide');
-
-  // special case: by default hiding the sidebar will show this toggle but wem hide it until
-  // content is populated
-  sidebarTogglerWhenHidden.style.visibility = 'hidden';
-
   nativeBrowserAddReactAppListener({
     window,
     message: MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED,
@@ -605,10 +522,10 @@ export function createSidebar(document: Document) {
       }
     },
   });
-}
+};
 
-export function reloadSidebar(document: Document, url: URL): void {
-  loadOrUpdateSidebar(document, url);
+export const reloadSidebar = async (document: Document, url: URL) => {
+  await loadOrUpdateSidebar(document, url);
   // flipSidebar(document, 'hide');
 
   // Making sure showButton is hidden before reloading sidebar
@@ -618,19 +535,19 @@ export function reloadSidebar(document: Document, url: URL): void {
 
   // removeAllSidebarTabs(document);
   // loadOrUpdateSidebar(document, url);
-}
+};
 
-export function loadOrUpdateSidebar(document: Document, url: URL): void {
+export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
   // mutates document
   debug('function call - loadOrUpdateSidebar', document, url);
 
-  const loadSidebarTabsAndShowSidebar = (
+  const loadSidebarTabsAndShowSidebar = async (
     document: HTMLDocument,
     tabs: ISidebarTab[],
     showSidebar: boolean,
   ) => {
     debug('function call - loadSidebarTabsAndShowSidebar', document, tabs, showSidebar);
-    loadSidebarIfNeeded(document);
+    await loadSidebarIfNeeded(document);
     loadSidebarTabs(tabs);
 
     if (showSidebar) {
@@ -658,4 +575,4 @@ export function loadOrUpdateSidebar(document: Document, url: URL): void {
       loadSidebarTabsAndShowSidebar(document, sidebarTabs, false);
     });
   });
-}
+};
