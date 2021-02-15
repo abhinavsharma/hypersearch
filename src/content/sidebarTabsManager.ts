@@ -45,7 +45,7 @@ const getCustomSearchEngine = async (url: string) => {
   return storedValue[storageKey];
 };
 
-const handleSubtabApiResponse = async (
+export const handleSubtabApiResponse = async (
   url: URL,
   document: Document,
   response_json: Record<
@@ -134,8 +134,7 @@ export default class SidebarTabsManager {
   async fetchSubtabs(url: URL) {
     debug('function call - fetchSubtabs', url);
     const response_json = await postAPI('subtabs', { url: url.href }, { client: 'desktop' });
-    const tabs = await handleSubtabApiResponse(url, document, response_json);
-    return tabs;
+    return response_json;
   }
 
   async loginSubtabs(url: URL) {

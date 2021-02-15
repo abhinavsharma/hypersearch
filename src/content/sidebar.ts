@@ -34,7 +34,7 @@ import {
 } from 'lumos-shared-js';
 import { loadPublicFile, runFunctionWhenDocumentReady } from './helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
-import SidebarTabsManager from './sidebarTabsManager';
+import SidebarTabsManager, { handleSubtabApiResponse } from './sidebarTabsManager';
 import { nativeBrowserAddReactAppListener } from './messenger_content';
 
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
@@ -569,10 +569,11 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
     }
   });
 
-  sidebarTabsManager.fetchSubtabs(url).then((sidebarTabs) => {
-    if (!sidebarTabs?.length) return;
-    runFunctionWhenDocumentReady(document, () => {
-      loadSidebarTabsAndShowSidebar(document, sidebarTabs, true);
+  sidebarTabsManager.fetchSubtabs(url).then((response) => {
+    if (!response) return;
+    runFunctionWhenDocumentReady(document, async () => {
+      const tabs = await handleSubtabApiResponse(url, document, response);
+      loadSidebarTabsAndShowSidebar(document, tabs, true);
     });
   });
 };
