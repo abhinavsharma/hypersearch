@@ -4,18 +4,48 @@ import {
   debug,
   LUMOS_APP_BASE_URL,
   ISuggestedAugmentationObject,
-  serpDocumentToLinks,
   SPECIAL_URL_JUNK_STRING,
 } from 'lumos-shared-js';
-import { postAPI } from './helpers';
+import { extractHostnameFromUrl, postAPI } from './helpers';
 
 const APP_SUBTAB_TITLE = 'Insight';
 const PINNED_TABS_KEY = 'pinnedTabs';
 const VISITED_TABS_KEY = 'visitedTabs';
 const VISITED_TABS_LIMIT = 1000 * 60 * 60 * 24 * 180;
 const MAX_PINNED_TABS = 1;
+const CUSTOM_SEARCH_ENGINES =
+  'https://raw.githubusercontent.com/insightbrowser/augmentations/main/serp_query_selectors.json';
 
-const handleSubtabApiResponse = (
+const getCustomSearchEngine = async (url: string) => {
+  let storedValue: Record<string, CustomSearchEngine>;
+  const { hostname, params } = extractHostnameFromUrl(url);
+  if (!hostname) return null;
+  const storageKey = hostname.replace(/\./g, '_'); // Be safe using `_` instead dots
+  storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
+  if (!storedValue) {
+    const result: CustomSearchEngine = Object.create({});
+    const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
+    const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
+    Object.values(results).forEach((customSearchEngine) => {
+      const hasAllMatchinParams = !customSearchEngine.search_engine_json.required_params.filter(
+        (i) => !params.includes(i),
+      ).length;
+      const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
+        ?.length;
+      if (hasAllMatchinParams && hasRequiredPrefix)
+        Object.assign(result, { ...customSearchEngine });
+    });
+    await new Promise((resolve) =>
+      chrome.storage.sync.set({ [storageKey]: result }, () => resolve('Stored successfully')),
+    );
+    storedValue = {
+      storageKey: result,
+    };
+  }
+  return storedValue[storageKey];
+};
+
+export const handleSubtabApiResponse = async (
   url: URL,
   document: Document,
   response_json: Record<
@@ -24,62 +54,50 @@ const handleSubtabApiResponse = (
   >,
 ) => {
   if (!(url && document && response_json)) {
-    return;
+    debug(
+      'handleSubtabApiResponse - ERROR\nDEBUG `url` : %s\nDEBUG `document` : %s\n DEBUG `response_json` : %s',
+      url,
+      document,
+      response_json,
+    );
+    return null;
   }
+
   debug('function call - handleSubtabApiResponse', url, response_json);
 
-  // setup as many tabs as in response
-  if (!response_json) {
-    debug('handleSubtabApiResponse - response json is invalid');
-    return;
-  }
-
-  const sidebarTabs: Array<ISidebarTab> = [];
-
+  const sidebarTabs: SidebarTab[] = [];
   const suggestedAugmentationResponse = response_json.suggested_augmentations as Array<ISuggestedAugmentationObject>;
+  const customSearchEngine = await getCustomSearchEngine(url.href);
+  if (!customSearchEngine?.querySelector) return null;
+  const serpDomains = Array.from(
+    document.querySelectorAll(customSearchEngine.querySelector.desktop),
+  ).map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
 
-  function removeWww(s: string): string {
-    if (s.startsWith('www.')) {
-      return s.slice(4);
-    }
-    return s;
-  }
-
-  const serpDomains = Array.from(document.querySelectorAll('.g a cite')).map((e) =>
-    removeWww(e.textContent.split(' ')[0]),
-  );
-
-  var isFirst = true;
-  suggestedAugmentationResponse.forEach(function (augmentation: ISuggestedAugmentationObject) {
+  suggestedAugmentationResponse.forEach((augmentation: ISuggestedAugmentationObject) => {
     if (augmentation.id.startsWith('cse-')) {
       const domainsToLookFor = augmentation.conditions.condition_list.map(
         (e) => e.value[0],
       ) as Array<string>;
-      console.log(serpDomains);
       if (serpDomains.filter((value) => domainsToLookFor.includes(value)).length > 0) {
         if (augmentation.actions.action_list?.[0].key == 'search_domains') {
           const domainsToSearch = augmentation.actions.action_list?.[0]?.value as Array<string>;
           const query = new URLSearchParams(document.location.search).get('q');
           const appendage: string =
             '(' + domainsToSearch.map((x) => 'site:' + x).join(' OR ') + ')';
-          var customSearchUrl = new URL('https://www.google.com/search');
+          const customSearchUrl = new URL(
+            `https://${customSearchEngine.search_engine_json.required_prefix}`,
+          );
           customSearchUrl.searchParams.append('q', query + ' ' + appendage);
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           sidebarTabs.push({
             title: augmentation.name,
             url: customSearchUrl,
-            default: isFirst,
+            default: !sidebarTabs.length,
           });
-          isFirst = false;
         }
       }
-
-      // if (augmentation.id === 'cse-frontenddev') {
-      //   debugger
-      // }
     }
   });
-
   return sidebarTabs;
 };
 
@@ -102,6 +120,7 @@ export default class SidebarTabsManager {
   currentPinnedTabs: string[];
   visitedTabs: Object;
   storage: chrome.storage.StorageArea;
+  customSearchEngine: CustomSearchEngine;
 
   constructor() {
     this.storage = chrome.storage.sync;
@@ -115,10 +134,10 @@ export default class SidebarTabsManager {
   async fetchSubtabs(url: URL) {
     debug('function call - fetchSubtabs', url);
     const response_json = await postAPI('subtabs', { url: url.href }, { client: 'desktop' });
-    return handleSubtabApiResponse(url, document, response_json);
+    return response_json;
   }
 
-  loginSubtabs(url: URL) {
+  async loginSubtabs(url: URL) {
     const tabs: Array<ISidebarResponseArrayObject> = [
       {
         url: url.href,
@@ -135,8 +154,7 @@ export default class SidebarTabsManager {
         readable_content: null,
       },
     ];
-
-    return handleSubtabApiResponse(url, document, { subtabs: tabs });
+    return await handleSubtabApiResponse(url, document, { subtabs: tabs });
   }
 
   hasMaxPinnedTabs() {

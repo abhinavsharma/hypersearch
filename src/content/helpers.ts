@@ -100,3 +100,17 @@ export const loadPublicFile: (path: string) => Promise<string> = async (path) =>
     };
     request.send();
   });
+
+export const extractHostnameFromUrl = (s: string) => {
+  let url: string;
+  if (s.startsWith('http://') || s.startsWith('https://')) url = s;
+  else url = `https://${s}`;
+  const raw = new URL(url);
+  return {
+    hostname: raw.hostname,
+    params: raw.searchParams
+      .toString()
+      .split('&')
+      .map((i) => i.split('=')[0]),
+  };
+};
