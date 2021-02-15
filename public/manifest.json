@@ -4,8 +4,10 @@
     "description": "Insight supercharges Google search with results from expert and community trusted sources for any field.",
     "version": "0.0.49",
     "web_accessible_resources": [
-        "*.png",
-        "*.svg"
+      "*.png", 
+      "*.svg", 
+      "markup/*.html", 
+      "styles/*.css"
     ],
     "icons": {
         "128": "logo128.png"
