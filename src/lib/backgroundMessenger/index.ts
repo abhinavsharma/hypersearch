@@ -6,9 +6,8 @@ import {
   CLIENT_MESSAGES,
   LUMOS_SERP_CONFIG,
 } from 'lumos-shared-js';
-import { URL_TO_TAB } from './background';
-
-import uuidv1 = require('uuid/v1');
+import { URL_TO_TAB } from 'background_script';
+import { v1 as uuidv1 } from 'uuid';
 
 let IS_READY = false;
 let REACT_APP_LOADED = false;

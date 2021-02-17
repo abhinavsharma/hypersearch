@@ -1,5 +1,5 @@
 import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
-import { loadHiddenMessenger } from './messenger_background';
+import { loadHiddenMessenger } from 'lib/backgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),

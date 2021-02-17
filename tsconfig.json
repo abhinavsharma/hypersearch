@@ -1,16 +1,24 @@
 {
     "compilerOptions": {
+        "baseUrl": "./src",
         "module": "commonjs",
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
-        "lib": ["es6", "dom", "es2017"],
+        "lib": [
+            "es6",
+            "dom",
+            "es2017"
+        ],
         "rootDirs": [
             "src",
             "lumos-shared-js"
         ],
         "outDir": "dist/js",
         "noEmitOnError": true,
-        "typeRoots": [ "node_modules/@types" ]
+        "typeRoots": [
+            "types",
+            "node_modules/@types"
+        ]
     }
 }
