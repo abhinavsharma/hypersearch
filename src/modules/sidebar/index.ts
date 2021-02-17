@@ -32,10 +32,11 @@ import {
   STYLE_FONT_SIZE_MEDIUM,
   STYLE_COLOR_TEXT_LIGHT,
 } from 'lumos-shared-js';
-import { loadPublicFile, runFunctionWhenDocumentReady } from './helpers';
+import { loadPublicFile, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { MESSAGES as LUMOS_WEB_MESSAGES } from 'lumos-web/src/Constants';
-import SidebarTabsManager, { handleSubtabApiResponse } from './sidebarTabsManager';
-import { nativeBrowserAddReactAppListener } from './messenger_content';
+import SidebarTabsManager from 'lib/sidebarTabsManager';
+import handleSubtabApiResponse from 'lib/handleSubtabApiResponse';
+import { nativeBrowserAddReactAppListener } from 'lib/nativeMessenger';
 
 const MIN_CLIENT_WIDTH_AUTOSHOW = 1200;
 
@@ -516,25 +517,12 @@ export const createSidebar = async (document: Document) => {
     message: MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED,
     callback: (msg) => {
       try {
-        reloadSidebar(document, new URL(msg.data.url));
+        loadOrUpdateSidebar(document, new URL(msg.data.url));
       } catch {
-        reloadSidebar(document, new URL(window.location.href));
+        loadOrUpdateSidebar(document, new URL(window.location.href));
       }
     },
   });
-};
-
-export const reloadSidebar = async (document: Document, url: URL) => {
-  await loadOrUpdateSidebar(document, url);
-  // flipSidebar(document, 'hide');
-
-  // Making sure showButton is hidden before reloading sidebar
-  // in case it should not appear anymore
-  // const showButton = document.getElementById(CONTENT_PAGE_ELEMENT_ID_LUMOS_SIDEBAR_SHOW);
-  // showButton.style.visibility = 'hidden';
-
-  // removeAllSidebarTabs(document);
-  // loadOrUpdateSidebar(document, url);
 };
 
 export const loadOrUpdateSidebar = async (document: Document, url: URL) => {

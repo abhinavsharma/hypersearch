@@ -1,10 +1,10 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const ChromeExtensionReloader = require('webpack-chrome-extension-reloader');
 
 module.exports = merge(common, {
-  devtool: 'inline-source-map',
   mode: 'development',
+  devtool: 'cheap-module-source-map',
   plugins: [
     new ChromeExtensionReloader({
       port: 9090,
