@@ -48,8 +48,8 @@ export default async function handleSubtabApiResponse(
   const customSearchEngine = await getCustomSearchEngine(url.href);
   if (!customSearchEngine) return;
   const serpDomains = Array.from(
-    document.querySelectorAll(customSearchEngine.querySelector.desktop),
-  ).map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
+    document.querySelectorAll(customSearchEngine.querySelector?.desktop),
+  )?.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
   suggestedAugmentationResponse.forEach((augmentation: SuggestedAugmentationObject) => {
     if (augmentation.id.startsWith('cse-')) {
       const domainsToLookFor = augmentation.conditions.condition_list.map((e) => e.value[0]);

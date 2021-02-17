@@ -552,16 +552,14 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
 
   const initialTabs = sidebarTabsManager.getPinnedTabs();
   runFunctionWhenDocumentReady(document, () => {
-    if (initialTabs?.length > 0) {
-      loadSidebarTabsAndShowSidebar(document, initialTabs, true);
-    }
+    !!initialTabs.length && loadSidebarTabsAndShowSidebar(document, initialTabs, true);
   });
 
   sidebarTabsManager.fetchSubtabs(url).then((response) => {
     if (!response) return;
     runFunctionWhenDocumentReady(document, async () => {
       const tabs = await handleSubtabApiResponse(url, document, response);
-      loadSidebarTabsAndShowSidebar(document, tabs, true);
+      !!tabs.length && loadSidebarTabsAndShowSidebar(document, tabs, true);
     });
   });
 };
