@@ -1,0 +1,46 @@
+.insight-tab-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  border-left: 3px solid black;
+}
+
+.insight-full-tab {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.insight-tab-iframe {
+  display: flex;
+  flex-grow: 1;
+  border: none;
+}
+
+.insight-tab-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  padding: 10px;
+  text-align: center;
+  color: #333;
+  background: #efefef;
+  cursor: pointer;
+  border-radius: 10px 10px 0 0;
+  border-bottom: 0;
+  margin-bottom: -11px;
+
+  &.active {
+    background-color: white;
+    font-weight: bold;
+    border-color: white;
+  }
+}
+
+.insight-tab-bar {
+  padding-left: 15px;
+  .ant-tabs-ink-bar {
+    display: none;
+  }
+}

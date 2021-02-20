@@ -2,7 +2,6 @@ import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN,
   debug,
   LUMOS_APP_URL,
-  INativePostMessageToReactApp,
   CLIENT_MESSAGES,
   LUMOS_SERP_CONFIG,
 } from 'lumos-shared-js';
@@ -14,11 +13,9 @@ let REACT_APP_LOADED = false;
 let MESSENGER_ID = uuidv1();
 let MESSENGER_IFRAME = null;
 
-export function isMessengerReady(): boolean {
-  return REACT_APP_LOADED && IS_READY && MESSENGER_IFRAME;
-}
+export const isMessengerReady = () => REACT_APP_LOADED && IS_READY && !!MESSENGER_IFRAME;
 
-function nativeBrowserPostMessageToReactApp({ command, data }: INativePostMessageToReactApp): void {
+const nativeBrowserPostMessageToReactApp: NativePostMessenger = ({ command, data }) => {
   debug('function call - background nativeBrowserPostMessageToReactApp');
   let iframe = MESSENGER_IFRAME;
   let RETRY_TIME = 100;
@@ -38,7 +35,7 @@ function nativeBrowserPostMessageToReactApp({ command, data }: INativePostMessag
     },
     LUMOS_APP_URL,
   );
-}
+};
 
 function monitorMessengerState(window: Window): void {
   window.addEventListener(

@@ -33,11 +33,11 @@ const getCustomSearchEngine = async (url: string) => {
   return storedValue[storageKey] ?? null;
 };
 
-export default async function handleSubtabApiResponse(
+export const handleSubtabApiResponse = async (
   url: URL,
   document: Document,
-  response: ResponseJson,
-) {
+  response: SubtabsResponse,
+) => {
   debug('function call - handleSubtabApiResponse', url, response);
   if (!(url && document && response)) {
     debug('handleSubtabApiResponse - ERROR', url, document, response);
@@ -76,4 +76,4 @@ export default async function handleSubtabApiResponse(
     }
   });
   return sidebarTabs;
-}
+};

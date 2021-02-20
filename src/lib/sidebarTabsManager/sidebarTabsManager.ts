@@ -6,7 +6,7 @@ const VISITED_TABS_KEY = 'visitedTabs';
 const VISITED_TABS_LIMIT = 1000 * 60 * 60 * 24 * 180;
 const MAX_PINNED_TABS = 1;
 
-export default class SidebarTabsManager {
+class SidebarTabsManager {
   currentPinnedTabs: string[];
   visitedTabs: SidebarTab[];
   storage: chrome.storage.StorageArea;
@@ -34,14 +34,14 @@ export default class SidebarTabsManager {
     storage.set({ [PINNED_TABS_KEY]: tabs });
   }
 
-  private syncVisitedTabs(storage: chrome.storage.StorageArea, tabs: Object) {
+  private syncVisitedTabs(storage: chrome.storage.StorageArea, tabs: SidebarTab[]) {
     storage.set({ [VISITED_TABS_KEY]: tabs });
   }
 
   public async fetchSubtabs(url: URL) {
     debug('function call - fetchSubtabs', url);
     const response_json = await postAPI('subtabs', { url: url.href }, { client: 'desktop' });
-    return response_json as ResponseJson;
+    return response_json as SubtabsResponse;
   }
 
   public updatedPinnedTabUrl(url: string, index: number) {
@@ -79,3 +79,5 @@ export default class SidebarTabsManager {
     this.syncVisitedTabs(this.storage, this.visitedTabs);
   }
 }
+
+export { SidebarTabsManager };

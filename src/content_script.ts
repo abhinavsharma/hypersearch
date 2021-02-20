@@ -1,5 +1,5 @@
 import { debug, fetchInformationForModifiedPage } from 'lumos-shared-js';
-import { loadOrUpdateSidebar } from 'modules/sidebar';
+import { loadOrUpdateSidebar } from 'lib/loadOrUpdateSidebar/loadOrUpdateSidebar';
 import { nativeBrowserPostMessageToReactApp } from 'lib/nativeMessenger';
 
 debug('executing content script on', location.href);

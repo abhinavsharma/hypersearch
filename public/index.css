@@ -1,0 +1,19 @@
+iframe {
+  border: none;
+}
+
+#sidebar-root-iframe {
+  position: fixed;
+  display: block !important;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 465px;
+  height: 100%;
+  background: white;
+  transition-property: all;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  border-width: 0 !important;
+  z-index: 9999;
+}

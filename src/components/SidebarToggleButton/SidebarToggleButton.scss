@@ -1,0 +1,22 @@
+.insight-sidebar-toggle-button {
+  display: none;
+  border: 3px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  line-height: 1.3 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+  color: white !important;
+  border-right: none;
+  cursor: pointer;
+  min-width: 200px !important;
+  padding: 15px !important;
+  border-radius: 25px 0 0 25px !important;
+  font-size: 11px !important;
+
+  .ant-list-items {
+    margin: auto auto;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+}

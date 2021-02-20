@@ -58,7 +58,7 @@ declare type CustomSearchEngine = {
   };
 };
 
-declare type ResponseJson = {
+declare type SubtabsResponse = {
   subtabs: SidebarResponseArrayObject[];
   suggested_augmentations?: SuggestedAugmentationObject[];
 };

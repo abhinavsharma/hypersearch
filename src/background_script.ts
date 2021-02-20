@@ -1,11 +1,12 @@
 import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
-import { loadHiddenMessenger } from 'lib/backgroundMessenger';
+import { loadHiddenMessenger } from 'lib/backgroundMessenger/backgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
-let USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
+
+const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),
 );
 
-export let URL_TO_TAB = {};
+export const URL_TO_TAB = {};
 
 debug('installing listener override response headers');
 // https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
@@ -13,7 +14,7 @@ debug('installing listener override response headers');
 // don't want to be loaded in iframes
 chrome.webRequest.onHeadersReceived.addListener(
   function (details) {
-    let strippedHeaders = ['x-frame-options', 'content-security-policy'];
+    const strippedHeaders = ['x-frame-options', 'content-security-policy'];
     return {
       responseHeaders: details.responseHeaders.filter(
         (responseHeader) => !strippedHeaders.includes(responseHeader.name.toLowerCase()),
@@ -33,7 +34,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
       requestHeaders: details.requestHeaders.map((requestHeader) => {
         // this is for the search result iframes loaded in the sidebar, we pretend the browser is mobile for them
         const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
-        let urlMatchesSearchPattern =
+        const urlMatchesSearchPattern =
           specialUrl ||
           USER_AGENT_REWRITE_URL_SUBSTRINGS.filter((substring) => details.url.includes(substring))
             .length > 0;

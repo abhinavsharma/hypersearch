@@ -4,21 +4,25 @@
         "module": "commonjs",
         "target": "es6",
         "noImplicitAny": false,
+        "esModuleInterop": true,
         "sourceMap": false,
+        "moduleResolution": "node",
+        "jsx": "react",
         "lib": [
             "es6",
             "dom",
             "es2017"
-        ],
-        "rootDirs": [
-            "src",
-            "lumos-shared-js"
         ],
         "outDir": "dist/js",
         "noEmitOnError": true,
         "typeRoots": [
             "types",
             "node_modules/@types"
+        ],
+        "plugins": [
+            {
+                "name": "typescript-plugin-css-modules"
+            }
         ]
     }
 }
