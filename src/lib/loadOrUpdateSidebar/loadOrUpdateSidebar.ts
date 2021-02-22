@@ -6,6 +6,7 @@ import { SidebarTabsManager } from 'lib/sidebarTabsManager/sidebarTabsManager';
 import { handleSubtabApiResponse } from 'lib/handleSubtabApiResponse';
 import { loadPublicFile, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { Sidebar } from 'components/Sidebar/Sidebar';
+import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 
 const style = document.getElementsByTagName('style')[0];
 
@@ -30,6 +31,10 @@ const createSidebar = async (document: Document, tabs: SidebarTab[]) => {
   const sidebarRoot = document.getElementById('sidebar-root');
   const sidebarInit = React.createElement(Sidebar, { tabs });
   reactInjector(sidebarRoot, sidebarInit, 'sidebar-root-iframe', style);
+
+  if (window.innerWidth <= 1200) {
+    flipSidebar(document, 'hide');
+  }
 
   nativeBrowserAddReactAppListener({
     window,

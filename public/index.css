@@ -2,6 +2,13 @@ iframe {
   border: none;
 }
 
+#sidebar-root {
+  transition-property: width;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  background: transparent;
+}
+
 #sidebar-root-iframe {
   position: fixed;
   display: block !important;
@@ -11,9 +18,11 @@ iframe {
   width: 465px;
   height: 100%;
   background: white;
-  transition-property: all;
-  transition-duration: 0.5s;
-  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
   border-width: 0 !important;
+  background: transparent;
   z-index: 9999;
+}
+
+#sidebar-root-iframe.hidden {
+  width: 0;
 }

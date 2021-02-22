@@ -1,5 +1,7 @@
 .insight-sidebar-toggle-button {
   display: none;
+  right: 0;
+  margin-bottom: -100px;
   border: 3px solid rgba(0, 0, 0, 0.5);
   background: rgba(0, 0, 0, 0.4);
   line-height: 1.3 !important;
@@ -8,7 +10,7 @@
   color: white !important;
   border-right: none;
   cursor: pointer;
-  min-width: 200px !important;
+  width: 200px !important;
   padding: 15px !important;
   border-radius: 25px 0 0 25px !important;
   font-size: 11px !important;

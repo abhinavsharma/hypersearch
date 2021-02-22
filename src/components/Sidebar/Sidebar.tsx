@@ -1,17 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Button from 'antd/lib/button';
+import React, { useEffect, useRef } from 'react';
 import { SidebarTabs } from 'components/SidebarTabs/SidebarTabs';
 import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 import { keyEventTranlator } from 'lib/keyEventTranslator/keyEventTranslator';
-import './Sidebar.scss';
 import { SidebarToggleButton } from 'components/SidebarToggleButton/SidebarToggleButton';
+import './Sidebar.scss';
 
 const XIcon: XIcon = () => {
   const handleClick = () => flipSidebar(document, 'hide');
   return (
-    <Button className="insight-sidebar-close-button" onClick={handleClick}>
+    <div className="insight-sidebar-close-button" onClick={handleClick}>
       ×
-    </Button>
+    </div>
   );
 };
 

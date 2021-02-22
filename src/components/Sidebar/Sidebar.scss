@@ -9,18 +9,31 @@ body {
   margin: 0;
   list-style: none;
   text-align: left;
+  background: transparent;
 }
 
 .insight-sidebar-container {
+  background: white;
   position: fixed;
   top: 0;
   bottom: 0;
   right: 0;
   width: 450px;
   z-index: 9998;
+  transition-property: width;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+
   &.hidden {
     width: 0;
-    transition: width 800ms ease-out;
+  }
+
+  .ant-tabs-tab {
+    margin: auto 10px;
+  }
+
+  .ant-tabs-nav-list {
+    width: 100%;
   }
 }
 
@@ -28,23 +41,21 @@ body {
   border: 0;
   outline: 0;
 
-  span {
-    cursor: pointer;
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: white;
-    border-radius: 50%;
-    font-size: 18px;
-    top: 20px;
-    left: -11.5px;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #ccc;
-    color: black;
-    z-index: 9999;
-  }
+  z-index: 9999;
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  border-radius: 50%;
+  font-size: 18px;
+  top: 20px;
+  left: -11.5px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  color: black;
 
   &.hidden {
     background: transparent;
