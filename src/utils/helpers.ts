@@ -101,10 +101,18 @@ export const loadPublicFile: (path: string) => Promise<string> = async (path) =>
     request.send();
   });
 
+
+export const removeWww = (s: string) => {
+  if (s?.startsWith("www.")) {
+    return s.slice(4);
+  }
+  return s
+}
+
 export const extractHostnameFromUrl = (s: string) => {
   let url: string;
   if (s.startsWith('http://') || s.startsWith('https://')) url = s;
-  else url = `https://${s}`;
+  else url = `https://${removeWww(s)}`;
   const raw = new URL(url);
   return {
     hostname: raw.hostname,
