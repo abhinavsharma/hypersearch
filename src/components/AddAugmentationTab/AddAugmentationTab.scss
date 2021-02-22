@@ -1,13 +1,16 @@
 .add-augmentation-tab {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   font-size: 20px !important;
   padding: 5px !important;
-  width: 30px;
-  min-width: 0 !important;
+  margin-right: -5px !important;
 }
 
 .add-augmentation-tab-header {
   display: flex;
   width: 100%;
+  margin-bottom: -2px;
 
   & > span {
     display: inline-flex;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ampRemover from 'utils/ampRemover';
 import Tabs from 'antd/lib/tabs';
 import { AddAugmentationTab } from 'components/AddAugmentationTab/AddAugmentationTab';
+import { AllAugmentationPage } from 'components/AllAugmentationPage/AllAugmentationPage';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
 
@@ -45,6 +46,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
       renderTabBar={TabBar}
       activeKey={activeKey}
     >
+      {/* First tab is always the augmentation page */}
       <TabPane
         key="0"
         tab={
@@ -55,44 +57,45 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
           />
         }
       >
-        <h1>Add Augmentation Page</h1>
+        <AllAugmentationPage />
       </TabPane>
-      {tabs.map((tab, i) => {
-        const tabId = `insight-tab-frame-${encodeURIComponent(tab.url.href)}`;
-        return (
-          <TabPane
-            key={i + 1}
-            tab={
-              <TabTitle
-                title={tab.title}
-                active={activeKey === (i + 1).toString()}
-                length={tabs.length}
-                onClick={() => setActiveKey((i + 1).toString())}
+      {activeKey !== '0' &&
+        tabs.map((tab, i) => {
+          const tabId = `insight-tab-frame-${encodeURIComponent(tab.url.href)}`;
+          return (
+            <TabPane
+              key={i + 1}
+              tab={
+                <TabTitle
+                  title={tab.title}
+                  active={activeKey === (i + 1).toString()}
+                  length={tabs.length}
+                  onClick={() => setActiveKey((i + 1).toString())}
+                />
+              }
+              className="insight-full-tab"
+              forceRender
+            >
+              <iframe
+                src={tab.url.href}
+                className="insight-tab-iframe"
+                id={tabId}
+                onLoad={(e) => injectAmpRemover(e.currentTarget)}
               />
-            }
-            className="insight-full-tab"
-            forceRender
-          >
-            <iframe
-              src={tab.url.href}
-              className="insight-tab-iframe"
-              id={tabId}
-              onLoad={(e) => injectAmpRemover(e.currentTarget)}
-            />
-            <div className="insight-tab-bottom-message">
-              <a
-                target="blank"
-                href={
-                  'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' +
-                  tab.title
-                }
-              >
-                Improve this search filter
-              </a>
-            </div>
-          </TabPane>
-        );
-      })}
+              <div className="insight-tab-bottom-message">
+                <a
+                  target="blank"
+                  href={
+                    'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' +
+                    tab.title
+                  }
+                >
+                  Improve this search filter
+                </a>
+              </div>
+            </TabPane>
+          );
+        })}
     </Tabs>
   );
 };
