@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  border-left: 3px solid black;
+  border-left: 2px solid #ccc;
 }
 
 .insight-full-tab {
@@ -29,17 +29,20 @@
   cursor: pointer;
   border-radius: 10px 10px 0 0;
   border-bottom: 0;
-  margin-bottom: -11px;
+  margin-bottom: -12px;
+  width: 100%;
 
   &.active {
     background-color: white;
     font-weight: bold;
-    border-color: white;
   }
 }
 
 .insight-tab-bar {
   padding-left: 15px;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid #ccc !important;
+  background: #efefef;
   .ant-tabs-ink-bar {
     display: none;
   }
