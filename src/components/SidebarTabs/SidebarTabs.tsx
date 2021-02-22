@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import ampRemover from 'utils/ampRemover';
 import Tabs from 'antd/lib/tabs';
+import { AddAugmentationTab } from 'components/AddAugmentationTab/AddAugmentationTab';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
 
 const { TabPane } = Tabs;
 
-const TabTitle: TabTitle = ({ title, active, length }) => {
+const TabTitle: TabTitle = ({ title, active, length, onClick }) => {
   const style = {
     width: `${(100 / length) | 0}%`,
   };
 
   return (
-    <span className={`insight-tab-title ${active ? 'active' : ''}`} style={style}>
+    <span className={`insight-tab-title ${active ? 'active' : ''}`} style={style} onClick={onClick}>
       {title}
     </span>
   );
@@ -42,18 +43,31 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
       defaultActiveKey="1"
       className="insight-tab-container"
       renderTabBar={TabBar}
-      onChange={handleChange}
+      activeKey={activeKey}
     >
+      <TabPane
+        key="0"
+        tab={
+          <AddAugmentationTab
+            active={activeKey === '0'}
+            setActiveKey={setActiveKey}
+            onClick={() => activeKey !== '0' && setActiveKey('0')}
+          />
+        }
+      >
+        <h1>Add Augmentation Page</h1>
+      </TabPane>
       {tabs.map((tab, i) => {
         const tabId = `insight-tab-frame-${encodeURIComponent(tab.url.href)}`;
         return (
           <TabPane
-            key={tab.title}
+            key={i + 1}
             tab={
               <TabTitle
                 title={tab.title}
                 active={activeKey === (i + 1).toString()}
                 length={tabs.length}
+                onClick={() => setActiveKey((i + 1).toString())}
               />
             }
             className="insight-full-tab"
@@ -66,9 +80,19 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
               onLoad={(e) => injectAmpRemover(e.currentTarget)}
             />
             <div className="insight-tab-bottom-message">
-              <a target="blank" href={'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' + tab.title}>Improve this search filter</a></div>
+              <a
+                target="blank"
+                href={
+                  'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' +
+                  tab.title
+                }
+              >
+                Improve this search filter
+              </a>
+            </div>
           </TabPane>
         );
       })}
-    </Tabs>);
+    </Tabs>
+  );
 };

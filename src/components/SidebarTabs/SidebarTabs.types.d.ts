@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactElement } from 'react';
+import { FunctionComponent, ReactElement, MouseEvent } from 'react';
 
 declare module './SidebarTabs' {
   type SidebarTabsProps = {
@@ -9,6 +9,7 @@ declare module './SidebarTabs' {
     title: string;
     active?: boolean;
     length: number;
+    onClick?: (e: MouseEvent<HTMLDivElement, any>) => void;
   };
 
   type SidebarTabs = FunctionComponent<SidebarTabsProps>;
