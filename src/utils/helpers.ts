@@ -19,7 +19,7 @@ function swapUrlsForDebuggingInJsonResponse(json: object): object {
 }
 
 export async function getAPI(api: string, params = {}): Promise<any> {
-  let url: URL = new URL(LUMOS_API_URL + api);
+  const url: URL = new URL(LUMOS_API_URL + api);
   Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
   try {
     const response = await fetch(url.href, {
@@ -46,7 +46,7 @@ export async function getAPI(api: string, params = {}): Promise<any> {
 
 export async function postAPI(api: string, params = {}, body = {}): Promise<any> {
   try {
-    let url: URL = new URL(LUMOS_API_URL + api);
+    const url: URL = new URL(LUMOS_API_URL + api);
     Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
 
     const response = await fetch(url.href, {
@@ -101,21 +101,20 @@ export const loadPublicFile: (path: string) => Promise<string> = async (path) =>
     request.send();
   });
 
-
 export const removeWww = (s: string) => {
-  if (s?.startsWith("www.")) {
+  if (s?.startsWith('www.')) {
     return s.slice(4);
   }
-  return s
-}
+  return s;
+};
 
 export const extractHostnameFromUrl = (s: string) => {
   let url: string;
   if (s.startsWith('http://') || s.startsWith('https://')) url = s;
-  else url = `https://${removeWww(s)}`;
+  else url = `https://${s}`;
   const raw = new URL(url);
   return {
-    hostname: raw.hostname,
+    hostname: removeWww(raw.hostname),
     params: raw.searchParams
       .toString()
       .split('&')
