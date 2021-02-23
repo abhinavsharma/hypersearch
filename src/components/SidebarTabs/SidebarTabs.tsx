@@ -65,9 +65,10 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
               id={tabId}
               onLoad={(e) => injectAmpRemover(e.currentTarget)}
             />
+            <div className="insight-tab-bottom-message">
+              <a target="blank" href={'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' + tab.title}>Improve this search filter</a></div>
           </TabPane>
         );
       })}
-    </Tabs>
-  );
+    </Tabs>);
 };

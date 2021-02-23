@@ -38,6 +38,21 @@
   }
 }
 
+.insight-tab-bottom-message {
+  position: absolute;
+  bottom: 0;
+  background: #eee;
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid #ccc;
+  color: black;
+  padding: 10px;
+
+  a {
+    text-decoration: none;
+  }
+}
+
 .insight-full-tab {
   display: flex;
   flex-direction: column;
