@@ -1,7 +1,7 @@
 import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { extractHostnameFromUrl } from 'utils/helpers';
 
-const CUSTOM_SEARCH_ENGINES =
+export const CUSTOM_SEARCH_ENGINES =
   'https://raw.githubusercontent.com/insightbrowser/augmentations/main/serp_query_selectors.json';
 
 const getCustomSearchEngine = async (url: string) => {
