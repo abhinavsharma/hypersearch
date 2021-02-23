@@ -4,7 +4,7 @@ import { nativeBrowserAddReactAppListener } from 'lib/nativeMessenger';
 import { reactInjector } from 'lib/reactInjector';
 import { SidebarTabsManager } from 'lib/sidebarTabsManager/sidebarTabsManager';
 import { handleSubtabApiResponse } from 'lib/handleSubtabApiResponse';
-import { loadPublicFile, runFunctionWhenDocumentReady } from 'utils/helpers';
+import { runFunctionWhenDocumentReady } from 'utils/helpers';
 import { Sidebar } from 'components/Sidebar/Sidebar';
 import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 
@@ -20,19 +20,16 @@ const loadSidebarCss = () => {
   document.head.appendChild(link);
 };
 
-const createSidebar = async (document: Document, tabs: SidebarTab[]) => {
+const createSidebar = (document: Document, tabs: SidebarTab[]) => {
   debug('function call - createSidebar', tabs);
 
   loadSidebarCss();
 
   const wrapper = document.createElement('div');
-  const result: string = await loadPublicFile('./index.html');
-  wrapper.innerHTML = result;
+  wrapper.id = 'sidebar-root';
   document.body.appendChild(wrapper);
-
-  const sidebarRoot = document.getElementById('sidebar-root');
   const sidebarInit = React.createElement(Sidebar, { tabs });
-  reactInjector(sidebarRoot, sidebarInit, 'sidebar-root-iframe', style);
+  reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', style);
 
   if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH) {
     flipSidebar(document, 'hide');
