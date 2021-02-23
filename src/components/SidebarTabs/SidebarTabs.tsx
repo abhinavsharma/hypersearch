@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ampRemover from 'utils/ampRemover';
 import Tabs from 'antd/lib/tabs';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
@@ -20,6 +21,14 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
     setActiveKey((tabs.findIndex((i) => i.title === e) + 1).toString());
   };
 
+  const injectAmpRemover = async (el: HTMLIFrameElement) => {
+    const currentDocument = el.contentWindow.document;
+    const scriptTag = currentDocument.createElement('script');
+    scriptTag.type = 'text/javascript';
+    scriptTag.innerHTML = ampRemover;
+    currentDocument.getElementsByTagName('head')[0].appendChild(scriptTag);
+  };
+
   return (
     <Tabs
       defaultActiveKey="1"
@@ -28,13 +37,20 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
       onChange={handleChange}
     >
       {tabs.map((tab, i) => {
+        const tabId = `insight-tab-frame-${encodeURIComponent(tab.url.href)}`;
         return (
           <TabPane
             key={tab.title}
             tab={<TabTitle title={tab.title} active={activeKey === (i + 1).toString()} />}
             className="insight-full-tab"
+            forceRender
           >
-            <iframe src={tab.url.href} className="insight-tab-iframe" />
+            <iframe
+              src={tab.url.href}
+              className="insight-tab-iframe"
+              id={tabId}
+              onLoad={(e) => injectAmpRemover(e.currentTarget)}
+            />
           </TabPane>
         );
       })}
