@@ -1,35 +1,51 @@
 import { CUSTOM_SEARCH_ENGINES } from 'lib/handleSubtabApiResponse';
+import { debug } from 'lumos-shared-js';
+
+const deleteItem = async (key: string) => {
+  debug('syncLocalSearchEngines - deleted item', key);
+  return await new Promise((resolve) =>
+    chrome.storage.sync.remove(key, () => resolve('Successfully deleted!')),
+  );
+};
 
 export const syncLocalSearchEngines = async () => {
+  debug('function call - syncLocalSearchEngines');
   const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
   const parsed: Record<string, CustomSearchEngine> = await customSearchEngines.json();
+  chrome.storage.sync.get(async (items) => {
+    debug('syncLocalSearchEngines - stored items', items);
+    Object.entries(items).forEach(async ([key, storedItem]: [string, CustomSearchEngine]) => {
+      // Check if stored value has the required structure
+      if (!(storedItem.querySelector && storedItem.search_engine_json)) deleteItem(key);
 
-  chrome.storage.sync.get((items) => {
-    Object.entries(items).forEach(([key, item]: [string, CustomSearchEngine]) => {
-      if (!(item.hasOwnProperty('querySelector') && item.hasOwnProperty('search_engine_json'))) {
-        chrome.storage.sync.remove(key);
-      }
-
-      const desktopSelector = item?.querySelector?.desktop;
-
-      const storedItem = Object.values(parsed).find(
-        ({ querySelector }) => querySelector.desktop == desktopSelector,
+      // Get matching item from the remote JSON blob
+      const remoteItem = Object.values(parsed).find(
+        ({ querySelector }) =>
+          storedItem.querySelector !== undefined &&
+          querySelector?.desktop === storedItem?.querySelector?.desktop,
       );
 
-      if (!storedItem) {
-        chrome.storage.sync.remove(key);
-      }
+      // Remove item from storage if its not present in the remote
+      if (!remoteItem) deleteItem(key);
 
-      if (storedItem.querySelector.desktop !== desktopSelector) {
-        chrome.storage.sync.remove(key);
-      }
+      // Remove item if required params are not matching
+      const paramsMismatch =
+        storedItem?.search_engine_json?.required_params
+          .reduce((a, c) => {
+            !remoteItem?.search_engine_json?.required_params.includes(c) && a.push(false);
+            return a;
+          }, [])
+          .indexOf(false) > -1;
 
+      if (paramsMismatch) deleteItem(key);
+
+      // Remove item if required prefix is not matching
       if (
-        !Array.isArray(item.search_engine_json.required_params) ||
-        typeof item.search_engine_json.required_prefix !== 'string'
-      ) {
-        chrome.storage.sync.remove(key);
-      }
+        storedItem?.search_engine_json?.required_prefix !==
+          remoteItem?.search_engine_json?.required_prefix &&
+        storedItem?.search_engine_json?.required_prefix !== undefined
+      )
+        deleteItem(key);
     });
   });
 };

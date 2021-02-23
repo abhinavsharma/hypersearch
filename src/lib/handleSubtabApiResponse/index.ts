@@ -5,12 +5,14 @@ export const CUSTOM_SEARCH_ENGINES =
   'https://raw.githubusercontent.com/insightbrowser/augmentations/main/serp_query_selectors.json';
 
 const getCustomSearchEngine = async (url: string) => {
+  debug('function call - getCustomSearchEngine', url);
   let storedValue: Record<string, CustomSearchEngine>;
   const { hostname, params } = extractHostnameFromUrl(url);
   if (!hostname) return null;
   const storageKey = hostname.replace(/\./g, '_'); // Be safe using `_` instead dots
   storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
-  if (!storedValue?.storageKey) {
+  if (!storedValue) {
+    debug('getCustomSearchEngine - Value not found in local storage, fetching from remote');
     const result: CustomSearchEngine = Object.create({});
     const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
     const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
@@ -32,6 +34,7 @@ const getCustomSearchEngine = async (url: string) => {
       [storageKey]: result,
     };
   }
+  debug('getCustomSearchEngine - processed', storedValue[storageKey]);
   return storedValue[storageKey] ?? null;
 };
 
@@ -40,11 +43,8 @@ export const handleSubtabApiResponse = async (
   document: Document,
   response: SubtabsResponse,
 ) => {
-  debug('function call - handleSubtabApiResponse', url, response);
-  if (!(url && document && response)) {
-    debug('handleSubtabApiResponse - ERROR', url, document, response);
-    return null;
-  }
+  debug('function call - handleSubtabApiResponse', response);
+  if (!(url && document && response)) return null;
   const sidebarTabs: SidebarTab[] = [];
   const suggestedAugmentationResponse = response.suggested_augmentations;
   const customSearchEngine = await getCustomSearchEngine(url.href);

@@ -1,5 +1,5 @@
 import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
-import { loadHiddenMessenger } from 'lib/backgroundMessenger/backgroundMessenger';
+import { BackgroundMessenger } from 'lib/backgroundMessenger/backgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import { syncLocalSearchEngines } from 'lib/syncLocalSearchEngines/syncLocalSearchEngines';
 
@@ -69,8 +69,10 @@ function onUpdatedListener(tabId, changeInfo, tab) {
   }
   URL_TO_TAB[tab.url] = tabId;
 }
-window.onload = function () {
-  loadHiddenMessenger(document, window);
+
+window.onload = () => {
+  const messenger = new BackgroundMessenger();
+  messenger.loadHiddenMessenger(document, window);
 };
 
 chrome.tabs.onUpdated.addListener(onUpdatedListener);

@@ -39,7 +39,7 @@ class SidebarTabsManager {
   }
 
   public async fetchSubtabs(url: URL) {
-    debug('function call - fetchSubtabs', url);
+    debug('function call - fetchSubtabs', url.href);
     const response_json = await postAPI('subtabs', { url: url.href }, { client: 'desktop' });
     return response_json as SubtabsResponse;
   }
