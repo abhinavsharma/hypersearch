@@ -56,7 +56,9 @@ body {
   width: 20px;
   height: 20px;
   border: 2px solid #ccc;
-  color: black;
+  color: #aaa;
+  padding-bottom: 3px;
+  padding-top: -3px;
 
   &.hidden {
     background: transparent;
