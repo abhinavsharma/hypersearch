@@ -18,7 +18,9 @@ export const syncLocalSearchEngines = async () => {
 
       // Get matching item from the remote JSON blob
       const remoteItem = Object.values(parsed).find(
-        ({ querySelector }) => querySelector?.desktop == storedItem.querySelector.desktop,
+        ({ querySelector }) =>
+          storedItem.querySelector !== undefined &&
+          querySelector?.desktop === storedItem?.querySelector?.desktop,
       );
 
       // Remove item from storage if its not present in the remote
@@ -26,9 +28,9 @@ export const syncLocalSearchEngines = async () => {
 
       // Remove item if required params are not matching
       const paramsMismatch =
-        storedItem.search_engine_json.required_params
+        storedItem?.search_engine_json?.required_params
           .reduce((a, c) => {
-            !remoteItem.search_engine_json.required_params.includes(c) && a.push(false);
+            !remoteItem?.search_engine_json?.required_params.includes(c) && a.push(false);
             return a;
           }, [])
           .indexOf(false) > -1;
@@ -37,8 +39,9 @@ export const syncLocalSearchEngines = async () => {
 
       // Remove item if required prefix is not matching
       if (
-        storedItem.search_engine_json.required_prefix !==
-        remoteItem.search_engine_json.required_prefix
+        storedItem?.search_engine_json?.required_prefix !==
+          remoteItem?.search_engine_json?.required_prefix &&
+        storedItem?.search_engine_json?.required_prefix !== undefined
       )
         deleteItem(key);
     });
