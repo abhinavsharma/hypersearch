@@ -11,7 +11,7 @@ const getCustomSearchEngine = async (url: string) => {
   if (!hostname) return null;
   const storageKey = hostname.replace(/\./g, '_'); // Be safe using `_` instead dots
   storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
-  if (!storedValue) {
+  if (!storedValue.storageKey) {
     debug('getCustomSearchEngine - Value not found in local storage, fetching from remote');
     const result: CustomSearchEngine = Object.create({});
     const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
