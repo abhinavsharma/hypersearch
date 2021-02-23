@@ -10,15 +10,15 @@ import { v1 as uuidv1 } from 'uuid';
 
 let IS_READY = false;
 let REACT_APP_LOADED = false;
-let MESSENGER_ID = uuidv1();
+const MESSENGER_ID = uuidv1();
 let MESSENGER_IFRAME = null;
 
 export const isMessengerReady = () => REACT_APP_LOADED && IS_READY && !!MESSENGER_IFRAME;
 
 const nativeBrowserPostMessageToReactApp: NativePostMessenger = ({ command, data }) => {
-  debug('function call - background nativeBrowserPostMessageToReactApp');
-  let iframe = MESSENGER_IFRAME;
-  let RETRY_TIME = 100;
+  debug('function call - background nativeBrowserPostMessageToReactApp', command, data);
+  const iframe = MESSENGER_IFRAME;
+  const RETRY_TIME = 100;
 
   if (!isMessengerReady()) {
     setTimeout(function () {
@@ -45,13 +45,13 @@ function monitorMessengerState(window: Window): void {
         switch (msg.data.command) {
           case 'readyConsumerBar':
           case 'reactAppLoaded':
-            let messengerHref = msg.data.messengerUrl;
+            const messengerHref = msg.data.messengerUrl;
             if (!messengerHref) return;
-            let messengerUrl = new URL(messengerHref);
+            const messengerUrl = new URL(messengerHref);
             if (!messengerUrl) return;
-            let searchParams = new URLSearchParams(messengerUrl.search);
+            const searchParams = new URLSearchParams(messengerUrl.search);
             if (!searchParams) return;
-            let messengerId = searchParams.get('messengerId');
+            const messengerId = searchParams.get('messengerId');
             if (!messengerId) return;
             if (messengerId === MESSENGER_ID) {
               if (msg.data.command === 'reactAppLoaded') {
@@ -169,7 +169,7 @@ export function loadHiddenMessenger(document: Document, window: Window): void {
     return;
   }
   // 1. load iframe
-  let iframe = document.createElement('iframe');
+  const iframe = document.createElement('iframe');
   iframe.src = LUMOS_APP_URL + '?messengerId=' + MESSENGER_ID;
   iframe.setAttribute('id', CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN);
   iframe.setAttribute(

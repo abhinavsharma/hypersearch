@@ -19,7 +19,7 @@ const loadSidebarCss = () => {
 };
 
 const createSidebar = async (document: Document, tabs: SidebarTab[]) => {
-  debug('function call - createSidebar');
+  debug('function call - createSidebar', tabs);
 
   loadSidebarCss();
 
@@ -32,9 +32,7 @@ const createSidebar = async (document: Document, tabs: SidebarTab[]) => {
   const sidebarInit = React.createElement(Sidebar, { tabs });
   reactInjector(sidebarRoot, sidebarInit, 'sidebar-root-iframe', style);
 
-  if (window.innerWidth <= 1200) {
-    flipSidebar(document, 'hide');
-  }
+  if (window.innerWidth <= 1200) flipSidebar(document, 'hide');
 
   nativeBrowserAddReactAppListener({
     window,
@@ -50,11 +48,11 @@ const createSidebar = async (document: Document, tabs: SidebarTab[]) => {
 };
 
 export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
-  debug('function call - loadOrUpdateSidebar', document, url);
+  debug('function call - loadOrUpdateSidebar', document);
+
   const firstChild = document.documentElement.firstChild;
-  if (style === firstChild) {
-    document.documentElement.removeChild(style);
-  }
+  if (style === firstChild) document.documentElement.removeChild(style);
+
   const sidebarTabsManager = new SidebarTabsManager();
   sidebarTabsManager.fetchSubtabs(url).then((response) => {
     if (!response) return;
