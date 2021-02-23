@@ -44,6 +44,10 @@
   margin-bottom: 0 !important;
   background: #efefef;
 
+  .ant-tabs-nav-more {
+    display: none;
+  }
+
   .ant-tabs-ink-bar {
     display: none;
   }
