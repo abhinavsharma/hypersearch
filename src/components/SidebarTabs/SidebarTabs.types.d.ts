@@ -1,4 +1,4 @@
-import { FunctionComponent, JSXElement } from 'react';
+import { FunctionComponent, ReactElement } from 'react';
 
 declare module './SidebarTabs' {
   type SidebarTabsProps = {
@@ -8,6 +8,7 @@ declare module './SidebarTabs' {
   type TabTitleProps = {
     title: string;
     active?: boolean;
+    length: number;
   };
 
   type SidebarTabs = FunctionComponent<SidebarTabsProps>;
@@ -16,5 +17,8 @@ declare module './SidebarTabs' {
 
   type _TabsProps = import('antd/lib/tabs').TabsProps;
 
-  type TabBar = (props: _TabsProps, DefaultTabBar: (props: _TabsProps) => JSXElement) => JSXElement;
+  type TabBar = (
+    props: _TabsProps,
+    DefaultTabBar: (props: _TabsProps) => ReactElement,
+  ) => ReactElement;
 }
