@@ -16,36 +16,43 @@ export const syncLocalSearchEngines = async () => {
     debug('syncLocalSearchEngines - stored items', items);
     Object.entries(items).forEach(async ([key, storedItem]: [string, CustomSearchEngine]) => {
       // Check if stored value has the required structure
-      if (!(storedItem.querySelector && storedItem.search_engine_json)) deleteItem(key);
+      if (!(storedItem.querySelector && storedItem.search_engine_json)) {
+        await deleteItem(key);
+      }
 
       // Get matching item from the remote JSON blob
       const remoteItem = Object.values(parsed).find(
         ({ querySelector }) =>
-          storedItem.querySelector !== undefined &&
+          querySelector?.desktop !== undefined &&
           querySelector?.desktop === storedItem?.querySelector?.desktop,
       );
 
       // Remove item from storage if its not present in the remote
-      if (!remoteItem) deleteItem(key);
+      if (!remoteItem) {
+        await deleteItem(key);
+      }
 
       // Remove item if required params are not matching
       const paramsMismatch =
         storedItem?.search_engine_json?.required_params
           .reduce((a, c) => {
-            !remoteItem?.search_engine_json?.required_params.includes(c) && a.push(false);
+            a.push(remoteItem?.search_engine_json?.required_params.includes(c));
             return a;
           }, [])
           .indexOf(false) > -1;
 
-      if (paramsMismatch) deleteItem(key);
+      if (paramsMismatch) {
+        await deleteItem(key);
+      }
 
       // Remove item if required prefix is not matching
       if (
         storedItem?.search_engine_json?.required_prefix !==
           remoteItem?.search_engine_json?.required_prefix &&
-        storedItem?.search_engine_json?.required_prefix !== undefined
-      )
-        deleteItem(key);
+        remoteItem?.search_engine_json?.required_prefix !== undefined
+      ) {
+        await deleteItem(key);
+      }
     });
   });
 };
