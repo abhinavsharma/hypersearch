@@ -17,15 +17,26 @@ export const reactInjector = (
   // Create an isolated iframe, preventing all external style modifications.
   const iframe = document.createElement('iframe');
   iframe.id = frameId;
+
   el.appendChild(iframe);
-  // This is the actual document element of the iframe, we can manipulate its content
-  // by using the `contentWindow.document` property.
-  const doc = iframe.contentWindow.document;
-  // Append the style tag to the iframe's head, so styles will be applied.
-  doc.getElementsByTagName('head')[0].appendChild(styleEl);
-  // Render the react app into the body element.
-  doc.getElementsByTagName('html')[0].setAttribute('style', 'overflow: hidden;');
-  const div = document.createElement('div');
-  const root = doc.body.appendChild(div);
-  render(reactEl, root);
+
+  const injector = () => {
+    // This is the actual document element of the iframe, we can manipulate its content
+    // by using the `contentWindow.document` property.
+    const doc = iframe.contentWindow.document;
+    // Append the style tag to the iframe's head, so styles will be applied.
+    doc.getElementsByTagName('head')[0].appendChild(styleEl);
+    // Render the react app into the body element.
+    doc.getElementsByTagName('html')[0].setAttribute('style', 'overflow: hidden;');
+    const div = document.createElement('div');
+    const root = doc.body.appendChild(div);
+    render(reactEl, root);
+  };
+
+  if (navigator.userAgent.search('Firefox') > -1) {
+    iframe.src = chrome.runtime.getURL('index.html');
+    iframe.onload = () => injector();
+  } else {
+    injector();
+  }
 };
