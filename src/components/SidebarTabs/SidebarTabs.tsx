@@ -6,9 +6,17 @@ import './SidebarTabs.scss';
 
 const { TabPane } = Tabs;
 
-const TabTitle: TabTitle = ({ title, active }) => (
-  <div className={`insight-tab-title ${active ? 'active' : ''}`}>{title}</div>
-);
+const TabTitle: TabTitle = ({ title, active, length }) => {
+  const style = {
+    width: `${(100 / length) | 0}%`,
+  };
+
+  return (
+    <span className={`insight-tab-title ${active ? 'active' : ''}`} style={style}>
+      {title}
+    </span>
+  );
+};
 
 const TabBar: TabBar = (props, DefaultTabBar) => (
   <DefaultTabBar {...props} className="insight-tab-bar" />
@@ -41,7 +49,13 @@ export const SidebarTabs: SidebarTabs = ({ tabs }) => {
         return (
           <TabPane
             key={tab.title}
-            tab={<TabTitle title={tab.title} active={activeKey === (i + 1).toString()} />}
+            tab={
+              <TabTitle
+                title={tab.title}
+                active={activeKey === (i + 1).toString()}
+                length={tabs.length}
+              />
+            }
             className="insight-full-tab"
             forceRender
           >
