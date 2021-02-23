@@ -10,7 +10,7 @@ const getCustomSearchEngine = async (url: string) => {
   if (!hostname) return null;
   const storageKey = hostname.replace(/\./g, '_'); // Be safe using `_` instead dots
   storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
-  if (!storedValue) {
+  if (!storedValue?.storageKey) {
     const result: CustomSearchEngine = Object.create({});
     const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
     const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
@@ -24,10 +24,12 @@ const getCustomSearchEngine = async (url: string) => {
         Object.assign(result, { ...customSearchEngine });
     });
     await new Promise((resolve) =>
-      chrome.storage.sync.set({ [storageKey]: result }, () => resolve('Stored successfully')),
+      chrome.storage.sync.set({ [storageKey]: result }, () => {
+        resolve('Stored successfully');
+      }),
     );
     storedValue = {
-      storageKey: result,
+      [storageKey]: result,
     };
   }
   return storedValue[storageKey] ?? null;
