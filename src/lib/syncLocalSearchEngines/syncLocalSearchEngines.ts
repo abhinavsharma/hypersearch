@@ -2,6 +2,7 @@ import { CUSTOM_SEARCH_ENGINES } from 'lib/handleSubtabApiResponse';
 import { debug } from 'lumos-shared-js';
 
 const deleteItem = async (key: string) => {
+  debug('syncLocalSearchEngines - deleted item', key);
   return await new Promise((resolve) =>
     chrome.storage.sync.remove(key, () => resolve('Successfully deleted!')),
   );
@@ -12,6 +13,7 @@ export const syncLocalSearchEngines = async () => {
   const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
   const parsed: Record<string, CustomSearchEngine> = await customSearchEngines.json();
   chrome.storage.sync.get(async (items) => {
+    debug('syncLocalSearchEngines - stored items', items);
     Object.entries(items).forEach(async ([key, storedItem]: [string, CustomSearchEngine]) => {
       // Check if stored value has the required structure
       if (!(storedItem.querySelector && storedItem.search_engine_json)) deleteItem(key);
