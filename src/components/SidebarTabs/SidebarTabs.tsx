@@ -11,21 +11,13 @@ const { TabPane } = Tabs;
 // !DEV Toggle rendering augmentation tab
 const SHOW_AUGMENTATION_TAB = false;
 
-const TabTitle: TabTitle = ({ title, active, length, onClick, hide }) => {
-  const style = {
-    width: `${(100 / length) | 0}%`,
-  };
-
-  return (
-    <span
-      className={`insight-tab-title ${active ? 'active' : ''} ${hide ? 'hidden' : ''}`}
-      style={style}
-      onClick={onClick}
-    >
+const TabTitle: TabTitle = ({ title, active, onClick, hide }) => (
+  <div onClick={onClick} className="insight-tab-pill">
+    <span className={`insight-tab-title ${active ? 'active' : ''} ${hide ? 'hidden' : ''}`}>
       {title}
     </span>
-  );
-};
+  </div>
+);
 
 const TabBar: TabBar = (props, DefaultTabBar) => (
   <DefaultTabBar {...props} className="insight-tab-bar" />

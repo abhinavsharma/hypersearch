@@ -4,37 +4,54 @@
   min-height: 100vh;
   border-left: 2px solid #ccc;
 
-  .ant-tabs-tab {
+  .insight-tab-bar {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    padding: 10px;
-    text-align: center;
-    color: #333;
-    background: #efefef;
-    cursor: pointer;
-    border-radius: 0;
-    border-bottom: 0;
-    margin-bottom: -12px;
-    white-space: pre-wrap;
-    width: 100%;
+    height: 55px;
 
-    &:first-child {
-      width: auto;
-      background: #efefef !important;
+    .insight-tab-pill {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      white-space: nowrap;
+      align-items: center;
+      justify-content: center;
     }
-  }
 
-  .ant-tabs-tab-active {
-    color: #333;
-    background-color: white;
-    font-weight: bold;
+    .ant-tabs-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: auto;
+      color: #333;
+      background: #efefef;
+      cursor: pointer;
+      border-radius: 0;
+      border-bottom: 0;
+      white-space: pre-wrap;
+
+      &:first-child {
+        padding: 5px;
+        min-width: 30px;
+        width: auto;
+        background: #efefef !important;
+      }
+    }
+
+    .ant-tabs-tab-active {
+      color: #333;
+      background-color: white;
+      font-weight: bold;
+    }
   }
 }
 
 .insight-tab-title {
   color: #333;
+  padding: 10px 15px;
 
   &.hidden {
     display: none;
@@ -78,10 +95,16 @@
   background: #efefef;
 
   .ant-tabs-nav-more {
-    display: none;
+    display: block;
+    outline: none;
+    cursor: default;
   }
 
   .ant-tabs-ink-bar {
     display: none;
   }
+}
+
+.ant-tabs-dropdown {
+  display: none;
 }

@@ -4,19 +4,10 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import { AugmentationContext } from 'components/Sidebar/Sidebar';
-import { AllAugmentationsPage } from 'components/AllAugmentationsPage/AllAugmentationsPage';
+import { EditAugmentationPage } from 'components/EditAugmentationPage/EditAugmentationPage';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './ActiveAugmentationsPage.scss';
-import { EditAugmentationPage } from 'components/EditAugmentationPage/EditAugmentationPage';
-
-const AllAugmentationsButton = ({ suggested }) => (
-  <Link component={AllAugmentationsPage} componentProps={{ suggested }}>
-    <Button type="primary" block className="insight-add-augmentation-button">
-      See all suggested augmentations
-    </Button>
-  </Link>
-);
 
 export const ActiveAugmentationsPage = () => {
   const { suggested, installed, url } = useContext<AugmentationContext>(AugmentationContext);
@@ -57,7 +48,6 @@ export const ActiveAugmentationsPage = () => {
             ))}
           </Col>
         </Row>
-        <AllAugmentationsButton suggested={suggested} />
       </div>
     </Router>
   );
