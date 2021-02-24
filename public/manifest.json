@@ -29,7 +29,8 @@
             "all_frames": true,
             "js": [
                 "content_frames.js"
-            ]
+            ],
+            "run_at": "document_end"
         },
         {
             "matches": [
