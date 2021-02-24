@@ -9,6 +9,8 @@ export const AugmentationContext = createContext(null);
 const XIcon: XIcon = ({ setForceTab }) => {
   const handleClick = () => {
     setForceTab('1');
+    // Workaround to `useState`'s async nature. The timeout
+    // will ensure that the sidebar is collapsed properly.
     setTimeout(() => {
       flipSidebar(document, 'hide');
     }, 100);
