@@ -46,6 +46,7 @@ export const handleSubtabApiResponse = async (
   debug('function call - handleSubtabApiResponse', response);
   if (!(url && document && response)) return null;
   const sidebarTabs: SidebarTab[] = [];
+  const suggestedAugmentations: SuggestedAugmentationObject[] = [];
   const suggestedAugmentationResponse = response.suggested_augmentations;
   const customSearchEngine = await getCustomSearchEngine(url.href);
   if (!customSearchEngine) return;
@@ -68,6 +69,7 @@ export const handleSubtabApiResponse = async (
             customSearchUrl.searchParams.append('q', query + ' ' + appendage);
           }
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          suggestedAugmentations.push(augmentation);
           sidebarTabs.push({
             title: augmentation.name,
             url: customSearchUrl,
@@ -77,5 +79,5 @@ export const handleSubtabApiResponse = async (
       }
     }
   });
-  return sidebarTabs;
+  return { sidebarTabs, suggestedAugmentations };
 };

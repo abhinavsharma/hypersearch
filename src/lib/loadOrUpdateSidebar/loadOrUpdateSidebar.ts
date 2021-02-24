@@ -73,8 +73,13 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
     }
 
     runFunctionWhenDocumentReady(document, async () => {
-      const tabs = await handleSubtabApiResponse(url, document, response);
-      !!tabs?.length && createSidebar(document, tabs, response.suggested_augmentations, url.href);
+      const { sidebarTabs, suggestedAugmentations } = await handleSubtabApiResponse(
+        url,
+        document,
+        response,
+      );
+      !!sidebarTabs?.length &&
+        createSidebar(document, sidebarTabs, suggestedAugmentations, url.href);
     });
   });
 };

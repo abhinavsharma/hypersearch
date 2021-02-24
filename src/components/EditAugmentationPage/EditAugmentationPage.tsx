@@ -1,13 +1,18 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Switch from 'antd/lib/switch';
+import Typography from 'antd/lib/typography';
 import { goBack } from 'route-lite';
 import 'antd/lib/button/style/index.css';
+import 'antd/lib/typography/style/index.css';
 import 'antd/lib/switch/style/index.css';
+import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './EditAugmentationPage.scss';
+
+const { Text } = Typography;
 
 const UploadOutlined = React.lazy(
   async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
@@ -54,13 +59,25 @@ const Header = () => (
 );
 
 export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, enabled }) => {
+  const [name, setName] = useState<string>(augmentation.name);
+
+  const handleEditName = {
+    onChange: setName,
+    autoSize: {
+      minRows: 1,
+      maxRows: 1,
+    },
+  };
+
   return (
     <div className="edit-augmentation-page-container">
       <Header />
       <div className="edit-augmentation-page-wrapper">
         <Row>
           <Col xs={12}>Name</Col>
-          <Col xs={12}>{augmentation.name}</Col>
+          <Col xs={12}>
+            <Text editable={handleEditName}>{name}</Text>
+          </Col>
         </Row>
         <Row>
           <Col xs={12}>Description</Col>
