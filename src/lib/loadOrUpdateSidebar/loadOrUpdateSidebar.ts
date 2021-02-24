@@ -20,7 +20,12 @@ const loadSidebarCss = () => {
   document.head.appendChild(link);
 };
 
-const createSidebar = (document: Document, tabs: SidebarTab[]) => {
+const createSidebar = (
+  document: Document,
+  tabs: SidebarTab[],
+  suggestedAugmentations: SuggestedAugmentationObject[],
+  url: string,
+) => {
   debug('function call - createSidebar', tabs);
 
   loadSidebarCss();
@@ -28,7 +33,11 @@ const createSidebar = (document: Document, tabs: SidebarTab[]) => {
   const wrapper = document.createElement('div');
   wrapper.id = 'sidebar-root';
   document.body.appendChild(wrapper);
-  const sidebarInit = React.createElement(Sidebar, { tabs });
+  const sidebarInit = React.createElement(Sidebar, {
+    url,
+    tabs,
+    suggestedAugmentations,
+  });
   reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', style);
 
   if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH) {
@@ -65,7 +74,7 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
 
     runFunctionWhenDocumentReady(document, async () => {
       const tabs = await handleSubtabApiResponse(url, document, response);
-      !!tabs?.length && createSidebar(document, tabs);
+      !!tabs?.length && createSidebar(document, tabs, response.suggested_augmentations, url.href);
     });
   });
 };

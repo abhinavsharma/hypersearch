@@ -1,0 +1,58 @@
+.inisight-active-augmentations-page {
+  display: block;
+  position: absolute;
+  height: calc(100% -55px);
+  width: 100%;
+  top: 55px;
+  bottom: 0;
+  background: #efefef;
+  overflow-y: auto !important;
+
+  h2 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 35px auto 10px 5px;
+  }
+
+  h3 {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 400;
+    margin-left: 6px;
+    margin-top: -10px;
+  }
+
+  a > button.ant-btn-primary {
+    color: black;
+    background-color: white;
+    border-color: white;
+    margin-top: 15px;
+    height: 40px;
+    text-align: left;
+
+    &:hover {
+      border-color: #efefef;
+      background: #efefef;
+    }
+  }
+
+  .ant-row {
+    .ant-col {
+      width: 450px;
+
+      button {
+        background: white;
+        text-align: left;
+        font-weight: bold;
+
+        &:hover {
+          background: #efefef;
+        }
+
+        &.installed-augmentation-button {
+          color: #ccc;
+        }
+      }
+    }
+  }
+}
