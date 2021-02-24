@@ -8,6 +8,9 @@ import './SidebarTabs.scss';
 
 const { TabPane } = Tabs;
 
+// !DEV Toggle rendering augmentation tab
+const SHOW_AUGMENTATION_TAB = false;
+
 const TabTitle: TabTitle = ({ title, active, length, onClick, hide }) => {
   const style = {
     width: `${(100 / length) | 0}%`,
@@ -47,19 +50,25 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
       activeKey={forceTab ?? activeKey}
     >
       {/* First tab is always the augmentation page */}
+
       <TabPane
         key="0"
         tab={
-          <AddAugmentationTab
-            active={activeKey === '0'}
-            setActiveKey={setActiveKey}
-            onClick={() => activeKey !== '0' && setActiveKey('0')}
-          />
+          SHOW_AUGMENTATION_TAB ? (
+            <AddAugmentationTab
+              active={activeKey === '0'}
+              setActiveKey={setActiveKey}
+              onClick={() => activeKey !== '0' && setActiveKey('0')}
+            />
+          ) : (
+            ''
+          )
         }
         forceRender
       >
         <ActiveAugmentationsPage />
       </TabPane>
+
       {tabs.map((tab, i) => {
         const tabId = `insight-tab-frame-${encodeURIComponent(tab.url.href)}`;
         return (
