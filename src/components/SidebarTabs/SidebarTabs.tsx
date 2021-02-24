@@ -9,7 +9,7 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-const SHOW_AUGMENTATION_TAB = true;
+const SHOW_AUGMENTATION_TAB = false;
 
 const TabTitle: TabTitle = ({ title, active, onClick, hide }) => (
   <div onClick={onClick} className="insight-tab-pill">
