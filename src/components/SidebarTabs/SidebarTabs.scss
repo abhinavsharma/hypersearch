@@ -17,9 +17,13 @@
     border-radius: 0;
     border-bottom: 0;
     margin-bottom: -12px;
-    margin-right: 15px;
     white-space: pre-wrap;
     width: 100%;
+
+    &:first-child {
+      width: auto;
+      background: #efefef !important;
+    }
   }
 
   .ant-tabs-tab-active {
@@ -31,6 +35,10 @@
 
 .insight-tab-title {
   color: #333;
+
+  &.hidden {
+    display: none;
+  }
 
   &.active {
     font-weight: bold;

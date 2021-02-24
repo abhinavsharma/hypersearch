@@ -1,0 +1,45 @@
+/**
+ * This is a hacky solution to overlap the Ant tabbar with
+ * AddAugmentationPage header.
+ */
+.all-augmentations-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #efefef !important;
+  margin-top: -65px;
+  align-items: flex-start !important;
+
+  h2 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 35px auto 10px 5px;
+  }
+
+  .all-augmentations-page-wrapper {
+    display: block;
+    position: absolute;
+    height: calc(100%-145px);
+    width: 100%;
+    top: 145px;
+    bottom: 0;
+    background: #efefef;
+    overflow-y: auto !important;
+
+    .ant-row {
+      .ant-col {
+        width: 450px;
+
+        button {
+          background: white;
+          text-align: left;
+          font-weight: bold;
+
+          &:hover {
+            background: #efefef;
+          }
+        }
+      }
+    }
+  }
+}

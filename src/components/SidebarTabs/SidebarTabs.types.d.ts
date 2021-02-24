@@ -3,12 +3,14 @@ import { FunctionComponent, ReactElement, MouseEvent } from 'react';
 declare module './SidebarTabs' {
   type SidebarTabsProps = {
     tabs: SidebarTab[];
+    forceTab: string | null;
   };
 
   type TabTitleProps = {
     title: string;
     active?: boolean;
     length: number;
+    hide: boolean;
     onClick?: (e: MouseEvent<HTMLDivElement, any>) => void;
   };
 

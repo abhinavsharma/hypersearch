@@ -1,0 +1,177 @@
+/**
+ * This is a hacky solution to overlap the Ant tabbar with
+ * AddAugmentationPage header.
+ */
+.edit-augmentation-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #efefef !important;
+  margin-top: -65px;
+  align-items: flex-start !important;
+
+  .edit-augmentation-tab-header {
+    display: flex;
+    height: 55px;
+    width: 450px !important;
+    align-items: center;
+    justify-content: flex-start !important;
+
+    & > button {
+      display: inline-flex;
+
+      &:last-child {
+        margin-left: auto;
+        margin-right: 10px;
+      }
+    }
+
+    & > span {
+      display: inline-flex;
+      cursor: text;
+      margin-left: 90px;
+      color: black;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
+
+  .edit-augmentation-page-wrapper {
+    display: block;
+    position: absolute;
+    height: calc(100%-75px);
+    width: 100%;
+    top: 75px;
+    bottom: 0;
+    background: #efefef;
+    overflow-y: auto !important;
+
+    .ant-row {
+      background: white !important;
+      min-height: 20px;
+      height: auto;
+      border-bottom: 1px solid #ccc;
+      align-items: center;
+      padding: 10px 10px;
+
+      &.button-row {
+        padding: 0;
+
+        .ant-col {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px 0;
+
+          &:first-child {
+            margin-right: -1px;
+            border-right: 1px solid #ccc;
+          }
+        }
+      }
+
+      .ant-col {
+        width: 450px;
+
+        &:first-child {
+          font-weight: bold;
+        }
+
+        & .ant-switch {
+          display: flex;
+          margin-left: auto;
+          margin-right: 15px;
+        }
+
+        button {
+          &.insight-augmentation-share-button,
+          &.insight-augmentation-delete-button {
+            margin: auto auto;
+            margin-bottom: 10px !important;
+          }
+
+          & .insight-augmentation-share-button-content,
+          & .insight-augmentation-delete-button-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold !important;
+
+            & > span:last-child {
+              color: black !important;
+              font-size: 16px;
+            }
+
+            &.insight-augmentation-delete-button-content {
+              color: red !important;
+
+              & > span:last-child {
+                color: red !important;
+              }
+            }
+          }
+
+          &.insight-augmentation-tab-button {
+            background: white;
+            text-align: left;
+            font-weight: bold;
+
+            &:hover {
+              background: #efefef;
+            }
+          }
+        }
+      }
+    }
+
+    .edit-augmentation-logic-wrapper {
+      h2 {
+        font-size: 16px;
+      }
+
+      .ant-row {
+        background: #efefef !important;
+
+        &.no-border {
+          border-bottom: none !important;
+        }
+
+        .ant-col {
+          font-weight: normal !important;
+
+          &:first-child {
+            span {
+              strong {
+                color: #1890ff;
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        &.edit-augmentation-condition-row {
+          background: white !important;
+          min-height: 20px;
+          height: auto;
+          border-bottom: 1px solid #ccc;
+          align-items: center;
+          padding: 10px 10px;
+
+          .ant-col {
+            &:first-child {
+              border-right: 1px solid #ccc;
+              margin-right: -1px;
+              font-weight: bold !important;
+            }
+
+            &:last-child {
+              padding-left: 10px;
+              margin-right: -10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
