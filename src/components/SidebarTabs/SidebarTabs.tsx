@@ -32,7 +32,6 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
     ampRemoverScript.type = 'text/javascript';
     ampRemoverScript.innerHTML = ampRemover;
     currentDocument.getElementsByTagName('head')[0].appendChild(ampRemoverScript);
-    await import(chrome.runtime.getURL('ad_remover.js'));
   };
 
   return (

@@ -35,7 +35,7 @@ export const ActiveAugmentationsPage = () => {
         <Row>
           <Col>
             <h2>Suggested augmentations for this page</h2>
-            {suggested.slice(0, 10).map((augmentation) => (
+            {suggested.map((augmentation) => (
               <Link
                 component={EditAugmentationPage}
                 componentProps={{ augmentation, enabled: false }}
