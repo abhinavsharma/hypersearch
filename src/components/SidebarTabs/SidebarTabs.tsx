@@ -53,8 +53,11 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
               onClick={() => activeKey !== '0' && setActiveKey('0')}
             />
           ) : (
-            <div className="add-augmentation-tab" onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}>
-            ➕
+            <div
+              className="add-augmentation-tab"
+              onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}
+            >
+              ➕
             </div>
           )
         }
@@ -64,7 +67,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
       </TabPane>
 
       {tabs.map((tab, i) => {
-        const tabId = `insight-tab-frame-${encodeURIComponent(tab.url.href)}`;
+        const tabId = `insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`;
         return (
           <TabPane
             key={i + 1}
@@ -80,23 +83,32 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
             forceRender
             className={`insight-full-tab`}
           >
-            <iframe
-              src={tab.url.href}
-              className="insight-tab-iframe"
-              id={tabId}
-              onLoad={(e) => injectAmpRemover(e.currentTarget)}
-            />
-            <div className="insight-tab-bottom-message">
-              <a
-                target="blank"
-                href={
-                  'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' +
-                  tab.title
-                }
-              >
-                Improve this search filter
-              </a>
-            </div>
+            {tab.readable ? (
+              <div
+                className="insight-readable-content"
+                dangerouslySetInnerHTML={{ __html: tab.readable }}
+              />
+            ) : (
+              <iframe
+                src={tab.url.href}
+                className="insight-tab-iframe"
+                id={tabId}
+                onLoad={(e) => injectAmpRemover(e.currentTarget)}
+              />
+            )}
+            {tab.isCse && (
+              <div className="insight-tab-bottom-message">
+                <a
+                  target="blank"
+                  href={
+                    'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' +
+                    tab.title
+                  }
+                >
+                  Improve this search filter
+                </a>
+              </div>
+            )}
           </TabPane>
         );
       })}

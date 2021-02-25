@@ -2,6 +2,8 @@ declare type SidebarTab = {
   title: string;
   url: URL;
   default: boolean;
+  readable?: string;
+  isCse?: boolean;
   isPinnedTab?: boolean;
 };
 

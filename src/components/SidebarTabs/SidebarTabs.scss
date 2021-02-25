@@ -88,6 +88,16 @@
   display: flex;
   flex-grow: 1;
   border: none;
+  padding: 0 0 50px 0;
+}
+
+.insight-readable-content {
+  position: absolute;
+  height: calc(100%-100px);
+  overflow-x: auto;
+  top: 55px;
+  bottom: 45px;
+  padding: 10px 15px;
 }
 
 .insight-tab-bar {
