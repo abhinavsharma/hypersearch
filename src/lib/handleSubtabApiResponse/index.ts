@@ -38,30 +38,20 @@ const getCustomSearchEngine = async (url: string) => {
   return storedValue[storageKey] ?? null;
 };
 
-export const handleSubtabApiResponse = async (
-  url: URL,
-  document: Document,
-  response: SubtabsResponse,
+const getSuggestedAugmentations = (
+  response: SubtabsResponse['suggested_augmentations'],
+  domains: string[],
+  cse?: CustomSearchEngine,
 ) => {
-  debug('function call - handleSubtabApiResponse', response);
-  if (!(url && document && response)) return null;
-  const sidebarTabs: SidebarTab[] = [];
   const suggestedAugmentations: SuggestedAugmentationObject[] = [];
-  const suggestedAugmentationResponse = response.suggested_augmentations;
-  const customSearchEngine = await getCustomSearchEngine(url.href);
-  if (!customSearchEngine) return;
-  const serpDomains = Array.from(
-    document.querySelectorAll(customSearchEngine.querySelector?.desktop),
-  )?.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
-  suggestedAugmentationResponse.forEach((augmentation: SuggestedAugmentationObject) => {
-    if (augmentation.id.startsWith('cse-')) {
+  const sidebarTabs: SidebarTab[] = [];
+  response.forEach((augmentation: SuggestedAugmentationObject) => {
+    if (cse && augmentation.id.startsWith('cse-')) {
       const domainsToLookFor = augmentation.conditions.condition_list.map((e) => e.value[0]);
-      if (serpDomains.filter((value) => domainsToLookFor.includes(value)).length > 0) {
+      if (domains.filter((value) => domainsToLookFor.includes(value)).length > 0) {
         if (augmentation.actions.action_list?.[0].key == 'search_domains') {
           const domainsToSearch = augmentation.actions.action_list?.[0]?.value;
-          const customSearchUrl = new URL(
-            `https://${customSearchEngine.search_engine_json.required_prefix}`,
-          );
+          const customSearchUrl = new URL(`https://${cse.search_engine_json.required_prefix}`);
           if (Array.isArray(domainsToSearch)) {
             const query = new URLSearchParams(document.location.search).get('q');
             const appendage: string =
@@ -74,10 +64,44 @@ export const handleSubtabApiResponse = async (
             title: augmentation.name,
             url: customSearchUrl,
             default: !sidebarTabs.length,
+            isCse: true,
           });
         }
       }
     }
   });
   return { sidebarTabs, suggestedAugmentations };
+};
+
+export const handleSubtabApiResponse = async (
+  url: URL,
+  document: Document,
+  response: SubtabsResponse,
+) => {
+  debug('function call - handleSubtabApiResponse', response);
+  if (!(url && document && response)) return null;
+  const customSearchEngine = await getCustomSearchEngine(url.href);
+
+  const serpDomains = Array.from(
+    document.querySelectorAll(customSearchEngine?.querySelector?.desktop),
+  )?.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
+
+  const { sidebarTabs, suggestedAugmentations } = getSuggestedAugmentations(
+    response.suggested_augmentations,
+    serpDomains,
+    customSearchEngine,
+  );
+
+  const subtabs: SidebarTab[] = response.subtabs
+    .slice(1, response.subtabs.length)
+    .map((subtab, i, a) => ({
+      title: subtab.title ?? 'Readable Content',
+      url: subtab.url && new URL(subtab.url),
+      readable: subtab.readable_content,
+      default: !sidebarTabs.length && i === 0 && !a[i + 1],
+      isCse: false,
+    }));
+
+  debug('handleSubtabApiResponse - matched results', sidebarTabs, suggestedAugmentations, subtabs);
+  return { sidebarTabs: [...sidebarTabs, ...subtabs], suggestedAugmentations };
 };
