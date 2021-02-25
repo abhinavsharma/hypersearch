@@ -6,6 +6,16 @@
       adElementSelector: 'article',
     },
     {
+      site: 'duckduckgo.com',
+      adText: 'Ad',
+      adElementSelector: '#ads',
+    },
+    {
+      site: 'bing.com',
+      adText: 'Ad',
+      adElementSelector: '.b_ad',
+    },
+    {
       site: 'facebook.com',
       adText: 'Sponsored',
       adElementSelector: 'article',
