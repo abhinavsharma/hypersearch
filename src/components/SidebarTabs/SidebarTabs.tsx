@@ -53,7 +53,9 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
               onClick={() => activeKey !== '0' && setActiveKey('0')}
             />
           ) : (
-            ''
+            <div className="add-augmentation-tab" onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}>
+            ➕
+            </div>
           )
         }
         forceRender
