@@ -28,10 +28,11 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
 
   const injectAmpRemover = async (el: HTMLIFrameElement) => {
     const currentDocument = el.contentWindow.document;
-    const scriptTag = currentDocument.createElement('script');
-    scriptTag.type = 'text/javascript';
-    scriptTag.innerHTML = ampRemover;
-    currentDocument.getElementsByTagName('head')[0].appendChild(scriptTag);
+    const ampRemoverScript = currentDocument.createElement('script');
+    ampRemoverScript.type = 'text/javascript';
+    ampRemoverScript.innerHTML = ampRemover;
+    currentDocument.getElementsByTagName('head')[0].appendChild(ampRemoverScript);
+    await import(chrome.runtime.getURL('ad_remover.js'));
   };
 
   return (

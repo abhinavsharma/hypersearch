@@ -33,6 +33,16 @@
         },
         {
             "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "js": [
+                "ad_remover.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
                 "https://cse.google.com/*"
             ],
             "all_frames": true,
