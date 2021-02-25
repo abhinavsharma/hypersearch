@@ -32,7 +32,7 @@ export const Sidebar: Sidebar = ({ url, tabs, suggestedAugmentations }) => {
     installed: [], // TODO: get this list from local storage
     suggested: suggestedAugmentations.filter((i) =>
       tabs.find(
-        (tab) => tab.title !== i.name && i.actions.action_list.some((i) => i.key !== 'inject_js'),
+        (tab) => tab.title === i.name && i.actions.action_list.some((i) => i.key !== 'inject_js'),
       ),
     ),
   };
