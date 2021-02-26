@@ -17,7 +17,7 @@ export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
 }) => (
   <div
     className={`add-augmentation-tab ${className}`}
-    onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}
+    onClick={() => window.open('https://share.insightbrowser.com/13')}
   >
     {children}
   </div>
