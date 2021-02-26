@@ -53,7 +53,7 @@ const createSidebar = (
   });
 };
 
-export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
+export const loadOrUpdateSidebar = async (document: Document, url: URL | null) => {
   debug('function call - loadOrUpdateSidebar', document);
 
   const firstChild = document.documentElement.firstChild;
@@ -69,12 +69,15 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
     }
 
     runFunctionWhenDocumentReady(document, async () => {
-      const { sidebarTabs, suggestedAugmentations } = await handleSubtabApiResponse(
+      const { sidebarTabs, suggestedAugmentations, isSerp } = await handleSubtabApiResponse(
         url,
         document,
         response,
       );
-      createSidebar(document, sidebarTabs, suggestedAugmentations, url.href);
+
+      if (!!sidebarTabs.length || !!suggestedAugmentations.length || isSerp) {
+        createSidebar(document, sidebarTabs, suggestedAugmentations, url.href);
+      }
     });
   });
 };

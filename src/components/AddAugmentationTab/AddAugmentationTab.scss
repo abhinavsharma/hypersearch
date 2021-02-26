@@ -10,7 +10,16 @@
 .add-augmentation-tab-header {
   display: flex;
   height: 55px;
-  width: 100%;
+
+  &.active {
+    position: fixed !important;
+    top: 0 !important;
+    display: flex;
+    height: 55px;
+    width: 450px;
+    z-index: 10000;
+    background: #efefef;
+  }
 
   & > button {
     display: inline-flex;

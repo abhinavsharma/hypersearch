@@ -2,6 +2,8 @@ import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos
 import { BackgroundMessenger } from 'lib/backgroundMessenger/backgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import { syncLocalSearchEngines } from 'lib/syncLocalSearchEngines/syncLocalSearchEngines';
+import { SHOW_AUGMENTATION_TAB } from 'components/SidebarTabs/SidebarTabs';
+import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/helpers';
 
 const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),
@@ -93,4 +95,10 @@ chrome.browserAction.setBadgeBackgroundColor({ color: 'black' });
 
 chrome.webNavigation.onBeforeNavigate.addListener(() => {
   syncLocalSearchEngines();
+});
+
+chrome.browserAction.onClicked.addListener((tab) => {
+  !SHOW_AUGMENTATION_TAB
+    ? chrome.tabs.create({ active: true, url: 'https://airtable.com/shr4dMhlqUYNTduxp' })
+    : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
 });

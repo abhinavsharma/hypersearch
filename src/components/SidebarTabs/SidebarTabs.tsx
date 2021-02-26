@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ampRemover from 'utils/ampRemover';
 import Tabs from 'antd/lib/tabs';
 import { AddAugmentationTab } from 'components/AddAugmentationTab/AddAugmentationTab';
 import { ActiveAugmentationsPage } from 'components/ActiveAugmentationsPage/ActiveAugmentationsPage';
+import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/helpers';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
+import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 
 const { TabPane } = Tabs;
 
@@ -36,7 +38,16 @@ const TabBar: TabBar = (props, DefaultTabBar) => (
 );
 
 export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
-  const [activeKey, setActiveKey] = useState<string>(tabs.length === 0 ? '0' : '1');
+  const [activeKey, setActiveKey] = useState<string>(forceTab ?? tabs.length === 0 ? '0' : '1');
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
+        flipSidebar(document, 'show', tabs.length);
+        setActiveKey('0');
+      }
+    });
+  }, []);
 
   const injectAmpRemover = async (el: HTMLIFrameElement) => {
     const currentDocument = el.contentWindow.document;
@@ -48,21 +59,20 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
 
   return (
     <Tabs
-      defaultActiveKey={tabs.length === 0 ? '0' : '1'}
+      defaultActiveKey={'1'}
       className="insight-tab-container"
       renderTabBar={TabBar}
       activeKey={forceTab ?? activeKey}
     >
       {/* First tab is always the augmentation page */}
-
       <TabPane
         key="0"
         tab={
           SHOW_AUGMENTATION_TAB ? (
             <AddAugmentationTab
-              active={activeKey === '0'}
+              active={(forceTab ?? activeKey) === '0'}
               setActiveKey={setActiveKey}
-              onClick={() => activeKey !== '0' && setActiveKey('0')}
+              onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
             />
           ) : (
             <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>

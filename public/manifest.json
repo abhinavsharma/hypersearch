@@ -58,9 +58,11 @@
         ]
     },
     "browser_action": {
-        "default_title": "Lumos"
+        "default_title": "Insight"
     },
     "permissions": [
+        "tabs",
+        "background",
         "storage",
         "<all_urls>",
         "webRequest",

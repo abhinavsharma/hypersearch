@@ -15,7 +15,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({ active, setActiveKey, o
       🚀
     </div>
   ) : (
-    <div className="add-augmentation-tab-header">
+    <div className={`add-augmentation-tab-header ${active ? 'active' : ''}`}>
       <Button type="link" onClick={handleClose}>
         Close
       </Button>

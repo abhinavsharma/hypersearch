@@ -70,7 +70,10 @@ const getSuggestedAugmentations = (
       }
     }
   });
-  return { sidebarTabs, suggestedAugmentations };
+  const isSerp = !!(
+    cse?.search_engine_json?.required_prefix + cse?.search_engine_json?.required_params
+  );
+  return { sidebarTabs, suggestedAugmentations, isSerp };
 };
 
 export const handleSubtabApiResponse = async (
@@ -86,7 +89,7 @@ export const handleSubtabApiResponse = async (
     document.querySelectorAll(customSearchEngine?.querySelector?.desktop),
   )?.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
 
-  const { sidebarTabs, suggestedAugmentations } = getSuggestedAugmentations(
+  const { sidebarTabs, suggestedAugmentations, isSerp } = getSuggestedAugmentations(
     response.suggested_augmentations,
     serpDomains,
     customSearchEngine,
@@ -103,5 +106,5 @@ export const handleSubtabApiResponse = async (
     }));
 
   debug('handleSubtabApiResponse - matched results', sidebarTabs, suggestedAugmentations, subtabs);
-  return { sidebarTabs: [...sidebarTabs, ...subtabs], suggestedAugmentations };
+  return { sidebarTabs: [...sidebarTabs, ...subtabs], suggestedAugmentations, isSerp };
 };

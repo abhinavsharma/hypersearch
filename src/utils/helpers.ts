@@ -121,3 +121,5 @@ export const extractHostnameFromUrl = (s: string) => {
       .map((i) => i.split('=')[0]),
   };
 };
+
+export const OPEN_AUGMENTATION_BUILDER_MESSAGE = 'OPEN_AUGMENTATION_BUILDER_MESSAGE';
