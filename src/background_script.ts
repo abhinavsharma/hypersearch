@@ -99,6 +99,6 @@ chrome.webNavigation.onBeforeNavigate.addListener(() => {
 
 chrome.browserAction.onClicked.addListener((tab) => {
   !SHOW_AUGMENTATION_TAB
-    ? chrome.tabs.create({ active: true, url: 'https://airtable.com/shr4dMhlqUYNTduxp' })
+    ? chrome.tabs.create({ active: true, url: 'http://share.insightbrowser.com/14' })
     : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
 });

@@ -32,11 +32,9 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
           I
         </div>
       ) : (
-        window.location.hostname !== 'airtable.com' && (
-          <ExternalAddAugmentationButton className="insight-sidebar-toggle-button add-augmentation-button external">
-            I
-          </ExternalAddAugmentationButton>
-        )
+        <ExternalAddAugmentationButton className="insight-sidebar-toggle-button add-augmentation-button external">
+          I
+        </ExternalAddAugmentationButton>
       )}
     </>
   );
