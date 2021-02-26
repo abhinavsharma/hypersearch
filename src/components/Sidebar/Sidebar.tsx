@@ -7,13 +7,13 @@ import { WINDOW_REQUIRED_MIN_WIDTH } from 'lib/loadOrUpdateSidebar/loadOrUpdateS
 
 export const AugmentationContext = createContext(null);
 
-const XIcon: XIcon = ({ setForceTab, tabs }) => {
+const XIcon: XIcon = ({ setForceTab, numTabs }) => {
   const handleClick = () => {
     setForceTab('1');
     // Workaround to `useState`'s async nature. The timeout
     // will ensure that the sidebar is collapsed properly.
     setTimeout(() => {
-      flipSidebar(document, 'hide', tabs);
+      flipSidebar(document, 'hide', numTabs);
     }, 100);
     setForceTab(null);
   };
@@ -49,7 +49,7 @@ export const Sidebar: Sidebar = ({ url, tabs, suggestedAugmentations }) => {
   return (
     <AugmentationContext.Provider value={augmentationContextValue}>
       <div className="insight-sidebar-container">
-        <XIcon setForceTab={setForceTab} tabs={tabs.length} />
+        <XIcon setForceTab={setForceTab} numTabs={tabs.length} />
         <SidebarTabs tabs={tabs} forceTab={forceTab} />
       </div>
       <SidebarToggleButton tabs={tabs} />
