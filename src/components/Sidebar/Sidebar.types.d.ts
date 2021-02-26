@@ -11,6 +11,7 @@ declare module './Sidebar' {
 
   type XIconProps = import('antd/lib/button').ButtonProps & {
     setForceTab: Dispatch<SetStateAction<string | null>>;
+    numTabs: number;
   };
 
   type XIcon = FunctionComponent<XIconProps>;

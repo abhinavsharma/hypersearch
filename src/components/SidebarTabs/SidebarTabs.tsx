@@ -11,12 +11,15 @@ const { TabPane } = Tabs;
 // !DEV Toggle rendering augmentation tab
 export const SHOW_AUGMENTATION_TAB = false;
 
-export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({ className }) => (
+export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
+  className,
+  children,
+}) => (
   <div
     className={`add-augmentation-tab ${className}`}
     onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}
   >
-    ➕
+    {children}
   </div>
 );
 
@@ -62,7 +65,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
               onClick={() => activeKey !== '0' && setActiveKey('0')}
             />
           ) : (
-            <ExternalAddAugmentationButton />
+            <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
           )
         }
         forceRender

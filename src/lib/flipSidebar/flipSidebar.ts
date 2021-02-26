@@ -1,4 +1,4 @@
-export const flipSidebar: FlipSidebar = (outerDocument, force) => {
+export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
   const document = innerDocument.contentWindow.document.documentElement;
 
@@ -18,6 +18,8 @@ export const flipSidebar: FlipSidebar = (outerDocument, force) => {
     'insight-sidebar-toggle-button',
   )[0] as HTMLDivElement;
 
+  if (!showButton) return;
+
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
     setTimeout(() => {
@@ -33,11 +35,11 @@ export const flipSidebar: FlipSidebar = (outerDocument, force) => {
         'style',
         `
         position: fixed;
-        width: 150px;
-        min-height: 100px;
-        height: 150px;
+        width: ${tabsLength === 0 ? '50px' : '150px'};
+        height: ${!!tabsLength ? tabsLength * 15 + 150 : '150'}px;
         top: auto;
         right: 0;
+        bottom: 20px;
         background: transparent;
     `,
       );

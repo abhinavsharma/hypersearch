@@ -23,7 +23,9 @@
   }
 
   &.add-augmentation-button {
-    font-size: 36px;
+    font-size: 36px !important;
+    font-style: italic;
+    font-weight: 900;
     justify-content: flex-start;
   }
 }
