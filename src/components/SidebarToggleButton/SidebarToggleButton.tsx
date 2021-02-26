@@ -15,7 +15,7 @@ const ListItem = (item: SidebarTab) => (
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
-    flipSidebar(document, 'show');
+    flipSidebar(document, 'show', tabs.length);
   };
 
   return !!tabs.length ? (
