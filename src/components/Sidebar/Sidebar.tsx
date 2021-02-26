@@ -29,7 +29,12 @@ export const Sidebar: Sidebar = ({ url, tabs, suggestedAugmentations }) => {
   const [forceTab, setForceTab] = useState<string | null>(null);
 
   useEffect(() => {
-    if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH || tabs.length === 0) {
+    const isKnowledgePage =
+      !!document.querySelectorAll('#rhs').length || // Google
+      !!document.querySelectorAll('.b_ans').length || // Bing
+      !!document.querySelectorAll('.module--about').length; // DuckDuckGo
+
+    if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH || tabs.length === 0 || isKnowledgePage) {
       flipSidebar(document, 'hide', tabs.length);
     } else {
       flipSidebar(document, 'show', tabs.length);
