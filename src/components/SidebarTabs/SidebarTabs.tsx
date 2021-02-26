@@ -65,7 +65,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
               onClick={() => activeKey !== '0' && setActiveKey('0')}
             />
           ) : (
-            <ExternalAddAugmentationButton />
+            <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
           )
         }
         forceRender
