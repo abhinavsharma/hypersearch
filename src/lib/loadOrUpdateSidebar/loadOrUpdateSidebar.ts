@@ -6,9 +6,8 @@ import { SidebarTabsManager } from 'lib/sidebarTabsManager/sidebarTabsManager';
 import { handleSubtabApiResponse } from 'lib/handleSubtabApiResponse';
 import { runFunctionWhenDocumentReady } from 'utils/helpers';
 import { Sidebar } from 'components/Sidebar/Sidebar';
-import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 
-const WINDOW_REQUIRED_MIN_WIDTH = 1200;
+export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
 
 const style = document.getElementsByTagName('style')[0];
 
@@ -32,6 +31,7 @@ const createSidebar = (
 
   const wrapper = document.createElement('div');
   wrapper.id = 'sidebar-root';
+  wrapper.style.display = 'none';
   document.body.appendChild(wrapper);
   const sidebarInit = React.createElement(Sidebar, {
     url,
@@ -39,10 +39,6 @@ const createSidebar = (
     suggestedAugmentations,
   });
   reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', style);
-
-  if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH) {
-    flipSidebar(document, 'hide');
-  }
 
   nativeBrowserAddReactAppListener({
     window,
@@ -78,8 +74,7 @@ export const loadOrUpdateSidebar = async (document: Document, url: URL) => {
         document,
         response,
       );
-      !!sidebarTabs?.length &&
-        createSidebar(document, sidebarTabs, suggestedAugmentations, url.href);
+      createSidebar(document, sidebarTabs, suggestedAugmentations, url.href);
     });
   });
 };

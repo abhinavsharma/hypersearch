@@ -24,4 +24,10 @@ declare module './SidebarTabs' {
     props: _TabsProps,
     DefaultTabBar: (props: _TabsProps) => ReactElement,
   ) => ReactElement;
+
+  type ExternalAddAugmentationButtonProps = {
+    className?: string;
+  };
+
+  type ExternalAddAugmentationButton = FunctionComponent<ExternalAddAugmentationButtonProps>;
 }

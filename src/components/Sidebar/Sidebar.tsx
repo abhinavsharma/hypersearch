@@ -1,8 +1,9 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { SidebarTabs } from 'components/SidebarTabs/SidebarTabs';
 import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 import { SidebarToggleButton } from 'components/SidebarToggleButton/SidebarToggleButton';
 import './Sidebar.scss';
+import { WINDOW_REQUIRED_MIN_WIDTH } from 'lib/loadOrUpdateSidebar/loadOrUpdateSidebar';
 
 export const AugmentationContext = createContext(null);
 
@@ -26,6 +27,14 @@ const XIcon: XIcon = ({ setForceTab }) => {
 
 export const Sidebar: Sidebar = ({ url, tabs, suggestedAugmentations }) => {
   const [forceTab, setForceTab] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH || tabs.length === 0) {
+      flipSidebar(document, 'hide');
+    } else {
+      flipSidebar(document, 'show');
+    }
+  }, []);
 
   const augmentationContextValue = {
     url,

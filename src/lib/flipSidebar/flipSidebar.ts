@@ -53,6 +53,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force) => {
     outerDocument.getElementById('sidebar-root').setAttribute(
       'style',
       `
+      display: block;
       width: 465px;
       transition-property: width;
       transition-duration: 0.5s;

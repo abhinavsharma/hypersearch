@@ -1,6 +1,10 @@
 import React from 'react';
 import List from 'antd/lib/list';
 import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
+import {
+  ExternalAddAugmentationButton,
+  SHOW_AUGMENTATION_TAB,
+} from 'components/SidebarTabs/SidebarTabs';
 import './SidebarToggleButton.scss';
 
 const ListItem = (item: SidebarTab) => (
@@ -14,9 +18,24 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     flipSidebar(document, 'show');
   };
 
-  return (
+  return !!tabs.length ? (
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
       <List itemLayout="horizontal" dataSource={tabs} renderItem={ListItem} />
     </div>
+  ) : (
+    <>
+      {SHOW_AUGMENTATION_TAB ? (
+        <div
+          className="add-augmentation-button insight-sidebar-toggle-button"
+          onClick={handleClick}
+        >
+          🚀
+        </div>
+      ) : (
+        window.location.hostname !== 'airtable.com' && (
+          <ExternalAddAugmentationButton className="insight-sidebar-toggle-button add-augmentation-button external" />
+        )
+      )}
+    </>
   );
 };

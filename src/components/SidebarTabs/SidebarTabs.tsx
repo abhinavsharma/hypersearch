@@ -9,7 +9,16 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-const SHOW_AUGMENTATION_TAB = false;
+export const SHOW_AUGMENTATION_TAB = false;
+
+export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({ className }) => (
+  <div
+    className={`add-augmentation-tab ${className}`}
+    onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}
+  >
+    ➕
+  </div>
+);
 
 const TabTitle: TabTitle = ({ title, active, onClick, hide }) => (
   <div onClick={onClick} className="insight-tab-pill">
@@ -24,7 +33,7 @@ const TabBar: TabBar = (props, DefaultTabBar) => (
 );
 
 export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
-  const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKey, setActiveKey] = useState<string>(tabs.length === 0 ? '0' : '1');
 
   const injectAmpRemover = async (el: HTMLIFrameElement) => {
     const currentDocument = el.contentWindow.document;
@@ -36,7 +45,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
 
   return (
     <Tabs
-      defaultActiveKey={'1'}
+      defaultActiveKey={tabs.length === 0 ? '0' : '1'}
       className="insight-tab-container"
       renderTabBar={TabBar}
       activeKey={forceTab ?? activeKey}
@@ -53,12 +62,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
               onClick={() => activeKey !== '0' && setActiveKey('0')}
             />
           ) : (
-            <div
-              className="add-augmentation-tab"
-              onClick={() => window.open('https://airtable.com/shr4dMhlqUYNTduxp')}
-            >
-              ➕
-            </div>
+            <ExternalAddAugmentationButton />
           )
         }
         forceRender
