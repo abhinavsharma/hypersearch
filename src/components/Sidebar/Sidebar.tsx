@@ -5,7 +5,7 @@ import { SidebarToggleButton } from 'components/SidebarToggleButton/SidebarToggl
 import './Sidebar.scss';
 import { WINDOW_REQUIRED_MIN_WIDTH } from 'lib/loadOrUpdateSidebar/loadOrUpdateSidebar';
 
-const GOOGLE_KP_SELECTOR = '#rhs';
+const GOOGLE_KP_SELECTOR = '.kp-wholepage';
 const DDG_KP_SELECTOR = '.b_ans';
 const BING_KP_SELECTOR = '.module--about';
 
