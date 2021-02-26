@@ -5,6 +5,10 @@ import { SidebarToggleButton } from 'components/SidebarToggleButton/SidebarToggl
 import './Sidebar.scss';
 import { WINDOW_REQUIRED_MIN_WIDTH } from 'lib/loadOrUpdateSidebar/loadOrUpdateSidebar';
 
+const GOOGLE_KP_SELECTOR = '#rhs';
+const DDG_KP_SELECTOR = '.b_ans';
+const BING_KP_SELECTOR = '.module--about';
+
 export const AugmentationContext = createContext(null);
 
 const XIcon: XIcon = ({ setForceTab, numTabs }) => {
@@ -30,9 +34,9 @@ export const Sidebar: Sidebar = ({ url, tabs, suggestedAugmentations }) => {
 
   useEffect(() => {
     const isKnowledgePage =
-      !!document.querySelectorAll('#rhs').length || // Google
-      !!document.querySelectorAll('.b_ans').length || // Bing
-      !!document.querySelectorAll('.module--about').length; // DuckDuckGo
+      !!document.querySelectorAll(GOOGLE_KP_SELECTOR).length ||
+      !!document.querySelectorAll(BING_KP_SELECTOR).length ||
+      !!document.querySelectorAll(DDG_KP_SELECTOR).length;
 
     if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH || tabs.length === 0 || isKnowledgePage) {
       flipSidebar(document, 'hide', tabs.length);
