@@ -108,7 +108,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
                 <a
                   target="blank"
                   href={
-                    'https://airtable.com/shrUcWah2XxEM1YLl?prefill_Search%20Engine%20Name=' +
+                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
                     tab.title
                   }
                 >
