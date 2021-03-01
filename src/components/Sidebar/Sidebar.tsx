@@ -33,12 +33,15 @@ export const Sidebar: Sidebar = ({ url, tabs, suggestedAugmentations }) => {
   const [forceTab, setForceTab] = useState<string | null>(null);
 
   useEffect(() => {
+    const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
+    const isTabsLength = tabs.length !== 0;
+    const isSearchTabs = tabs.find((tab) => tab.isCse);
     const isKnowledgePage =
       !!document.querySelectorAll(GOOGLE_KP_SELECTOR).length ||
       !!document.querySelectorAll(BING_KP_SELECTOR).length ||
       !!document.querySelectorAll(DDG_KP_SELECTOR).length;
 
-    if (window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH || tabs.length === 0 || isKnowledgePage) {
+    if (isSmallWidth || !isTabsLength || !isSearchTabs || isKnowledgePage) {
       flipSidebar(document, 'hide', tabs.length);
     } else {
       flipSidebar(document, 'show', tabs.length);
