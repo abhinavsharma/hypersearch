@@ -35,7 +35,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         'style',
         `
         position: fixed;
-        width: ${tabsLength === 0 ? '50px' : '150px'};
+        width: ${tabsLength === 0 ? '60px' : '150px'};
         height: ${!!tabsLength ? tabsLength * 15 + 150 : '150'}px;
         top: auto;
         right: 0;

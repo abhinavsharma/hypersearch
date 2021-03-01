@@ -33,7 +33,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         </div>
       ) : (
         <ExternalAddAugmentationButton className="insight-sidebar-toggle-button add-augmentation-button external">
-          I
+          🤔
         </ExternalAddAugmentationButton>
       )}
     </>

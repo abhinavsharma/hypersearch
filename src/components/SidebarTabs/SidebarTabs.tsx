@@ -122,7 +122,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
                     tab.title
                   }
                 >
-                  Improve this search filter
+                  🤔 Improve this search filter
                 </a>
               </div>
             )}
