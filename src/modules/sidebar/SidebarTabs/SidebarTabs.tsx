@@ -10,7 +10,7 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-export const SHOW_AUGMENTATION_TAB = true;
+export const SHOW_AUGMENTATION_TAB = false;
 
 export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
   className,
