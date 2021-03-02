@@ -4,10 +4,10 @@ import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import { goBack } from 'route-lite';
+import { EditAugmentationPage } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './AllAugmentationsPage.scss';
-import { EditAugmentationPage } from 'components/EditAugmentationPage/EditAugmentationPage';
 
 const Header = () => (
   <>

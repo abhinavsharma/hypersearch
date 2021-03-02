@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import ampRemover from 'utils/ampRemover';
+import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 import Tabs from 'antd/lib/tabs';
-import { AddAugmentationTab } from 'components/AddAugmentationTab/AddAugmentationTab';
-import { ActiveAugmentationsPage } from 'components/ActiveAugmentationsPage/ActiveAugmentationsPage';
+import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
 import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/helpers';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
-import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-export const SHOW_AUGMENTATION_TAB = false;
+export const SHOW_AUGMENTATION_TAB = true;
 
 export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
   className,

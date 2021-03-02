@@ -1,9 +1,8 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { SidebarTabs } from 'components/SidebarTabs/SidebarTabs';
 import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
-import { SidebarToggleButton } from 'components/SidebarToggleButton/SidebarToggleButton';
-import './Sidebar.scss';
 import { WINDOW_REQUIRED_MIN_WIDTH } from 'lib/loadOrUpdateSidebar/loadOrUpdateSidebar';
+import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
+import './Sidebar.scss';
 
 const GOOGLE_KP_SELECTOR = '.kp-wholepage';
 const DDG_KP_SELECTOR = '.b_ans';
