@@ -5,7 +5,7 @@ import { reactInjector } from 'lib/reactInjector';
 import { SidebarTabsManager } from 'lib/sidebarTabsManager/sidebarTabsManager';
 import { handleSubtabApiResponse } from 'lib/handleSubtabApiResponse';
 import { runFunctionWhenDocumentReady } from 'utils/helpers';
-import { Sidebar } from 'components/Sidebar/Sidebar';
+import { Sidebar } from 'modules/sidebar';
 
 export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
 

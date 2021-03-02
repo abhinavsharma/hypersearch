@@ -1,10 +1,11 @@
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
 import { goBack } from 'route-lite';
+import { ShareAugmentationButton, DeleteAugmentationButton } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/switch/style/index.css';
@@ -13,36 +14,6 @@ import 'antd/lib/grid/style/index.css';
 import './EditAugmentationPage.scss';
 
 const { Text } = Typography;
-
-const UploadOutlined = React.lazy(
-  async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
-);
-
-const DeleteOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
-);
-
-const ShareButton = () => (
-  <Button type="link" size="large" className="insight-augmentation-share-button">
-    <div className="insight-augmentation-share-button-content">
-      <Suspense fallback={null}>
-        <UploadOutlined />
-      </Suspense>
-      <span>Share Extension</span>
-    </div>
-  </Button>
-);
-
-const DeleteButton = () => (
-  <Button type="link" danger size="large" className="insight-augmentation-delete-button">
-    <div className="insight-augmentation-delete-button-content">
-      <Suspense fallback={null}>
-        <DeleteOutlined />
-      </Suspense>
-      <span>Delete Extension</span>
-    </div>
-  </Button>
-);
 
 const Header = () => (
   <>
@@ -91,10 +62,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, enabl
         </Row>
         <Row className="button-row">
           <Col xs={12}>
-            <ShareButton />
+            <ShareAugmentationButton />
           </Col>
           <Col xs={12}>
-            <DeleteButton />
+            <DeleteAugmentationButton />
           </Col>
         </Row>
         <div className="edit-augmentation-logic-wrapper">

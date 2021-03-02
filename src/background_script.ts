@@ -2,7 +2,7 @@ import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos
 import { BackgroundMessenger } from 'lib/backgroundMessenger/backgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import { syncLocalSearchEngines } from 'lib/syncLocalSearchEngines/syncLocalSearchEngines';
-import { SHOW_AUGMENTATION_TAB } from 'components/SidebarTabs/SidebarTabs';
+import { SHOW_AUGMENTATION_TAB } from 'modules/sidebar';
 import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/helpers';
 
 const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
