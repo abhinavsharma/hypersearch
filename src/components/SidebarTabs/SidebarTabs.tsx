@@ -19,7 +19,12 @@ export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
 }) => (
   <div
     className={`add-augmentation-tab ${className}`}
-    onClick={() => window.open('https://share.insightbrowser.com/13?prefill_sample_query=' + new URLSearchParams(window.location.search).get('q'))}
+    onClick={() =>
+      window.open(
+        'https://share.insightbrowser.com/13?prefill_sample_query=' +
+          new URLSearchParams(window.location.search).get('q'),
+      )
+    }
   >
     {children}
   </div>
@@ -118,8 +123,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
                 <a
                   target="blank"
                   href={
-                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
-                    tab.title
+                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' + tab.title
                   }
                 >
                   🤔 Improve this search filter
