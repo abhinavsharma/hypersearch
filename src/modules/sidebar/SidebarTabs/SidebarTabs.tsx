@@ -11,7 +11,7 @@ import { getLocalAugmentations } from 'lib/getLocalAugmentations/getLocalAugment
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-export const SHOW_AUGMENTATION_TAB = true;
+export const SHOW_AUGMENTATION_TAB = false;
 
 export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
   className,
@@ -61,7 +61,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
           setActiveKey('0');
           break;
         case EDIT_AUGMENTATION_SUCCESS:
-          loadAugmentations();
+          SHOW_AUGMENTATION_TAB && loadAugmentations();
           break;
         default:
           break;
@@ -70,7 +70,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
   }, []);
 
   useEffect(() => {
-    loadAugmentations();
+    SHOW_AUGMENTATION_TAB && loadAugmentations();
   }, [loadAugmentations]);
 
   const injectAmpRemover = async (el: HTMLIFrameElement) => {
@@ -94,7 +94,9 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
         tab={
           SHOW_AUGMENTATION_TAB ? (
             <AddAugmentationTab
-              installedAugmentationsNum={installedAugmentations.length}
+              installedAugmentationsNum={
+                SHOW_AUGMENTATION_TAB ? installedAugmentations.length : tabs.length
+              }
               active={(forceTab ?? activeKey) === '0'}
               setActiveKey={setActiveKey}
               onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
@@ -108,7 +110,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
         <ActiveAugmentationsPage />
       </TabPane>
 
-      {installedAugmentations.map((tab, i) => {
+      {(SHOW_AUGMENTATION_TAB ? installedAugmentations : tabs).map((tab, i) => {
         const tabId = `insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`;
         return (
           <TabPane
