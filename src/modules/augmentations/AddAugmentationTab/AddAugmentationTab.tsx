@@ -4,10 +4,15 @@ import { goBack } from 'route-lite';
 import 'antd/lib/button/style/index.css';
 import './AddAugmentationTab.scss';
 
-export const AddAugmentationTab: AddAugmentationTab = ({ active, setActiveKey, onClick }) => {
+export const AddAugmentationTab: AddAugmentationTab = ({
+  active,
+  setActiveKey,
+  onClick,
+  installedAugmentationsNum,
+}) => {
   const handleClose = () => {
     goBack();
-    setActiveKey('1');
+    setActiveKey(installedAugmentationsNum ? '1' : '0');
   };
 
   return !active ? (
@@ -16,7 +21,11 @@ export const AddAugmentationTab: AddAugmentationTab = ({ active, setActiveKey, o
     </div>
   ) : (
     <div className={`add-augmentation-tab-header ${active ? 'active' : ''}`}>
-      <Button type="link" onClick={handleClose}>
+      <Button
+        type="link"
+        onClick={handleClose}
+        className={installedAugmentationsNum ? '' : 'hidden'}
+      >
         Close
       </Button>
       <span>Extensions</span>

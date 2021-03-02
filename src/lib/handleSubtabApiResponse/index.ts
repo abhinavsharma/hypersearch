@@ -61,6 +61,7 @@ const getSuggestedAugmentations = (
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           suggestedAugmentations.push(augmentation);
           sidebarTabs.push({
+            id: augmentation.id,
             title: augmentation.name,
             url: customSearchUrl,
             default: !sidebarTabs.length,
@@ -98,6 +99,7 @@ export const handleSubtabApiResponse = async (
   const subtabs: SidebarTab[] = response.subtabs
     .slice(1, response.subtabs.length)
     .map((subtab, i, a) => ({
+      id: subtab.title,
       title: subtab.title ?? 'Readable Content',
       url: subtab.url && new URL(subtab.url),
       readable: subtab.readable_content,

@@ -3,7 +3,7 @@ import { BackgroundMessenger } from 'lib/backgroundMessenger/backgroundMessenger
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import { syncLocalSearchEngines } from 'lib/syncLocalSearchEngines/syncLocalSearchEngines';
 import { SHOW_AUGMENTATION_TAB } from 'modules/sidebar';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/helpers';
+import { EDIT_AUGMENTATION_SUCCESS, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/messages';
 
 const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),
@@ -134,4 +134,10 @@ chrome.browserAction.onClicked.addListener((tab) => {
   !SHOW_AUGMENTATION_TAB
     ? chrome.tabs.create({ active: true, url: 'http://share.insightbrowser.com/14' })
     : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
+});
+
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (msg.type === EDIT_AUGMENTATION_SUCCESS) {
+    chrome.tabs.sendMessage(sender.tab.id, { type: EDIT_AUGMENTATION_SUCCESS });
+  }
 });

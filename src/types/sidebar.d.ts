@@ -1,4 +1,5 @@
 declare type SidebarTab = {
+  id: string;
   title: string;
   url: URL;
   default: boolean;

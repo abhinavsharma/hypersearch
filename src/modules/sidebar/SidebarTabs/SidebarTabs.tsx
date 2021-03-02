@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ampRemover from 'utils/ampRemover';
 import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
 import Tabs from 'antd/lib/tabs';
 import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/helpers';
+import { EDIT_AUGMENTATION_SUCCESS, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/messages';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
+import { getLocalAugmentations } from 'lib/getLocalAugmentations/getLocalAugmentations';
 
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-export const SHOW_AUGMENTATION_TAB = false;
+export const SHOW_AUGMENTATION_TAB = true;
 
 export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
   className,
@@ -43,15 +44,34 @@ const TabBar: TabBar = (props, DefaultTabBar) => (
 
 export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
   const [activeKey, setActiveKey] = useState<string>(forceTab ?? tabs.length === 0 ? '0' : '1');
+  const [installedAugmentations, setInstalledAugmentations] = useState<SidebarTab[]>([]);
+
+  const loadAugmentations = useCallback(async () => {
+    const results = await getLocalAugmentations();
+    const newTabs = tabs.filter((i) => !i.isCse || results.includes(i.id));
+    setInstalledAugmentations(newTabs);
+    !newTabs.length && setActiveKey('0');
+  }, []);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
-        flipSidebar(document, 'show', tabs.length);
-        setActiveKey('0');
+      switch (msg.type) {
+        case OPEN_AUGMENTATION_BUILDER_MESSAGE:
+          flipSidebar(document, 'show', tabs.length);
+          setActiveKey('0');
+          break;
+        case EDIT_AUGMENTATION_SUCCESS:
+          loadAugmentations();
+          break;
+        default:
+          break;
       }
     });
   }, []);
+
+  useEffect(() => {
+    loadAugmentations();
+  }, [loadAugmentations]);
 
   const injectAmpRemover = async (el: HTMLIFrameElement) => {
     const currentDocument = el.contentWindow.document;
@@ -63,7 +83,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
 
   return (
     <Tabs
-      defaultActiveKey={'1'}
+      defaultActiveKey={installedAugmentations.length ? '1' : '0'}
       className="insight-tab-container"
       renderTabBar={TabBar}
       activeKey={forceTab ?? activeKey}
@@ -74,6 +94,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
         tab={
           SHOW_AUGMENTATION_TAB ? (
             <AddAugmentationTab
+              installedAugmentationsNum={installedAugmentations.length}
               active={(forceTab ?? activeKey) === '0'}
               setActiveKey={setActiveKey}
               onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
@@ -87,7 +108,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
         <ActiveAugmentationsPage />
       </TabPane>
 
-      {tabs.map((tab, i) => {
+      {installedAugmentations.map((tab, i) => {
         const tabId = `insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`;
         return (
           <TabPane

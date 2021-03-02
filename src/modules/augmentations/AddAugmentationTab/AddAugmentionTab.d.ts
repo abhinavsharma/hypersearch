@@ -4,6 +4,7 @@ declare module './AddAugmentationTab' {
   type AddAugmentationTabProps = {
     active: boolean;
     setActiveKey: Dispatch<SetStateAction<string>>;
+    installedAugmentationsNum: number;
     onClick?: (e: MouseEvent<HTMLDivElement, any>) => void;
   };
 

@@ -5,6 +5,7 @@ import Col from 'antd/lib/col';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
 import { goBack } from 'route-lite';
+import { saveLocalAugmentation } from 'lib/saveLocalAugmentation/saveLocalAugmentation';
 import { ShareAugmentationButton, DeleteAugmentationButton } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
@@ -15,19 +16,26 @@ import './EditAugmentationPage.scss';
 
 const { Text } = Typography;
 
-const Header = () => (
-  <>
-    <div className="edit-augmentation-tab-header ant-tabs-tab">
-      <Button type="link" onClick={() => goBack()} className="insight-augmentation-tab-button">
-        Cancel
-      </Button>
-      <span>Edit extension</span>
-      <Button type="link" onClick={() => null} className="insight-augmentation-tab-button">
-        Save
-      </Button>
-    </div>
-  </>
-);
+const Header: Header = ({ augmentation }) => {
+  const handleSave = () => {
+    saveLocalAugmentation(augmentation.id);
+    goBack();
+  };
+
+  return (
+    <>
+      <div className="edit-augmentation-tab-header ant-tabs-tab">
+        <Button type="link" onClick={() => goBack()} className="insight-augmentation-tab-button">
+          Cancel
+        </Button>
+        <span>Edit extension</span>
+        <Button type="link" onClick={handleSave} className="insight-augmentation-tab-button">
+          Save
+        </Button>
+      </div>
+    </>
+  );
+};
 
 export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, enabled }) => {
   const [name, setName] = useState<string>(augmentation.name);
@@ -42,7 +50,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, enabl
 
   return (
     <div className="edit-augmentation-page-container">
-      <Header />
+      <Header augmentation={augmentation} />
       <div className="edit-augmentation-page-wrapper">
         <Row>
           <Col xs={12}>Name</Col>
@@ -65,7 +73,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, enabl
             <ShareAugmentationButton />
           </Col>
           <Col xs={12}>
-            <DeleteAugmentationButton />
+            <DeleteAugmentationButton augmentation={augmentation} />
           </Col>
         </Row>
         <div className="edit-augmentation-logic-wrapper">

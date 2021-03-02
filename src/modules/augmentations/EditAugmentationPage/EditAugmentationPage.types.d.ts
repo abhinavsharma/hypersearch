@@ -7,4 +7,10 @@ declare module './EditAugmentationPage' {
   };
 
   type EditAugmentationPage = FunctionComponent<EditAugmentationPageProps>;
+
+  type HeaderProps = {
+    augmentation: SuggestedAugmentationObject;
+  };
+
+  type Header = FunctionComponent<HeaderProps>;
 }

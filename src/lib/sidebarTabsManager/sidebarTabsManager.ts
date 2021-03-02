@@ -23,6 +23,7 @@ class SidebarTabsManager {
 
   private pinnedTabWithURL(url: string) {
     return {
+      id: '',
       title: 'Pinned',
       url: new URL(url),
       default: true,

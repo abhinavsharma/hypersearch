@@ -10,6 +10,7 @@
 .add-augmentation-tab-header {
   display: flex;
   height: 55px;
+  cursor: default;
 
   &.active {
     position: fixed !important;
@@ -24,6 +25,11 @@
   & > button {
     display: inline-flex;
     align-self: center;
+
+    &.hidden {
+      opacity: 0;
+      cursor: default !important;
+    }
   }
 
   & > span {
