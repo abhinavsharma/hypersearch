@@ -122,10 +122,10 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
                 <a
                   target="blank"
                   href={
-                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' + tab.title
+                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' + tab.title + '&prefill_sample_query=' + new URLSearchParams(window.location.search).get('q')
                   }
                 >
-                  🤔 Improve this search filter
+                  🤔 Filter needs improvement?
                 </a>
               </div>
             )}
