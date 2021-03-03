@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 
 declare module './AllAugmentationsPage' {
   type AllAugmentationsPageProps = {
-    suggested: SuggestedAugmentationObject[];
+    suggested: AugmentationObject[];
   };
 
   type AllAugmentationsPage = FunctionComponent<AllAugmentationsPageProps>;

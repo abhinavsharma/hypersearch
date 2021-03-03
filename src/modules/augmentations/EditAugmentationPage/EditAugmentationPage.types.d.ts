@@ -1,16 +1,24 @@
 import { FunctionComponent } from 'react';
 
 declare module './EditAugmentationPage' {
+  type CustomAugmentationObject<T = AugmentationObject> = T & {
+    installed?: boolean;
+  };
+
   type EditAugmentationPageProps = {
-    augmentation: SuggestedAugmentationObject;
-    enabled: boolean;
+    augmentation: CustomAugmentationObject;
+    isAdding?: boolean;
+  };
+
+  type CustomAction = AugmentationSingleActionObject & {
+    id: string;
+  };
+
+  type CustomCondition = AugmentationSingleActionObject & {
+    id: string;
   };
 
   type EditAugmentationPage = FunctionComponent<EditAugmentationPageProps>;
 
-  type HeaderProps = {
-    augmentation: SuggestedAugmentationObject;
-  };
-
-  type Header = FunctionComponent<HeaderProps>;
+  type Header = FunctionComponent<EditAugmentationPageProps>;
 }

@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import ampRemover from 'utils/ampRemover';
-import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
+import React, { useState, useEffect } from 'react';
 import Tabs from 'antd/lib/tabs';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
-import { EDIT_AUGMENTATION_SUCCESS, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/messages';
+import ampRemover from 'utils/ampRemover';
+import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
+import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
-import { getLocalAugmentations } from 'lib/getLocalAugmentations/getLocalAugmentations';
 
 const { TabPane } = Tabs;
 
 // !DEV Toggle rendering augmentation tab
-export const SHOW_AUGMENTATION_TAB = false;
+export const SHOW_AUGMENTATION_TAB = true;
 
 export const ExternalAddAugmentationButton: ExternalAddAugmentationButton = ({
   className,
@@ -42,36 +42,19 @@ const TabBar: TabBar = (props, DefaultTabBar) => (
   <DefaultTabBar {...props} className="insight-tab-bar" />
 );
 
-export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
-  const [activeKey, setActiveKey] = useState<string>(forceTab ?? tabs.length === 0 ? '0' : '1');
-  const [installedAugmentations, setInstalledAugmentations] = useState<SidebarTab[]>([]);
+export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
+  const tabs = SidebarLoader.sidebarTabs;
 
-  const loadAugmentations = useCallback(async () => {
-    const results = await getLocalAugmentations();
-    const newTabs = tabs.filter((i) => !i.isCse || results.includes(i.id));
-    setInstalledAugmentations(newTabs);
-    !newTabs.length && setActiveKey('0');
-  }, []);
+  const [activeKey, setActiveKey] = useState<string>(!!tabs.length ? '1' : '0');
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
-      switch (msg.type) {
-        case OPEN_AUGMENTATION_BUILDER_MESSAGE:
-          flipSidebar(document, 'show', tabs.length);
-          setActiveKey('0');
-          break;
-        case EDIT_AUGMENTATION_SUCCESS:
-          SHOW_AUGMENTATION_TAB && loadAugmentations();
-          break;
-        default:
-          break;
+      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
+        flipSidebar(document, 'show', tabs?.length);
+        setActiveKey('0');
       }
     });
-  }, []);
-
-  useEffect(() => {
-    SHOW_AUGMENTATION_TAB && loadAugmentations();
-  }, [loadAugmentations]);
+  }, [SidebarLoader.sidebarTabs]);
 
   const injectAmpRemover = async (el: HTMLIFrameElement) => {
     const currentDocument = el.contentWindow.document;
@@ -82,21 +65,13 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
   };
 
   return (
-    <Tabs
-      defaultActiveKey={installedAugmentations.length ? '1' : '0'}
-      className="insight-tab-container"
-      renderTabBar={TabBar}
-      activeKey={forceTab ?? activeKey}
-    >
-      {/* First tab is always the augmentation page */}
+    <Tabs className="insight-tab-container" renderTabBar={TabBar} activeKey={forceTab ?? activeKey}>
       <TabPane
         key="0"
         tab={
           SHOW_AUGMENTATION_TAB ? (
             <AddAugmentationTab
-              installedAugmentationsNum={
-                SHOW_AUGMENTATION_TAB ? installedAugmentations.length : tabs.length
-              }
+              installedAugmentationsNum={tabs.length}
               active={(forceTab ?? activeKey) === '0'}
               setActiveKey={setActiveKey}
               onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
@@ -109,8 +84,7 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
       >
         <ActiveAugmentationsPage />
       </TabPane>
-
-      {(SHOW_AUGMENTATION_TAB ? installedAugmentations : tabs).map((tab, i) => {
+      {tabs?.map((tab, i) => {
         const tabId = `insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`;
         return (
           <TabPane
@@ -132,13 +106,15 @@ export const SidebarTabs: SidebarTabs = ({ tabs, forceTab }) => {
                 className="insight-readable-content"
                 dangerouslySetInnerHTML={{ __html: tab.readable }}
               />
-            ) : (
+            ) : tab.url ? (
               <iframe
                 src={tab.url.href}
                 className="insight-tab-iframe"
                 id={tabId}
                 onLoad={(e) => injectAmpRemover(e.currentTarget)}
               />
+            ) : (
+              <></>
             )}
             {tab.isCse && (
               <div className="insight-tab-bottom-message">

@@ -1,9 +1,15 @@
-import { MESSAGES, debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
-import { BackgroundMessenger } from 'lib/backgroundMessenger/backgroundMessenger';
+import { debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+import { BackgroundMessenger } from 'lib/BackgroundMessenger/BackgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
-import { syncLocalSearchEngines } from 'lib/syncLocalSearchEngines/syncLocalSearchEngines';
+import { syncLocalSearchEngines } from 'utils/syncLocalSearchEngines/syncLocalSearchEngines';
 import { SHOW_AUGMENTATION_TAB } from 'modules/sidebar';
-import { EDIT_AUGMENTATION_SUCCESS, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/messages';
+import {
+  REMOVE_AUGMENTATION_SUCCESS_MESSAGE,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+  ADD_LOCAL_AUGMENTATION_MESSAGE,
+  URL_UPDATED_MESSAGE,
+} from 'utils/constants';
 
 const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),
@@ -91,16 +97,7 @@ function onUpdatedListener(tabId, changeInfo, tab) {
   debug('function call - onUpdatedListener:', tabId, changeInfo, tab);
   if (changeInfo.url) {
     debug('changeInfo has URL:', changeInfo.url);
-    chrome.tabs.sendMessage(
-      tabId,
-      {
-        data: {
-          command: MESSAGES.BROWSERBG_BROWSERFG_URL_UPDATED,
-          url: changeInfo.url,
-        },
-      },
-      () => debug(chrome.runtime.lastError),
-    );
+    chrome.tabs.sendMessage(tabId, { type: URL_UPDATED_MESSAGE, url: changeInfo.url });
   }
   URL_TO_TAB[tab.url] = tabId;
 }
@@ -137,7 +134,17 @@ chrome.browserAction.onClicked.addListener((tab) => {
 });
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
-  if (msg.type === EDIT_AUGMENTATION_SUCCESS) {
-    chrome.tabs.sendMessage(sender.tab.id, { type: EDIT_AUGMENTATION_SUCCESS });
+  switch (msg.type) {
+    case ADD_LOCAL_AUGMENTATION_MESSAGE:
+      chrome.tabs.sendMessage(sender.tab.id, { type: ADD_LOCAL_AUGMENTATION_MESSAGE });
+      break;
+    case REMOVE_AUGMENTATION_SUCCESS_MESSAGE:
+      chrome.tabs.sendMessage(sender.tab.id, { type: REMOVE_AUGMENTATION_SUCCESS_MESSAGE });
+      break;
+    case UPDATE_SIDEBAR_TABS_MESSAGE:
+      chrome.tabs.sendMessage(sender.tab.id, { type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      break;
+    default:
+      break;
   }
 });

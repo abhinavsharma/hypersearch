@@ -74,14 +74,14 @@ export const runFunctionWhenDocumentReady = (
   callback: ({ ...args }?: any) => void,
 ): void => {
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    debug('runFunctionWhenDocumentReady - document is ready right now');
+    debug('document is ready right now');
     callback();
   } else {
-    debug('runFunctionWhenDocumentReady - document is not ready');
+    debug('document is not ready yet...');
     document.addEventListener(
       'DOMContentLoaded',
       () => {
-        debug('runFunctionWhenDocumentReady - document was not ready but DOMContentLoaded now');
+        debug('DELAYED - document is ready right now');
         callback();
       },
       false,

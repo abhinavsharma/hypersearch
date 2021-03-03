@@ -1,6 +1,6 @@
 import React from 'react';
 import List from 'antd/lib/list';
-import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
+import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { ExternalAddAugmentationButton, SHOW_AUGMENTATION_TAB } from 'modules/sidebar';
 import './SidebarToggleButton.scss';
 
@@ -12,10 +12,10 @@ const ListItem = (item: SidebarTab) => (
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
-    flipSidebar(document, 'show', tabs.length);
+    flipSidebar(document, 'show', tabs?.length);
   };
 
-  return !!tabs.length ? (
+  return !!tabs?.length ? (
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
       <List itemLayout="horizontal" dataSource={tabs} renderItem={ListItem} />
     </div>

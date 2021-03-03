@@ -1,4 +1,4 @@
-import { CUSTOM_SEARCH_ENGINES } from 'lib/handleSubtabApiResponse';
+import { CUSTOM_SEARCH_ENGINES } from 'utils/constants';
 import { debug } from 'lumos-shared-js';
 
 const deleteItem = async (key: string) => {

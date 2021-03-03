@@ -1,7 +1,3 @@
-/**
- * This is a hacky solution to overlap the Ant tabbar with
- * AddAugmentationPage header.
- */
 .edit-augmentation-page-container {
   display: flex;
   flex-direction: column;
@@ -9,6 +5,11 @@
   background: #efefef !important;
   margin-top: -65px;
   align-items: flex-start !important;
+
+  textarea.ant-input {
+    max-height: 30px !important;
+    margin-bottom: -10px !important;
+  }
 
   .edit-augmentation-tab-header {
     display: flex;
@@ -44,7 +45,8 @@
     height: calc(100%-75px);
     width: 100%;
     top: 75px;
-    bottom: 0;
+    bottom: 0px;
+    padding-bottom: 30px;
     background: #efefef;
     overflow-y: auto !important;
 
@@ -112,6 +114,15 @@
                 color: red !important;
               }
             }
+
+            &.disabled {
+              cursor: not-allowed;
+              color: #cecece !important;
+
+              & > span:last-child {
+                color: #cecece !important;
+              }
+            }
           }
 
           &.insight-augmentation-tab-button {
@@ -139,11 +150,19 @@
           border-bottom: none !important;
         }
 
+        button.add-operation-button {
+          text-align: left;
+        }
+
         .ant-col {
           font-weight: normal !important;
 
           &:first-child {
             span {
+              button {
+                padding: 4px;
+              }
+
               strong {
                 color: #1890ff;
                 text-decoration: underline;
@@ -152,7 +171,7 @@
           }
         }
 
-        &.edit-augmentation-condition-row {
+        &.edit-input-row {
           background: white !important;
           min-height: 20px;
           height: auto;
@@ -162,7 +181,6 @@
 
           .ant-col {
             &:first-child {
-              border-right: 1px solid #ccc;
               margin-right: -1px;
               font-weight: bold !important;
             }
@@ -170,15 +188,26 @@
             &:last-child {
               padding-left: 10px;
               margin-right: -10px;
+
+              textarea {
+                min-height: 30px;
+                max-height: 100% !important;
+                margin-bottom: 0px !important;
+              }
+
+              button.edit-input-save-button {
+                width: 45%;
+              }
+
+              button.edit-input-delete-button {
+                width: 45%;
+                margin-left: 10%;
+                margin-top: 5px;
+              }
             }
           }
         }
       }
     }
   }
-}
-
-textarea.ant-input {
-  max-height: 30px !important;
-  margin-bottom: -10px !important;
 }

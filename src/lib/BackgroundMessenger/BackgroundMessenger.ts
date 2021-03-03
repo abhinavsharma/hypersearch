@@ -66,7 +66,6 @@ class BackgroundMessenger {
         case CLIENT_MESSAGES.CONTENT_BROWSER_GET_LUMOS_SERP_CONFIG:
           debug('message from browser to background', command, data, sender);
           chrome.storage.sync.get([LUMOS_SERP_CONFIG], function (items) {
-            console.log(items);
             chrome.tabs.sendMessage(sender.tab.id, {
               data: {
                 command: CLIENT_MESSAGES.BROWSER_CONTENT_LUMOS_SERP_CONFIG,
