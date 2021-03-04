@@ -18,7 +18,6 @@
 		CD3C029925F06F0000B8A449 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028D25F06F0000B8A449 /* index.html */; };
 		CD3C029A25F06F0000B8A449 /* js in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028E25F06F0000B8A449 /* js */; };
 		CD3C029B25F06F0000B8A449 /* logo128.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028F25F06F0000B8A449 /* logo128.png */; };
-		CD3C029C25F06F0000B8A449 /* Insight in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029025F06F0000B8A449 /* Insight */; };
 		CD3C029D25F06F0000B8A449 /* index.css in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029125F06F0000B8A449 /* index.css */; };
 		CD3C029E25F06F0000B8A449 /* google_cse.css in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029225F06F0000B8A449 /* google_cse.css */; };
 		CD3C029F25F06F0000B8A449 /* ad_remover.js in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029325F06F0000B8A449 /* ad_remover.js */; };
@@ -69,7 +68,6 @@
 		CD3C028D25F06F0000B8A449 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = index.html; path = ../../dist/index.html; sourceTree = "<group>"; };
 		CD3C028E25F06F0000B8A449 /* js */ = {isa = PBXFileReference; lastKnownFileType = folder; name = js; path = ../../dist/js; sourceTree = "<group>"; };
 		CD3C028F25F06F0000B8A449 /* logo128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo128.png; path = ../../dist/logo128.png; sourceTree = "<group>"; };
-		CD3C029025F06F0000B8A449 /* Insight */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Insight; path = ../../dist/Insight; sourceTree = "<group>"; };
 		CD3C029125F06F0000B8A449 /* index.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = index.css; path = ../../dist/index.css; sourceTree = "<group>"; };
 		CD3C029225F06F0000B8A449 /* google_cse.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = google_cse.css; path = ../../dist/google_cse.css; sourceTree = "<group>"; };
 		CD3C029325F06F0000B8A449 /* ad_remover.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = ad_remover.js; path = ../../dist/ad_remover.js; sourceTree = "<group>"; };
@@ -156,7 +154,6 @@
 				CD3C028D25F06F0000B8A449 /* index.html */,
 				CD3C028E25F06F0000B8A449 /* js */,
 				CD3C028F25F06F0000B8A449 /* logo128.png */,
-				CD3C029025F06F0000B8A449 /* Insight */,
 				CD3C029125F06F0000B8A449 /* index.css */,
 				CD3C029225F06F0000B8A449 /* google_cse.css */,
 				CD3C029325F06F0000B8A449 /* ad_remover.js */,
@@ -261,7 +258,6 @@
 				CD3C029825F06F0000B8A449 /* icon.png in Resources */,
 				CD3C029A25F06F0000B8A449 /* js in Resources */,
 				CD3C029D25F06F0000B8A449 /* index.css in Resources */,
-				CD3C029C25F06F0000B8A449 /* Insight in Resources */,
 				CD3C02A225F06F0000B8A449 /* logo128-active.png in Resources */,
 				CD3C02A125F06F0000B8A449 /* content_frames.js in Resources */,
 				CD3C02A025F06F0000B8A449 /* manifest.json in Resources */,
