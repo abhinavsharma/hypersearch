@@ -20,6 +20,7 @@ iframe {
   border-width: 0 !important;
   background: transparent;
   z-index: 9999;
+  border: 0;
 }
 
 #sidebar-root-iframe.hidden {
