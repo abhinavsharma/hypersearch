@@ -24,7 +24,6 @@
 		CD3C02A025F06F0000B8A449 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029425F06F0000B8A449 /* manifest.json */; };
 		CD3C02A125F06F0000B8A449 /* content_frames.js in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029525F06F0000B8A449 /* content_frames.js */; };
 		CD3C02A225F06F0000B8A449 /* logo128-active.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029625F06F0000B8A449 /* logo128-active.png */; };
-		CD3C02A325F06F0000B8A449 /* logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD3C029725F06F0000B8A449 /* logo.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,7 +73,6 @@
 		CD3C029425F06F0000B8A449 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../../dist/manifest.json; sourceTree = "<group>"; };
 		CD3C029525F06F0000B8A449 /* content_frames.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content_frames.js; path = ../../dist/content_frames.js; sourceTree = "<group>"; };
 		CD3C029625F06F0000B8A449 /* logo128-active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "logo128-active.png"; path = "../../dist/logo128-active.png"; sourceTree = "<group>"; };
-		CD3C029725F06F0000B8A449 /* logo.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = logo.svg; path = ../../dist/logo.svg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,7 +158,6 @@
 				CD3C029425F06F0000B8A449 /* manifest.json */,
 				CD3C029525F06F0000B8A449 /* content_frames.js */,
 				CD3C029625F06F0000B8A449 /* logo128-active.png */,
-				CD3C029725F06F0000B8A449 /* logo.svg */,
 			);
 			name = Resources;
 			path = "Insight Extension Extension";
@@ -261,7 +258,6 @@
 				CD3C02A225F06F0000B8A449 /* logo128-active.png in Resources */,
 				CD3C02A125F06F0000B8A449 /* content_frames.js in Resources */,
 				CD3C02A025F06F0000B8A449 /* manifest.json in Resources */,
-				CD3C02A325F06F0000B8A449 /* logo.svg in Resources */,
 				CD3C029F25F06F0000B8A449 /* ad_remover.js in Resources */,
 				CD3C029B25F06F0000B8A449 /* logo128.png in Resources */,
 				CD3C029925F06F0000B8A449 /* index.html in Resources */,
