@@ -8,11 +8,11 @@ export const AddAugmentationTab: AddAugmentationTab = ({
   active,
   setActiveKey,
   onClick,
-  installedAugmentationsNum,
+  numInstalledAugmentations,
 }) => {
   const handleClose = () => {
     goBack();
-    setActiveKey(installedAugmentationsNum ? '1' : '0');
+    setActiveKey(numInstalledAugmentations ? '1' : '0');
   };
 
   return !active ? (
@@ -24,7 +24,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       <Button
         type="link"
         onClick={handleClose}
-        className={installedAugmentationsNum ? '' : 'hidden'}
+        className={numInstalledAugmentations ? '' : 'hidden'}
       >
         Close
       </Button>

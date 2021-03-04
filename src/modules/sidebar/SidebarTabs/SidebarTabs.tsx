@@ -87,7 +87,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
         tab={
           ENABLE_AUGMENTATION_BUILDER ? (
             <AddAugmentationTab
-              installedAugmentationsNum={SidebarLoader.sidebarTabs.length}
+              numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
               active={(forceTab ?? activeKey) === '0'}
               setActiveKey={setActiveKey}
               onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
