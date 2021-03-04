@@ -46,7 +46,7 @@ Firefox: [WebExtensions - Installing](https://developer.mozilla.org/en-US/docs/M
 
 Edge: [Sideload an extension](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/extension-sideloading#:~:text=Open%20the%20edge%3A%2F%2Fextensions,browser%2C%20and%20then%20selecting%20Extensions.&text=On%20the%20extension%20management%20page,bottom%20left%20of%20the%20page.&text=When%20installing%20your%20extension%20for%20the%20first%20time%2C%20choose%20Load%20Unpacked.)
 
-Safari:
+Safari: [Building a Safari App Extension](https://developer.apple.com/documentation/safariservices/safari_app_extensions/building_a_safari_app_extension)
 - Prepare Safari to run unsigned extensions:
   1. Open Safari and choose Safari > Preferences.
   2. Select the Advanced tab, then select the “Show Develop menu in menu bar” checkbox.
