@@ -46,6 +46,19 @@ Firefox: [WebExtensions - Installing](https://developer.mozilla.org/en-US/docs/M
 
 Edge: [Sideload an extension](https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-started/extension-sideloading#:~:text=Open%20the%20edge%3A%2F%2Fextensions,browser%2C%20and%20then%20selecting%20Extensions.&text=On%20the%20extension%20management%20page,bottom%20left%20of%20the%20page.&text=When%20installing%20your%20extension%20for%20the%20first%20time%2C%20choose%20Load%20Unpacked.)
 
+Safari:
+- Prepare Safari to run unsigned extensions:
+  1. Open Safari and choose Safari > Preferences.
+  2. Select the Advanced tab, then select the “Show Develop menu in menu bar” checkbox.
+  3. Choose Develop > Allow Unsigned Extensions. The Allow Unsigned Extensions setting is reset when a user quits Safari; you must set it again the next time Safari is launched.
+  4. Select the Extensions tab. This tab shows the localized description, display name, and version number for the selected Safari App Extension. It also provides a more nuanced message about the permissions claimed by the extension.
+  5. Find your new extension in the list on the left, and enable it by selecting the checkbox.
+  6. Close Safari Preferences.
+- Using Xcode 12 or higher:
+  1. open the project ./Insight Extension/Insight Extension.xcodeproj.
+  2. Make sure that your macOS app is selected in the Scheme menu next to the Run and Stop buttons in Xcode’s main toolbar.
+  3. Click the Run button, or choose Product > Run (Command-R) to build and run your app.
+
 ## Architecture
 
 See: [ARCHITECTURE.md](https://github.com/lumosbrowser/lumos-extension/blob/master/ARCHITECTURE.md)
