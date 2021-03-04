@@ -1,6 +1,5 @@
 import React, { Suspense, useCallback } from 'react';
 import Button from 'antd/lib/button';
-import md5 from 'md5';
 import 'antd/lib/button/style/index.css';
 
 // TODO: implement share logic

@@ -1,8 +1,8 @@
 import { debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
-import { BackgroundMessenger } from 'lib/BackgroundMessenger/BackgroundMessenger';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
-import { syncLocalSearchEngines } from 'utils/syncLocalSearchEngines/syncLocalSearchEngines';
-import { SHOW_AUGMENTATION_TAB } from 'modules/sidebar';
+import { BackgroundMessenger } from 'lib/BackgroundMessenger/BackgroundMessenger';
+import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
+import { ENABLE_AUGMENTATION_BUILDER } from 'utils/constants';
 import {
   REMOVE_AUGMENTATION_SUCCESS_MESSAGE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -18,16 +18,13 @@ const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map
 export const URL_TO_TAB = {};
 
 // eslint-disable-next-line
-/* @ts-ignore */
+// @ts-ignore
 const isFirefox = typeof InstallTrigger !== 'undefined';
 const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeaders'].filter(
   (i) => i,
 );
 
-debug('installing listener override response headers');
-// https://gist.github.com/dergachev/e216b25d9a144914eae2#file-manifest-json
-// this is to get around loading pages in iframes that otherwise
-// don't want to be loaded in iframes
+// Allow external pages blocked by CORS to load into iframes.
 chrome.webRequest.onHeadersReceived.addListener(
   function (details) {
     const strippedHeaders = [
@@ -40,8 +37,7 @@ chrome.webRequest.onHeadersReceived.addListener(
       const deleted = !strippedHeaders.includes(responseHeader.name.toLowerCase());
       return deleted;
     });
-
-    return {
+    const result = {
       responseHeaders: [
         ...responseHeaders,
         {
@@ -54,6 +50,7 @@ chrome.webRequest.onHeadersReceived.addListener(
         },
       ],
     };
+    return result;
   },
   {
     urls: ['<all_urls>'],
@@ -62,7 +59,7 @@ chrome.webRequest.onHeadersReceived.addListener(
   extraSpec,
 );
 
-debug('installing listener for overriding request headers');
+// Mimick mobile browser environment.
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
     const requestHeaders = details.requestHeaders.map((requestHeader) => {
@@ -92,27 +89,31 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   ['blocking', 'requestHeaders'],
 );
 
-debug('installing listener for onUpdated');
-function onUpdatedListener(tabId, changeInfo, tab) {
-  debug('function call - onUpdatedListener:', tabId, changeInfo, tab);
-  if (changeInfo.url) {
-    debug('changeInfo has URL:', changeInfo.url);
-    chrome.tabs.sendMessage(tabId, { type: URL_UPDATED_MESSAGE, url: changeInfo.url });
-  }
-  URL_TO_TAB[tab.url] = tabId;
-}
-
 window.onload = () => {
   const messenger = new BackgroundMessenger();
   messenger.loadHiddenMessenger(document, window);
 };
 
-chrome.tabs.onUpdated.addListener(onUpdatedListener);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url) {
+    debug(
+      'onUpdatedListener - call\n---\n\tTab ID',
+      tabId,
+      '\n\tChange',
+      changeInfo.url,
+      '\n\tTab',
+      tab,
+    );
+    chrome.tabs.sendMessage(tabId, { type: URL_UPDATED_MESSAGE, url: changeInfo.url });
+  }
+  URL_TO_TAB[tab.url] = tabId;
+});
 
 chrome.browserAction.onClicked.addListener(function (tab) {
   debug(
-    'message from background to content script',
+    'browserAction - clicked\n---\n\tMessage',
     CLIENT_MESSAGES.BROWSER_CONTENT_FLIP_NON_SERP_CONTAINER,
+    '\n---',
   );
   chrome.tabs.sendMessage(tab.id, {
     data: {
@@ -123,12 +124,12 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 chrome.browserAction.setBadgeBackgroundColor({ color: 'black' });
 
-chrome.webNavigation.onBeforeNavigate.addListener(() => {
-  syncLocalSearchEngines();
+chrome.webNavigation.onBeforeNavigate.addListener(async () => {
+  SearchEngineManager.sync();
 });
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  !SHOW_AUGMENTATION_TAB
+  !ENABLE_AUGMENTATION_BUILDER
     ? chrome.tabs.create({ active: true, url: 'http://share.insightbrowser.com/14' })
     : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
 });
@@ -143,6 +144,9 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
       break;
     case UPDATE_SIDEBAR_TABS_MESSAGE:
       chrome.tabs.sendMessage(sender.tab.id, { type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      break;
+    case OPEN_AUGMENTATION_BUILDER_MESSAGE:
+      chrome.tabs.sendMessage(sender.tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
       break;
     default:
       break;

@@ -7,7 +7,7 @@ declare module './SidebarTabs' {
   };
 
   type TabTitleProps = {
-    title: string;
+    tab: SidebarTab;
     active?: boolean;
     length: number;
     hide: boolean;
@@ -24,10 +24,4 @@ declare module './SidebarTabs' {
     props: _TabsProps,
     DefaultTabBar: (props: _TabsProps) => ReactElement,
   ) => ReactElement;
-
-  type ExternalAddAugmentationButtonProps = {
-    className?: string;
-  };
-
-  type ExternalAddAugmentationButton = FunctionComponent<ExternalAddAugmentationButtonProps>;
 }

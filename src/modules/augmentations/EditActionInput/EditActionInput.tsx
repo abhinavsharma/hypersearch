@@ -7,35 +7,38 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 
-const DEFAULT_CONDITION = {
-  evaluation: 'contains',
-  key: 'search_contains',
-  label: 'Search results contain domain',
+const DEFAULT_ACTION = {
+  key: 'search_domains',
+  label: 'Search only these domains',
   type: 'list',
+  value: [''],
 };
 
-const DeleteOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
+const MinusCircleOutlined = React.lazy(
+  async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
+);
+
+const PlusCircleTwoTone = React.lazy(
+  async () => await import('@ant-design/icons/PlusCircleTwoTone').then((mod) => mod),
 );
 
 export const EditActionInput: EditActionInput = ({
   action,
+  label,
   noDelete,
   deleteAction,
   saveAction,
-  disabled,
 }) => {
-  const [updated, setUpdated] = useState(action.value);
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUpdated(e.target.value);
-  };
+  const [current, setCurrent] = useState(action);
 
   const handleSave = () => {
-    if (disabled) {
-      return null;
-    }
-    saveAction({ ...action, value: updated });
+    if (!current.length) return null;
+    saveAction(current);
+    setCurrent('');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrent(e.target.value);
   };
 
   const handleDelete = () => {
@@ -44,30 +47,22 @@ export const EditActionInput: EditActionInput = ({
 
   return (
     <Row className="edit-input-row">
-      <Col xs={12}>{action.label ?? DEFAULT_CONDITION.label}</Col>
+      <Col xs={12}>{label ?? DEFAULT_ACTION.label}</Col>
       <Col xs={12}>
-        <Input.TextArea onChange={handleChange} value={updated} />
+        {!action.length ? (
+          <Input onChange={handleChange} value={current} />
+        ) : (
+          <span>{current}</span>
+        )}
         <Button
-          onClick={handleSave}
-          className="edit-input-save-button"
-          block
-          type="primary"
-          disabled={disabled}
-        >
-          <Suspense fallback={null}>
-            Save <DeleteOutlined />
-          </Suspense>
-        </Button>
-        <Button
-          onClick={handleDelete}
-          className="edit-input-delete-button"
-          block
+          onClick={action.length ? handleDelete : handleSave}
+          className="edit-input-action-button"
           danger
-          type="ghost"
+          type="link"
           disabled={noDelete}
         >
           <Suspense fallback={null}>
-            Delete <DeleteOutlined />
+            {action.length ? <MinusCircleOutlined /> : <PlusCircleTwoTone twoToneColor="#52c41a" />}
           </Suspense>
         </Button>
       </Col>

@@ -10,11 +10,11 @@ declare module './EditAugmentationPage' {
     isAdding?: boolean;
   };
 
-  type CustomAction = AugmentationSingleActionObject & {
+  type CustomAction = ActionObject & {
     id: string;
   };
 
-  type CustomCondition = AugmentationSingleActionObject & {
+  type CustomCondition = ConditionObject & {
     id: string;
   };
 

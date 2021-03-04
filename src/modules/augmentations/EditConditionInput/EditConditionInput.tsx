@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from 'react';
-import { debug } from 'lumos-shared-js';
+import { useDebouncedFn } from 'beautiful-react-hooks';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
@@ -15,8 +15,8 @@ const DEFAULT_CONDITION = {
   type: 'list',
 };
 
-const DeleteOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
+const MinusCircleOutlined = React.lazy(
+  async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
 export const EditConditionInput: EditConditionInput = ({
@@ -24,26 +24,26 @@ export const EditConditionInput: EditConditionInput = ({
   noDelete,
   deleteCondition,
   saveCondition,
-  disabled,
 }) => {
-  const [updated, setUpdated] = useState<string>(condition.value as string);
+  const [updated, setUpdated] = useState<string>(condition.value[0]);
+
+  const handleSave = useDebouncedFn(
+    (e: string) => {
+      if (!e) return null;
+      const updatedCondition = { ...condition, value: [e] };
+      saveCondition(updatedCondition);
+    },
+    350,
+    undefined,
+    [],
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debug('EditConditionInput - handleChange', e.target.value);
     setUpdated(e.target.value);
-  };
-
-  const handleSave = () => {
-    if (disabled) {
-      return null;
-    }
-    const updatedCondition = { ...condition, value: [updated] };
-    debug('EditConditionInput - handleSave', condition, updatedCondition);
-    saveCondition(updatedCondition);
+    handleSave(e.target.value);
   };
 
   const handleDelete = () => {
-    debug('EditConditionInput - handleDelete', condition);
     deleteCondition(condition);
   };
 
@@ -53,26 +53,14 @@ export const EditConditionInput: EditConditionInput = ({
       <Col xs={12}>
         <Input onChange={handleChange} value={updated} />
         <Button
-          onClick={handleSave}
-          className="edit-input-save-button"
-          block
-          type="primary"
-          disabled={disabled}
-        >
-          <Suspense fallback={null}>
-            Save <DeleteOutlined />
-          </Suspense>
-        </Button>
-        <Button
           onClick={handleDelete}
           className="edit-input-delete-button"
-          block
           danger
-          type="ghost"
+          type="link"
           disabled={noDelete}
         >
           <Suspense fallback={null}>
-            Delete <DeleteOutlined />
+            <MinusCircleOutlined />
           </Suspense>
         </Button>
       </Col>

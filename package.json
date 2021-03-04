@@ -26,6 +26,7 @@
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "antd": "^4.12.3",
+    "beautiful-react-hooks": "^0.31.0",
     "copy-webpack-plugin": "^7.0.0",
     "css-loader": "^5.0.2",
     "eslint": "^7.20.0",

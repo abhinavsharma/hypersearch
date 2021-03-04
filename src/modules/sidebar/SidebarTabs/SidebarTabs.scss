@@ -4,6 +4,17 @@
   min-height: 100vh;
   border-left: 2px solid #ccc;
 
+  .insight-suggested-tab-popup {
+    display: flex;
+    justify-content: space-around;
+    padding: 5px 10px;
+    border-bottom: solid 1px #cecece;
+
+    span {
+      font-weight: bold !important;
+    }
+  }
+
   .insight-tab-bar {
     display: flex;
     height: 55px;

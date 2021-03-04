@@ -6,6 +6,7 @@ import Col from 'antd/lib/col';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import { v4 as uuid } from 'uuid';
 import { UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
 import {
   ShareAugmentationButton,
@@ -26,7 +27,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
   const [name, setName] = useState<string>(augmentation.name);
   const [description, setDescription] = useState<string>(augmentation.description);
-  const [isActive, setIsActive] = useState<boolean>(augmentation.enabled);
+  const [isActive, setIsActive] = useState<boolean>(augmentation.enabled || isAdding);
   const [conditionEvaluation, setConditionEvaluation] = useState<Condition['evaluate_with']>(
     augmentation.conditions.evaluate_with,
   );
@@ -38,22 +39,21 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
     })),
   );
 
-  const [actions, setActions] = useState<CustomAction[]>(
-    augmentation.actions.action_list.map((action, index) => ({
-      ...action,
-      id: index.toString(),
-    })),
-  );
+  const [actions, setActions] = useState<ActionObject[]>(augmentation.actions.action_list);
 
   useEffect(() => {
     setInstalledAugmentations(SidebarLoader.installedAugmentations);
   }, [SidebarLoader.installedAugmentations]);
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (isDisabled) return null;
+    const customId = `cse-custom-${
+      augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
+    }-${uuid()}`;
+    const id = augmentation.id.startsWith('cse-custom-') ? augmentation.id : customId;
     const updated = {
       ...augmentation,
-      id: augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase(),
+      id,
       name,
       description,
       conditions: {
@@ -71,26 +71,26 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
       updated,
       ...installedAugmentations.filter((i) => i.id !== updated.id),
     ];
-    chrome.storage.local.set({ [augmentation.id]: updated });
+    chrome.storage.local.set({ [id]: updated });
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
     setTimeout(() => goBack(), 100);
   };
 
-  const handleDeleteAction = (e) => {
-    setActions((prev) => prev.filter((i) => i.value !== e.value));
+  const handleDeleteAction = (e: string) => {
+    setActions((prev) => {
+      const updated = { ...prev[0], value: prev[0].value.filter((i) => i !== e) };
+      return [updated];
+    });
   };
 
-  const handleSaveAction = (e) => {
-    console.log(e);
-    setActions((prev) =>
-      prev.map((i) => {
-        if (i.id === e.id) {
-          return e;
-        } else {
-          return i;
-        }
-      }),
-    );
+  const handleSaveAction = (e: string) => {
+    setActions((prev) => {
+      const updated = prev[0];
+      const existingIndex = updated.value.indexOf(e);
+      if (existingIndex > 1) updated.value.map((cur, index) => (index === existingIndex ? e : cur));
+      else updated.value.push(e);
+      return [updated];
+    });
   };
 
   const handleDeleteCondition = (e) => {
@@ -111,10 +111,6 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
 
   const handleAddCondition = (e) => {
     setConditions((prev) => [...prev, e]);
-  };
-
-  const handleAddAction = (e) => {
-    handleAddAction((prev) => [...prev, e]);
   };
 
   const handleEditName = {
@@ -215,7 +211,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
           <Row className="no-border">
             <Button
               className="add-operation-button"
-              type="text"
+              type="link"
               block
               onClick={() =>
                 setConditions((prev) => [
@@ -225,7 +221,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
                     key: 'search_contains',
                     type: 'list',
                     label: 'Search results contain domain',
-                    value: '',
+                    value: [''],
                   },
                 ])
               }
@@ -238,38 +234,25 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
               <span>Then</span>
             </Col>
           </Row>
-          {actions.map((action, i) => (
-            <EditActionInput
-              key={action.value + String(i)}
-              action={action}
-              addAction={handleAddAction}
-              saveAction={handleSaveAction}
-              deleteAction={handleDeleteAction}
-              noDelete={actions.length === 1}
-              disabled={!action.value}
-            />
-          ))}
-          <Row className="no-border">
-            <Button
-              className="add-operation-button"
-              type="text"
-              block
-              onClick={() =>
-                setActions((prev) => [
-                  ...prev,
-                  {
-                    id: prev.length.toString(),
-                    key: 'search_domains',
-                    label: 'Search only these domains',
-                    type: 'list',
-                    value: '',
-                  },
-                ])
-              }
-            >
-              ➕ Add action
-            </Button>
-          </Row>
+          {actions.map(({ value, label }) =>
+            value.map((action, i) => (
+              <EditActionInput
+                key={`${action}-${i}`}
+                label={label}
+                action={action}
+                saveAction={handleSaveAction}
+                deleteAction={handleDeleteAction}
+                noDelete={value.length === 1}
+              />
+            )),
+          )}
+          <EditActionInput
+            label={undefined}
+            action={''}
+            saveAction={handleSaveAction}
+            deleteAction={handleDeleteAction}
+            noDelete={false}
+          />
         </div>
       </div>
     </div>
