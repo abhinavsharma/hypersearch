@@ -14,7 +14,6 @@
 		CD3C027725F06F0000B8A449 /* Insight Extension Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CD3C027625F06F0000B8A449 /* Insight Extension Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CD3C027C25F06F0000B8A449 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD3C027B25F06F0000B8A449 /* Cocoa.framework */; };
 		CD3C027F25F06F0000B8A449 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3C027E25F06F0000B8A449 /* SafariWebExtensionHandler.swift */; };
-		CD3C029825F06F0000B8A449 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028C25F06F0000B8A449 /* icon.png */; };
 		CD3C029925F06F0000B8A449 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028D25F06F0000B8A449 /* index.html */; };
 		CD3C029A25F06F0000B8A449 /* js in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028E25F06F0000B8A449 /* js */; };
 		CD3C029B25F06F0000B8A449 /* logo128.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3C028F25F06F0000B8A449 /* logo128.png */; };
@@ -63,7 +62,6 @@
 		CD3C027E25F06F0000B8A449 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
 		CD3C028025F06F0000B8A449 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CD3C028125F06F0000B8A449 /* Insight_Extension_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Insight_Extension_Extension.entitlements; sourceTree = "<group>"; };
-		CD3C028C25F06F0000B8A449 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../../dist/icon.png; sourceTree = "<group>"; };
 		CD3C028D25F06F0000B8A449 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = index.html; path = ../../dist/index.html; sourceTree = "<group>"; };
 		CD3C028E25F06F0000B8A449 /* js */ = {isa = PBXFileReference; lastKnownFileType = folder; name = js; path = ../../dist/js; sourceTree = "<group>"; };
 		CD3C028F25F06F0000B8A449 /* logo128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo128.png; path = ../../dist/logo128.png; sourceTree = "<group>"; };
@@ -148,7 +146,6 @@
 		CD3C028B25F06F0000B8A449 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				CD3C028C25F06F0000B8A449 /* icon.png */,
 				CD3C028D25F06F0000B8A449 /* index.html */,
 				CD3C028E25F06F0000B8A449 /* js */,
 				CD3C028F25F06F0000B8A449 /* logo128.png */,
@@ -252,7 +249,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD3C029825F06F0000B8A449 /* icon.png in Resources */,
 				CD3C029A25F06F0000B8A449 /* js in Resources */,
 				CD3C029D25F06F0000B8A449 /* index.css in Resources */,
 				CD3C02A225F06F0000B8A449 /* logo128-active.png in Resources */,
