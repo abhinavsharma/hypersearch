@@ -51,9 +51,22 @@ class SidebarLoader {
           const domainsToLookFor = augmentation.conditions?.condition_list.map((e) => e.value[0]);
           if (this.domains.filter((value) => domainsToLookFor?.includes(value)).length > 0) {
             if (augmentation.actions.action_list?.[0].key == 'search_domains') {
+              const isSafari = () => {
+                const hasVersion = /Version\/(\d{2})/;
+                const hasSafari = /Safari\/(\d{3})/;
+                const hasChrome = /Chrome\/(\d{3})/;
+                const ua = window.navigator.userAgent;
+                return (
+                  ua.match(hasVersion) !== null &&
+                  ua.match(hasSafari) !== null &&
+                  ua.match(hasChrome) === null
+                );
+              };
               const actions = augmentation.actions.action_list?.[0]?.value;
               const customSearchUrl = new URL(
-                `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
+                isSafari()
+                  ? 'https://www.ecosia.org/search'
+                  : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
               );
               const query = new URLSearchParams(this.document.location.search).get('q');
               const append = `(${actions.map((x) => `site:${x}`).join(' OR ')})`;
