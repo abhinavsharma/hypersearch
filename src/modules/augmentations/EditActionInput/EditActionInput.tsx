@@ -47,8 +47,7 @@ export const EditActionInput: EditActionInput = ({
 
   return (
     <Row className="edit-input-row">
-      <Col xs={12}>{label ?? DEFAULT_ACTION.label}</Col>
-      <Col xs={12}>
+      <Col>
         {!action.length ? (
           <Input onChange={handleChange} value={current} />
         ) : (

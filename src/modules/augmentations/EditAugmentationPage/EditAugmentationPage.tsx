@@ -184,7 +184,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
           <Row className="no-border">
             <Col>
               <h2>Edit logic</h2>
-              <span>
+              <span className="operation-description">
                 If{' '}
                 <Button
                   type="link"
@@ -195,6 +195,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
                 </Button>
                 of these conditions are true
               </span>
+              <h3>{conditions[0].label}</h3>
             </Col>
           </Row>
           {conditions.map((condition, i) => (
@@ -231,7 +232,8 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
           </Row>
           <Row className="no-border">
             <Col>
-              <span>Then</span>
+              <span className="operation-description">Then</span>
+              <h3>{actions[0].label}</h3>
             </Col>
           </Row>
           {actions.map(({ value, label }) =>

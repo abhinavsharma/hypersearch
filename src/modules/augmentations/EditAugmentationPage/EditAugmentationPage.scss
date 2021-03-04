@@ -143,6 +143,15 @@
         font-size: 16px;
       }
 
+      h3 {
+        font-size: 14px;
+      }
+
+      span.operation-description {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
       .ant-row {
         background: #efefef !important;
 
@@ -183,6 +192,7 @@
 
           .ant-col {
             display: flex;
+            align-items: center;
 
             &:first-child {
               font-weight: bold !important;

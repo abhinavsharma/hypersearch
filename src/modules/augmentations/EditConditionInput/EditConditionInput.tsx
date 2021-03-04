@@ -49,8 +49,7 @@ export const EditConditionInput: EditConditionInput = ({
 
   return (
     <Row className="edit-input-row">
-      <Col xs={12}>{condition.label ?? DEFAULT_CONDITION.label}</Col>
-      <Col xs={12}>
+      <Col>
         <Input onChange={handleChange} value={updated} />
         <Button
           onClick={handleDelete}
