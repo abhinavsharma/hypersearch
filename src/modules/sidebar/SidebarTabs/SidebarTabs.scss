@@ -4,6 +4,11 @@
   min-height: 100vh;
   border-left: 2px solid #ccc;
 
+  .ant-tabs-extra-content {
+    cursor: pointer;
+    width: 50px;
+  }
+
   .insight-suggested-tab-popup {
     display: flex;
     justify-content: space-around;
@@ -43,13 +48,6 @@
       border-radius: 0;
       border-bottom: 0;
       white-space: pre-wrap;
-
-      &:first-child {
-        padding: 5px;
-        min-width: 30px;
-        width: auto;
-        background: #efefef !important;
-      }
     }
 
     .ant-tabs-tab-active {

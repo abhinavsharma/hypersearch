@@ -87,23 +87,20 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
         className="insight-tab-container"
         renderTabBar={TabBar}
         activeKey={forceTab ?? activeKey}
+        tabBarExtraContent={{
+          left: ENABLE_AUGMENTATION_BUILDER ? (
+            <AddAugmentationTab
+              numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
+              active={(forceTab ?? activeKey) === '0'}
+              setActiveKey={setActiveKey}
+              onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
+            />
+          ) : (
+            <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
+          ),
+        }}
       >
-        <TabPane
-          key="0"
-          tab={
-            ENABLE_AUGMENTATION_BUILDER ? (
-              <AddAugmentationTab
-                numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
-                active={(forceTab ?? activeKey) === '0'}
-                setActiveKey={setActiveKey}
-                onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
-              />
-            ) : (
-              <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
-            )
-          }
-          forceRender
-        >
+        <TabPane key="0" tab={null} forceRender>
           <ActiveAugmentationsPage />
         </TabPane>
         {SidebarLoader.sidebarTabs?.map((tab, i) => (

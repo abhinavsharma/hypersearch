@@ -195,7 +195,6 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
                 </Button>
                 of these conditions are true
               </span>
-              <h3>{conditions[0].label}</h3>
             </Col>
           </Row>
           {conditions.map((condition, i) => (
