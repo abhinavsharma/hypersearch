@@ -54,7 +54,7 @@
       background: white !important;
       min-height: 30px;
       height: auto;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #eee;
       align-items: center;
       padding: 10px 10px;
 
@@ -69,7 +69,7 @@
 
           &:first-child {
             margin-right: -1px;
-            border-right: 1px solid #ccc;
+            border-right: 1px solid #eee;
           }
         }
       }
@@ -100,7 +100,6 @@
             flex-direction: column;
             align-items: center;
             font-size: 24px;
-            font-weight: bold !important;
 
             & > span:last-child {
               color: black !important;
@@ -186,7 +185,7 @@
           background: white !important;
           min-height: 20px;
           height: auto;
-          border-bottom: 1px solid #ccc;
+          border-bottom: 1px solid #eee;
           align-items: center;
           padding: 10px 10px;
 
@@ -194,7 +193,7 @@
             border-bottom: none;
 
             .ant-col:last-child {
-              border-left: 1px solid #ccc;
+              border-left: 1px solid #eee;
               margin: -10px -10px -10px -1px;
               padding: 10px 0 10px 10px;
             }

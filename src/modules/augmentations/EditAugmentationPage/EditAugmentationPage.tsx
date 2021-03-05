@@ -145,14 +145,14 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
         <Button type="link" onClick={goBack} className="insight-augmentation-tab-button">
           Cancel
         </Button>
-        <span>{`${!isAdding ? 'Edit' : 'Add'} extension`}</span>
+        <span>{`${!isAdding ? 'Edit' : 'Add'} filter`}</span>
         <Button
           type="link"
           onClick={handleSave}
           className="insight-augmentation-tab-button"
           disabled={isDisabled}
         >
-          {!isAdding ? 'Save' : 'Install'}
+          {!isAdding ? 'Save' : 'Add'}
         </Button>
       </div>
       <div className="edit-augmentation-page-wrapper">

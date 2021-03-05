@@ -1,4 +1,4 @@
-.inisight-active-augmentations-page {
+.insight-active-augmentations-page {
   display: block;
   position: absolute;
   height: calc(100% -55px);
@@ -11,14 +11,14 @@
   h2 {
     font-size: 14px;
     font-weight: bold;
-    margin: 35px auto 10px 5px;
+    margin: 35px auto 10px 10px;
   }
 
   h3 {
     font-size: 13px;
     font-style: italic;
     font-weight: 400;
-    margin-left: 6px;
+    margin-left: 10px;
     margin-top: -10px;
   }
 
@@ -63,9 +63,9 @@
       }
 
       button {
+        height: 50px;
         background: white;
         text-align: left;
-        font-weight: bold;
 
         &:hover {
           background: #efefef;

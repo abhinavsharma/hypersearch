@@ -15,7 +15,7 @@ const Header = () => (
       <Button type="link" onClick={() => goBack()}>
         Close
       </Button>
-      <span>Extensions</span>
+      <span>Filters</span>
     </div>
     <h2>All suggested augmentations for this page</h2>
   </>

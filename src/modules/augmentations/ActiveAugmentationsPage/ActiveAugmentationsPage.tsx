@@ -42,10 +42,10 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
 
   return (
     <Router>
-      <div className="inisight-active-augmentations-page">
+      <div className="insight-active-augmentations-page">
         <Row>
           <Col>
-            <h2>Installed extensions for this page</h2>
+            <h2>Your custom filters for this page</h2>
             <h3>{`${SidebarLoader.url.href.slice(0, 60)}...`}</h3>
             {installedAugmentations.map((augmentation) => (
               <div className="installed-augmentation-row" key={augmentation.id}>
@@ -71,12 +71,12 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
               goTo(EditAugmentationPage, { augmentation: EMPTY_AUGMENTATION, isAdding: true })
             }
           >
-            ➕ Add extension
+            ➕ Add filter
           </Button>
         </Row>
         <Row>
           <Col>
-            <h2>Suggested extension for this page</h2>
+            <h2>Suggested filters for this page</h2>
             {suggestedAugmentations
               .filter((i) => i.actions.action_list.some((i) => i.key !== 'inject_js'))
               .map((augmentation) => (
@@ -97,7 +97,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
         </Row>
         <Row>
           <Col>
-            <h2>Ignored extensions</h2>
+            <h2>Hidden filters</h2>
             {ignoredAugmentations.map((augmentation) => (
               <Button
                 type="text"

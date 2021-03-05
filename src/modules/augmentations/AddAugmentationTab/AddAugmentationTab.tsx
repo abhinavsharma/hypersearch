@@ -28,7 +28,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       >
         Close
       </Button>
-      <span>Extensions</span>
+      <span>Filters</span>
     </div>
   );
 };

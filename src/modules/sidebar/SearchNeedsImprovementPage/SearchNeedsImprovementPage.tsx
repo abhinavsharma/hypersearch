@@ -15,18 +15,20 @@ export const SearchNeedsImprovementPage: SearchNeedsImprovementPage = ({ setActi
   return (
     <div className="insight-search-needs-improvement-page">
       <div className="external-link">
-        😟
-        <a
+        
+        <Button
+          type="primary"
+          size="large"
           target="blank"
           href={`http://share.insightbrowser.com/13?&prefill_sample_query=${new URLSearchParams(
             window.location.search,
           ).get('q')}`}
         >
-          Need Better Results
-        </a>
+          🤷‍♂️ Get Better Results
+        </Button>
       </div>
       <Button type="link" onClick={handleClick}>
-        Create an extension
+        Create a search filter
       </Button>
     </div>
   );

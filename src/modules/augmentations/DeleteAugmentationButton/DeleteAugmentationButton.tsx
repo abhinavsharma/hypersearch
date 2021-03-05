@@ -32,7 +32,7 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
         <Suspense fallback={null}>
           <DeleteOutlined />
         </Suspense>
-        <span>Delete Extension</span>
+        <span>Delete Filter</span>
       </div>
     </Button>
   );

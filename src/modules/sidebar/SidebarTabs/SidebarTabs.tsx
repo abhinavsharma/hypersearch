@@ -123,6 +123,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
           >
             {tab.isSuggested && activeKey === (i + 1).toString() ? (
               <div className="insight-suggested-tab-popup">
+                <div className="insight-suggested-text">Suggested filter:</div>
                 <Link
                   component={EditAugmentationPage}
                   componentProps={{
@@ -135,11 +136,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                   key={tab.id}
                 >
                   <Button type="link" onClick={handleAddSuggested}>
-                    ➕ Install Extension
+                    ➕ Customize
                   </Button>
                 </Link>
                 <Button type="link" onClick={() => handleHideSuggested(tab)}>
-                  ❌ Hide Extension
+                  ❌ Hide
                 </Button>
               </div>
             ) : null}
