@@ -118,7 +118,9 @@ class SidebarLoader {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
-        await this.createSidebar();
+        if (this.isSerp || this.sidebarTabs.length || this.suggestedAugmentations.length) {
+          await this.createSidebar();
+        }
       });
     });
   }
