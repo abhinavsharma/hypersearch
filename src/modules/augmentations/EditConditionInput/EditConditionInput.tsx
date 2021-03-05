@@ -21,6 +21,7 @@ const MinusCircleOutlined = React.lazy(
 
 export const EditConditionInput: EditConditionInput = ({
   condition,
+  label,
   noDelete,
   deleteCondition,
   saveCondition,
@@ -49,7 +50,7 @@ export const EditConditionInput: EditConditionInput = ({
 
   return (
     <Row className="edit-input-row">
-      <Col xs={12}>{condition.label}</Col>
+      <Col xs={12}>{label}</Col>
       <Col xs={12}>
         <Input onChange={handleChange} value={updated} />
         <Button

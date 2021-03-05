@@ -201,6 +201,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
             <EditConditionInput
               key={condition.value + String(i)}
               condition={condition}
+              label={i === 0 && condition.label}
               addCondition={handleAddCondition}
               saveCondition={handleSaveCondition}
               deleteCondition={handleDeleteCondition}
@@ -232,14 +233,13 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
           <Row className="no-border">
             <Col>
               <span className="operation-description">Then</span>
-              <h3>{actions[0].label}</h3>
             </Col>
           </Row>
           {actions.map(({ value, label }) =>
             value.map((action, i) => (
               <EditActionInput
                 key={`${action}-${i}`}
-                label={label}
+                label={i === 0 && label}
                 action={action}
                 saveAction={handleSaveAction}
                 deleteAction={handleDeleteAction}
