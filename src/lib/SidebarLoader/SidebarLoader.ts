@@ -19,6 +19,7 @@ class SidebarLoader {
   public installedAugmentations: AugmentationObject[];
   public suggestedAugmentations: AugmentationObject[];
   public ignoredAugmentations: AugmentationObject[];
+  public matchingDisabledInstalledAugmentations: AugmentationObject[];
   private domains: string[];
   private styleEl: HTMLStyleElement;
   private customSearchEngine: CustomSearchEngine;
@@ -31,6 +32,7 @@ class SidebarLoader {
     this.installedAugmentations = [];
     this.suggestedAugmentations = [];
     this.ignoredAugmentations = [];
+    this.matchingDisabledInstalledAugmentations = [];
   }
 
   public getTabsAndAugmentations(
@@ -87,6 +89,9 @@ class SidebarLoader {
                   isSuggested: !augmentation.hasOwnProperty('enabled'),
                   isCse: true,
                 });
+              augmentation.hasOwnProperty('enabled') &&
+                !augmentation.enabled &&
+                this.matchingDisabledInstalledAugmentations.push(augmentation);
             }
           }
         }
@@ -118,7 +123,13 @@ class SidebarLoader {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
-        await this.createSidebar();
+        if (
+          this.isSerp ||
+          this.sidebarTabs.length ||
+          this.matchingDisabledInstalledAugmentations.length
+        ) {
+          await this.createSidebar();
+        }
       });
     });
   }
