@@ -4,8 +4,8 @@ import { goBack } from 'route-lite';
 import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
+import Input from 'antd/lib/input';
 import Switch from 'antd/lib/switch';
-import Typography from 'antd/lib/typography';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { v4 as uuid } from 'uuid';
 import { UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
@@ -16,13 +16,10 @@ import {
   EditActionInput,
 } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
-import 'antd/lib/typography/style/index.css';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './EditAugmentationPage.scss';
-
-const { Text } = Typography;
 
 export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdding }) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
@@ -121,20 +118,12 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
     setConditions((prev) => [...prev, e]);
   };
 
-  const handleEditName = {
-    onChange: setName,
-    autoSize: {
-      minRows: 1,
-      maxRows: 1,
-    },
+  const handleEditName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
 
-  const handleEditDescription = {
-    onChange: setDescription,
-    autoSize: {
-      minRows: 1,
-      maxRows: 1,
-    },
+  const handleEditDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDescription(e.target.value);
   };
 
   const isDisabled = !name || !actions.length || !conditions.length;
@@ -159,13 +148,13 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
         <Row>
           <Col xs={12}>Name</Col>
           <Col xs={12}>
-            <Text editable={handleEditName}>{name}</Text>
+            <Input onChange={handleEditName} value={name} />
           </Col>
         </Row>
         <Row>
           <Col xs={12}>Description</Col>
           <Col xs={12}>
-            <Text editable={handleEditDescription}>{description}</Text>
+            <Input onChange={handleEditDescription} value={description} />
           </Col>
         </Row>
         <Row>
