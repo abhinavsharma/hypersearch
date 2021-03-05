@@ -2,7 +2,13 @@ import { debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import { BackgroundMessenger } from 'lib/BackgroundMessenger/BackgroundMessenger';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
-import { ENABLE_AUGMENTATION_BUILDER } from 'utils/constants';
+import {
+  ENABLE_AUGMENTATION_BUILDER,
+  FRESHPAINT_API_ENDPOINT,
+  FRESHPAINT_API_TOKEN,
+  SEND_FRAME_INFO_MESSAGE,
+  SEND_LOG_MESSAGE,
+} from 'utils/constants';
 import {
   REMOVE_AUGMENTATION_SUCCESS_MESSAGE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -10,12 +16,16 @@ import {
   ADD_LOCAL_AUGMENTATION_MESSAGE,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
+import axios from 'axios';
+import { v4 as uuid } from 'uuid';
 
 const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),
 );
 
 export const URL_TO_TAB = {};
+
+const SESSION_ID = uuid();
 
 // eslint-disable-next-line
 // @ts-ignore
@@ -24,6 +34,8 @@ const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeade
   (i) => i,
 );
 
+chrome.runtime.getPlatformInfo;
+
 // Allow external pages blocked by CORS to load into iframes.
 chrome.webRequest.onHeadersReceived.addListener(
   function (details) {
@@ -31,12 +43,14 @@ chrome.webRequest.onHeadersReceived.addListener(
       'x-frame-options',
       'frame-options',
       'content-security-policy',
+      'access-control-allow-origin',
       'referer-policy',
     ];
     const responseHeaders = details.responseHeaders.filter((responseHeader) => {
       const deleted = !strippedHeaders.includes(responseHeader.name.toLowerCase());
       return deleted;
     });
+
     const result = {
       responseHeaders: [
         ...responseHeaders,
@@ -46,7 +60,7 @@ chrome.webRequest.onHeadersReceived.addListener(
         },
         {
           name: 'Access-Control-Allow-Origin',
-          value: 'no-cors',
+          value: '*',
         },
       ],
     };
@@ -125,8 +139,21 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 chrome.browserAction.setBadgeBackgroundColor({ color: 'black' });
 
-chrome.webNavigation.onBeforeNavigate.addListener(async () => {
+chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   SearchEngineManager.sync();
+});
+
+chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
+  chrome.webNavigation.getFrame(
+    { frameId: details.sourceFrameId, tabId: details.sourceTabId },
+    (frame) => {
+      chrome.tabs.sendMessage(details.sourceTabId, {
+        type: SEND_FRAME_INFO_MESSAGE,
+        frame,
+        url: details.url,
+      });
+    },
+  );
 });
 
 chrome.browserAction.onClicked.addListener((tab) => {
@@ -134,6 +161,32 @@ chrome.browserAction.onClicked.addListener((tab) => {
     ? chrome.tabs.create({ active: true, url: 'http://share.insightbrowser.com/14' })
     : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
 });
+
+const handleLogSend = async (event: string, properties: Record<string, any> = {}) => {
+  debug('handleLogSend - call');
+  try {
+    const data: FreshpaintTrackEvent = {
+      event: event,
+      properties: {
+        distinct_id: SESSION_ID,
+        token: FRESHPAINT_API_TOKEN,
+        time: Date.now() / 1000, // ! Time is epoch seconds
+        ...properties,
+      },
+    };
+    const result = await axios({
+      url: FRESHPAINT_API_ENDPOINT,
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data,
+    });
+    debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
+  } catch (e) {
+    debug('handleLogSend - error\n---\n\tError', e, '\n---');
+  }
+};
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
   switch (msg.type) {
@@ -148,6 +201,9 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
       break;
     case OPEN_AUGMENTATION_BUILDER_MESSAGE:
       chrome.tabs.sendMessage(sender.tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
+      break;
+    case SEND_LOG_MESSAGE:
+      handleLogSend(msg.event, msg.properties);
       break;
     default:
       break;

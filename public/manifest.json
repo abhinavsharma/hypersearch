@@ -68,5 +68,8 @@
         "webRequest",
         "webRequestBlocking",
         "webNavigation"
+    ],
+    "host_permissions": [
+        "https://api.perfalytics.com/track"
     ]
 }
