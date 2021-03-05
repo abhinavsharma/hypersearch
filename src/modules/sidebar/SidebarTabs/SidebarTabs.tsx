@@ -15,6 +15,7 @@ import {
   ExternalAddAugmentationButton,
   EditAugmentationPage,
 } from 'modules/augmentations/';
+import { SearchNeedsImprovementPage } from 'modules/sidebar';
 import ampRemover from 'utils/ampRemover';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
@@ -39,7 +40,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
         flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
-        setActiveKey('0');
+        setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
       }
     });
   }, [SidebarLoader.sidebarTabs]);
@@ -81,96 +82,105 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
   );
 
   return (
-    <Tabs className="insight-tab-container" renderTabBar={TabBar} activeKey={forceTab ?? activeKey}>
-      <TabPane
-        key="0"
-        tab={
-          ENABLE_AUGMENTATION_BUILDER ? (
-            <AddAugmentationTab
-              numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
-              active={(forceTab ?? activeKey) === '0'}
-              setActiveKey={setActiveKey}
-              onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
-            />
-          ) : (
-            <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
-          )
-        }
-        forceRender
+    <>
+      <Tabs
+        className="insight-tab-container"
+        renderTabBar={TabBar}
+        activeKey={forceTab ?? activeKey}
       >
-        <ActiveAugmentationsPage />
-      </TabPane>
-      {SidebarLoader.sidebarTabs?.map((tab, i) => (
         <TabPane
-          key={i + 1}
+          key="0"
           tab={
-            <div onClick={() => setActiveKey((i + 1).toString())} className="insight-tab-pill">
-              <span
-                className={`insight-tab-title ${activeKey === (i + 1).toString() ? 'active' : ''} ${
-                  activeKey === '0' ? 'hidden' : ''
-                }`}
-              >
-                {tab.isSuggested ? tab.title : `${tab.title} ◾`}
-              </span>
-            </div>
+            ENABLE_AUGMENTATION_BUILDER ? (
+              <AddAugmentationTab
+                numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
+                active={(forceTab ?? activeKey) === '0'}
+                setActiveKey={setActiveKey}
+                onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
+              />
+            ) : (
+              <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
+            )
           }
           forceRender
-          className={`insight-full-tab`}
         >
-          {tab.isSuggested && activeKey === (i + 1).toString() ? (
-            <div className="insight-suggested-tab-popup">
-              <Link
-                component={EditAugmentationPage}
-                componentProps={{
-                  augmentation: {
-                    ...SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id),
-                    installed: false,
-                  },
-                  isAdding: true,
-                }}
-                key={tab.id}
-              >
-                <Button type="link" onClick={handleAddSuggested}>
-                  ➕ Install Extension
-                </Button>
-              </Link>
-              <Button type="link" onClick={() => handleHideSuggested(tab)}>
-                ❌ Hide Extension
-              </Button>
-            </div>
-          ) : null}
-          {tab.readable ? (
-            <div
-              className="insight-readable-content"
-              dangerouslySetInnerHTML={{ __html: tab.readable }}
-            />
-          ) : tab.url ? (
-            <iframe
-              src={tab.url.href}
-              className="insight-tab-iframe"
-              id={`insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`}
-              onLoad={(e) => injectAmpRemover(e.currentTarget)}
-            />
-          ) : (
-            <></>
-          )}
-          {tab.isCse && (
-            <div className="insight-tab-bottom-message">
-              <a
-                target="blank"
-                href={
-                  'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
-                  tab.title +
-                  '&prefill_sample_query=' +
-                  new URLSearchParams(window.location.search).get('q')
-                }
-              >
-                🤔 Filter needs improvement?
-              </a>
-            </div>
-          )}
+          <ActiveAugmentationsPage />
         </TabPane>
-      ))}
-    </Tabs>
+        {SidebarLoader.sidebarTabs?.map((tab, i) => (
+          <TabPane
+            key={i + 1}
+            tab={
+              <div onClick={() => setActiveKey((i + 1).toString())} className="insight-tab-pill">
+                <span
+                  className={`insight-tab-title ${
+                    activeKey === (i + 1).toString() ? 'active' : ''
+                  } ${activeKey === '0' ? 'hidden' : ''}`}
+                >
+                  {tab.isSuggested ? tab.title : `${tab.title} ◾`}
+                </span>
+              </div>
+            }
+            forceRender
+            className={`insight-full-tab`}
+          >
+            {tab.isSuggested && activeKey === (i + 1).toString() ? (
+              <div className="insight-suggested-tab-popup">
+                <Link
+                  component={EditAugmentationPage}
+                  componentProps={{
+                    augmentation: {
+                      ...SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id),
+                      installed: false,
+                    },
+                    isAdding: true,
+                  }}
+                  key={tab.id}
+                >
+                  <Button type="link" onClick={handleAddSuggested}>
+                    ➕ Install Extension
+                  </Button>
+                </Link>
+                <Button type="link" onClick={() => handleHideSuggested(tab)}>
+                  ❌ Hide Extension
+                </Button>
+              </div>
+            ) : null}
+            {tab.readable ? (
+              <div
+                className="insight-readable-content"
+                dangerouslySetInnerHTML={{ __html: tab.readable }}
+              />
+            ) : tab.url ? (
+              <iframe
+                src={tab.url.href}
+                className="insight-tab-iframe"
+                id={`insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`}
+                onLoad={(e) => injectAmpRemover(e.currentTarget)}
+              />
+            ) : (
+              <></>
+            )}
+            {tab.isCse && (
+              <div className="insight-tab-bottom-message">
+                <a
+                  target="blank"
+                  href={
+                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
+                    tab.title +
+                    '&prefill_sample_query=' +
+                    new URLSearchParams(window.location.search).get('q')
+                  }
+                >
+                  🤔 Filter needs improvement?
+                </a>
+              </div>
+            )}
+          </TabPane>
+        ))}
+        <TabPane key="100" tab={null} className={`insight-full-tab`}>
+          <SearchNeedsImprovementPage setActiveKey={setActiveKey} />
+        </TabPane>
+      </Tabs>
+    </>
   );
 };

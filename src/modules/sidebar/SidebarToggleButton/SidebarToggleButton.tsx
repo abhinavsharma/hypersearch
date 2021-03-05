@@ -7,13 +7,15 @@
 import React from 'react';
 import List from 'antd/lib/list';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
-import { ENABLE_AUGMENTATION_BUILDER } from 'utils/constants';
+import { ENABLE_AUGMENTATION_BUILDER, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
 import { ExternalAddAugmentationButton } from 'modules/augmentations';
 import './SidebarToggleButton.scss';
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
-    flipSidebar(document, 'show', tabs?.length);
+    !tabs.length
+      ? chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })
+      : flipSidebar(document, 'show', tabs?.length);
   };
 
   const ListItem = (item: SidebarTab) => (
