@@ -8,7 +8,7 @@ import Input from 'antd/lib/input';
 import Switch from 'antd/lib/switch';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { v4 as uuid } from 'uuid';
-import { UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
 import {
   ShareAugmentationButton,
   DeleteAugmentationButton,
@@ -31,10 +31,18 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
   );
 
   const [conditions, setConditions] = useState<CustomCondition[]>(
-    augmentation.conditions.condition_list.map((cond, index) => ({
-      ...cond,
-      id: index.toString(),
-    })),
+    isAdding && !augmentation.conditions.condition_list[0].value.length
+      ? Array(5)
+          .fill(null)
+          .map((_, i) => ({
+            ...EMPTY_AUGMENTATION.conditions.condition_list[0],
+            value: [SidebarLoader.domains[i]],
+            id: i.toString(),
+          }))
+      : augmentation.conditions.condition_list.map((cond, index) => ({
+          ...cond,
+          id: index.toString(),
+        })),
   );
 
   const [actions, setActions] = useState<ActionObject[]>(augmentation.actions.action_list);
@@ -245,7 +253,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
             )),
           )}
           <EditActionInput
-            label={undefined}
+            label={!actions[0].value.length && 'Search results contain domain'}
             action={''}
             saveAction={handleSaveAction}
             deleteAction={handleDeleteAction}
