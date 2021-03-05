@@ -209,7 +209,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
             <EditConditionInput
               key={condition.value + String(i)}
               condition={condition}
-              label={i === 0 && condition.label}
+              label={condition.label}
               addCondition={handleAddCondition}
               saveCondition={handleSaveCondition}
               deleteCondition={handleDeleteCondition}

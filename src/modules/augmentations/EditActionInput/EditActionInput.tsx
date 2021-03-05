@@ -39,7 +39,7 @@ export const EditActionInput: EditActionInput = ({
   };
 
   return (
-    <Row className="edit-input-row">
+    <Row className="edit-input-row action">
       <Col xs={12}>{label}</Col>
       <Col xs={12}>
         {!action.length ? (

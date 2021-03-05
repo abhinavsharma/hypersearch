@@ -190,6 +190,16 @@
           align-items: center;
           padding: 10px 10px;
 
+          &.action {
+            border-bottom: none;
+
+            .ant-col:last-child {
+              border-left: 1px solid #ccc;
+              margin: -10px -10px -10px -1px;
+              padding: 10px 0 10px 10px;
+            }
+          }
+
           .ant-col {
             display: flex;
             align-items: center;
