@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { debug } from 'lumos-shared-js';
 import { goBack } from 'route-lite';
 import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
@@ -67,6 +68,13 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
       enabled: isActive,
       installed: true,
     };
+    debug(
+      'EditAugmentationPage - save\n---\n\tOriginal',
+      augmentation,
+      '\n\tUpdated',
+      updated,
+      '\n---',
+    );
     SidebarLoader.installedAugmentations = [
       updated,
       ...installedAugmentations.filter((i) => i.id !== updated.id),

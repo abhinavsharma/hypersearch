@@ -67,12 +67,13 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
     SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
-    if (
-      !SidebarLoader.suggestedAugmentations.length &&
-      !SidebarLoader.installedAugmentations.filter((i) => !!i.enabled).length
-    ) {
-      setActiveKey('0');
-    }
+    const numInstalledAugmentations = SidebarLoader.installedAugmentations.filter(
+      (i) => !!i.enabled,
+    ).length;
+    const numSuggestedAugmentations = SidebarLoader.suggestedAugmentations.length;
+    !numSuggestedAugmentations && !numInstalledAugmentations
+      ? setActiveKey('100')
+      : setActiveKey('1');
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
