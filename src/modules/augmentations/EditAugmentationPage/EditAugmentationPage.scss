@@ -1,7 +1,3 @@
-/**
- * This is a hacky solution to overlap the Ant tabbar with
- * AddAugmentationPage header.
- */
 .edit-augmentation-page-container {
   display: flex;
   flex-direction: column;
@@ -9,6 +5,11 @@
   background: #efefef !important;
   margin-top: -65px;
   align-items: flex-start !important;
+
+  textarea.ant-input {
+    max-height: 30px !important;
+    margin-bottom: -10px !important;
+  }
 
   .edit-augmentation-tab-header {
     display: flex;
@@ -44,7 +45,8 @@
     height: calc(100%-75px);
     width: 100%;
     top: 75px;
-    bottom: 0;
+    bottom: 0px;
+    padding-bottom: 30px;
     background: #efefef;
     overflow-y: auto !important;
 
@@ -112,6 +114,15 @@
                 color: red !important;
               }
             }
+
+            &.disabled {
+              cursor: not-allowed;
+              color: #cecece !important;
+
+              & > span:last-child {
+                color: #cecece !important;
+              }
+            }
           }
 
           &.insight-augmentation-tab-button {
@@ -132,6 +143,15 @@
         font-size: 16px;
       }
 
+      h3 {
+        font-size: 14px;
+      }
+
+      span.operation-description {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
       .ant-row {
         background: #efefef !important;
 
@@ -139,11 +159,19 @@
           border-bottom: none !important;
         }
 
+        button.add-operation-button {
+          text-align: left;
+        }
+
         .ant-col {
           font-weight: normal !important;
 
           &:first-child {
             span {
+              button {
+                padding: 4px;
+              }
+
               strong {
                 color: #1890ff;
                 text-decoration: underline;
@@ -152,7 +180,9 @@
           }
         }
 
-        &.edit-augmentation-condition-row {
+        &.edit-input-row {
+          display: flex;
+          align-items: center;
           background: white !important;
           min-height: 20px;
           height: auto;
@@ -160,25 +190,47 @@
           align-items: center;
           padding: 10px 10px;
 
+          &.action {
+            border-bottom: none;
+
+            .ant-col:last-child {
+              border-left: 1px solid #ccc;
+              margin: -10px -10px -10px -1px;
+              padding: 10px 0 10px 10px;
+            }
+          }
+
           .ant-col {
+            display: flex;
+            align-items: center;
+
             &:first-child {
-              border-right: 1px solid #ccc;
-              margin-right: -1px;
               font-weight: bold !important;
             }
 
             &:last-child {
               padding-left: 10px;
               margin-right: -10px;
+
+              & > span {
+                display: block;
+                width: 70%;
+              }
+
+              button {
+                margin-left: auto;
+                font-size: 20px;
+              }
+
+              textarea {
+                min-height: 30px;
+                max-height: 100% !important;
+                margin-bottom: 0px !important;
+              }
             }
           }
         }
       }
     }
   }
-}
-
-textarea.ant-input {
-  max-height: 30px !important;
-  margin-bottom: -10px !important;
 }

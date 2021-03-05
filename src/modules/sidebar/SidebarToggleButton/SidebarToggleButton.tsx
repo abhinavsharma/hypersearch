@@ -1,27 +1,36 @@
+/**
+ * @module SidebarToggleButton
+ * @author Matyas Angyal<matyas@laso.ai>
+ * @license (C) Insight
+ * @version 1.0.0
+ */
 import React from 'react';
 import List from 'antd/lib/list';
-import { flipSidebar } from 'lib/flipSidebar/flipSidebar';
-import { ExternalAddAugmentationButton, SHOW_AUGMENTATION_TAB } from 'modules/sidebar';
+import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
+import { ENABLE_AUGMENTATION_BUILDER, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
+import { ExternalAddAugmentationButton } from 'modules/augmentations';
 import './SidebarToggleButton.scss';
-
-const ListItem = (item: SidebarTab) => (
-  <List.Item>
-    <List.Item.Meta title={item.title} />
-  </List.Item>
-);
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
-    flipSidebar(document, 'show', tabs.length);
+    !tabs.length
+      ? chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })
+      : flipSidebar(document, 'show', tabs?.length);
   };
 
-  return !!tabs.length ? (
+  const ListItem = (item: SidebarTab) => (
+    <List.Item>
+      <List.Item.Meta title={item.title} />
+    </List.Item>
+  );
+
+  return !!tabs?.length ? (
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
       <List itemLayout="horizontal" dataSource={tabs} renderItem={ListItem} />
     </div>
   ) : (
     <>
-      {SHOW_AUGMENTATION_TAB ? (
+      {ENABLE_AUGMENTATION_BUILDER ? (
         <div
           className="add-augmentation-button insight-sidebar-toggle-button"
           onClick={handleClick}

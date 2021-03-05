@@ -1,3 +1,9 @@
+/**
+ * @module BackgroundMessenger
+ * @author Abhinav Sharma<abhinav@laso.ai>
+ * @license (C) Insight
+ * @version 1.0.0
+ */
 import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN,
   debug,
@@ -29,12 +35,19 @@ class BackgroundMessenger {
   }
 
   public setupMessagePassthrough(window: Window): void {
-    debug('function call - setupMessagePassthrough');
-    debug('setting up listening to messages from tabs');
+    debug('setupMessagePassthrough - call');
     chrome.runtime.onMessage.addListener(({ command, data }, sender) => {
       switch (command) {
         case CLIENT_MESSAGES.CONTENT_BROWSER_BADGE_UPDATE:
-          debug('message from browser to background', command, data, sender);
+          debug(
+            'setupMessagePassthrough - badge updated\n---\n\tMessage',
+            command,
+            '\n\tData',
+            data,
+            '\n\tSender',
+            sender,
+            '\n---',
+          );
           // https://stackoverflow.com/questions/32168449/how-can-i-get-different-badge-value-for-every-tab-on-chrome/32168534
           chrome.tabs.get(sender.tab.id, function (tab) {
             if (chrome.runtime.lastError) {
@@ -58,15 +71,30 @@ class BackgroundMessenger {
           break;
 
         case CLIENT_MESSAGES.CONTENT_BROWSER_SET_LUMOS_SERP_CONFIG:
-          debug('message from browser to background', command, data, sender);
+          debug(
+            'setupMessagePassthrough - set serp config\n---\n\tMessage',
+            command,
+            '\n\tData',
+            data,
+            '\n\tSender',
+            sender,
+            '\n---',
+          );
           const { lumosSerpConfig } = data;
           chrome.storage.sync.set({ [LUMOS_SERP_CONFIG]: lumosSerpConfig });
           break;
 
         case CLIENT_MESSAGES.CONTENT_BROWSER_GET_LUMOS_SERP_CONFIG:
-          debug('message from browser to background', command, data, sender);
+          debug(
+            'setupMessagePassthrough - get serp config\n---\n\tMessage',
+            command,
+            '\n\tData',
+            data,
+            '\n\tSender',
+            sender,
+            '\n---',
+          );
           chrome.storage.sync.get([LUMOS_SERP_CONFIG], function (items) {
-            console.log(items);
             chrome.tabs.sendMessage(sender.tab.id, {
               data: {
                 command: CLIENT_MESSAGES.BROWSER_CONTENT_LUMOS_SERP_CONFIG,
@@ -78,7 +106,15 @@ class BackgroundMessenger {
           break;
 
         default:
-          debug('message from tab to background', command, data, sender);
+          debug(
+            'setupMessagePassthrough - default message\n---\n\tMessage',
+            command,
+            '\n\tData',
+            data,
+            '\n\tSender',
+            sender,
+            '\n---',
+          );
           this._nativeBrowserPostMessageToReactApp({
             command: command,
             data: {
@@ -89,27 +125,16 @@ class BackgroundMessenger {
       }
     });
 
-    debug('setting up listening to messages from react app in bg');
     window.addEventListener(
       'message',
       (msg) => {
-        debug('message from react app to background script', msg);
+        debug('setupMessagePassthrough - message\n---\n\tMessage', msg, '\n---');
         if (msg.data && msg.data.command) {
           if (msg.data?.href in URL_TO_TAB) {
-            debug(
-              'nativeBrowserAddReactAppListener - received message from react into bg',
-              msg,
-              URL_TO_TAB[msg.data.href],
-            );
             chrome.tabs.sendMessage(URL_TO_TAB[msg.data.href], {
               data: msg.data,
             });
           } else if (msg.data?.origin in URL_TO_TAB) {
-            debug(
-              'nativeBrowserAddReactAppListener - received message from react into bg',
-              msg,
-              URL_TO_TAB[msg.data.origin],
-            );
             chrome.tabs.sendMessage(URL_TO_TAB[msg.data.origin], {
               data: msg.data,
             });
@@ -121,6 +146,7 @@ class BackgroundMessenger {
   }
 
   public loadHiddenMessenger(document: Document, window: Window): void {
+    debug('loadHiddenMessenger - call');
     if (this.messengerIframe !== null) return;
     const iframe = document.createElement('iframe');
     iframe.src = LUMOS_APP_URL + '?messengerId=' + this.messengerId;
@@ -139,12 +165,10 @@ class BackgroundMessenger {
   }
 
   private _nativeBrowserPostMessageToReactApp: NativePostMessenger = ({ command, data }) => {
-    debug('function call - background nativeBrowserPostMessageToReactApp');
-    debug('isMessengerReady - current value', this.isMessengerReady());
-
+    debug('nativeBrowserPostMessageToReactApp - call');
     const iframe = this.messengerIframe;
-
     if (!this.isMessengerReady() && !this.isThrottled) {
+      debug('nativeBrowserPostMessageToReactApp - post - throttle execution');
       this.isThrottled = true;
       this._nativeBrowserPostMessageToReactApp({ command: command, data: data });
       setTimeout(() => {
@@ -152,9 +176,14 @@ class BackgroundMessenger {
       }, 100);
       return;
     }
-
-    debug('nativeBrowserPostMessageToReactApp - posting', command, data);
     iframe.contentWindow.postMessage({ command, ...data }, LUMOS_APP_URL);
+    debug(
+      'nativeBrowserPostMessageToReactApp - post\n---\n\tMessage',
+      command,
+      '\n\tData',
+      data,
+      '\n---',
+    );
   };
 
   private _monitorMessengerState(window: Window): void {
@@ -175,10 +204,18 @@ class BackgroundMessenger {
               if (!messengerId) return;
               if (messengerId === this.messengerId) {
                 if (msg.data.command === 'reactAppLoaded') {
-                  debug('React App Loaded', messengerId);
+                  debug(
+                    'monitorMessengerState - react app loaded\n---\n\tMessenger ID',
+                    messengerId,
+                    '\n---',
+                  );
                   this.reactAppLoaded = true;
                 } else {
-                  debug('Messenger Ready', messengerId);
+                  debug(
+                    'monitorMessengerState - messenger ready\n---\n\tMessenger ID',
+                    messengerId,
+                    '\n---',
+                  );
                   this.isReady = true;
                 }
               }

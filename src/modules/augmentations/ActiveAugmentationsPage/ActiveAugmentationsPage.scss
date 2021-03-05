@@ -36,9 +36,31 @@
     }
   }
 
+  button.add-augmentation-button {
+    margin-top: 10px;
+  }
+
   .ant-row {
     .ant-col {
       width: 450px;
+      display: flex;
+      flex-direction: column;
+
+      .installed-augmentation-row {
+        flex-direction: row;
+
+        button.half-width {
+          width: 45%;
+
+          &.installed {
+            margin-right: 5%;
+          }
+
+          &.suggested {
+            width: 140px;
+          }
+        }
+      }
 
       button {
         background: white;

@@ -128,7 +128,7 @@
                 font-family: -apple-system, BlinkMacSystemFont, sans-serif;
                 position: absolute; left: 0; top: 0; right: 0; bottom: 0;
                 background: linear-gradient(hsla(0,0%,100%,.9) 0%,#fff);
-                z-index: 2147483647`,
+                z-index: 1000;`,
       );
       overlay.setAttribute('class', 'adblock');
       const overlaytext = document.createElement('div');

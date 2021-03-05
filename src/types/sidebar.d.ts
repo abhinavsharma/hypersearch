@@ -1,9 +1,18 @@
+declare type AugmentationContext = {
+  url: string;
+  originalTabs: SidebarTab[];
+  installed: AugmentationObject[];
+  suggested: AugmentationObject[];
+};
+
 declare type SidebarTab = {
+  id: string;
   title: string;
   url: URL;
   default: boolean;
   readable?: string;
   isCse?: boolean;
+  isSuggested?: boolean;
   isPinnedTab?: boolean;
 };
 
@@ -15,37 +24,38 @@ declare type SidebarResponseArrayObject = {
   readable_content: string | null;
 };
 
-declare type AugmentationSingleActionObject = {
+declare type ActionObject = {
   label: string;
   key: string;
   type: string;
-  value: string | string[];
+  value: string[];
 };
 
-declare type AugmentationSingleConditionObject = {
+declare type ConditionObject = {
   label: string;
   key: string;
-  evaluation: string;
   type: string;
-  value: string | string[];
+  value: string[];
+  evaluation?: string;
 };
 
-declare type AugmentationAllCondtitionsObject = {
+declare type Condition = {
   evaluate_with: 'AND' | 'OR';
-  condition_list: AugmentationSingleConditionObject[];
+  condition_list: ConditionObject[];
 };
 
-declare type AugmentationActionsObject = {
+declare type Action = {
   evaluate_with: 'AND' | 'OR';
-  action_list: AugmentationSingleActionObject[];
+  action_list: ActionObject[];
 };
 
-declare type SuggestedAugmentationObject = {
+declare type AugmentationObject = {
   id: string;
   name: string;
   description: string;
-  conditions: AugmentationAllCondtitionsObject;
-  actions: AugmentationActionsObject;
+  conditions: Condition;
+  actions: Action;
+  enabled?: boolean;
 };
 
 declare type CustomSearchEngine = {
@@ -62,7 +72,7 @@ declare type CustomSearchEngine = {
 
 declare type SubtabsResponse = {
   subtabs: SidebarResponseArrayObject[];
-  suggested_augmentations?: SuggestedAugmentationObject[];
+  suggested_augmentations?: AugmentationObject[];
 };
 
 declare module 'serp.json';

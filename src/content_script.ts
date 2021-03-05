@@ -1,9 +1,8 @@
 import { debug } from 'lumos-shared-js';
-import { loadOrUpdateSidebar } from 'lib/loadOrUpdateSidebar/loadOrUpdateSidebar';
-
-debug('executing content script on', location.href);
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 ((document: Document, location: Location) => {
+  debug('execute content script\n---\n\tCurrent Location', location.href, '\n---');
   const url = new URL(location.href);
-  loadOrUpdateSidebar(document, url);
+  SidebarLoader.loadOrUpdateSidebar(document, url);
 })(document, location);
