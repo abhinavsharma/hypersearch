@@ -158,7 +158,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
             ) : (
               <></>
             )}
-            {tab.isCse && (
+            {tab.isCse && !tab.id.startsWith('cse-custom-') && (
               <div className="insight-tab-bottom-message">
                 <a
                   target="blank"
