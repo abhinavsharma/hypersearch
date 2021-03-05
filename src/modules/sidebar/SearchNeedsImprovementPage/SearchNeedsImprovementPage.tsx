@@ -18,7 +18,7 @@ export const SearchNeedsImprovementPage: SearchNeedsImprovementPage = ({ setActi
         😟
         <a
           target="blank"
-          href={`http://share.insightbrowser.com/14?&prefill_sample_query='${new URLSearchParams(
+          href={`http://share.insightbrowser.com/13?&prefill_sample_query='${new URLSearchParams(
             window.location.search,
           ).get('q')}`}
         >
