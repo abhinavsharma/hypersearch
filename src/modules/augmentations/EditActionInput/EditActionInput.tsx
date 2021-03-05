@@ -7,13 +7,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 
-const DEFAULT_ACTION = {
-  key: 'search_domains',
-  label: 'Search only these domains',
-  type: 'list',
-  value: [''],
-};
-
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );

@@ -19,7 +19,7 @@ body {
   bottom: 0;
   right: 0;
   width: 450px;
-  z-index: 9998;
+  z-index: 9999;
   transition-property: width;
   transition-duration: 0.5s;
   transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
@@ -32,7 +32,7 @@ body {
 .insight-sidebar-close-button {
   border: 0;
   outline: 0;
-  z-index: 9999;
+  z-index: 10000;
   cursor: pointer;
   position: absolute;
   display: flex;
