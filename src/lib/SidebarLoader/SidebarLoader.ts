@@ -96,7 +96,7 @@ class SidebarLoader {
           }
         }
       });
-    const isSerp = !!(
+    this.isSerp = !!(
       this.customSearchEngine?.search_engine_json?.required_prefix +
       this.customSearchEngine?.search_engine_json?.required_params
     );
@@ -107,7 +107,7 @@ class SidebarLoader {
       '\n\tSuggested Augmentations',
       this.suggestedAugmentations,
       '\n\tIs SERP',
-      isSerp,
+      this.isSerp,
       '\n---',
     );
   }
