@@ -34,8 +34,6 @@ const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeade
   (i) => i,
 );
 
-chrome.runtime.getPlatformInfo;
-
 // Allow external pages blocked by CORS to load into iframes.
 chrome.webRequest.onHeadersReceived.addListener(
   function (details) {
@@ -139,7 +137,7 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 chrome.browserAction.setBadgeBackgroundColor({ color: 'black' });
 
-chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+chrome.webNavigation.onBeforeNavigate.addListener(async () => {
   SearchEngineManager.sync();
 });
 
