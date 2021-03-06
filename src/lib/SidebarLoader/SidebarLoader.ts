@@ -5,7 +5,9 @@
  * @version 1.0.0
  */
 import React, { ReactElement } from 'react';
+import { render } from 'react-dom';
 import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+import { Sidebar } from 'modules/sidebar';
 import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
 import {
   CUSTOM_SEARCH_ENGINES,
@@ -13,24 +15,136 @@ import {
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
-import { Sidebar } from 'modules/sidebar';
-import { render } from 'react-dom';
 
 class SidebarLoader {
+  /**
+   * The current location URL.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public url: URL;
+
+  /**
+   * The current SERP query.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public query: string;
+
+  /**
+   * True if the current page is a SERP.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public isSerp: boolean;
-  public frames: any[];
+
+  /**
+   * The list of current SERP result domains.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public domains: string[];
+
+  /**
+   * The list of result URLs for all tabs, including the main SERP. Record keys
+   * are the loaded tab IDs, values are full URLs. Main SERP is stored as `original`.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public tabDomains: Record<string, string[]>;
+
+  /**
+   * The current document object.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public document: Document;
+
+  /**
+   * The list of available sidebar tabs.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public sidebarTabs: SidebarTab[];
-  public domainsToSearch: string[];
+
+  /**
+   * The list of augmentation actions. Stored as a dictionary, where the key is
+   * the augmentation ID.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public domainsToSearch: Record<string, string[]>;
+
+  /**
+   * The matching custom search engine object.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public customSearchEngine: CustomSearchEngine;
+
+  /**
+   * The list of locally installed augmentations.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public installedAugmentations: AugmentationObject[];
+
+  /**
+   * The list of matching suggested augmentations from Subtabs API.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public suggestedAugmentations: AugmentationObject[];
+
+  /**
+   * The list of ignored augmentations.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public ignoredAugmentations: AugmentationObject[];
+
+  /**
+   * The list of locally installed but disabled augmentations.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
   public matchingDisabledInstalledAugmentations: AugmentationObject[];
+
+  /**
+   * The merged stylesheet to inject into the sidebar. Initially this element
+   * will be injected in the parent document, then moved to the sidebar and
+   * removed from parent document to prevent style pollution.
+   *
+   * @private
+   * @property
+   * @memberof SidebarLoader
+   */
   private styleEl: HTMLStyleElement;
 
   constructor() {
@@ -38,6 +152,7 @@ class SidebarLoader {
     this.styleEl = document.getElementsByTagName('style')[0];
     this.tabDomains = Object.create(null);
     this.sidebarTabs = [];
+    this.domainsToSearch = Object.create(null);
     this.customSearchEngine = Object.create(null);
     this.installedAugmentations = [];
     this.suggestedAugmentations = [];
@@ -45,6 +160,17 @@ class SidebarLoader {
     this.matchingDisabledInstalledAugmentations = [];
   }
 
+  /**
+   * Get domain names from the list of SERP results in the passed document.
+   * Values extracted using the matching custom search engine selector.
+   *
+   * @param document - The document object
+   * @param platform - Select platform specific selector
+   * @param full - Toggle to get the full URL instead domain name
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
   public getDomains(document: Document, platform = 'desktop', full?: boolean) {
     const els = Array.from(
       document.querySelectorAll(this.customSearchEngine?.querySelector?.[platform]),
@@ -54,6 +180,16 @@ class SidebarLoader {
       : els.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
   }
 
+  /**
+   * Generate sidebar tabs and suggested augmentations from a provided list of augmentations.
+   * When called without arguments, it is using the current installed and suggested values.
+   * The method also creates a list of disabled but installed augmentations.
+   *
+   * @param augmentations -The list of augmentations
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
   public getTabsAndAugmentations(
     augmentations: AugmentationObject[] = this.suggestedAugmentations.concat(
       this.installedAugmentations,
@@ -61,6 +197,7 @@ class SidebarLoader {
   ) {
     debug('getTabsAndAugmentations - call');
     this.sidebarTabs = [];
+    // Order of augmentations: Installed -> Suggested -> Subtabs
     augmentations
       .sort((a, b) => (a.hasOwnProperty('enabled') && b.hasOwnProperty('enabled') ? 1 : -1))
       .forEach((augmentation: AugmentationObject) => {
@@ -83,14 +220,16 @@ class SidebarLoader {
                   ua.match(hasChrome) === null
                 );
               };
-              this.domainsToSearch = augmentation.actions.action_list?.[0]?.value;
+              this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
               const customSearchUrl = new URL(
                 isSafari()
                   ? 'https://www.ecosia.org/search'
                   : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
               );
               this.query = new URLSearchParams(this.document.location.search).get('q');
-              const append = `(${this.domainsToSearch.map((x) => `site:${x}`).join(' OR ')})`;
+              const append = `(${this.domainsToSearch[augmentation.id]
+                .map((x) => `site:${x}`)
+                .join(' OR ')})`;
               customSearchUrl.searchParams.append('q', this.query + ' ' + append);
               customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
               if (
@@ -131,6 +270,16 @@ class SidebarLoader {
     );
   }
 
+  /**
+   * Initialize augmentations and create the sidebar when necessary. The method
+   * will fetch the Subtabs API for matching augmentations according to the URL.
+   *
+   * @param document - The document object
+   * @param url - The current location
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
   public async loadOrUpdateSidebar(document: Document, url: URL | null) {
     debug('loadOrUpdateSidebar - call\n');
     await this.getLocalAugmentations();
@@ -162,25 +311,35 @@ class SidebarLoader {
     });
   }
 
-  private reactInjector(
-    el: HTMLElement,
-    reactEl: ReactElement,
-    frameId: string,
-    styleEl?: HTMLStyleElement,
-  ) {
+  /**
+   * Inject and initialize a React Element into the HTML Element. This process
+   * will create an IFrame to separate the context form the parent document.
+   *
+   * @param el - The HTML Element
+   * @param reactEl - The React Element
+   * @param frameId - The ID of the injected IFrame
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
+  private reactInjector(el: HTMLElement, reactEl: ReactElement, frameId: string) {
     debug('reactInjector - call');
     const iframe = document.createElement('iframe');
     iframe.id = frameId;
     el.appendChild(iframe);
     const injector = () => {
       const doc = iframe.contentWindow.document;
-      doc.getElementsByTagName('head')[0].appendChild(styleEl);
+      // Webpack merges all SCSS files into a single <style> element. We initialize
+      // the IFrame document object with this merged stylesheet.
+      doc.getElementsByTagName('head')[0].appendChild(this.styleEl);
       doc.getElementsByTagName('html')[0].setAttribute('style', 'overflow: hidden;');
       const div = document.createElement('div');
       const root = doc.body.appendChild(div);
       render(reactEl, root);
       debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');
     };
+    // Firefox is a special case, we need to set IFrame source to make it work.
+    // Here we add an empty HTML file as source, so the browser won't complain.
     if (navigator.userAgent.search('Firefox') > -1) {
       iframe.src = chrome.runtime.getURL('index.html');
       iframe.onload = () => injector();
@@ -189,14 +348,14 @@ class SidebarLoader {
     }
   }
 
-  private loadSidebarCss() {
-    const link = this.document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = chrome.extension.getURL('./index.css');
-    link.type = 'text/css';
-    this.document.head.appendChild(link);
-  }
-
+  /**
+   * Check the local storage for a stored custom search engine object. If it is not found,
+   * the method will fetch avaliable CSEs from remote host and store the matching value.
+   *
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
   private async getCustomSearchEngine() {
     debug('getCustomSearchEngine - call\n');
     let storedValue: Record<string, CustomSearchEngine>;
@@ -230,6 +389,13 @@ class SidebarLoader {
     );
   }
 
+  /**
+   * Get installed and ignored augmentations from the local storage.
+   *
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
   private async getLocalAugmentations() {
     const locals = await new Promise((resolve) => chrome.storage.local.get(resolve));
     this.ignoredAugmentations =
@@ -251,12 +417,22 @@ class SidebarLoader {
     );
   }
 
+  /**
+   * Process the results from Subtabs API, by filtering out the matching
+   * augmentations then append sidebar tabs with matching subtabs. Subtabs
+   * could be custom augmentations or readable contents.
+   *
+   * @param response - The Subtabs API response object
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
   private async handleSubtabApiResponse(response: SubtabsResponse) {
     debug('handleSubtabApiResponse - call');
     if (!(this.url && response)) return null;
     await this.getCustomSearchEngine();
     this.domains = this.getDomains(document);
-    this.tabDomains['original'];
+    this.tabDomains['original'] = this.getDomains(document, 'desktop', true);
     this.getTabsAndAugmentations([
       ...response.suggested_augmentations,
       ...this.installedAugmentations,
@@ -275,6 +451,14 @@ class SidebarLoader {
     debug('handleSubtabApiResponse - processed', '\n---\n\tMatched Subtabs', subtabs, '\n---');
   }
 
+  /**
+   * Fetch the Subtabs API according to the current location.
+   *
+   * @returns - The result from Subtabs API
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
     const response = await postAPI('subtabs', { url: this.url.href }, { client: 'desktop' });
@@ -282,9 +466,21 @@ class SidebarLoader {
     return response as SubtabsResponse;
   }
 
+  /**
+   * Creates the sidebar layout and inject global stylesheet. Also this method
+   * will add a listener to reload whenever the location URL changes.
+   *
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
   private async createSidebar() {
     debug('createSidebar - call\n');
-    this.loadSidebarCss();
+    const link = this.document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = chrome.extension.getURL('./index.css');
+    link.type = 'text/css';
+    this.document.head.appendChild(link);
     const wrapper = this.document.createElement('div');
     wrapper.id = 'sidebar-root';
     wrapper.style.display = 'none';
@@ -293,7 +489,7 @@ class SidebarLoader {
     this.sidebarTabs.concat(nonCseTabs);
     debug('createSidebar - processed\n---\n\tNon CSE Tabs', nonCseTabs, '\n---');
     const sidebarInit = React.createElement(Sidebar);
-    this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', this.styleEl);
+    this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe');
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.type === URL_UPDATED_MESSAGE) {
         this.loadOrUpdateSidebar(document, new URL(msg.url));
@@ -302,6 +498,9 @@ class SidebarLoader {
   }
 }
 
+/**
+ * Static instance of the sidebar manager.
+ */
 const instance = new SidebarLoader();
 
 export default instance;

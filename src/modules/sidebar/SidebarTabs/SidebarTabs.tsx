@@ -203,14 +203,13 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                     'phone',
                     true,
                   );
-                  console.log(SidebarLoader.tabDomains[tab.id]);
                   chrome.runtime.sendMessage({
                     type: SEND_LOG_MESSAGE,
                     event: EXTENSION_SERP_FILTER_LOADED,
                     properties: {
                       query: SidebarLoader.query,
                       filter_name: tab.title,
-                      domains_to_search: SidebarLoader.domainsToSearch,
+                      domains_to_search: SidebarLoader.domainsToSearch[tab.id],
                     },
                   });
                 }}
