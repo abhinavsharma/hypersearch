@@ -7,32 +7,51 @@
 import React, { ReactElement } from 'react';
 import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
-import { CUSTOM_SEARCH_ENGINES, URL_UPDATED_MESSAGE } from 'utils/constants';
+import {
+  CUSTOM_SEARCH_ENGINES,
+  EXTENSION_SERP_LOADED,
+  SEND_LOG_MESSAGE,
+  URL_UPDATED_MESSAGE,
+} from 'utils/constants';
 import { Sidebar } from 'modules/sidebar';
 import { render } from 'react-dom';
 
 class SidebarLoader {
   public url: URL;
+  public query: string;
   public isSerp: boolean;
+  public frames: any[];
+  public domains: string[];
+  public tabDomains: Record<string, string[]>;
   public document: Document;
   public sidebarTabs: SidebarTab[];
+  public domainsToSearch: string[];
+  public customSearchEngine: CustomSearchEngine;
   public installedAugmentations: AugmentationObject[];
   public suggestedAugmentations: AugmentationObject[];
   public ignoredAugmentations: AugmentationObject[];
   public matchingDisabledInstalledAugmentations: AugmentationObject[];
-  private domains: string[];
   private styleEl: HTMLStyleElement;
-  private customSearchEngine: CustomSearchEngine;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.styleEl = document.getElementsByTagName('style')[0];
+    this.tabDomains = Object.create(null);
     this.sidebarTabs = [];
     this.customSearchEngine = Object.create(null);
     this.installedAugmentations = [];
     this.suggestedAugmentations = [];
     this.ignoredAugmentations = [];
     this.matchingDisabledInstalledAugmentations = [];
+  }
+
+  public getDomains(document: Document, platform = 'desktop', full?: boolean) {
+    const els = Array.from(
+      document.querySelectorAll(this.customSearchEngine?.querySelector?.[platform]),
+    );
+    return full
+      ? els.map((i) => i.getAttribute('href'))
+      : els.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
   }
 
   public getTabsAndAugmentations(
@@ -64,15 +83,15 @@ class SidebarLoader {
                   ua.match(hasChrome) === null
                 );
               };
-              const actions = augmentation.actions.action_list?.[0]?.value;
+              this.domainsToSearch = augmentation.actions.action_list?.[0]?.value;
               const customSearchUrl = new URL(
                 isSafari()
                   ? 'https://www.ecosia.org/search'
                   : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
               );
-              const query = new URLSearchParams(this.document.location.search).get('q');
-              const append = `(${actions.map((x) => `site:${x}`).join(' OR ')})`;
-              customSearchUrl.searchParams.append('q', query + ' ' + append);
+              this.query = new URLSearchParams(this.document.location.search).get('q');
+              const append = `(${this.domainsToSearch.map((x) => `site:${x}`).join(' OR ')})`;
+              customSearchUrl.searchParams.append('q', this.query + ' ' + append);
               customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
               if (
                 !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
@@ -123,6 +142,15 @@ class SidebarLoader {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
+        this.isSerp &&
+          chrome.runtime.sendMessage({
+            type: SEND_LOG_MESSAGE,
+            event: EXTENSION_SERP_LOADED,
+            properties: {
+              query: this.query,
+              url: this.url,
+            },
+          });
         if (
           this.isSerp ||
           this.sidebarTabs.length ||
@@ -227,9 +255,8 @@ class SidebarLoader {
     debug('handleSubtabApiResponse - call');
     if (!(this.url && response)) return null;
     await this.getCustomSearchEngine();
-    this.domains = Array.from(
-      document.querySelectorAll(this.customSearchEngine?.querySelector?.desktop),
-    )?.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
+    this.domains = this.getDomains(document);
+    this.tabDomains['original'];
     this.getTabsAndAugmentations([
       ...response.suggested_augmentations,
       ...this.installedAugmentations,

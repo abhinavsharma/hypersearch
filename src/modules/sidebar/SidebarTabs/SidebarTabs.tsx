@@ -22,10 +22,16 @@ import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   ENABLE_AUGMENTATION_BUILDER,
   UPDATE_SIDEBAR_TABS_MESSAGE,
+  SEND_LOG_MESSAGE,
+  EXTENSION_SERP_FILTER_LOADED,
+  SEND_FRAME_INFO_MESSAGE,
+  EXTENSION_SERP_LINK_CLICKED,
+  EXTENSION_SERP_FILTER_LINK_CLICKED,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
+import { extractHostnameFromUrl } from 'utils/helpers';
 
 const { TabPane } = Tabs;
 
@@ -38,9 +44,45 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
     // Set up listener for expanding sidebar with the augmentation builder page,
     // when the extension toolbar icon is clicked by the user.
     chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
-        flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
-        setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
+      switch (msg.type) {
+        case OPEN_AUGMENTATION_BUILDER_MESSAGE:
+          flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
+          setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
+          break;
+        case SEND_FRAME_INFO_MESSAGE:
+          if (msg.frame.parentFrameId === -1) {
+            chrome.runtime.sendMessage({
+              type: SEND_LOG_MESSAGE,
+              event: EXTENSION_SERP_LINK_CLICKED,
+              properties: {
+                query: SidebarLoader.query,
+                url: msg.url,
+                position_in_serp:
+                  SidebarLoader.domains.indexOf(extractHostnameFromUrl(msg.url).hostname) + 1,
+              },
+            });
+          } else {
+            const sourceTab = SidebarLoader.sidebarTabs.find(
+              (i) => i.url.href === msg.frame.url.replace('www.', ''),
+            );
+            setTimeout(
+              () =>
+                chrome.runtime.sendMessage({
+                  type: SEND_LOG_MESSAGE,
+                  event: EXTENSION_SERP_FILTER_LINK_CLICKED,
+                  properties: {
+                    query: SidebarLoader.query,
+                    url: msg.url,
+                    filter_name: sourceTab.title,
+                    position_in_serp: SidebarLoader.tabDomains[sourceTab.id].indexOf(msg.url) + 1,
+                  },
+                }),
+              250,
+            );
+          }
+          break;
+        default:
+          break;
       }
     });
   }, [SidebarLoader.sidebarTabs]);
@@ -144,20 +186,35 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                 </Button>
               </div>
             ) : null}
-            {tab.readable ? (
+            {tab.readable && (
               <div
                 className="insight-readable-content"
                 dangerouslySetInnerHTML={{ __html: tab.readable }}
               />
-            ) : tab.url ? (
+            )}
+            {tab.url && (
               <iframe
                 src={tab.url.href}
                 className="insight-tab-iframe"
-                id={`insight-tab-frame-${encodeURIComponent(tab.url?.href ?? i)}`}
-                onLoad={(e) => injectAmpRemover(e.currentTarget)}
+                onLoad={(e) => {
+                  injectAmpRemover(e.currentTarget);
+                  SidebarLoader.tabDomains[tab.id] = SidebarLoader.getDomains(
+                    e.currentTarget.contentWindow.document,
+                    'phone',
+                    true,
+                  );
+                  console.log(SidebarLoader.tabDomains[tab.id]);
+                  chrome.runtime.sendMessage({
+                    type: SEND_LOG_MESSAGE,
+                    event: EXTENSION_SERP_FILTER_LOADED,
+                    properties: {
+                      query: SidebarLoader.query,
+                      filter_name: tab.title,
+                      domains_to_search: SidebarLoader.domainsToSearch,
+                    },
+                  });
+                }}
               />
-            ) : (
-              <></>
             )}
             {tab.isCse && !tab.id.startsWith('cse-custom-') && (
               <div className="insight-tab-bottom-message">
