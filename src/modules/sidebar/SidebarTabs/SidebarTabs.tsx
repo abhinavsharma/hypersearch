@@ -167,18 +167,18 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
               <div className="insight-suggested-tab-popup">
                 <div className="insight-suggested-text">Suggested Filter</div>
                 {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-                    <Button
-                      type="link"
-                      target="_blank"
-                      href={
-                        'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
-                        tab.title +
-                        '&prefill_sample_query=' +
-                        new URLSearchParams(window.location.search).get('q')
-                      }
-                    >
-                      💪 Improve
-                    </Button>
+                  <Button
+                    type="link"
+                    target="_blank"
+                    href={
+                      'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
+                      tab.title +
+                      '&prefill_sample_query=' +
+                      new URLSearchParams(window.location.search).get('q')
+                    }
+                  >
+                    💪 Improve
+                  </Button>
                 )}
                 <Link
                   component={EditAugmentationPage}
@@ -212,6 +212,9 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                 className="insight-tab-iframe"
                 onLoad={(e) => {
                   injectAmpRemover(e.currentTarget);
+                  e.currentTarget.contentWindow.document
+                    .getElementsByTagName('html')[0]
+                    ?.classList.remove('is-not-mobile-device');
                   SidebarLoader.tabDomains[tab.id] = SidebarLoader.getDomains(
                     e.currentTarget.contentWindow.document,
                     'phone',
