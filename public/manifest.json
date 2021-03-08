@@ -62,7 +62,6 @@
     },
     "permissions": [
         "tabs",
-        "background",
         "storage",
         "<all_urls>",
         "webRequest",
