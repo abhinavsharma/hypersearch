@@ -2,12 +2,16 @@
 
 This folder contains the actual source code of the extenison. It includes library functions (`lib`), utility functions (`utils`) and modules.
 
-## Entry points
+## Scripts
 
-- `background_script.ts`  - Background handlers for the extension. This will run as a persistent script with event listeners and background functionality.
+- `background.ts`  - Background handlers for the extension. This will run as a persistent script with event listeners and background functionality.
 See [Manage events with background scripts](https://developer.chrome.com/docs/extensions/mv2/background_pages/) on the documentation for more information.
 
-- `content_scripts.ts` - This script will be injected into every page when the extension is enabled. This will take care of loading the sidebar and injecting the React application into the page.
+- `main.ts` - This script will be injected into the main page when the extension is enabled. This will take care of loading the sidebar and injecting the React application into the page.
+
+- `block.ts` - Remove advertisments and add a dismissable overlay. Any content blocker logic should go here. This script will be injected to all frames.
+
+- `frame.ts` - General logic injected to all frames.
 
 ## Modules
 
