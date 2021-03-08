@@ -221,9 +221,7 @@ class SidebarLoader {
                 );
               };
               this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
-              const customSearchUrl = new URL(
-                'https://duckduckgo.com/'
-              );
+              const customSearchUrl = new URL('https://duckduckgo.com/');
               this.query = new URLSearchParams(this.document.location.search).get('q');
               const append = `(${this.domainsToSearch[augmentation.id]
                 .map((x) => `site:${x}`)

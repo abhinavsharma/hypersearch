@@ -28,7 +28,7 @@
             ],
             "all_frames": true,
             "js": [
-                "content_frames.js"
+                "js/content_frames.js"
             ],
             "run_at": "document_start"
         },
@@ -38,7 +38,7 @@
             ],
             "all_frames": true,
             "js": [
-                "ad_remover.js"
+                "js/content_blocker.js"
             ],
             "run_at": "document_end"
         },
