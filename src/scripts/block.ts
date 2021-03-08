@@ -99,10 +99,10 @@
     setInterval(() => {
       let node;
       const search = adText.map((adText) => "normalize-space()='" + adText + "'").join(' or ');
-      const xpath = "//" + adTextContainer + "[" + search + "]";
+      const xpath = '//' + adTextContainer + '[' + search + ']';
       const matchingElements = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
       const nodes = [];
-      while (node = matchingElements.iterateNext()) {
+      while ((node = matchingElements.iterateNext())) {
         node && nodes.push(node);
       }
       adBlockNodes(nodes, adElementSelector);
@@ -155,7 +155,7 @@
       overlay.addEventListener('click', (e) => {
         if (adstory.getAttribute('adblock-protected') !== 'true') {
           e.preventDefault();
-          const ol = e.target.closest('.adblock');
+          const ol = (e.target as Element).closest('.adblock');
           ol.parentElement.style.maxHeight = 'none';
           ol.parentElement.style.overflow = 'auto';
           ol.parentNode.removeChild(ol);
@@ -173,4 +173,4 @@
       }
     }
   }
-})()
+})();

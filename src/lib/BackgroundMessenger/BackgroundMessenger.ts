@@ -11,7 +11,7 @@ import {
   CLIENT_MESSAGES,
   LUMOS_SERP_CONFIG,
 } from 'lumos-shared-js';
-import { URL_TO_TAB } from 'background_script';
+import { URL_TO_TAB } from 'scripts/background';
 import { v1 as uuidv1 } from 'uuid';
 
 class BackgroundMessenger {

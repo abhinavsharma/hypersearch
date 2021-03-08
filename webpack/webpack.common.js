@@ -4,8 +4,10 @@ const srcDir = '../src/';
 
 module.exports = {
   entry: {
-    background: path.join(__dirname, srcDir + 'background_script.ts'),
-    content_script: path.join(__dirname, srcDir + 'content_script.ts'),
+    background: path.join(__dirname, srcDir + 'scripts/background.ts'),
+    content_script: path.join(__dirname, srcDir + 'scripts/main.ts'),
+    content_frames: path.join(__dirname, srcDir + 'scripts/frame.ts'),
+    content_blocker: path.join(__dirname, srcDir + 'scripts/block.ts')
   },
   output: {
     path: path.join(__dirname, '../dist/js'),

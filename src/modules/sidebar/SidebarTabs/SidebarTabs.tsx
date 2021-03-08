@@ -16,7 +16,6 @@ import {
   EditAugmentationPage,
 } from 'modules/augmentations/';
 import { SearchNeedsImprovementPage } from 'modules/sidebar';
-import ampRemover from 'utils/ampRemover';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -27,6 +26,8 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
+  GET_TAB_DOMAINS_MESSAGE,
+  SET_TAB_DOMAINS_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -48,6 +49,9 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
           flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
           setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
+          break;
+        case SET_TAB_DOMAINS_MESSAGE:
+          SidebarLoader.tabDomains[msg.tab.id] = msg.domains;
           break;
         case SEND_FRAME_INFO_MESSAGE:
           if (msg.frame.parentFrameId === -1) {
@@ -86,15 +90,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
       }
     });
   }, [SidebarLoader.sidebarTabs]);
-  // Remove Accelerated Modile Page references and make them open in a new browser tab.
-  // This script will be injected in the parent document as well as the sidebar.
-  const injectAmpRemover = async (el: HTMLIFrameElement) => {
-    const currentDocument = el.contentWindow.document;
-    const ampRemoverScript = currentDocument.createElement('script');
-    ampRemoverScript.type = 'text/javascript';
-    ampRemoverScript.innerHTML = ampRemover;
-    currentDocument.getElementsByTagName('head')[0].appendChild(ampRemoverScript);
-  };
 
   const handleAddSuggested = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
@@ -211,15 +206,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                 src={tab.url.href}
                 className="insight-tab-iframe"
                 onLoad={(e) => {
-                  injectAmpRemover(e.currentTarget);
-                  e.currentTarget.contentWindow.document
-                    .getElementsByTagName('html')[0]
-                    ?.classList.remove('is-not-mobile-device');
-                  SidebarLoader.tabDomains[tab.id] = SidebarLoader.getDomains(
-                    e.currentTarget.contentWindow.document,
-                    'phone',
-                    true,
-                  );
+                  chrome.runtime.sendMessage({
+                    type: GET_TAB_DOMAINS_MESSAGE,
+                    tab,
+                    document: e.currentTarget.contentWindow.document,
+                  });
                   chrome.runtime.sendMessage({
                     type: SEND_LOG_MESSAGE,
                     event: EXTENSION_SERP_FILTER_LOADED,
