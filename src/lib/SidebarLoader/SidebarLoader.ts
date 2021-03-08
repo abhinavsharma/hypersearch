@@ -222,9 +222,7 @@ class SidebarLoader {
               };
               this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
               const customSearchUrl = new URL(
-                isSafari()
-                  ? 'https://www.ecosia.org/search'
-                  : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
+                'https://duckduckgo.com/'
               );
               this.query = new URLSearchParams(this.document.location.search).get('q');
               const append = `(${this.domainsToSearch[augmentation.id]

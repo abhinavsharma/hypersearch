@@ -2,7 +2,7 @@
 let toRemove = {
   'google.com': ['header.Fh5muf'],
   'bing.com': ['header#b_header'],
-  'duckduckgo.com': ['div#header_wrapper'],
+  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
 }
 
 const waitUntilElementExists = (selector, callback) => {

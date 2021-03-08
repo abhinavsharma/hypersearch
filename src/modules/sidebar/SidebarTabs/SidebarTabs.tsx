@@ -165,7 +165,21 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
           >
             {tab.isSuggested && activeKey === (i + 1).toString() ? (
               <div className="insight-suggested-tab-popup">
-                <div className="insight-suggested-text">Suggested filter:</div>
+                <div className="insight-suggested-text">Suggested Filter</div>
+                {tab.isCse && !tab.id.startsWith('cse-custom-') && (
+                    <Button
+                      type="link"
+                      target="_blank"
+                      href={
+                        'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
+                        tab.title +
+                        '&prefill_sample_query=' +
+                        new URLSearchParams(window.location.search).get('q')
+                      }
+                    >
+                      💪 Improve
+                    </Button>
+                )}
                 <Link
                   component={EditAugmentationPage}
                   componentProps={{
@@ -178,11 +192,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                   key={tab.id}
                 >
                   <Button type="link" onClick={handleAddSuggested}>
-                    ➕ Customize
+                    ⑃ Fork
                   </Button>
                 </Link>
                 <Button type="link" onClick={() => handleHideSuggested(tab)}>
-                  ❌ Hide
+                  × Hide
                 </Button>
               </div>
             ) : null}
@@ -214,21 +228,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                   });
                 }}
               />
-            )}
-            {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-              <div className="insight-tab-bottom-message">
-                <a
-                  target="blank"
-                  href={
-                    'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
-                    tab.title +
-                    '&prefill_sample_query=' +
-                    new URLSearchParams(window.location.search).get('q')
-                  }
-                >
-                  🤔 Filter needs improvement?
-                </a>
-              </div>
             )}
           </TabPane>
         ))}
