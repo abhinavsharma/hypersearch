@@ -21,7 +21,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const ListItem = (item: SidebarTab) => (
     <List.Item>
       <List.Item.Meta
-        title={item.title.length > 18 ? item.title.slice(0, 20) + '...' : item.title}
+        title={item.title.length > 18 ? item.title.slice(0, 17) + '...' : item.title}
       />
     </List.Item>
   );
