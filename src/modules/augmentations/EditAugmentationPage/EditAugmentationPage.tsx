@@ -253,7 +253,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
             )),
           )}
           <EditActionInput
-            label={!actions[0].value.length && 'Search results contain domain'}
+            label={!actions[0].value.length && 'Search only these domains'}
             action={''}
             saveAction={handleSaveAction}
             deleteAction={handleDeleteAction}
