@@ -44,6 +44,15 @@
         },
         {
             "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "css":[
+                "overwrite.css"
+            ]
+        },
+        {
+            "matches": [
                 "https://cse.google.com/*"
             ],
             "all_frames": true,

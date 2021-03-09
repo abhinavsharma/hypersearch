@@ -276,7 +276,7 @@ class SidebarLoader {
         });
       };
       compareDomainList(aLowest.domains, bLowest.domains);
-      if (aLowest.rate !== bLowest.rate) {
+      if (aLowest.rate === bLowest.rate) {
         compareDomainList(
           aLowest.domains.filter((i) => i !== aLowest.name),
           bLowest.domains.filter((i) => i !== bLowest.name),
