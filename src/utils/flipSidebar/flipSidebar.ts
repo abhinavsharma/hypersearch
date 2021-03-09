@@ -31,15 +31,21 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         width: 0;
       `,
       );
+      showButton.setAttribute(
+        'style',
+        `
+        position: absolute;
+        width: ${tabsLength === 0 ? '30px' : '150px'} !important;
+      `,
+      );
       outerDocument.getElementById('sidebar-root-iframe').setAttribute(
         'style',
         `
         position: fixed;
-        width: ${tabsLength === 0 ? '60px' : '150px'};
-        height: ${!!tabsLength ? tabsLength * 15 + 150 : '150'}px;
+        height: 100%;
         top: auto;
         right: 0;
-        bottom: 20px;
+        bottom: 0;
         background: transparent;
     `,
       );

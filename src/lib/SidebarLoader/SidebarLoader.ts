@@ -197,63 +197,105 @@ class SidebarLoader {
   ) {
     debug('getTabsAndAugmentations - call');
     this.sidebarTabs = [];
-    // Order of augmentations: Installed -> Suggested -> Subtabs
-    augmentations
-      .sort((a, b) => (a.hasOwnProperty('enabled') && b.hasOwnProperty('enabled') ? 1 : -1))
-      .forEach((augmentation: AugmentationObject) => {
-        if (
-          this.customSearchEngine &&
-          augmentation.id.startsWith('cse-') &&
-          !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
-        ) {
-          const domainsToLookFor = augmentation.conditions?.condition_list.map((e) => e.value[0]);
-          if (this.domains.filter((value) => domainsToLookFor?.includes(value)).length > 0) {
-            if (augmentation.actions.action_list?.[0].key == 'search_domains') {
-              const isSafari = () => {
-                const hasVersion = /Version\/(\d{2})/;
-                const hasSafari = /Safari\/(\d{3})/;
-                const hasChrome = /Chrome\/(\d{3})/;
-                const ua = window.navigator.userAgent;
-                return (
-                  ua.match(hasVersion) !== null &&
-                  ua.match(hasSafari) !== null &&
-                  ua.match(hasChrome) === null
-                );
-              };
-              this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
-              const customSearchUrl = new URL('https://duckduckgo.com/');
-              this.query = new URLSearchParams(this.document.location.search).get('q');
-              const append = `(${this.domainsToSearch[augmentation.id]
-                .map((x) => `site:${x}`)
-                .join(' OR ')})`;
-              customSearchUrl.searchParams.append('q', this.query + ' ' + append);
-              customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-              if (
-                !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-                !augmentation.id.startsWith('cse-custom')
-              ) {
-                this.suggestedAugmentations.push(augmentation);
-              }
-              (augmentation.enabled || !augmentation.hasOwnProperty('enabled')) &&
-                this.sidebarTabs.push({
-                  id: augmentation.id,
-                  title: augmentation.name,
-                  url: customSearchUrl,
-                  default: !this.sidebarTabs.length,
-                  isSuggested: !augmentation.hasOwnProperty('enabled'),
-                  isCse: true,
-                });
-              augmentation.hasOwnProperty('enabled') &&
-                !augmentation.enabled &&
-                this.matchingDisabledInstalledAugmentations.push(augmentation);
+    const newTabs: SidebarTab[] = [];
+    augmentations.forEach((augmentation: AugmentationObject) => {
+      if (
+        this.customSearchEngine &&
+        augmentation.id.startsWith('cse-') &&
+        !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
+      ) {
+        const domainsToLookFor = augmentation.conditions?.condition_list.map((e) => e.value[0]);
+        const matchingDomains = this.domains.filter((value) => domainsToLookFor?.includes(value));
+        if (matchingDomains.length > 0) {
+          if (augmentation.actions.action_list?.[0].key == 'search_domains') {
+            /*  const isSafari = () => {
+              const hasVersion = /Version\/(\d{2})/;
+              const hasSafari = /Safari\/(\d{3})/;
+              const hasChrome = /Chrome\/(\d{3})/;
+              const ua = window.navigator.userAgent;
+              return (
+                ua.match(hasVersion) !== null &&
+                ua.match(hasSafari) !== null &&
+                ua.match(hasChrome) === null
+              );
+            }; */
+            this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
+            const customSearchUrl = new URL('https://duckduckgo.com/');
+            /* const customSearchUrl = new URL(
+              isSafari()
+                ? 'https://www.ecosia.org/search'
+                : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
+            ); */
+            this.query = new URLSearchParams(this.document.location.search).get('q');
+            const append = `(${this.domainsToSearch[augmentation.id]
+              .map((x) => `site:${x}`)
+              .join(' OR ')})`;
+            customSearchUrl.searchParams.append('q', this.query + ' ' + append);
+            customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+            if (
+              !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
+              !augmentation.id.startsWith('cse-custom')
+            ) {
+              this.suggestedAugmentations.push(augmentation);
             }
+            (augmentation.enabled || !augmentation.hasOwnProperty('enabled')) &&
+              newTabs.unshift({
+                matchingDomains,
+                id: augmentation.id,
+                title: augmentation.name,
+                url: customSearchUrl,
+                default: !newTabs.length,
+                isSuggested: !augmentation.hasOwnProperty('enabled'),
+                isCse: true,
+              });
+            augmentation.hasOwnProperty('enabled') &&
+              !augmentation.enabled &&
+              this.matchingDisabledInstalledAugmentations.push(augmentation);
           }
         }
-      });
+      }
+    });
+
+    const compareTabs = (a: SidebarTab, b: SidebarTab) => {
+      const tabRatings = Object.create(null);
+      const aLowest = { name: '', rate: Infinity, domains: a.matchingDomains };
+      const bLowest = { name: '', rate: Infinity, domains: b.matchingDomains };
+      Array.from(new Set(this.domains)).forEach((i, index) => (tabRatings[i] = index));
+      const compareDomainList = (domainsA, domainsB) => {
+        domainsA.forEach((i) => {
+          if (tabRatings[i] < aLowest.rate) {
+            aLowest.name = i;
+            aLowest.rate = tabRatings[i];
+          }
+        });
+        domainsB.forEach((i) => {
+          if (tabRatings[i] < bLowest.rate) {
+            bLowest.name = i;
+            bLowest.rate = tabRatings[i];
+          }
+        });
+      };
+      compareDomainList(aLowest.domains, bLowest.domains);
+      if (aLowest.rate !== bLowest.rate) {
+        compareDomainList(
+          aLowest.domains.filter((i) => i !== aLowest.name),
+          bLowest.domains.filter((i) => i !== bLowest.name),
+        );
+      }
+      return aLowest.rate > bLowest.rate ? 1 : -1;
+    };
+
+    this.sidebarTabs = newTabs.sort((a, b) => {
+      if (a.isSuggested && !b.isSuggested) return 1;
+      if (!a.isSuggested && b.isSuggested) return -1;
+      return compareTabs(a, b);
+    });
+
     this.isSerp = !!(
       this.customSearchEngine?.search_engine_json?.required_prefix +
       this.customSearchEngine?.search_engine_json?.required_params
     );
+
     debug(
       'getTabsAndAugmentations - processed',
       '\n---\n\tSidebar Tabs ',
@@ -430,7 +472,7 @@ class SidebarLoader {
     this.domains = this.getDomains(document);
     this.tabDomains['original'] = this.getDomains(
       document,
-      !!window.location.href.match(/google\.com/g).length ? 'pad' : 'desktop',
+      !!window.location.href.match(/google\.com/g)?.length ? 'pad' : 'desktop',
       true,
     );
     this.getTabsAndAugmentations([
