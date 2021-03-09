@@ -258,20 +258,31 @@ class SidebarLoader {
 
     const compareTabs = (a: SidebarTab, b: SidebarTab) => {
       const tabRatings = Object.create(null);
-      let aLowest = Infinity;
-      let bLowest = Infinity;
+      const aLowest = { name: '', rate: Infinity, domains: a.matchingDomains };
+      const bLowest = { name: '', rate: Infinity, domains: b.matchingDomains };
       Array.from(new Set(this.domains)).forEach((i, index) => (tabRatings[i] = index));
-      a.matchingDomains.forEach((i) => {
-        if (tabRatings[i] < aLowest) {
-          aLowest = tabRatings[i];
-        }
-      });
-      b.matchingDomains.forEach((i) => {
-        if (tabRatings[i] < bLowest) {
-          bLowest = tabRatings[i];
-        }
-      });
-      return aLowest > bLowest ? 1 : -1;
+      const compareDomainList = (domainsA, domainsB) => {
+        domainsA.forEach((i) => {
+          if (tabRatings[i] < aLowest.rate) {
+            aLowest.name = i;
+            aLowest.rate = tabRatings[i];
+          }
+        });
+        domainsB.forEach((i) => {
+          if (tabRatings[i] < bLowest.rate) {
+            bLowest.name = i;
+            bLowest.rate = tabRatings[i];
+          }
+        });
+      };
+      compareDomainList(aLowest.domains, bLowest.domains);
+      if (aLowest.rate !== bLowest.rate) {
+        compareDomainList(
+          aLowest.domains.filter((i) => i !== aLowest.name),
+          bLowest.domains.filter((i) => i !== bLowest.name),
+        );
+      }
+      return aLowest.rate > bLowest.rate ? 1 : -1;
     };
 
     this.sidebarTabs = newTabs.sort((a, b) => {
