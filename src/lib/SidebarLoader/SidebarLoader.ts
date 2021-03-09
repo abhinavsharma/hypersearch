@@ -472,7 +472,7 @@ class SidebarLoader {
     this.domains = this.getDomains(document);
     this.tabDomains['original'] = this.getDomains(
       document,
-      !!window.location.href.match(/google\.com/g).length ? 'pad' : 'desktop',
+      !!window.location.href.match(/google\.com/g)?.length ? 'pad' : 'desktop',
       true,
     );
     this.getTabsAndAugmentations([
