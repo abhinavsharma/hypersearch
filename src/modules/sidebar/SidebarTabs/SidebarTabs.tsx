@@ -42,6 +42,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
   );
   // SIDE EFFECTS
   useEffect(() => {
+    window.top.addEventListener('message', (event) => {
+      if (event.data.type === SET_TAB_DOMAINS_MESSAGE) {
+        SidebarLoader.tabDomains[event.data.tab] = Array.from(new Set(event.data.domains));
+      }
+    });
     // Set up listener for expanding sidebar with the augmentation builder page,
     // when the extension toolbar icon is clicked by the user.
     chrome.runtime.onMessage.addListener((msg) => {
@@ -49,9 +54,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
           flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
           setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
-          break;
-        case SET_TAB_DOMAINS_MESSAGE:
-          SidebarLoader.tabDomains[msg.tab.id] = msg.domains;
           break;
         case SEND_FRAME_INFO_MESSAGE:
           if (msg.frame.parentFrameId === -1) {
@@ -206,11 +208,13 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
                 src={tab.url.href}
                 className="insight-tab-iframe"
                 onLoad={(e) => {
-                  chrome.runtime.sendMessage({
-                    type: GET_TAB_DOMAINS_MESSAGE,
-                    tab,
-                    document: e.currentTarget.contentWindow.document,
-                  });
+                  e.currentTarget.contentWindow.postMessage(
+                    {
+                      type: GET_TAB_DOMAINS_MESSAGE,
+                      tab: tab.id,
+                    },
+                    '*',
+                  );
                   chrome.runtime.sendMessage({
                     type: SEND_LOG_MESSAGE,
                     event: EXTENSION_SERP_FILTER_LOADED,

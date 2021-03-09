@@ -6,10 +6,8 @@ import {
   ENABLE_AUGMENTATION_BUILDER,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
-  GET_TAB_DOMAINS_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
-  SET_TAB_DOMAINS_MESSAGE,
 } from 'utils/constants';
 import {
   REMOVE_AUGMENTATION_SUCCESS_MESSAGE,
@@ -20,7 +18,6 @@ import {
 } from 'utils/constants';
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
   s.replace('{searchTerms}', ''),
@@ -206,12 +203,6 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
     case SEND_LOG_MESSAGE:
       handleLogSend(msg.event, msg.properties);
       break;
-    case GET_TAB_DOMAINS_MESSAGE:
-      chrome.tabs.sendMessage(sender.tab.id, {
-        type: SET_TAB_DOMAINS_MESSAGE,
-        tab: msg.tab,
-        domains: SidebarLoader.getDomains(msg.document.document, 'phone', true),
-      });
     default:
       break;
   }
