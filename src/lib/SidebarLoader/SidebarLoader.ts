@@ -428,7 +428,11 @@ class SidebarLoader {
     if (!(this.url && response)) return null;
     await this.getCustomSearchEngine();
     this.domains = this.getDomains(document);
-    this.tabDomains['original'] = this.getDomains(document, 'desktop', true);
+    this.tabDomains['original'] = this.getDomains(
+      document,
+      !!window.location.href.match(/google\.com/g).length ? 'pad' : 'desktop',
+      true,
+    );
     this.getTabsAndAugmentations([
       ...response.suggested_augmentations,
       ...this.installedAugmentations,
