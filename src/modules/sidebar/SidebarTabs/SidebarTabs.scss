@@ -102,11 +102,14 @@
 
 .insight-readable-content {
   position: absolute;
-  height: calc(100%-100px);
+  height: auto;
   overflow-x: auto;
+  right: 0;
+  left: 2px;
   top: 55px;
-  bottom: 45px;
+  bottom: 0;
   padding: 10px 15px;
+  background: #ffffff;
 }
 
 .insight-tab-bar {
