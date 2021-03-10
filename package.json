@@ -4,7 +4,7 @@
   "description": "Insight supercharges Google search with results from expert and community trusted sources for any field.",
   "main": "index.js",
   "scripts": {
-    "watch": "npm run clean && webpack --config webpack/webpack.dev.js --watch",
+    "watch": "webpack --config webpack/webpack.dev.js --watch",
     "build": "npm run clean && webpack --config webpack/webpack.prod.js",
     "clean": "rimraf dist",
     "test": "npx jest"

@@ -110,15 +110,19 @@ export const removeWww = (s: string) => {
 };
 
 export const extractHostnameFromUrl = (s: string) => {
-  let url: string;
-  if (s.startsWith('http://') || s.startsWith('https://')) url = s;
-  else url = `https://${s}`;
-  const raw = new URL(url);
-  return {
-    hostname: removeWww(raw.hostname),
-    params: raw.searchParams
-      .toString()
-      .split('&')
-      .map((i) => i.split('=')[0]),
-  };
+  try {
+    let url: string;
+    if (s.startsWith('http://') || s.startsWith('https://')) url = s;
+    else url = `https://${s}`;
+    const raw = new URL(url);
+    return {
+      hostname: removeWww(raw.hostname),
+      params: raw.searchParams
+        .toString()
+        .split('&')
+        .map((i) => i.split('=')[0]),
+    };
+  } catch (e) {
+    debug('extractHostnameFromUrl - error', e);
+  }
 };

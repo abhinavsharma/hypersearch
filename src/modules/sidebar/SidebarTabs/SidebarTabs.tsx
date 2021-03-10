@@ -5,34 +5,32 @@
  * @version 1.0.0
  */
 import React, { useState, useEffect } from 'react';
-import { Link } from 'route-lite';
 import Tabs from 'antd/lib/tabs';
-import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import {
   AddAugmentationTab,
   ActiveAugmentationsPage,
   ExternalAddAugmentationButton,
-  EditAugmentationPage,
 } from 'modules/augmentations/';
-import { SearchNeedsImprovementPage } from 'modules/sidebar';
+import {
+  SearchNeedsImprovementPage,
+  SuggestedTabPopup,
+  SidebarTabReadable,
+  SidebarTabContainer,
+} from 'modules/sidebar';
+import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   ENABLE_AUGMENTATION_BUILDER,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
   SEND_LOG_MESSAGE,
-  EXTENSION_SERP_FILTER_LOADED,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
-  GET_TAB_DOMAINS_MESSAGE,
-  SET_TAB_DOMAINS_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
-import { extractHostnameFromUrl } from 'utils/helpers';
 
 const { TabPane } = Tabs;
 
@@ -40,21 +38,17 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
   const [activeKey, setActiveKey] = useState<string>(
     !!SidebarLoader.sidebarTabs.length ? '1' : '0',
   );
-  // SIDE EFFECTS
+
   useEffect(() => {
-    window.top.addEventListener('message', (event) => {
-      if (event.data.type === SET_TAB_DOMAINS_MESSAGE) {
-        SidebarLoader.tabDomains[event.data.tab] = Array.from(new Set(event.data.domains));
-      }
-    });
-    // Set up listener for expanding sidebar with the augmentation builder page,
-    // when the extension toolbar icon is clicked by the user.
     chrome.runtime.onMessage.addListener((msg) => {
       switch (msg.type) {
+        // Set up listener for expanding sidebar with the augmentation builder page,
+        // when the extension toolbar icon is clicked by the user.
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
           flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
           setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
           break;
+        // LOGGING
         case SEND_FRAME_INFO_MESSAGE:
           if (msg.frame.parentFrameId === -1) {
             chrome.runtime.sendMessage({
@@ -93,146 +87,66 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
     });
   }, [SidebarLoader.sidebarTabs]);
 
-  const handleAddSuggested = () => {
-    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
-  };
-
-  const handleHideSuggested = (tab: SidebarTab) => {
-    const augmentation = SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id);
-    SidebarLoader.ignoredAugmentations.push(augmentation);
-    chrome.storage.local.set({
-      [`ignored-${tab.id}`]: augmentation,
-    });
-    SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    const numInstalledAugmentations = SidebarLoader.installedAugmentations.filter(
-      (i) => !!i.enabled,
-    ).length;
-    const numSuggestedAugmentations = SidebarLoader.suggestedAugmentations.length;
-    !numSuggestedAugmentations && !numInstalledAugmentations
-      ? setActiveKey('100')
-      : setActiveKey('1');
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-  };
-
-  // Overwrite the default Ant Design tab bar to be able to style it.
   const TabBar: TabBar = (props, DefaultTabBar) => (
     <DefaultTabBar {...props} className="insight-tab-bar" />
   );
 
+  const TabTitle = ({ tab, index }) => {
+    const handleClick = () => setActiveKey((index + 1).toString());
+    return (
+      <div onClick={handleClick} className="insight-tab-pill">
+        <span
+          className={`insight-tab-title ${activeKey === (index + 1).toString() ? 'active' : ''} ${
+            activeKey === '0' ? 'hidden' : ''
+          }`}
+        >
+          {tab.isSuggested ? tab.title : `${tab.title} ◾`}
+        </span>
+      </div>
+    );
+  };
+
+  const extraContent = {
+    left: ENABLE_AUGMENTATION_BUILDER ? (
+      <AddAugmentationTab
+        numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
+        active={(forceTab ?? activeKey) === '0'}
+        setActiveKey={setActiveKey}
+        onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
+      />
+    ) : (
+      <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
+    ),
+  };
+
   return (
-    <>
-      <Tabs
-        className="insight-tab-container"
-        renderTabBar={TabBar}
-        activeKey={forceTab ?? activeKey}
-        tabBarExtraContent={{
-          left: ENABLE_AUGMENTATION_BUILDER ? (
-            <AddAugmentationTab
-              numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
-              active={(forceTab ?? activeKey) === '0'}
-              setActiveKey={setActiveKey}
-              onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
-            />
-          ) : (
-            <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
-          ),
-        }}
-      >
-        <TabPane key="0" tab={null} forceRender>
-          <ActiveAugmentationsPage />
-        </TabPane>
-        {SidebarLoader.sidebarTabs?.map((tab, i) => (
+    <Tabs
+      className="insight-tab-container"
+      renderTabBar={TabBar}
+      activeKey={forceTab ?? activeKey}
+      tabBarExtraContent={extraContent}
+    >
+      <TabPane key="0" tab={null} forceRender>
+        <ActiveAugmentationsPage />
+      </TabPane>
+      {SidebarLoader.sidebarTabs?.map((tab, i) => {
+        const showPopup = tab.isSuggested && activeKey === (i + 1).toString();
+        return (
           <TabPane
             key={i + 1}
-            tab={
-              <div onClick={() => setActiveKey((i + 1).toString())} className="insight-tab-pill">
-                <span
-                  className={`insight-tab-title ${
-                    activeKey === (i + 1).toString() ? 'active' : ''
-                  } ${activeKey === '0' ? 'hidden' : ''}`}
-                >
-                  {tab.isSuggested ? tab.title : `${tab.title} ◾`}
-                </span>
-              </div>
-            }
+            tab={<TabTitle tab={tab} index={i} />}
             forceRender
             className={`insight-full-tab`}
           >
-            {tab.isSuggested && activeKey === (i + 1).toString() ? (
-              <div className="insight-suggested-tab-popup">
-                <div className="insight-suggested-text">Suggested Filter</div>
-                {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-                  <Button
-                    type="link"
-                    target="_blank"
-                    href={
-                      'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
-                      tab.title +
-                      '&prefill_sample_query=' +
-                      new URLSearchParams(window.location.search).get('q')
-                    }
-                  >
-                    💪 Improve
-                  </Button>
-                )}
-                <Link
-                  component={EditAugmentationPage}
-                  componentProps={{
-                    augmentation: {
-                      ...SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id),
-                      installed: false,
-                    },
-                    isAdding: true,
-                  }}
-                  key={tab.id}
-                >
-                  <Button type="link" onClick={handleAddSuggested}>
-                    ⑃ Fork
-                  </Button>
-                </Link>
-                <Button type="link" onClick={() => handleHideSuggested(tab)}>
-                  × Hide
-                </Button>
-              </div>
-            ) : null}
-            {tab.readable && (
-              <div
-                className="insight-readable-content"
-                dangerouslySetInnerHTML={{ __html: tab.readable }}
-              />
-            )}
-            {tab.url && (
-              <iframe
-                src={tab.url.href}
-                className="insight-tab-iframe"
-                onLoad={(e) => {
-                  e.currentTarget.contentWindow.postMessage(
-                    {
-                      type: GET_TAB_DOMAINS_MESSAGE,
-                      tab: tab.id,
-                    },
-                    '*',
-                  );
-                  chrome.runtime.sendMessage({
-                    type: SEND_LOG_MESSAGE,
-                    event: EXTENSION_SERP_FILTER_LOADED,
-                    properties: {
-                      query: SidebarLoader.query,
-                      filter_name: tab.title,
-                      domains_to_search: SidebarLoader.domainsToSearch[tab.id],
-                    },
-                  });
-                }}
-              />
-            )}
+            {showPopup && <SuggestedTabPopup tab={tab} setActiveKey={setActiveKey} />}
+            {tab.readable && <SidebarTabReadable readable={tab.readable} />}
+            {tab.url && <SidebarTabContainer tab={tab} />}
           </TabPane>
-        ))}
-        <TabPane key="100" tab={null} className={`insight-full-tab`}>
-          <SearchNeedsImprovementPage setActiveKey={setActiveKey} />
-        </TabPane>
-      </Tabs>
-    </>
+        );
+      })}
+      <TabPane key="100" tab={null} className={`insight-full-tab`}>
+        <SearchNeedsImprovementPage setActiveKey={setActiveKey} />
+      </TabPane>
+    </Tabs>
   );
 };

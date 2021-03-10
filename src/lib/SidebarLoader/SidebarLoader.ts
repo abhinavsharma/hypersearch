@@ -208,7 +208,7 @@ class SidebarLoader {
         const matchingDomains = this.domains.filter((value) => domainsToLookFor?.includes(value));
         if (matchingDomains.length > 0) {
           if (augmentation.actions.action_list?.[0].key == 'search_domains') {
-            /*  const isSafari = () => {
+            const isSafari = () => {
               const hasVersion = /Version\/(\d{2})/;
               const hasSafari = /Safari\/(\d{3})/;
               const hasChrome = /Chrome\/(\d{3})/;
@@ -218,14 +218,13 @@ class SidebarLoader {
                 ua.match(hasSafari) !== null &&
                 ua.match(hasChrome) === null
               );
-            }; */
+            };
             this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
-            const customSearchUrl = new URL('https://duckduckgo.com/');
-            /* const customSearchUrl = new URL(
+            const customSearchUrl = new URL(
               isSafari()
                 ? 'https://www.ecosia.org/search'
                 : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
-            ); */
+            );
             this.query = new URLSearchParams(this.document.location.search).get('q');
             const append = `(${this.domainsToSearch[augmentation.id]
               .map((x) => `site:${x}`)
