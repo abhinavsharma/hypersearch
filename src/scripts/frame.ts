@@ -12,12 +12,16 @@ import { GET_TAB_DOMAINS_MESSAGE, SET_TAB_DOMAINS_MESSAGE } from 'utils/constant
     if (e.data.type === GET_TAB_DOMAINS_MESSAGE) {
       tab = e.data.tab;
       if (document.readyState === 'complete' || 'interactive') {
-        const domains = Array.from(document.querySelectorAll('.result__extras__url > a'));
+        const domains = Array.from(document.querySelectorAll(e.data.selector)).map((i) =>
+          window.location.href.search(/bing\.com/g) === -1 ? i : i.textContent,
+        );
         window.top.postMessage(
           {
             tab,
             type: SET_TAB_DOMAINS_MESSAGE,
-            domains: domains.map((i) => i.getAttribute('href')),
+            domains: domains.map((i) =>
+              window.location.href.search(/bing\.com/g) === -1 ? i.getAttribute('href') : i,
+            ),
           },
           '*',
         );

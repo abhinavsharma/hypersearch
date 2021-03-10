@@ -8,7 +8,9 @@ export const SidebarTabDomains: SidebarTabDomains = ({ tab }) => {
   const context = useContext(SidebarTabDomainsContext);
   useEffect(() => {
     setDomains(
-      Array.from(new Set(context?.[tab.id]?.map((i) => extractHostnameFromUrl(i).hostname))),
+      Array.from(
+        new Set(context?.[tab.id]?.map((i) => extractHostnameFromUrl(i)?.hostname)),
+      ).filter((i) => i !== undefined) as string[],
     );
   }, [context?.[tab.id]]);
 

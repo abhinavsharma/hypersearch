@@ -19,6 +19,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
             {
               type: GET_TAB_DOMAINS_MESSAGE,
               tab: tab.id,
+              selector: SidebarLoader.customSearchEngine.querySelector.phone,
             },
             '*',
           );
