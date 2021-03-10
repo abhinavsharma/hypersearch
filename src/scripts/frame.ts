@@ -1,19 +1,30 @@
 import { GET_TAB_DOMAINS_MESSAGE, SET_TAB_DOMAINS_MESSAGE } from 'utils/constants';
 
 ((document, window) => {
+  let tab = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const domainsContainer = document.querySelector('#message.results--message');
+    domainsContainer?.setAttribute('style', 'display: none;');
+  });
+
   window.addEventListener('message', (e) => {
     if (e.data.type === GET_TAB_DOMAINS_MESSAGE) {
-      const domains = Array.from(document.querySelectorAll('.result__body a'));
-      window.top.postMessage(
-        {
-          type: SET_TAB_DOMAINS_MESSAGE,
-          tab: e.data.tab,
-          domains: domains.map((i) => i.getAttribute('href')),
-        },
-        '*',
-      );
+      tab = e.data.tab;
+      if (document.readyState === 'complete' || 'interactive') {
+        const domains = Array.from(document.querySelectorAll('.result__extras__url > a'));
+        window.top.postMessage(
+          {
+            tab,
+            type: SET_TAB_DOMAINS_MESSAGE,
+            domains: domains.map((i) => i.getAttribute('href')),
+          },
+          '*',
+        );
+      }
     }
   });
+
   // not exactly ad blocking but removing known bad components
   const toRemove = {
     'google.com': ['header.Fh5muf'],

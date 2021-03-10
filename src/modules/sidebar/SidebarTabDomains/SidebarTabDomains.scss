@@ -1,0 +1,17 @@
+.sidebar-tab-domains {
+  display: flex;
+  height: auto;
+  min-height: 40px;
+  width: 100%;
+  background: #ffffff;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  white-space: nowrap;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ccc;
+
+  .domain-list-prefix {
+    font-weight: bold;
+  }
+}

@@ -356,11 +356,11 @@ class SidebarLoader {
    * @param el - The HTML Element
    * @param reactEl - The React Element
    * @param frameId - The ID of the injected IFrame
-   * @private
+   * @public
    * @method
    * @memberof SidebarLoader
    */
-  private reactInjector(el: HTMLElement, reactEl: ReactElement, frameId: string) {
+  public reactInjector(el: HTMLElement, reactEl: ReactElement, frameId: string) {
     debug('reactInjector - call');
     const iframe = document.createElement('iframe');
     iframe.id = frameId;
