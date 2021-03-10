@@ -16,10 +16,11 @@ export const SidebarTabDomains: SidebarTabDomains = ({ tab }) => {
 
   return (
     <div className="sidebar-tab-domains">
-      <span className="domain-list-prefix">Domains:&nbsp;</span>
+      <span className="domain-list-prefix">Trusted sources include&nbsp;</span>
       {domains?.map((domain, i, a) => (
-        <span key={domain}>{`${!a[i + 1] ? domain : domain + ','}`}&nbsp;</span>
+        <a href={domain} className="sidebar-tab-domain-text"key={domain}>{`${!a[i + 1] ? domain : domain + ','}`}&nbsp;</a>
       ))}
     </div>
+    
   );
 };
