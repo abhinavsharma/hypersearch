@@ -69,6 +69,11 @@
     },
     {
       site: 'google.com',
+      adText: 'Ads,Ads·',
+      adElementSelector: '.cu-container',
+    },
+    {
+      site: 'google.com',
       adText: 'Ads',
       adElementSelector: '.mnr-c',
     },

@@ -115,12 +115,14 @@ export const extractHostnameFromUrl = (s: string) => {
     if (s.startsWith('http://') || s.startsWith('https://')) url = s;
     else url = `https://${s}`;
     const raw = new URL(url);
+    const hostname = removeWww(raw.hostname);
     return {
-      hostname: removeWww(raw.hostname),
+      hostname,
       params: raw.searchParams
         .toString()
         .split('&')
         .map((i) => i.split('=')[0]),
+      full: hostname + raw.pathname,
     };
   } catch (e) {
     debug('extractHostnameFromUrl - error', e);

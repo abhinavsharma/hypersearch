@@ -8,7 +8,12 @@ import React, { ReactElement } from 'react';
 import { render } from 'react-dom';
 import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { Sidebar } from 'modules/sidebar';
-import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
+import {
+  extractHostnameFromUrl,
+  postAPI,
+  removeWww,
+  runFunctionWhenDocumentReady,
+} from 'utils/helpers';
 import {
   CUSTOM_SEARCH_ENGINES,
   EXTENSION_SERP_LOADED,
@@ -171,13 +176,11 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  public getDomains(document: Document, platform = 'desktop', full?: boolean) {
+  public getDomains(document: Document, platform = 'pad', full?: boolean) {
     const els = Array.from(
       document.querySelectorAll(this.customSearchEngine?.querySelector?.[platform]),
     );
-    return full
-      ? els.map((i) => i.getAttribute('href'))
-      : els.map((e) => extractHostnameFromUrl(e.textContent.split(' ')[0]).hostname);
+    return els.map((i) => extractHostnameFromUrl(i.getAttribute('href')).full);
   }
 
   /**
@@ -195,7 +198,7 @@ class SidebarLoader {
       this.installedAugmentations,
     ),
   ) {
-    debug('getTabsAndAugmentations - call');
+    debug('getTabsAndAugmentations - call\n---\n\tDomains', this.domains, '\n---');
     this.sidebarTabs = [];
     const newTabs: SidebarTab[] = [];
     augmentations.forEach((augmentation: AugmentationObject) => {
@@ -205,7 +208,17 @@ class SidebarLoader {
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
         const domainsToLookFor = augmentation.conditions?.condition_list.map((e) => e.value[0]);
-        const matchingDomains = this.domains.filter((value) => domainsToLookFor?.includes(value));
+        const matchingDomains = this.domains.filter((value) =>
+          domainsToLookFor?.find((i) => value.search(i) > -1),
+        );
+        debug(
+          `getTabsAndAugmentations - processing "${augmentation.id}"\n---`,
+          '\n\tDomains to look for',
+          domainsToLookFor,
+          '\n\tMatching domains',
+          matchingDomains,
+          '\n---',
+        );
         if (matchingDomains.length > 0) {
           if (augmentation.actions.action_list?.[0].key == 'search_domains') {
             const isSafari = () => {

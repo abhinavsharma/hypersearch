@@ -36,7 +36,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
           .fill(null)
           .map((_, i) => ({
             ...EMPTY_AUGMENTATION.conditions.condition_list[0],
-            value: [SidebarLoader.domains[i]],
+            value: [SidebarLoader.domains[i].split('/')[0]],
             id: i.toString(),
           }))
       : augmentation.conditions.condition_list.map((cond, index) => ({
