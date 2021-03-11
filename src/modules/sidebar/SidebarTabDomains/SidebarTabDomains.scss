@@ -10,8 +10,11 @@
   flex-wrap: wrap;
 
   .ant-typography {
-    max-width: 330px;
     margin-bottom: 0;
+
+    &.ant-typography-ellipsis {
+      max-width: 330px;
+    }
   }
 
   .sidebar-tab-domain-text {
