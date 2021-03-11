@@ -1,0 +1,55 @@
+{
+  "manifest_version": 2,
+  "name": "Search Club",
+  "description": "A community of unbiased experts across every field eradicating misinformation, SEO and charlatan content from the web.",
+  "version": "0.0.63",
+  "web_accessible_resources": ["*.png", "*.svg", "*.html", "*.css"],
+  "icons": {
+    "128": "logo128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "js": ["js/content_script.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "all_frames": true,
+      "js": ["js/content_frames.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "all_frames": true,
+      "js": ["js/content_blocker.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "all_frames": true,
+      "css": ["overwrite.css"]
+    },
+    {
+      "matches": ["https://cse.google.com/*"],
+      "all_frames": true,
+      "css": ["google_cse.css"]
+    }
+  ],
+  "background": {
+    "scripts": ["js/background.js"]
+  },
+  "browser_action": {
+    "default_title": "Insight"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "google.com",
+    "duckduckgo.com",
+    "bing.com",
+    "webRequest",
+    "webRequestBlocking",
+    "webNavigation"
+  ]
+}
