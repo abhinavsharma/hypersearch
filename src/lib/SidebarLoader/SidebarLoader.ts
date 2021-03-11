@@ -253,13 +253,24 @@ class SidebarLoader {
               .join(' OR ')})`;
             customSearchUrl.searchParams.append('q', this.query + ' ' + append);
             customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+
+            const isRelevant =
+              matchingDomains
+                .map((i) =>
+                  this.domains.slice(0, 3).find((e) => e.search(new RegExp(`^${i}`, 'gi')) > -1)
+                    ? true
+                    : false,
+                )
+                .filter((i) => !!i).length < 2;
+
             if (
               !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-              !augmentation.id.startsWith('cse-custom')
+              !augmentation.id.startsWith('cse-custom') &&
+              isRelevant
             ) {
               this.suggestedAugmentations.push(augmentation);
             }
-            if (augmentation.enabled || !augmentation.hasOwnProperty('enabled')) {
+            if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
               this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
               newTabs.unshift({
                 matchingDomains,
