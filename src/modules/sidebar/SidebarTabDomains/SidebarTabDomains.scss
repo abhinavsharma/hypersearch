@@ -1,14 +1,21 @@
 .sidebar-tab-domains {
   display: flex;
   height: auto;
+  width: 100%;
   min-height: 40px;
   background: #ffffff;
   align-items: center;
   margin-bottom: 5px;
-  padding: 0px 20px 10px 20px;
-  white-space: nowrap;
+  padding: 10px 20px 0px 20px;
   flex-wrap: wrap;
-  border-bottom: 1px solid #ccc;
+
+  .ant-typography {
+    margin-bottom: 0;
+
+    &.ant-typography-ellipsis {
+      max-width: 330px;
+    }
+  }
 
   .sidebar-tab-domain-text {
     text-decoration: underline;

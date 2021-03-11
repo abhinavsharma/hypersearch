@@ -17,6 +17,7 @@ import {
   SuggestedTabPopup,
   SidebarTabReadable,
   SidebarTabContainer,
+  SidebarTabDomains,
 } from 'modules/sidebar';
 import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
@@ -138,6 +139,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
             forceRender
             className={`insight-full-tab`}
           >
+            {tab.url && <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />}
             {showPopup && <SuggestedTabPopup tab={tab} setActiveKey={setActiveKey} />}
             {tab.readable && <SidebarTabReadable readable={tab.readable} />}
             {tab.url && <SidebarTabContainer tab={tab} />}
