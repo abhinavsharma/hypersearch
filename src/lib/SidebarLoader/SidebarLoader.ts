@@ -237,7 +237,8 @@ class SidebarLoader {
             ) {
               this.suggestedAugmentations.push(augmentation);
             }
-            (augmentation.enabled || !augmentation.hasOwnProperty('enabled')) &&
+            if (augmentation.enabled || !augmentation.hasOwnProperty('enabled')) {
+              this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
               newTabs.unshift({
                 matchingDomains,
                 id: augmentation.id,
@@ -247,6 +248,7 @@ class SidebarLoader {
                 isSuggested: !augmentation.hasOwnProperty('enabled'),
                 isCse: true,
               });
+            }
             augmentation.hasOwnProperty('enabled') &&
               !augmentation.enabled &&
               this.matchingDisabledInstalledAugmentations.push(augmentation);

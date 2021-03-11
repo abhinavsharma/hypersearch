@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  EXTENSION_SERP_FILTER_LOADED,
-  GET_TAB_DOMAINS_MESSAGE,
-  SEND_LOG_MESSAGE,
-} from 'utils/constants';
+import { EXTENSION_SERP_FILTER_LOADED, SEND_LOG_MESSAGE } from 'utils/constants';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { SidebarTabDomains } from 'modules/sidebar';
 
@@ -14,15 +10,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       <iframe
         src={tab.url.href}
         className="insight-tab-iframe"
-        onLoad={(e) => {
-          e.currentTarget.contentWindow.postMessage(
-            {
-              type: GET_TAB_DOMAINS_MESSAGE,
-              tab: tab.id,
-              selector: SidebarLoader.customSearchEngine.querySelector.phone,
-            },
-            '*',
-          );
+        onLoad={() => {
           chrome.runtime.sendMessage({
             type: SEND_LOG_MESSAGE,
             event: EXTENSION_SERP_FILTER_LOADED,
