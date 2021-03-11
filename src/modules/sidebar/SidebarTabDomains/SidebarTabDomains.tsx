@@ -1,22 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import React, { useState } from 'react';
+import Typography from 'antd/lib/typography';
+import Button from 'antd/lib/button';
+import 'antd/lib/typography/style/index.css';
+import 'antd/lib/button/style/index.css';
 import './SidebarTabDomains.scss';
 
-export const SidebarTabDomains: SidebarTabDomains = ({ tab }) => {
-  const [domains, setDomains] = useState<string[]>();
+const { Paragraph } = Typography;
 
-  useEffect(() => {
-    setDomains(SidebarLoader.tabDomains[tab.id]);
-  }, [SidebarLoader.tabDomains[tab.id]]);
+export const SidebarTabDomains: SidebarTabDomains = ({ domains }) => {
+  const [hide, setHide] = useState<boolean>(false);
+
+  const ellipsis = {
+    rows: 1,
+  };
+
+  const handleHide = () => setHide((prev) => !prev);
 
   return (
     <div className="sidebar-tab-domains">
-      <span className="domain-list-prefix">Trusted sources include&nbsp;</span>
-      {domains?.map((domain, i, a) => (
-        <a href={domain} className="sidebar-tab-domain-text" key={domain}>
-          {`${!a[i + 1] ? domain : domain + ','}`}&nbsp;
-        </a>
-      ))}
+      <Paragraph ellipsis={!hide && ellipsis}>
+        <span className="domain-list-prefix">Trusted&nbsp;sources&nbsp;include&nbsp;</span>
+        {domains.map((domain, i, a) => (
+          <a
+            href={`https://${domain}`}
+            className="sidebar-tab-domain-text"
+            key={domain}
+            target="_blank"
+          >
+            {`${!a[i + 1] ? domain : domain + ','}`}{' '}
+          </a>
+        ))}
+      </Paragraph>
+      {!hide && (
+        <Button type="link" onClick={handleHide}>
+          Show All
+        </Button>
+      )}
     </div>
   );
 };
