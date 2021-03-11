@@ -8,13 +8,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 
-const DEFAULT_CONDITION = {
-  evaluation: 'contains',
-  key: 'search_contains',
-  label: 'Search results contain domain',
-  type: 'list',
-};
-
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
