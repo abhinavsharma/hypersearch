@@ -176,11 +176,20 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  public getDomains(document: Document, platform = 'pad', full?: boolean) {
+  public getDomains(document: Document) {
+    const isGoogle = location.href.search(/google\.com/gi) > -1;
+    const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
+    const isBing = location.href.search(/bing\.com/gi) > -1;
     const els = Array.from(
-      document.querySelectorAll(this.customSearchEngine?.querySelector?.[platform]),
+      document.querySelectorAll(
+        isDdg
+          ? 'a.result__url.js-result-extras-url' // TODO: update this in `insightbrowser/augmentations`
+          : this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
+      ),
     );
-    return els.map((i) => extractHostnameFromUrl(i.getAttribute('href')).full);
+    return els.map(
+      (i) => extractHostnameFromUrl(isBing ? i.textContent : i.getAttribute('href')).full,
+    );
   }
 
   /**
@@ -484,11 +493,7 @@ class SidebarLoader {
     if (!(this.url && response)) return null;
     await this.getCustomSearchEngine();
     this.domains = this.getDomains(document);
-    this.tabDomains['original'] = this.getDomains(
-      document,
-      !!window.location.href.match(/google\.com/g)?.length ? 'pad' : 'desktop',
-      true,
-    );
+    this.tabDomains['original'] = this.getDomains(document);
     this.getTabsAndAugmentations([
       ...response.suggested_augmentations,
       ...this.installedAugmentations,
