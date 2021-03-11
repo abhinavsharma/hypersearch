@@ -218,7 +218,7 @@ class SidebarLoader {
       ) {
         const domainsToLookFor = augmentation.conditions?.condition_list.map((e) => e.value[0]);
         const matchingDomains = this.domains.filter((value) =>
-          domainsToLookFor?.find((i) => value.search(i) > -1),
+          domainsToLookFor?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
         debug(
           `getTabsAndAugmentations - processing "${augmentation.id}"\n---`,
