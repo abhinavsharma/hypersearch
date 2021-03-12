@@ -18,6 +18,7 @@
         "https://www.bing.com/*",
         "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*",
         "https://raw.githubusercontent.com/insightbrowser/*"
+        "https://api.perfalytics.com/track"
       ],
       "js": ["js/content_script.js"],
       "run_at": "document_start"
@@ -29,7 +30,8 @@
         "https://duckduckgo.com/*",
         "https://www.duckduckgo.com/*",
         "https://bing.com/*",
-        "https://www.bing.com/*"
+        "https://www.bing.com/*",
+        "https://api.perfalytics.com/track"
       ],
       "all_frames": true,
       "js": ["js/content_frames.js"],
@@ -75,6 +77,7 @@
   "permissions": [
     "tabs",
     "storage",
+    "https://api.perfalytics.com/track",
     "https://google.com/*",
     "https://www.google.com/*",
     "https://duckduckgo.com/*",
