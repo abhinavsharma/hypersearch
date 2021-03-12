@@ -15,7 +15,9 @@
         "https://duckduckgo.com/*",
         "https://www.duckduckgo.com/*",
         "https://bing.com/*",
-        "https://www.bing.com/*"
+        "https://www.bing.com/*",
+        "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*",
+        "https://raw.githubusercontent.com/insightbrowser/*"
       ],
       "js": ["js/content_script.js"],
       "run_at": "document_start"
@@ -79,6 +81,8 @@
     "https://www.duckduckgo.com/*",
     "https://bing.com/*",
     "https://www.bing.com/*",
+    "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*",
+    "https://raw.githubusercontent.com/insightbrowser/*",
     "webRequest",
     "webRequestBlocking",
     "webNavigation"
