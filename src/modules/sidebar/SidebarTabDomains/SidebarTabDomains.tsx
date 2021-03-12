@@ -19,7 +19,7 @@ export const SidebarTabDomains: SidebarTabDomains = ({ domains }) => {
   return (
     <div className="sidebar-tab-domains">
       <Paragraph ellipsis={!hide && ellipsis}>
-        <span className="domain-list-prefix">Trusted&nbsp;sources&nbsp;include&nbsp;</span>
+        <span className="domain-list-prefix">Filter&nbsp;sources&nbsp;include&nbsp;</span>
         {domains.map((domain, i, a) => (
           <a
             href={`https://${domain}`}

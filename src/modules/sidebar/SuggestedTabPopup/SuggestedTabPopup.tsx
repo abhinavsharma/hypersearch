@@ -31,7 +31,6 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
 
   return (
     <div className="insight-suggested-tab-popup">
-      <div className="insight-suggested-text">Suggested Filter</div>
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
         <Button
           type="link"
