@@ -1,3 +1,32 @@
+iframe {
+  border: none;
+}
+
+#sidebar-root {
+  transition-property: width;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  background: transparent;
+}
+
+#sidebar-root-iframe {
+  position: fixed;
+  display: block !important;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 465px;
+  height: 100%;
+  border-width: 0 !important;
+  background: transparent;
+  z-index: 9999;
+  border: 0;
+}
+
+#sidebar-root-iframe.hidden {
+  width: 0;
+}
+
 body {
   line-height: 1.3 !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
