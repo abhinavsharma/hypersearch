@@ -9,24 +9,24 @@
   },
   "content_scripts": [
     {
-      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
       "js": ["js/content_script.js"],
       "run_at": "document_start"
     },
     {
-      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
       "all_frames": true,
       "js": ["js/content_frames.js"],
       "run_at": "document_start"
     },
     {
-      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
       "all_frames": true,
       "js": ["js/content_blocker.js"],
       "run_at": "document_end"
     },
     {
-      "matches": ["google.com", "duckduckgo.com", "bing.com"],
+      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
       "all_frames": true,
       "css": ["overwrite.css"]
     },
@@ -45,9 +45,9 @@
   "permissions": [
     "tabs",
     "storage",
-    "google.com",
-    "duckduckgo.com",
-    "bing.com",
+    "https://google.com/*",
+    "https://duckduckgo.com/*",
+    "https://bing.com/*",
     "webRequest",
     "webRequestBlocking",
     "webNavigation"
