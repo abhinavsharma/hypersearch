@@ -20,20 +20,24 @@ Alternatively, `make setup` is available executing the same commands as above. H
 
 ## Structure
 
-- `dist` - The distribution folder, both development and production build outputs into this folder.
+- `dist_{is|sc}` - The distribution folder for production build.
+- `build_{is|sc}` - The development build folder for HMR server.
 - `public` - This folder's content is avalable in the extension calling `chrome.runtime.getUrl(path)`.
 *Note: to access a public file, it must be listed under `manifest.json -> web_accessible_resources`*
-- `releases` - Output of `make ship`, these are zipped production ready packages.
+- `releases` - Output of `make ship-{is|sc}`, these are zipped production ready packages.
 - `src` - The actual source code of the extension. See sub-directory `README.md`-s for more details.
-- `webpack` - The build configuration and custom HMR plugin.
+- `tasks` - The build configuration, scripts and custom HMR plugin.
 
 ## Development
 
 *Note: The application is using a custom fork of [webpack-chrome-extension-reloader](https://www.npmjs.com/package/webpack-chrome-extension-reloader)
 to make it compatible with [Webpack 5](https://webpack.js.org/concepts/). This module provides HMR functionality for rapid development.*
 
-- `make dev` - Initially this will build the source code and run the HMR server. Once, it's loaded, the `dist` folder can be loaded into the browser and
-the extension will auto-reload on every code change.
+- `make dev`  - Prompts for which project to build.
+
+Initially this will build the source code for the selected project and run the HMR server. Once, it's loaded, the related build folder can be loaded into the browser and the extension will auto-reload on every code change.
+
+See [Tasks Readme](https://github.com/lumosbrowser/lumos-extension/blob/master/tasks/README.md) for more details on the build process.
 
 ### Integration
 
@@ -65,5 +69,5 @@ See: [ARCHITECTURE.md](https://github.com/lumosbrowser/lumos-extension/blob/mast
 
 ## Deployment
 
-- `make ship` - This command will create a new production build and a **release package** in the `releases` folder. After the process,
+- `make ship-{is|sc}` - This command will create a new production build and a **release package** in the `releases` folder. After the process,
 the new package can be distibuted among extension stores.
