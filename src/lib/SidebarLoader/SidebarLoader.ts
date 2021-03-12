@@ -417,7 +417,7 @@ class SidebarLoader {
       iframe.src = chrome.runtime.getURL('index.html');
       iframe.onload = () => injector();
     } else {
-      iframe.onload = () => injector();
+      injector();
     }
   }
 
