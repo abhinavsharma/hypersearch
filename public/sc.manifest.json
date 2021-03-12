@@ -9,24 +9,52 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://duckduckgo.com/*",
+        "https://www.duckduckgo.com/*",
+        "https://bing.com/*",
+        "https://www.bing.com/*"
+      ],
       "js": ["js/content_script.js"],
       "run_at": "document_start"
     },
     {
-      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://duckduckgo.com/*",
+        "https://www.duckduckgo.com/*",
+        "https://bing.com/*",
+        "https://www.bing.com/*"
+      ],
       "all_frames": true,
       "js": ["js/content_frames.js"],
       "run_at": "document_start"
     },
     {
-      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://duckduckgo.com/*",
+        "https://www.duckduckgo.com/*",
+        "https://bing.com/*",
+        "https://www.bing.com/*"
+      ],
       "all_frames": true,
       "js": ["js/content_blocker.js"],
       "run_at": "document_end"
     },
     {
-      "matches": ["https://google.com/*", "https://duckduckgo.com/*", "https://bing.com/*"],
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://duckduckgo.com/*",
+        "https://www.duckduckgo.com/*",
+        "https://bing.com/*",
+        "https://www.bing.com/*"
+      ],
       "all_frames": true,
       "css": ["overwrite.css"]
     },
@@ -46,8 +74,11 @@
     "tabs",
     "storage",
     "https://google.com/*",
+    "https://www.google.com/*",
     "https://duckduckgo.com/*",
+    "https://www.duckduckgo.com/*",
     "https://bing.com/*",
+    "https://www.bing.com/*",
     "webRequest",
     "webRequestBlocking",
     "webNavigation"
