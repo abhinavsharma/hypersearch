@@ -7,13 +7,18 @@ module.exports = (env) =>
   merge(common(env), {
     mode: 'development',
     watch: true,
+    watchOptions: {
+      poll: 1000,
+      followSymlinks: true,
+      aggregateTimeout: 500,
+    },
     devtool: 'cheap-module-source-map',
     plugins: [
       new ChromeExtensionReloader({
         port: 9090,
         reloadPage: true,
         entries: {
-          contentScript: ['content_script', 'content_frames', 'content_blocker'],
+          contentScript: ['content_script'],
           background: 'background',
         },
       }),

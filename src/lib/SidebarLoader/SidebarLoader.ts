@@ -8,12 +8,7 @@ import React, { ReactElement } from 'react';
 import { render } from 'react-dom';
 import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { Sidebar } from 'modules/sidebar';
-import {
-  extractHostnameFromUrl,
-  postAPI,
-  removeWww,
-  runFunctionWhenDocumentReady,
-} from 'utils/helpers';
+import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
 import {
   CUSTOM_SEARCH_ENGINES,
   EXTENSION_SERP_LOADED,
@@ -154,7 +149,7 @@ class SidebarLoader {
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
-    this.styleEl = document.getElementsByTagName('style')[0];
+    this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
     this.tabDomains = Object.create(null);
     this.sidebarTabs = [];
     this.domainsToSearch = Object.create(null);
@@ -358,7 +353,7 @@ class SidebarLoader {
     this.document = document;
     this.url = url;
     const firstChild = this.document.documentElement.firstChild;
-    if (this.styleEl === firstChild) this.document.documentElement.removeChild(this.styleEl);
+    if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
     this.fetchSubtabs().then((response) => {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
@@ -377,7 +372,7 @@ class SidebarLoader {
           this.sidebarTabs.length ||
           this.matchingDisabledInstalledAugmentations.length
         ) {
-          await this.createSidebar();
+          this.createSidebar();
         }
       });
     });
@@ -394,19 +389,25 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  private reactInjector(el: HTMLElement, reactEl: ReactElement, frameId: string) {
+  private reactInjector(
+    el: HTMLElement,
+    reactEl: ReactElement,
+    frameId: string,
+    link: HTMLLinkElement,
+  ) {
     debug('reactInjector - call');
     const iframe = document.createElement('iframe');
     iframe.id = frameId;
     el.appendChild(iframe);
     const injector = () => {
-      const doc = iframe.contentWindow.document;
+      const doc = iframe.contentWindow.document.documentElement;
       // Webpack merges all SCSS files into a single <style> element. We initialize
       // the IFrame document object with this merged stylesheet.
+      doc.getElementsByTagName('head')[0].appendChild(link);
       doc.getElementsByTagName('head')[0].appendChild(this.styleEl);
-      doc.getElementsByTagName('html')[0].setAttribute('style', 'overflow: hidden;');
+      doc.setAttribute('style', 'overflow: hidden;');
       const div = document.createElement('div');
-      const root = doc.body.appendChild(div);
+      const root = doc.getElementsByTagName('body')[0].appendChild(div);
       render(reactEl, root);
       debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');
     };
@@ -416,7 +417,7 @@ class SidebarLoader {
       iframe.src = chrome.runtime.getURL('index.html');
       iframe.onload = () => injector();
     } else {
-      injector();
+      iframe.onload = () => injector();
     }
   }
 
@@ -546,8 +547,9 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  private async createSidebar() {
+  private createSidebar() {
     debug('createSidebar - call\n');
+    const existing = this.document.getElementById('sidebar-root');
     const link = this.document.createElement('link');
     link.rel = 'stylesheet';
     link.href = chrome.extension.getURL('./index.css');
@@ -556,12 +558,16 @@ class SidebarLoader {
     const wrapper = this.document.createElement('div');
     wrapper.id = 'sidebar-root';
     wrapper.style.display = 'none';
-    this.document.body.appendChild(wrapper);
+    if (existing) {
+      this.document.body.replaceChild(wrapper, existing);
+    } else {
+      this.document.body.appendChild(wrapper);
+    }
     const nonCseTabs = this.sidebarTabs.filter((tab) => !tab.isCse);
     this.sidebarTabs.concat(nonCseTabs);
     debug('createSidebar - processed\n---\n\tNon CSE Tabs', nonCseTabs, '\n---');
     const sidebarInit = React.createElement(Sidebar);
-    this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe');
+    this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', link);
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.type === URL_UPDATED_MESSAGE) {
         this.loadOrUpdateSidebar(document, new URL(msg.url));
