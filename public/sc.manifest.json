@@ -17,7 +17,7 @@
         "https://bing.com/*",
         "https://www.bing.com/*",
         "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*",
-        "https://raw.githubusercontent.com/insightbrowser/*"
+        "https://raw.githubusercontent.com/insightbrowser/*",
         "https://api.perfalytics.com/track"
       ],
       "js": ["js/content_script.js"],
