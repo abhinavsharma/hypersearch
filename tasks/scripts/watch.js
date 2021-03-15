@@ -35,8 +35,10 @@ const PATHS = require('../lib/path').default;
       fs.rename(`${root}/${project}.logo128-active.png`, `${root}/logo128-active.png`, handleError);
       fs.rename(`${root}/${project}.logo128.png`, `${root}/logo128.png`, handleError);
       fs.rename(`${root}/${project}.manifest.json`, `${root}/manifest.json`, handleError);
-      console.log(chalk.greenBright('Compiled successfully!\n'));
     }
+    console.log(
+      chalk.greenBright(`Compiled successfully at ${new Date(Date.now()).toISOString()}`),
+    );
     built = true;
   });
 })();
