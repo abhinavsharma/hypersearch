@@ -352,7 +352,7 @@ class SidebarLoader {
     await this.getLocalAugmentations();
     this.document = document;
     this.url = url;
-    const firstChild = this.document.documentElement.firstChild;
+    const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
     this.fetchSubtabs().then((response) => {
       if (!response) return;
