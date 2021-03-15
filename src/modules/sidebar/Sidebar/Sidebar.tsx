@@ -8,12 +8,8 @@ import React, { useEffect, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
-import {
-  BING_KP_SELECTOR,
-  GOOGLE_KP_SELECTOR,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-  WINDOW_REQUIRED_MIN_WIDTH,
-} from 'utils/constants';
+import { UPDATE_SIDEBAR_TABS_MESSAGE, WINDOW_REQUIRED_MIN_WIDTH } from 'utils/constants';
+import { isKnowledgePage } from 'utils/helpers';
 import './Sidebar.scss';
 
 const Sidebar: Sidebar = () => {
@@ -42,11 +38,7 @@ const Sidebar: Sidebar = () => {
     const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
     const isTabsLength = sidebarTabs?.length !== 0;
     const isSearchTabs = sidebarTabs?.find((tab) => tab.isCse);
-    const isKnowledgePage =
-      !!document.querySelectorAll(GOOGLE_KP_SELECTOR).length ||
-      !!document.querySelectorAll(BING_KP_SELECTOR).length ||
-      !!document.querySelectorAll(BING_KP_SELECTOR).length;
-    if (isSmallWidth || !isTabsLength || !isSearchTabs || isKnowledgePage) {
+    if (isSmallWidth || !isTabsLength || !isSearchTabs || isKnowledgePage(document)) {
       flipSidebar(document, 'hide', sidebarTabs?.length);
     } else {
       flipSidebar(document, 'show', sidebarTabs?.length);
