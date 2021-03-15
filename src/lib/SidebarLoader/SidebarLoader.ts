@@ -6,7 +6,7 @@
  */
 import React, { ReactElement } from 'react';
 import { render } from 'react-dom';
-import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+import { debug, IN_DEBUG_MODE, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { Sidebar } from 'modules/sidebar';
 import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
 import {
@@ -202,9 +202,17 @@ class SidebarLoader {
       this.installedAugmentations,
     ),
   ) {
-    debug('getTabsAndAugmentations - call\n---\n\tDomains', this.domains, '\n---');
+    debug(
+      'getTabsAndAugmentations - call\n---\n\tDomains on the current page (in preserved order)\n',
+      ...this.domains.map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),
+      '\n---',
+    );
     this.sidebarTabs = [];
     const newTabs: SidebarTab[] = [];
+    const logirrelevant: any[] = [];
+    const logProcessed: any[] = [];
+    const logSuggested: any[] = [];
+    const logTabs: any[] = [];
     augmentations.forEach((augmentation: AugmentationObject) => {
       if (
         this.customSearchEngine &&
@@ -215,14 +223,17 @@ class SidebarLoader {
         const matchingDomains = this.domains.filter((value) =>
           domainsToLookFor?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
-        debug(
-          `getTabsAndAugmentations - processing "${augmentation.id}"\n---`,
-          '\n\tDomains to look for',
-          domainsToLookFor,
-          '\n\tMatching domains',
-          matchingDomains,
-          '\n---',
-        );
+        IN_DEBUG_MODE &&
+          logProcessed.push(
+            '\n\t',
+            {
+              [augmentation.id]: {
+                'Domains to look for': domainsToLookFor,
+                'Matching domains': matchingDomains,
+              },
+            },
+            '\n',
+          );
         if (matchingDomains.length > 0) {
           if (augmentation.actions.action_list?.[0].key == 'search_domains') {
             const isSafari = () => {
@@ -258,16 +269,31 @@ class SidebarLoader {
                 )
                 .filter((i) => !!i).length < 2;
 
+            IN_DEBUG_MODE &&
+              !isRelevant &&
+              logirrelevant.push(
+                '\n\t',
+                {
+                  [augmentation.id]: {
+                    'Domains to look for': domainsToLookFor,
+                    'Matching domains': matchingDomains,
+                    ...augmentation,
+                  },
+                },
+                '\n',
+              );
+
             if (
               !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
               !augmentation.id.startsWith('cse-custom') &&
               isRelevant
             ) {
               this.suggestedAugmentations.push(augmentation);
+              IN_DEBUG_MODE && logSuggested.push('\n\t', augmentation, '\n');
             }
             if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
               this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
-              newTabs.unshift({
+              const tab = {
                 matchingDomains,
                 id: augmentation.id,
                 title: augmentation.name,
@@ -275,7 +301,9 @@ class SidebarLoader {
                 default: !newTabs.length,
                 isSuggested: !augmentation.hasOwnProperty('enabled'),
                 isCse: true,
-              });
+              };
+              newTabs.unshift(tab);
+              IN_DEBUG_MODE && logTabs.unshift('\n\t', tab, '\n');
             }
             augmentation.hasOwnProperty('enabled') &&
               !augmentation.enabled &&
@@ -325,16 +353,21 @@ class SidebarLoader {
       this.customSearchEngine?.search_engine_json?.required_params
     );
 
-    debug(
-      'getTabsAndAugmentations - processed',
-      '\n---\n\tSidebar Tabs ',
-      this.sidebarTabs,
-      '\n\tSuggested Augmentations',
-      this.suggestedAugmentations,
-      '\n\tIs SERP',
-      this.isSerp,
-      '\n---',
-    );
+    IN_DEBUG_MODE &&
+      debug(
+        'getTabsAndAugmentations - processed',
+        '\n---\n\tSidebar Tabs (installed + suggested)\n---',
+        ...logTabs,
+        '\n---\n\tSuggested Augmentations (at least one matching domain)\n---',
+        ...logSuggested,
+        '\n---\n\tExcluded Augmentations (at least two matching domains at top three SERP position)\n---',
+        ...logirrelevant,
+        '\n---\n\tIs this page a search engine? --- ',
+        this.isSerp ? 'Yes' : 'No',
+        '\n---\n\tProcessed Augmentations (response from subtabs API)\n---',
+        ...logProcessed,
+        '\n---',
+      );
   }
 
   /**
