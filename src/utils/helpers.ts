@@ -5,6 +5,7 @@ import {
   LUMOS_APP_BASE_URL_PROD,
   LUMOS_APP_BASE_URL_DEBUG,
 } from 'lumos-shared-js';
+import { KP_SELECTORS } from './constants';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
 
@@ -128,3 +129,6 @@ export const extractHostnameFromUrl = (s: string) => {
     debug('extractHostnameFromUrl - error', e);
   }
 };
+
+export const isKnowledgePage = (document: Document) =>
+  KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
