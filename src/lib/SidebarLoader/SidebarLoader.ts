@@ -11,10 +11,18 @@ import { Sidebar } from 'modules/sidebar';
 import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
 import {
   CUSTOM_SEARCH_ENGINES,
+  ENABLED_AUGMENTATION_TYPES,
   EXTENSION_SERP_LOADED,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
+
+/**
+ * ! In order of priority
+ * TODO: Lower complexity of getTabsAndAugmentations method
+ * TODO: Decouple custom search engine handler
+ * TODO: Decouple Subtabs functionality
+ */
 
 class SidebarLoader {
   /**
@@ -173,13 +181,11 @@ class SidebarLoader {
    */
   public getDomains(document: Document) {
     const isGoogle = location.href.search(/google\.com/gi) > -1;
-    const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
+    //!dev const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
     const isBing = location.href.search(/bing\.com/gi) > -1;
     const els = Array.from(
       document.querySelectorAll(
-        isDdg
-          ? 'a.result__url.js-result-extras-url' // TODO: update this in `insightbrowser/augmentations`
-          : this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
+        this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
       ),
     );
     return els.map(
@@ -234,66 +240,102 @@ class SidebarLoader {
             },
             '\n',
           );
-        if (matchingDomains.length > 0) {
-          if (augmentation.actions.action_list?.[0].key == 'search_domains') {
-            const isSafari = () => {
-              const hasVersion = /Version\/(\d{2})/;
-              const hasSafari = /Safari\/(\d{3})/;
-              const hasChrome = /Chrome\/(\d{3})/;
-              const ua = window.navigator.userAgent;
-              return (
-                ua.match(hasVersion) !== null &&
-                ua.match(hasSafari) !== null &&
-                ua.match(hasChrome) === null
-              );
-            };
-            this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
-            const customSearchUrl = new URL(
-              isSafari()
-                ? 'https://www.ecosia.org/search'
-                : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
+        if (
+          matchingDomains.length > 0 &&
+          augmentation.conditions.condition_list
+            .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
+            .indexOf(false) === -1
+        ) {
+          const isSafari = () => {
+            const hasVersion = /Version\/(\d{2})/;
+            const hasSafari = /Safari\/(\d{3})/;
+            const hasChrome = /Chrome\/(\d{3})/;
+            const ua = window.navigator.userAgent;
+            return (
+              ua.match(hasVersion) !== null &&
+              ua.match(hasSafari) !== null &&
+              ua.match(hasChrome) === null
             );
-            this.query = new URLSearchParams(this.document.location.search).get('q');
+          };
+          this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
+          const isAnyUrl = !!augmentation.conditions.condition_list.find(
+            (i) => i.key === 'any_url',
+          );
+
+          const customSearchUrl = new URL(
+            isSafari()
+              ? 'https://www.ecosia.org/search'
+              : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
+          );
+
+          this.query = new URLSearchParams(this.document.location.search).get('q');
+
+          const multipleUrls: { title: string; url: URL }[] = [];
+
+          if (isAnyUrl) {
+            augmentation.actions.action_list[0].value.forEach((i) => {
+              const url = new URL(`https://${i.replace('%s', this.query)}`);
+              url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+              multipleUrls.push({ title: extractHostnameFromUrl(url.href).hostname, url });
+            });
+          } else {
             const append = `(${this.domainsToSearch[augmentation.id]
               .map((x) => `site:${x}`)
               .join(' OR ')})`;
             customSearchUrl.searchParams.append('q', this.query + ' ' + append);
             customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          }
+          const isRelevant =
+            matchingDomains
+              .map((i) =>
+                this.domains.slice(0, 3).find((e) => e.search(new RegExp(`^${i}`, 'gi')) > -1)
+                  ? true
+                  : false,
+              )
+              .filter((i) => !!i).length < 2;
 
-            const isRelevant =
-              matchingDomains
-                .map((i) =>
-                  this.domains.slice(0, 3).find((e) => e.search(new RegExp(`^${i}`, 'gi')) > -1)
-                    ? true
-                    : false,
-                )
-                .filter((i) => !!i).length < 2;
-
-            IN_DEBUG_MODE &&
-              !isRelevant &&
-              logirrelevant.push(
-                '\n\t',
-                {
-                  [augmentation.id]: {
-                    'Domains to look for': domainsToLookFor,
-                    'Matching domains': matchingDomains,
-                    ...augmentation,
-                  },
+          IN_DEBUG_MODE &&
+            !isRelevant &&
+            !isAnyUrl &&
+            logirrelevant.push(
+              '\n\t',
+              {
+                [augmentation.id]: {
+                  'Domains to look for': domainsToLookFor,
+                  'Matching domains': matchingDomains,
+                  ...augmentation,
                 },
-                '\n',
-              );
+              },
+              '\n',
+            );
 
-            if (
-              !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-              !augmentation.id.startsWith('cse-custom') &&
-              isRelevant
-            ) {
-              this.suggestedAugmentations.push(augmentation);
-              IN_DEBUG_MODE && logSuggested.push('\n\t', augmentation, '\n');
-            }
-            if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
-              this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
+          if (
+            !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
+            !augmentation.id.startsWith('cse-custom') &&
+            isRelevant
+          ) {
+            this.suggestedAugmentations.push(augmentation);
+          }
+          if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
+            this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
+            if (!!multipleUrls.length) {
+              multipleUrls.forEach((url) => {
+                const tab = {
+                  url: url.url,
+                  isAnyUrl,
+                  matchingDomains,
+                  id: augmentation.id,
+                  title: url.title,
+                  default: !newTabs.length,
+                  isSuggested: !augmentation.hasOwnProperty('enabled'),
+                  isCse: true,
+                };
+                newTabs.unshift(tab);
+                IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
+              });
+            } else {
               const tab = {
+                isAnyUrl,
                 matchingDomains,
                 id: augmentation.id,
                 title: augmentation.name,
@@ -303,12 +345,12 @@ class SidebarLoader {
                 isCse: true,
               };
               newTabs.unshift(tab);
-              IN_DEBUG_MODE && logTabs.unshift('\n\t', tab, '\n');
+              IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
             }
-            augmentation.hasOwnProperty('enabled') &&
-              !augmentation.enabled &&
-              this.matchingDisabledInstalledAugmentations.push(augmentation);
           }
+          augmentation.hasOwnProperty('enabled') &&
+            !augmentation.enabled &&
+            this.matchingDisabledInstalledAugmentations.push(augmentation);
         }
       }
     });

@@ -44,8 +44,17 @@ export const EditConditionInput: EditConditionInput = ({
   return (
     <Row className="edit-input-row">
       <Col xs={12}>{label}</Col>
-      <Col xs={12}>
-        <Input onChange={handleChange} value={updated} />
+      <Col xs={12} className="value-col">
+        {(() => {
+          switch (condition.key) {
+            case 'search_contains':
+              return <Input onChange={handleChange} value={updated} />;
+            case 'any_url':
+              return <Input value={'Any URL'} disabled />;
+            default:
+              return null;
+          }
+        })()}
         <Button
           onClick={handleDelete}
           className="edit-input-delete-button"

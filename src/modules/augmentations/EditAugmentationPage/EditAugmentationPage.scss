@@ -164,6 +164,11 @@
           border-bottom: none !important;
         }
 
+        &.condition-footer {
+          display: flex;
+          justify-content: space-between;
+        }
+
         button.add-operation-button {
           text-align: left;
         }
@@ -213,7 +218,7 @@
               font-weight: bold !important;
             }
 
-            &:last-child {
+            &.value-col {
               padding-left: 10px;
               margin-right: -10px;
 

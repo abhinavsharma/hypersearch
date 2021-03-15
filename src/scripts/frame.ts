@@ -2,6 +2,19 @@
   document.addEventListener('DOMContentLoaded', () => {
     const domainsContainer = document.querySelector('#message.results--message');
     domainsContainer?.setAttribute('style', 'display: none;');
+    const viewportMeta = document.createElement('meta');
+    viewportMeta.name = 'viewport';
+    viewportMeta.content =
+      'width=device-width, minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+    const mobileMeta = document.createElement('meta');
+    mobileMeta.name = 'format-detection';
+    mobileMeta.content = 'telephone=yes';
+    const optimizedMeta = document.createElement('meta');
+    optimizedMeta.name = 'mobileoptimized';
+    optimizedMeta.content = '1';
+    document.getElementsByTagName('head')[0].appendChild(viewportMeta);
+    document.getElementsByTagName('head')[0].appendChild(mobileMeta);
+    document.getElementsByTagName('head')[0].appendChild(optimizedMeta);
   });
 
   // not exactly ad blocking but removing known bad components
