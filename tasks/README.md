@@ -19,6 +19,6 @@ To support both with the same workflow, we provide custom build tasks.
 
 - `ship-sc` - Same as for **Insight**, but this creates a **SearchClub** release
 
-Development configuration creates source-maps and loads the extension with a pre-built custom fork of [webpack-chrome-extension-reloader](https://www.npmjs.com/package/webpack-chrome-extension-reloader). This is avalable from the `lib/extensionReloader.js`, which is a compiled distibution code of the fork.
+Development configuration creates source-maps and loads the extension. Hot Module Replacement done by a custom background script which is only run when extension is installed via development mode. In production, we omit this functionality.
 
 Production configuration omits source-maps and HMR server from the build. Also, this will run with `production` flag to minify and optimize the source code.
