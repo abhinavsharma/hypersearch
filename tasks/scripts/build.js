@@ -5,7 +5,6 @@ const webpack = require('webpack');
 const chalk = require('chalk');
 const prompts = require('prompts');
 const config = require('../config/webpack.prod');
-const { getSummary } = require('webpack-stats-summary');
 const PATHS = require('../lib/path').default;
 
 (async () => {
@@ -35,6 +34,5 @@ const PATHS = require('../lib/path').default;
     fs.rename(`${root}/${project}.logo128.png`, `${root}/logo128.png`, handleError);
     fs.rename(`${root}/${project}.manifest.json`, `${root}/manifest.json`, handleError);
     console.log(chalk.greenBright('Compiled successfully!\n'));
-    getSummary();
   });
 })();
