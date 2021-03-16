@@ -11,8 +11,8 @@ export const AddAugmentationTab: AddAugmentationTab = ({
   numInstalledAugmentations,
 }) => {
   const handleClose = () => {
+    setActiveKey('1');
     goBack();
-    setActiveKey(numInstalledAugmentations ? '1' : '0');
   };
 
   return !active ? (

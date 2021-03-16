@@ -24,7 +24,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
     ).length;
     const numSuggestedAugmentations = SidebarLoader.suggestedAugmentations.length;
     !numSuggestedAugmentations && !numInstalledAugmentations
-      ? setActiveKey('100')
+      ? setActiveKey('0')
       : setActiveKey('1');
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };

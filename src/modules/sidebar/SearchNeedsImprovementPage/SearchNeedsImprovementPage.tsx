@@ -15,7 +15,6 @@ export const SearchNeedsImprovementPage: SearchNeedsImprovementPage = ({ setActi
   return (
     <div className="insight-search-needs-improvement-page">
       <div className="external-link">
-        
         <Button
           type="primary"
           size="large"

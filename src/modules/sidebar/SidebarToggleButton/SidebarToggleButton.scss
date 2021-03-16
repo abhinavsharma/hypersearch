@@ -22,6 +22,27 @@
     padding: 0;
   }
 
+  &.empty {
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+
+    .ant-btn {
+      font-weight: bold;
+      font-size: 16px;
+      color: #ffffff;
+
+      span {
+        padding-top: 2px;
+      }
+    }
+
+    .ant-divider {
+      margin: 5px 0;
+      background-color: white;
+    }
+  }
+
   &.add-augmentation-button {
     font-size: 36px !important;
     font-weight: 900;

@@ -7,11 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import Tabs from 'antd/lib/tabs';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import {
-  AddAugmentationTab,
-  ActiveAugmentationsPage,
-  ExternalAddAugmentationButton,
-} from 'modules/augmentations/';
+import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
 import {
   SearchNeedsImprovementPage,
   SuggestedTabPopup,
@@ -23,7 +19,6 @@ import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  ENABLE_AUGMENTATION_BUILDER,
   SEND_LOG_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
@@ -35,10 +30,8 @@ import './SidebarTabs.scss';
 
 const { TabPane } = Tabs;
 
-export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
-  const [activeKey, setActiveKey] = useState<string>(
-    !!SidebarLoader.sidebarTabs.length ? '1' : '0',
-  );
+export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
+  const [activeKey, setActiveKey] = useState<string>(!!tabs.length ? '1' : '0');
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -46,8 +39,8 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
         // Set up listener for expanding sidebar with the augmentation builder page,
         // when the extension toolbar icon is clicked by the user.
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
-          flipSidebar(document, 'show', SidebarLoader.sidebarTabs?.length);
-          setActiveKey(!SidebarLoader.sidebarTabs?.length ? '100' : '0');
+          flipSidebar(document, 'show', tabs?.length);
+          setActiveKey('0');
           break;
         // LOGGING
         case SEND_FRAME_INFO_MESSAGE:
@@ -63,9 +56,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
               },
             });
           } else {
-            const sourceTab = SidebarLoader.sidebarTabs.find(
-              (i) => i.url.href === msg.frame.url.replace('www.', ''),
-            );
+            const sourceTab = tabs.find((i) => i.url.href === msg.frame.url.replace('www.', ''));
             setTimeout(
               () =>
                 chrome.runtime.sendMessage({
@@ -86,7 +77,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
           break;
       }
     });
-  }, [SidebarLoader.sidebarTabs]);
+  }, [tabs]);
 
   const TabBar: TabBar = (props, DefaultTabBar) => (
     <DefaultTabBar {...props} className="insight-tab-bar" />
@@ -108,15 +99,13 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
   };
 
   const extraContent = {
-    left: ENABLE_AUGMENTATION_BUILDER ? (
+    left: (
       <AddAugmentationTab
-        numInstalledAugmentations={SidebarLoader.sidebarTabs.length}
+        numInstalledAugmentations={tabs.length}
         active={(forceTab ?? activeKey) === '0'}
         setActiveKey={setActiveKey}
         onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
       />
-    ) : (
-      <ExternalAddAugmentationButton>➕</ExternalAddAugmentationButton>
     ),
   };
 
@@ -130,7 +119,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
       <TabPane key="0" tab={null} forceRender>
         <ActiveAugmentationsPage />
       </TabPane>
-      {SidebarLoader.sidebarTabs?.map((tab, i) => {
+      {tabs?.map((tab, i) => {
         const showPopup = tab.isSuggested && activeKey === (i + 1).toString();
         return (
           <TabPane
@@ -139,7 +128,9 @@ export const SidebarTabs: SidebarTabs = ({ forceTab }) => {
             forceRender
             className={`insight-full-tab`}
           >
-            {tab.url && <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />}
+            {tab.url && tab.isCse && (
+              <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
+            )}
             {showPopup && <SuggestedTabPopup tab={tab} setActiveKey={setActiveKey} />}
             {tab.readable && <SidebarTabReadable readable={tab.readable} />}
             {tab.url && <SidebarTabContainer tab={tab} />}
