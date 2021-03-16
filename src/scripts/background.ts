@@ -1,39 +1,37 @@
-import { debug, CLIENT_MESSAGES, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+/**
+ * @module BackgroundService
+ * @author Abhinav Sharma<abhinav@laso.ai>
+ * @author Matyas Angyal<matyas@laso.ai>
+ * @license (C) Insight
+ * @version 1.0.0
+ */
+import axios from 'axios';
+import { v4 as uuid } from 'uuid';
+import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
-import { BackgroundMessenger } from 'lib/BackgroundMessenger/BackgroundMessenger';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import {
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
-} from 'utils/constants';
-import {
-  REMOVE_AUGMENTATION_SUCCESS_MESSAGE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-  ADD_LOCAL_AUGMENTATION_MESSAGE,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
-import axios from 'axios';
-import { v4 as uuid } from 'uuid';
-
-const USER_AGENT_REWRITE_URL_SUBSTRINGS = Object.values(HOSTNAME_TO_PATTERN).map((s) =>
-  s.replace('{searchTerms}', ''),
-);
-
-export const URL_TO_TAB = {};
-
+// ! INITIALIZATION
+// We use this for the logging. This ID will be assigned to the instance, throughout the application
+// lifetime. This way we can follow the exact user actions indentifying them by their ID. Also, we can
+// keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
 const SESSION_ID = uuid();
-
-// eslint-disable-next-line
-// @ts-ignore
+// See: https://stackoverflow.com/a/9851769/2826713
 const isFirefox = typeof InstallTrigger !== 'undefined';
+// ! HEADER MODIFICATIONS
+// Firefox does not allow the `extraHeaders` property on the `webRequest` object.
 const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeaders'].filter(
   (i) => i,
 );
-
-// Allow external pages blocked by CORS to load into iframes.
+// Rewrite all request headers to remove CORS related content and allow remote sites to be loaded into
+// IFrames for example. This is a NOT SAFE solution and ignores any external security concern provided.
 chrome.webRequest.onHeadersReceived.addListener(
   function (details) {
     const strippedHeaders = [
@@ -69,17 +67,18 @@ chrome.webRequest.onHeadersReceived.addListener(
   },
   extraSpec,
 );
-
-// Mimick mobile browser environment.
+// Rewrite outgoing headers to mimick if UA was a mobile device. We are always want to show the mobile page in
+// the sidebar. However, this solution is not covering every case. See: `scripts/frame.ts` for details. The idea
+// here is to append the URL with a junk string on each request we want mobile page back and check for this junk.
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
     const requestHeaders = details.requestHeaders.map((requestHeader) => {
-      // this is for the search result iframes loaded in the sidebar, we pretend the browser is mobile for them
       const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
       const urlMatchesSearchPattern =
         specialUrl ||
-        USER_AGENT_REWRITE_URL_SUBSTRINGS.filter((substring) => details.url.includes(substring))
-          .length > 0;
+        Object.values(HOSTNAME_TO_PATTERN)
+          .map((s) => s.replace('{searchTerms}', ''))
+          .filter((substring) => details.url.includes(substring)).length > 0;
       if (
         urlMatchesSearchPattern &&
         details.frameId > 0 &&
@@ -100,12 +99,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   { urls: ['<all_urls>'] },
   ['blocking', 'requestHeaders'],
 );
-
-window.onload = () => {
-  const messenger = new BackgroundMessenger();
-  messenger.loadHiddenMessenger(document, window);
-};
-
+// ! NAVIGATION LISTENERS
+// Send a message whenever the URL of the current tab is updated, to let the React app know that it should update
+// the contents of the sidebar according to the change that happened.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url) {
     debug(
@@ -118,28 +114,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     );
     chrome.tabs.sendMessage(tabId, { type: URL_UPDATED_MESSAGE, url: changeInfo.url });
   }
-  URL_TO_TAB[tab.url] = tabId;
 });
-
-chrome.browserAction.onClicked.addListener(function (tab) {
-  debug(
-    'browserAction - clicked\n---\n\tMessage',
-    CLIENT_MESSAGES.BROWSER_CONTENT_FLIP_NON_SERP_CONTAINER,
-    '\n---',
-  );
-  chrome.tabs.sendMessage(tab.id, {
-    data: {
-      command: CLIENT_MESSAGES.BROWSER_CONTENT_FLIP_NON_SERP_CONTAINER,
-    },
-  });
-});
-
-chrome.browserAction.setBadgeBackgroundColor({ color: 'black' });
-
+// Fire an event when the user is navigating away from the current site. This will run asynchronously and it's not
+// guaranteed that `SidebarLoader`'s `getCustomSearchEngine` method finds a value in the storage, beacuse of the
+// race conditions. On the other hand, we can safely ignore this behaviour, because in that case, both results will
+// come from the same source, and going to be identical. The only drawback is an extra fetch request from the client.
 chrome.webNavigation.onBeforeNavigate.addListener(async () => {
   SearchEngineManager.sync();
 });
-
+// ! MESSAGING
+// This forwards the information when a URL is opened in an IFrame. Since we're opening tab URLs in a new page, it
+// must listen to the `onCreatedNavigationTarget` event of the browser. See: `modules/sidebar/SidebarTabs.tsx`.
 chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   chrome.webNavigation.getFrame(
     { frameId: details.sourceFrameId, tabId: details.sourceTabId },
@@ -152,55 +137,42 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
     },
   );
 });
-
+// Send a message to open the specified page in the sidebar when the toolbar icon is clicked.
 chrome.browserAction.onClicked.addListener((tab) =>
   chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE }),
 );
-
-const handleLogSend = async (event: string, properties: Record<string, any> = {}) => {
-  debug('handleLogSend - call');
-  try {
-    const data: FreshpaintTrackEvent = {
-      event: event,
-      properties: {
-        distinct_id: SESSION_ID,
-        token: FRESHPAINT_API_TOKEN,
-        time: Date.now() / 1000, // ! Time is epoch seconds
-        ...properties,
-      },
-    };
-    const result = await axios({
-      url: FRESHPAINT_API_ENDPOINT,
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data,
-    });
-    debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
-  } catch (e) {
-    debug('handleLogSend - error\n---\n\tError', e, '\n---');
-  }
-};
-
+// The content script does not support the `tabs` property yet, so we have to pass the messages through the background
+// page. By default it will forward any message as is to the client.
 chrome.runtime.onMessage.addListener((msg, sender) => {
   switch (msg.type) {
-    case ADD_LOCAL_AUGMENTATION_MESSAGE:
-      chrome.tabs.sendMessage(sender.tab.id, { type: ADD_LOCAL_AUGMENTATION_MESSAGE });
-      break;
-    case REMOVE_AUGMENTATION_SUCCESS_MESSAGE:
-      chrome.tabs.sendMessage(sender.tab.id, { type: REMOVE_AUGMENTATION_SUCCESS_MESSAGE });
-      break;
-    case UPDATE_SIDEBAR_TABS_MESSAGE:
-      chrome.tabs.sendMessage(sender.tab.id, { type: UPDATE_SIDEBAR_TABS_MESSAGE });
-      break;
-    case OPEN_AUGMENTATION_BUILDER_MESSAGE:
-      chrome.tabs.sendMessage(sender.tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
-      break;
     case SEND_LOG_MESSAGE:
-      handleLogSend(msg.event, msg.properties);
+      debug('handleLogSend - call');
+      try {
+        const data: FreshpaintTrackEvent = {
+          event: msg.event,
+          properties: {
+            distinct_id: SESSION_ID,
+            token: FRESHPAINT_API_TOKEN,
+            time: Date.now() / 1000, // ! Time is epoch seconds
+            ...msg.properties,
+          },
+        };
+        axios({
+          url: FRESHPAINT_API_ENDPOINT,
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          data,
+        }).then((result) => {
+          debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
+        });
+      } catch (e) {
+        debug('handleLogSend - error\n---\n\tError', e, '\n---');
+      }
       break;
     default:
+      chrome.tabs.sendMessage(sender.tab.id, msg);
       break;
   }
 });
