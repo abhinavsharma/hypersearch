@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 
 declare module './EditConditionInput' {
   type EditConditionInputProps = {
-    condition: ActionObject;
+    condition: ActionObject & { isAdding?: boolean };
     label: string;
     addCondition: (e: ActionObject) => void;
     saveCondition: (e: ActionObject) => void;

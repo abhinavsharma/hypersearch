@@ -214,26 +214,44 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
               disabled={!condition.value}
             />
           ))}
-          <Row className="no-border">
+          <Row className="no-border condition-footer">
             <Button
               className="add-operation-button"
               type="link"
-              block
               onClick={() =>
                 setConditions((prev) => [
-                  ...prev,
+                  ...prev.filter((i) => i.key !== 'any_url'),
                   {
                     id: conditions.length.toString(),
                     key: 'search_contains',
                     type: 'list',
                     label: 'Search results contain domain',
                     value: [''],
+                    isAdding: true,
                   },
                 ])
               }
             >
               ➕ Add condition
             </Button>
+            {conditions[0].key !== 'any_url' && (
+              <Button
+                type="link"
+                onClick={() =>
+                  setConditions([
+                    {
+                      id: '0',
+                      key: 'any_url',
+                      label: 'Any page',
+                      type: 'list',
+                      value: ['.*'],
+                    },
+                  ])
+                }
+              >
+                Match any page
+              </Button>
+            )}
           </Row>
           <Row className="no-border">
             <Col>
