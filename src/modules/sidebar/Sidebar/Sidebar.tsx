@@ -63,7 +63,7 @@ const Sidebar: Sidebar = () => {
         </div>
         <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />
       </div>
-      <SidebarToggleButton tabs={sidebarTabs} />
+      <SidebarToggleButton tabs={sidebarTabs} setTab={setForceTab} />
     </>
   );
 };

@@ -35,7 +35,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         'style',
         `
         position: absolute;
-        width: ${tabsLength === 0 ? '30px' : '150px'} !important;
+        width: ${tabsLength === 0 ? '200px' : '150px'} !important;
       `,
       );
       outerDocument.getElementById('sidebar-root-iframe').setAttribute(
@@ -49,6 +49,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         right: 0;
         bottom: 0;
         background: transparent;
+        z-index: 9999;
     `,
       );
       showButton.style.visibility = 'visible';

@@ -3,7 +3,6 @@ import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altse
 import { BackgroundMessenger } from 'lib/BackgroundMessenger/BackgroundMessenger';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import {
-  ENABLE_AUGMENTATION_BUILDER,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
   SEND_FRAME_INFO_MESSAGE,
@@ -154,11 +153,9 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   );
 });
 
-chrome.browserAction.onClicked.addListener((tab) => {
-  !ENABLE_AUGMENTATION_BUILDER
-    ? chrome.tabs.create({ active: true, url: 'http://share.insightbrowser.com/14' })
-    : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
-});
+chrome.browserAction.onClicked.addListener((tab) =>
+  chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE }),
+);
 
 const handleLogSend = async (event: string, properties: Record<string, any> = {}) => {
   debug('handleLogSend - call');

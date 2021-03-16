@@ -6,16 +6,22 @@
  */
 import React from 'react';
 import List from 'antd/lib/list';
+import Button from 'antd/lib/button';
+import Divider from 'antd/lib/divider';
+import { goTo } from 'route-lite';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
-import { ENABLE_AUGMENTATION_BUILDER, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
-import { ExternalAddAugmentationButton } from 'modules/augmentations';
+import { EditAugmentationPage } from 'modules/augmentations';
+import { EMPTY_AUGMENTATION } from 'utils/constants';
+import 'antd/lib/divider/style/index.css';
+import 'antd/lib/button/style/index.css';
 import './SidebarToggleButton.scss';
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
-    !tabs.length
-      ? chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })
-      : flipSidebar(document, 'show', tabs?.length);
+    if (!tabs.length) {
+      goTo(EditAugmentationPage, { augmentation: EMPTY_AUGMENTATION, isAdding: true });
+    }
+    flipSidebar(document, 'show', tabs?.length);
   };
 
   const ListItem = (item: SidebarTab) => (
@@ -31,19 +37,20 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       <List itemLayout="horizontal" dataSource={tabs} renderItem={ListItem} />
     </div>
   ) : (
-    <>
-      {ENABLE_AUGMENTATION_BUILDER ? (
-        <div
-          className="add-augmentation-button insight-sidebar-toggle-button"
-          onClick={handleClick}
-        >
-          I
-        </div>
-      ) : (
-        <ExternalAddAugmentationButton className="insight-sidebar-toggle-button add-augmentation-button external">
-          🤔
-        </ExternalAddAugmentationButton>
-      )}
-    </>
+    <div className="add-augmentation-button insight-sidebar-toggle-button empty">
+      <Button
+        type="text"
+        target="blank"
+        href={`http://share.insightbrowser.com/13?&prefill_sample_query=${new URLSearchParams(
+          window.location.search,
+        ).get('q')}`}
+      >
+        🤷‍♂️ Get Better Results
+      </Button>
+      <Divider />
+      <Button type="text" onClick={handleClick}>
+        Create a search filter
+      </Button>
+    </div>
   );
 };
