@@ -3,6 +3,7 @@
  * @author Abhinav Sharma<abhinav@laso.ai>
  * @license (C) Insight
  * @version 1.0.0
+ * @deprecated
  */
 import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN,
@@ -11,8 +12,9 @@ import {
   CLIENT_MESSAGES,
   LUMOS_SERP_CONFIG,
 } from 'lumos-shared-js';
-import { URL_TO_TAB } from 'scripts/background';
 import { v1 as uuidv1 } from 'uuid';
+
+// TODO: rewrite this to an interface communicating with `lumos-web`
 
 class BackgroundMessenger {
   isReady: boolean;
@@ -34,7 +36,7 @@ class BackgroundMessenger {
     return this.reactAppLoaded && this.messengerIframe && this.isReady;
   }
 
-  public setupMessagePassthrough(window: Window): void {
+  public setupMessagePassthrough(): void {
     debug('setupMessagePassthrough - call');
     chrome.runtime.onMessage.addListener(({ command, data }, sender) => {
       switch (command) {
@@ -124,25 +126,6 @@ class BackgroundMessenger {
           });
       }
     });
-
-    window.addEventListener(
-      'message',
-      (msg) => {
-        debug('setupMessagePassthrough - message\n---\n\tMessage', msg, '\n---');
-        if (msg.data && msg.data.command) {
-          if (msg.data?.href in URL_TO_TAB) {
-            chrome.tabs.sendMessage(URL_TO_TAB[msg.data.href], {
-              data: msg.data,
-            });
-          } else if (msg.data?.origin in URL_TO_TAB) {
-            chrome.tabs.sendMessage(URL_TO_TAB[msg.data.origin], {
-              data: msg.data,
-            });
-          }
-        }
-      },
-      false,
-    );
   }
 
   public loadHiddenMessenger(document: Document, window: Window): void {
@@ -161,7 +144,7 @@ class BackgroundMessenger {
     document.body.appendChild(iframe);
     this.messengerIframe = iframe;
     this._monitorMessengerState(window);
-    this.setupMessagePassthrough(window);
+    this.setupMessagePassthrough();
   }
 
   private _nativeBrowserPostMessageToReactApp: NativePostMessenger = ({ command, data }) => {
