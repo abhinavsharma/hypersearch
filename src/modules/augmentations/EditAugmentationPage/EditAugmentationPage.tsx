@@ -242,7 +242,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
                     {
                       id: '0',
                       key: 'any_url',
-                      label: 'Search results contain domain',
+                      label: 'Any page',
                       type: 'list',
                       value: ['.*'],
                     },

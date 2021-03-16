@@ -48,24 +48,28 @@ export const EditConditionInput: EditConditionInput = ({
         {(() => {
           switch (condition.key) {
             case 'search_contains':
-              return <Input onChange={handleChange} value={updated} />;
+              return (
+                <>
+                  <Input onChange={handleChange} value={updated} />
+                  <Button
+                    onClick={handleDelete}
+                    className="edit-input-delete-button"
+                    danger
+                    type="link"
+                    disabled={noDelete}
+                  >
+                    <Suspense fallback={null}>
+                      <MinusCircleOutlined />
+                    </Suspense>
+                  </Button>
+                </>
+              );
             case 'any_url':
-              return <Input value={'Any URL'} disabled />;
+              return null;
             default:
               return null;
           }
         })()}
-        <Button
-          onClick={handleDelete}
-          className="edit-input-delete-button"
-          danger
-          type="link"
-          disabled={noDelete}
-        >
-          <Suspense fallback={null}>
-            <MinusCircleOutlined />
-          </Suspense>
-        </Button>
       </Col>
     </Row>
   );

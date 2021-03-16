@@ -214,6 +214,10 @@
             display: flex;
             align-items: center;
 
+            .edit-input-action-button {
+              margin-left: auto;
+            }
+
             &:first-child {
               font-weight: bold !important;
             }

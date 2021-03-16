@@ -8,36 +8,36 @@ import './SidebarTabDomains.scss';
 const { Paragraph } = Typography;
 
 export const SidebarTabDomains: SidebarTabDomains = ({ domains, tab }) => {
-  const [hide, setHide] = useState<boolean>(tab.isAnyUrl);
+  const [hideShowAllButton, setHideShowAllButton] = useState<boolean>(tab.isAnyUrl);
 
   const ellipsis = {
     rows: 1,
   };
 
-  const handleHide = () => setHide((prev) => !prev);
+  const handleHide = () => setHideShowAllButton((prev) => !prev);
 
   return (
     <div className="sidebar-tab-domains">
-      <Paragraph ellipsis={!hide && ellipsis}>
+      <Paragraph ellipsis={!hideShowAllButton && ellipsis}>
         {tab.isAnyUrl ? (
           <span>Searching on: {tab.title}</span>
         ) : (
           <>
             <span className="domain-list-prefix">Filter&nbsp;sources&nbsp;include&nbsp;</span>
-            {domains.map((domain, i, a) => (
+            {domains.map((domain, index, originalDomainsArray) => (
               <a
                 href={`https://${domain}`}
                 className="sidebar-tab-domain-text"
                 key={domain}
                 target="_blank"
               >
-                {`${!a[i + 1] ? domain : domain + ','}`}{' '}
+                {`${!originalDomainsArray[index + 1] ? domain : domain + ','}`}{' '}
               </a>
             ))}
           </>
         )}
       </Paragraph>
-      {!hide && (
+      {!hideShowAllButton && (
         <Button type="link" onClick={handleHide}>
           Show All
         </Button>
