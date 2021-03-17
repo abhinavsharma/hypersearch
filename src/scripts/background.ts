@@ -139,8 +139,8 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   );
 });
 // Send a message to open the specified page in the sidebar when the toolbar icon is clicked.
-chrome.browserAction.onClicked.addListener((tab) =>
-  chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE }),
+chrome.browserAction.onClicked.addListener(() =>
+  chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') }),
 );
 // The content script does not support the `tabs` property yet, so we have to pass the messages through the background
 // page. By default it will forward any message as is to the client.
@@ -176,4 +176,9 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
       chrome.tabs.sendMessage(sender.tab.id, msg);
       break;
   }
+});
+
+chrome.runtime.onInstalled.addListener((details) => {
+  details.reason === 'install' &&
+    chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') });
 });

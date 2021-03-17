@@ -1,0 +1,34 @@
+.intro-panel-header {
+  display: block;
+  width: 100%;
+}
+
+.license-panel {
+  display: flex;
+  align-items: center;
+}
+
+.license-panel .activation-notice {
+  margin-left: 30px;
+}
+
+.license-panel .ant-input {
+  width: 400px;
+}
+
+.privacy-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.privacy-panel .privacy-toggle {
+  width: 20px;
+}
+
+.ant-collapse-header-collapsible-only .ant-collapse-header-text {
+  cursor: default !important;
+}
+
+.ant-collapse-header-collapsible-only .ant-collapse-arrow {
+  display: none !important;
+}
