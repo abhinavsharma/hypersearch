@@ -1,25 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { goBack } from 'route-lite';
 import Button from 'antd/lib/button';
-import Row from 'antd/lib/row';
-import Col from 'antd/lib/col';
-import Input from 'antd/lib/input';
-import Switch from 'antd/lib/switch';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { v4 as uuid } from 'uuid';
 import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
 import { debug } from 'utils/helpers';
-import {
-  ShareAugmentationButton,
-  DeleteAugmentationButton,
-  EditConditionInput,
-  EditActionInput,
-} from 'modules/augmentations';
+import { EditAugmentationMeta, EditAugmentationActions } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
-import 'antd/lib/switch/style/index.css';
-import 'antd/lib/input/style/index.css';
-import 'antd/lib/grid/style/index.css';
 import './EditAugmentationPage.scss';
+import { EditAugmentationConditions } from '../EditAugmentationConditions/EditAugmentationConditions';
 
 export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdding }) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
@@ -109,11 +98,11 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
     });
   };
 
-  const handleDeleteCondition = (e) => {
+  const handleDeleteCondition = (e: CustomCondition) => {
     setConditions((prev) => prev.filter((i) => i.value !== e.value));
   };
 
-  const handleSaveCondition = (e) => {
+  const handleSaveCondition = (e: CustomCondition) => {
     setConditions((prev) =>
       prev.map((i) => {
         if (i.id === e.id) {
@@ -125,7 +114,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
     );
   };
 
-  const handleAddCondition = (e) => {
+  const handleAddCondition = (e: CustomCondition) => {
     setConditions((prev) => [...prev, e]);
   };
 
@@ -156,131 +145,32 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
         </Button>
       </div>
       <div className="edit-augmentation-page-wrapper">
-        <Row>
-          <Col xs={12}>Name</Col>
-          <Col xs={12}>
-            <Input onChange={handleEditName} value={name} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>Description</Col>
-          <Col xs={12}>
-            <Input onChange={handleEditDescription} value={description} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>Enabled</Col>
-          <Col xs={12}>
-            <Switch defaultChecked={isActive} onChange={setIsActive} />
-          </Col>
-        </Row>
-        <Row className="button-row">
-          <Col xs={12}>
-            <ShareAugmentationButton
-              augmentation={augmentation}
-              disabled={!augmentation.installed}
-            />
-          </Col>
-          <Col xs={12}>
-            <DeleteAugmentationButton
-              augmentation={augmentation}
-              disabled={!augmentation.installed}
-            />
-          </Col>
-        </Row>
+        <h2>Edit logic</h2>
         <div className="edit-augmentation-logic-wrapper">
-          <Row className="no-border">
-            <Col>
-              <h2>Edit logic</h2>
-              <span className="operation-description">
-                If{' '}
-                <Button
-                  type="link"
-                  onClick={() => setConditionEvaluation((prev) => (prev == 'AND' ? 'OR' : 'AND'))}
-                  className="insight-augmentation-edit-evaluation"
-                >
-                  <strong>{conditionEvaluation == 'AND' ? 'all' : 'any'}</strong>
-                </Button>
-                of these conditions are true
-              </span>
-            </Col>
-          </Row>
-          {conditions.map((condition, i) => (
-            <EditConditionInput
-              key={condition.value + String(i)}
-              condition={condition}
-              label={condition.label}
-              addCondition={handleAddCondition}
-              saveCondition={handleSaveCondition}
-              deleteCondition={handleDeleteCondition}
-              noDelete={conditions.length === 1}
-              disabled={!condition.value}
-            />
-          ))}
-          <Row className="no-border condition-footer">
-            <Button
-              className="add-operation-button"
-              type="link"
-              onClick={() =>
-                setConditions((prev) => [
-                  ...prev.filter((i) => i.key !== 'any_url'),
-                  {
-                    id: conditions.length.toString(),
-                    key: 'search_contains',
-                    type: 'list',
-                    label: 'Search results contain domain',
-                    value: [''],
-                    isAdding: true,
-                  },
-                ])
-              }
-            >
-              ➕ Add condition
-            </Button>
-            {conditions[0].key !== 'any_url' && (
-              <Button
-                type="link"
-                onClick={() =>
-                  setConditions([
-                    {
-                      id: '0',
-                      key: 'any_url',
-                      label: 'Any page',
-                      type: 'list',
-                      value: ['.*'],
-                    },
-                  ])
-                }
-              >
-                Match any page
-              </Button>
-            )}
-          </Row>
-          <Row className="no-border">
-            <Col>
-              <span className="operation-description">Perform These Actions</span>
-            </Col>
-          </Row>
-          {actions.map(({ value, label }) =>
-            value.map((action, i) => (
-              <EditActionInput
-                key={`${action}-${i}`}
-                label={i === 0 && label}
-                action={action}
-                saveAction={handleSaveAction}
-                deleteAction={handleDeleteAction}
-                noDelete={value.length === 1}
-              />
-            )),
-          )}
-          <EditActionInput
-            label={!actions[0].value.length && 'Search only these domains'}
-            action={''}
-            saveAction={handleSaveAction}
-            deleteAction={handleDeleteAction}
-            noDelete={false}
+          <EditAugmentationActions
+            actions={actions}
+            onSave={handleSaveAction}
+            onDelete={handleDeleteAction}
+          />
+          <EditAugmentationConditions
+            conditions={conditions}
+            setConditions={setConditions}
+            evaluation={conditionEvaluation}
+            setEvaluation={setConditionEvaluation}
+            onAdd={handleAddCondition}
+            onDelete={handleDeleteCondition}
+            onSave={handleSaveCondition}
           />
         </div>
+        <EditAugmentationMeta
+          augmentation={augmentation}
+          name={name}
+          description={description}
+          onNameChange={handleEditName}
+          onDescriptionChange={handleEditDescription}
+          enabled={isActive}
+          setEnabled={setIsActive}
+        />
       </div>
     </div>
   );

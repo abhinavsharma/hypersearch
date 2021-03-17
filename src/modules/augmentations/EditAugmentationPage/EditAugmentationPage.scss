@@ -51,6 +51,11 @@
     background: #efefef;
     overflow-y: auto !important;
 
+    h2 {
+      padding-left: 10px;
+      font-size: 16px;
+    }
+
     .ant-row {
       background: white !important;
       min-height: 30px;
@@ -139,9 +144,7 @@
     }
 
     .edit-augmentation-logic-wrapper {
-      h2 {
-        font-size: 16px;
-      }
+      margin-bottom: 20px;
 
       h3 {
         font-size: 14px;
