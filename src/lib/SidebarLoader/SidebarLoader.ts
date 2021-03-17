@@ -280,9 +280,11 @@ class SidebarLoader {
               multipleUrls.push({ title: extractHostnameFromUrl(url.href).hostname, url });
             });
           } else {
-            const append = `(${this.domainsToSearch[augmentation.id]
-              .map((x) => `site:${x}`)
-              .join(' OR ')})`;
+            const actionDomains = this.domainsToSearch[augmentation.id];
+            const append =
+              actionDomains.length === 1
+                ? `site:${actionDomains}`
+                : `(${actionDomains.map((x) => `site:${x}`).join(' OR ')})`;
             customSearchUrl.searchParams.append('q', this.query + ' ' + append);
             customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           }
