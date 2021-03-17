@@ -23,6 +23,7 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
+  ENABLE_INTRO,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -34,9 +35,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const [activeKey, setActiveKey] = useState<string>(!!tabs.length ? '1' : '0');
 
   const handleLog = useCallback(async (msg) => {
-    const strongPrivacy = await new Promise((resolve) =>
-      chrome.storage.local.get('anonymousQueries', resolve),
-    ).then(({ anonymousQueries }) => !anonymousQueries);
+    const strongPrivacy =
+      ENABLE_INTRO &&
+      (await new Promise((resolve) => chrome.storage.local.get('anonymousQueries', resolve)).then(
+        ({ anonymousQueries }) => !anonymousQueries,
+      ));
     if (strongPrivacy) return null;
     if (msg.frame.parentFrameId === -1) {
       chrome.runtime.sendMessage({

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { EXTENSION_SERP_FILTER_LOADED, SEND_LOG_MESSAGE } from 'utils/constants';
+import { ENABLE_INTRO, EXTENSION_SERP_FILTER_LOADED, SEND_LOG_MESSAGE } from 'utils/constants';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
@@ -7,9 +7,10 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
 
   const getStrongPrivacyPreference = useCallback(
     async () =>
-      await new Promise((resolve) =>
+      ENABLE_INTRO &&
+      (await new Promise((resolve) =>
         chrome.storage.local.get('anonymousQueries', resolve),
-      ).then(({ anonymousQueries }) => setIsStrongPrivacyEnabled(!anonymousQueries)),
+      ).then(({ anonymousQueries }) => setIsStrongPrivacyEnabled(!anonymousQueries))),
     [],
   );
 

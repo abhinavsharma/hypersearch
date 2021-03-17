@@ -24,6 +24,7 @@ import {
   URL_UPDATED_MESSAGE,
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
+  ENABLE_INTRO,
 } from 'utils/constants';
 
 /**
@@ -626,9 +627,11 @@ class SidebarLoader {
       return (await postAPI('subtabs', { url }, { client: 'desktop' })) as SubtabsResponse;
     };
     let response: SubtabsResponse = Object.create(null);
-    const strongPrivacy = await new Promise((resolve) =>
-      chrome.storage.local.get('anonymousQueries', resolve),
-    ).then(({ anonymousQueries }) => !anonymousQueries);
+    const strongPrivacy =
+      ENABLE_INTRO &&
+      (await new Promise((resolve) => chrome.storage.local.get('anonymousQueries', resolve)).then(
+        ({ anonymousQueries }) => !anonymousQueries,
+      ));
     debug('\n---\n\tIs strong privacy enabled --- ', strongPrivacy ? 'Yes' : 'No', '\n---');
     if (strongPrivacy) {
       const cache = await new Promise((resolve) =>
