@@ -13,6 +13,7 @@ import {
   CUSTOM_SEARCH_ENGINES,
   ENABLED_AUGMENTATION_TYPES,
   EXTENSION_SERP_LOADED,
+  NUM_DOMAINS_TO_CONSIDER,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
@@ -188,9 +189,9 @@ class SidebarLoader {
         this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
       ),
     );
-    return els.map(
-      (i) => extractHostnameFromUrl(isBing ? i.textContent : i.getAttribute('href')).full,
-    );
+    return els
+      .map((i) => extractHostnameFromUrl(isBing ? i.textContent : i.getAttribute('href')).full)
+      .slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
 
   /**
