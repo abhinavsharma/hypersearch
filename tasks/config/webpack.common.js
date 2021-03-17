@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { DefinePlugin } = require('webpack');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const PATHS = require('../lib/path').default;
@@ -77,6 +78,9 @@ module.exports = (env) => {
             context: 'public',
           },
         ],
+      }),
+      new DefinePlugin({
+        'process.env.PROJECT': JSON.stringify(env.PROJECT),
       }),
     ],
   };

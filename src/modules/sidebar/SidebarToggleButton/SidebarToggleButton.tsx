@@ -11,7 +11,7 @@ import Divider from 'antd/lib/divider';
 import { goTo } from 'route-lite';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { EditAugmentationPage } from 'modules/augmentations';
-import { EMPTY_AUGMENTATION } from 'utils/constants';
+import { AIRTABLE_IMPROVE_SEARCH_LINK, EMPTY_AUGMENTATION } from 'utils/constants';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarToggleButton.scss';
@@ -38,13 +38,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     </div>
   ) : (
     <div className="add-augmentation-button insight-sidebar-toggle-button empty">
-      <Button
-        type="text"
-        target="blank"
-        href={`http://share.insightbrowser.com/13?&prefill_sample_query=${new URLSearchParams(
-          window.location.search,
-        ).get('q')}`}
-      >
+      <Button type="text" target="blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
         🤷‍♂️ Get Better Results
       </Button>
       <Divider />

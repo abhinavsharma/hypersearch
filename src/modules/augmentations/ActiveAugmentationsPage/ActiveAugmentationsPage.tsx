@@ -5,7 +5,11 @@ import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { EditAugmentationPage } from 'modules/augmentations';
-import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import {
+  EMPTY_AUGMENTATION,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+} from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './ActiveAugmentationsPage.scss';
@@ -27,6 +31,9 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
         setInstalledAugmentations(SidebarLoader.installedAugmentations);
         setSuggestedAugmentations(SidebarLoader.suggestedAugmentations);
         setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
+      }
+      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE && msg.create) {
+        goTo(EditAugmentationPage, { augmentation: EMPTY_AUGMENTATION, isAdding: true });
       }
     });
   }, []);
