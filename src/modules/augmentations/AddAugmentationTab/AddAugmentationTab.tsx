@@ -23,25 +23,25 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       type="link"
       onClick={() => window.open(AIRTABLE_IMPROVE_SEARCH_LINK)}
     >
-      Needs Improvement
+      🤔 Report to Mothership
     </Button>,
     <Button
       className="dropdown-button"
       type="link"
       onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
     >
-      Create your own filter
+      💪 Create a filter
     </Button>,
   ];
 
   return !active ? (
     process.env.PROJECT === 'sc' ? (
       <div className="add-augmentation-tab">
-        <Dropdown icon="🚀" items={items} />
+        <Dropdown icon="…" items={items} />
       </div>
     ) : (
       <div className="add-augmentation-tab" onClick={onClick}>
-        🚀
+        …
       </div>
     )
   ) : (

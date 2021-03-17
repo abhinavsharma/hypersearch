@@ -39,11 +39,11 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   ) : (
     <div className="add-augmentation-button insight-sidebar-toggle-button empty">
       <Button type="text" target="blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
-        🤷‍♂️ Get Better Results
+        🤔 Report to Mothership
       </Button>
       <Divider />
       <Button type="text" onClick={handleClick}>
-        Create a search filter
+        Create a filter
       </Button>
     </div>
   );

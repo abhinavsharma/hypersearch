@@ -258,7 +258,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
           </Row>
           <Row className="no-border">
             <Col>
-              <span className="operation-description">Then</span>
+              <span className="operation-description">Perform These Actions</span>
             </Col>
           </Row>
           {actions.map(({ value, label }) =>

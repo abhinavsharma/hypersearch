@@ -12,7 +12,9 @@ import {
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
+import 'antd/lib/divider/style/index.css';
 import './ActiveAugmentationsPage.scss';
+import Divider from 'antd/lib/divider';
 
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>(
@@ -50,6 +52,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
   return (
     <Router>
       <div className="insight-active-augmentations-page">
+        <Divider />
         <Row>
           <Col>
             <h2>Your custom filters for this page</h2>
@@ -81,6 +84,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
             ➕ Add filter
           </Button>
         </Row>
+        <Divider />
         <Row>
           <Col>
             <h2>Suggested filters for this page</h2>
@@ -102,6 +106,8 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
               ))}
           </Col>
         </Row>
+        <Divider />
+
         <Row>
           <Col>
             <h2>Hidden filters</h2>

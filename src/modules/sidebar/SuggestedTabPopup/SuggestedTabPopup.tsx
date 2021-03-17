@@ -42,7 +42,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
             new URLSearchParams(window.location.search).get('q')
           }
         >
-          💪 Improve
+          🤔 Report Filter
         </Button>
       )}
       <Link
