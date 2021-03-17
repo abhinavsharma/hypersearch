@@ -14,6 +14,7 @@ import {
   ENABLED_AUGMENTATION_TYPES,
   EXTENSION_SERP_LOADED,
   NUM_DOMAINS_TO_CONSIDER,
+  NUM_DOMAINS_TO_EXCLUDE,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
@@ -291,11 +292,9 @@ class SidebarLoader {
           const isRelevant =
             matchingDomains
               .map((i) =>
-                this.domains.slice(0, 3).find((e) => e.search(new RegExp(`^${i}`, 'gi')) > -1)
-                  ? true
-                  : false,
+                this.domains.find((e) => e.search(new RegExp(`^${i}`, 'gi')) > -1) ? true : false,
               )
-              .filter((i) => !!i).length < 2;
+              .filter((i) => !!i).length < NUM_DOMAINS_TO_EXCLUDE;
 
           IN_DEBUG_MODE &&
             !isRelevant &&
