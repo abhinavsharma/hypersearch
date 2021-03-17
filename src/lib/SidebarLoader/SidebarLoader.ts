@@ -561,7 +561,9 @@ class SidebarLoader {
       }, []) ?? [];
     this.installedAugmentations =
       Object.entries(locals).reduce((a, [key, value]) => {
-        !key.startsWith('ignored-') && a.push(value);
+        !key.startsWith('ignored-') &&
+          !key.match(/(cachedSubtabs|anonymousQueries)/gi) &&
+          a.push(value);
         return a;
       }, []) ?? [];
     debug(
@@ -617,9 +619,43 @@ class SidebarLoader {
    */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
-    const response = await postAPI('subtabs', { url: this.url.href }, { client: 'desktop' });
+    const getSubtabs = async () =>
+      (await postAPI('subtabs', { url: this.url.href }, { client: 'desktop' })) as SubtabsResponse;
+    let response: SubtabsResponse = Object.create(null);
+    const isAnonymous = await new Promise((resolve) =>
+      chrome.storage.local.get('anonymousQueries', resolve),
+    ).then(({ anonymousQueries }) => anonymousQueries);
+    debug('\n---\n\tSend anonymous queries --- ', isAnonymous ? 'Yes' : 'No', '\n---');
+    if (isAnonymous) {
+      const cache = await new Promise((resolve) =>
+        chrome.storage.local.get('cachedSubtabs', resolve),
+      ).then(({ cachedSubtabs }) => cachedSubtabs);
+      if (cache && cache.expire > Date.now()) {
+        debug(
+          '\n---\n\tValid cache data found',
+          cache.data,
+          '\n\tExpires',
+          new Date(cache.expire).toLocaleString(),
+          '\n---',
+        );
+        response = cache.data;
+      } else {
+        debug('\n---\n\tCache not found or expired...\n---');
+        response = await getSubtabs();
+        await new Promise((resolve) =>
+          chrome.storage.local.set(
+            {
+              cachedSubtabs: { data: response, expire: Date.now() + 30 * 60 * 1000 },
+            },
+            () => resolve('Stored'),
+          ),
+        );
+      }
+    } else {
+      response = await getSubtabs();
+    }
     debug('fetchSubtabs - success\n---\n\tSubtabs Response', response, '\n---');
-    return response as SubtabsResponse;
+    return response;
   }
 
   /**
