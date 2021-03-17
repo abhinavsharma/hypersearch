@@ -1,3 +1,13 @@
+.insight-intro-title {
+  text-align: center;
+  padding: 50px;
+  font-family: 'DM Serif Display', serif;
+}
+
+.insight-intro-title h1 {
+  font-weight: bold;
+}
+
 .intro-panel-header {
   display: block;
   width: 100%;
@@ -14,6 +24,7 @@
 
 .license-panel .ant-input {
   width: 400px;
+  margin-right: 10px;
 }
 
 .privacy-panel {
@@ -21,8 +32,20 @@
   flex-direction: column;
 }
 
+.privacy-panel-lr {
+  display:flex;
+}
+
+.privacy-explainer {
+  margin-top: 20px;
+  color: #666;
+  font-size: 12px;
+
+}
+
 .privacy-panel .privacy-toggle {
   width: 20px;
+  margin-right: 10px;
 }
 
 .ant-collapse-header-collapsible-only .ant-collapse-header-text {

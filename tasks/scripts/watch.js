@@ -15,7 +15,7 @@ const PATHS = require('../lib/path').default;
     message: 'Select which project you want to build',
     choices: [
       { title: 'Insight', description: 'The Insight Browser Extension', value: 'is' },
-      { title: 'SearchClub', description: 'The SearchClub Browser Extension', value: 'sc' },
+      { title: 'Search Club', description: 'The Search Club Browser Extension', value: 'sc' },
     ],
     initial: 1,
   });

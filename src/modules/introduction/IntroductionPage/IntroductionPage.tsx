@@ -1,8 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Collapse, Input, Button, Switch } from 'antd';
+import { Collapse, Input, Button, Switch, List, Typography } from 'antd';
 import { APP_NAME } from 'utils/constants';
+import Paragraph from 'antd/lib/typography/Paragraph';
 
 const { Panel } = Collapse;
+
+const listData = {
+
+  'Startups': [
+    {'text': 'how to raise a seed round'},
+    {'text': 'how to hire engineers'},
+    {'text': 'how to hire marketers'},
+  ],
+  
+  'Tech': [
+    {'text': 'best js framework'},
+    {'text': 'best machine learning books' }
+  ],
+
+  'Auto': [
+    {'text': 'best car insurance'},
+    {'text': 'best ev to buy 2021'},
+  ],
+
+  'News': [
+    {'text': 'will trump run in 2024'},
+  ],
+};
 
 export const IntroductionPage = () => {
   const [licenseKey, setLicenseKey] = useState<string>('');
@@ -34,8 +58,8 @@ export const IntroductionPage = () => {
         onClick={() => setActiveKeys((prev) => handleToggle(prev, '1'))}
         dangerouslySetInnerHTML={{
           __html: !isLicenseActivated
-            ? `Enter your license to activate ${APP_NAME}`
-            : `You have successfully activated <strong>${licenseKey}</strong> license key!`,
+            ? `Step 1. Enter your license to activate ${APP_NAME}`
+            : `Step 1. You have successfully activated <strong>${licenseKey}</strong> license key!`,
         }}
       />
     );
@@ -47,15 +71,18 @@ export const IntroductionPage = () => {
         className="intro-panel-header"
         onClick={() => setActiveKeys((prev) => handleToggle(prev, '2'))}
       >
-        Choose your privacy setting
+        Step 2. Choose your privacy setting
       </span>
     );
   };
 
   return (
     <>
-      <h1>Welcome to {APP_NAME}</h1>
-      <Collapse activeKey={activeKeys}>
+      <div className="insight-intro-title">
+        <h1>Welcome to {APP_NAME}</h1>
+        <Typography.Text>Let's get you started</Typography.Text>
+      </div>
+      <Collapse accordion activeKey={activeKeys}>
         <Panel header={<LicenseHeader />} key="1">
           <div className="license-panel">
             <Input
@@ -74,25 +101,58 @@ export const IntroductionPage = () => {
               Activate
             </Button>
           </div>
+          <div style={{marginTop: 20}}>
+            <ul>
+              <li>You should have received this in your welcome email</li>
+              <li>Your license is <b>not connected to your identity</b>. You can share it if you wish.</li>
+              <li>Each license is limited to a monthly usage limit</li>
+            </ul>
+          </div>
         </Panel>
         <Panel header={<PrivacyHeader />} key="2">
           <div className="privacy-panel">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat quos tempore hic sequi
-            laudantium omnis perspiciatis sapiente mollitia illum vel praesentium, labore voluptates
-            ullam sit veniam fuga quia! Veniam, error! Lorem ipsum dolor sit amet, consectetur
-            adipisicing elit. Minus explicabo sed vitae, maiores optio velit tempora doloremque!
-            Vero reiciendis officia nam atque quae, dolorum, eos ea, nulla adipisci laudantium
-            libero! Lorem ipsum, dolor sit amet consectetur adipisicing elit. Modi inventore aut
-            laborum labore tempora eveniet laudantium, hic ducimus voluptate quis? Dolorum nemo
-            inventore eligendi non quasi voluptatibus consectetur aut voluptate.Lorem ipsum dolor
-            sit amet consectetur adipisicing elit. Molestias natus excepturi, voluptatem animi
-            officiis quasi facilis doloribus optio recusandae nisi placeat veniam autem ut
-            blanditiis labore iste minus, expedita dolores.
+            <div className="privacy-panel-lr">
             <Switch className="privacy-toggle" />
+            <span>
+              Enable anonymous & obfuscated logging.
+            </span>
+            </div>
+            <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: 'more' }} className="privacy-explainer">
+              Logging some data is critical to improving your user experience.
+              <br />We log
+              <ul>
+                <li>Search queries that contain dictionary words only</li>
+                <li>Position of search results clicked</li>
+              </ul>
+              
+              More context:
+              <ul>
+                <li> We need to know what searches you were not satisifed with</li>
+                <li> We DO NOT SELL this data to anyone.</li>
+                <li> We delete this data every 3 months.</li>
+
+              </ul>
+            </Paragraph>
+            
+            
           </div>
         </Panel>
-        <Panel header="Try some queries" key="3" collapsible="header">
-          list
+        <Panel header="Step 3. Try some queries" key="3">
+          {Object.entries(listData).map(([key, value]) => (
+            <>
+              <List
+                header={<div>{key}</div>}
+                bordered
+                dataSource={value}
+                renderItem={item => (
+                  <List.Item>
+                    <a target="_blank" href={'https://www.google.com/search?q=' + item.text}>{item.text}</a>
+                  </List.Item>
+                )}
+              />
+              <div style={{marginBottom: 20}}></div>
+            </>
+          ))}
         </Panel>
       </Collapse>
     </>
