@@ -23,7 +23,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       type="link"
       onClick={() => window.open(AIRTABLE_IMPROVE_SEARCH_LINK)}
     >
-      🤔 Report to Mothership
+      🤔 Report
     </Button>,
     <Button
       className="dropdown-button"
