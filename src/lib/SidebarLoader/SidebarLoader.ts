@@ -23,6 +23,7 @@ import {
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
   IN_DEBUG_MODE,
+  DUMMY_SUBTABS_URL,
 } from 'utils/constants';
 
 /**
@@ -437,11 +438,12 @@ class SidebarLoader {
     this.url = url;
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
-    this.fetchSubtabs().then((response) => {
+    this.fetchSubtabs().then(({ response, strongPrivacy }) => {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
         this.isSerp &&
+          !strongPrivacy &&
           chrome.runtime.sendMessage({
             type: SEND_LOG_MESSAGE,
             event: EXTENSION_SERP_LOADED,
@@ -619,14 +621,16 @@ class SidebarLoader {
    */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
-    const getSubtabs = async () =>
-      (await postAPI('subtabs', { url: this.url.href }, { client: 'desktop' })) as SubtabsResponse;
+    const getSubtabs = async (url = this.url.href) => {
+      debug('\n---\n\tRequest API', url, '\n---');
+      return (await postAPI('subtabs', { url }, { client: 'desktop' })) as SubtabsResponse;
+    };
     let response: SubtabsResponse = Object.create(null);
-    const isAnonymous = await new Promise((resolve) =>
+    const strongPrivacy = await new Promise((resolve) =>
       chrome.storage.local.get('anonymousQueries', resolve),
-    ).then(({ anonymousQueries }) => anonymousQueries);
-    debug('\n---\n\tSend anonymous queries --- ', isAnonymous ? 'Yes' : 'No', '\n---');
-    if (isAnonymous) {
+    ).then(({ anonymousQueries }) => !anonymousQueries);
+    debug('\n---\n\tIs strong privacy enabled --- ', strongPrivacy ? 'Yes' : 'No', '\n---');
+    if (strongPrivacy) {
       const cache = await new Promise((resolve) =>
         chrome.storage.local.get('cachedSubtabs', resolve),
       ).then(({ cachedSubtabs }) => cachedSubtabs);
@@ -641,7 +645,7 @@ class SidebarLoader {
         response = cache.data;
       } else {
         debug('\n---\n\tCache not found or expired...\n---');
-        response = await getSubtabs();
+        response = await getSubtabs(DUMMY_SUBTABS_URL);
         await new Promise((resolve) =>
           chrome.storage.local.set(
             {
@@ -655,7 +659,7 @@ class SidebarLoader {
       response = await getSubtabs();
     }
     debug('fetchSubtabs - success\n---\n\tSubtabs Response', response, '\n---');
-    return response;
+    return { response, strongPrivacy };
   }
 
   /**

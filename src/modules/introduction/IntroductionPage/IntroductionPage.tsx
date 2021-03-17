@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Collapse, Input, Button, Switch, List, Typography } from 'antd';
+import { Collapse, Input, Button, List, Typography } from 'antd';
 import { APP_NAME } from 'utils/constants';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import { ToggleAnonymousQueries } from 'modules/introduction';
@@ -36,18 +36,15 @@ const listData = {
 export const IntroductionPage = () => {
   const [licenseKey, setLicenseKey] = useState<string>('');
   const [isLicenseActivated, setIsLicenseActivated] = useState<boolean>(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['1', '2', '3']);
+  const [activeKeys, setActiveKeys] = useState<string[]>(['1', '3']);
 
   useEffect(() => {
     document.title = `Welcome to ${APP_NAME}`;
   }, []);
 
-  const handleToggle = (prev, key) =>
-    prev.find((i) => i === key) ? [...prev.filter((i) => i !== key)] : [...prev, key];
-
   const handleLicenseSubmit = () => {
     setIsLicenseActivated(true);
-    setActiveKeys(['3']);
+    setActiveKeys(['2', '3']);
   };
 
   const validateLicense = () => {
@@ -58,7 +55,7 @@ export const IntroductionPage = () => {
     return (
       <span
         className="intro-panel-header"
-        onClick={() => setActiveKeys((prev) => handleToggle(prev, '1'))}
+        onClick={() => setActiveKeys(['1', '3'])}
         dangerouslySetInnerHTML={{
           __html: !isLicenseActivated
             ? `Step 1. Enter your license to activate ${APP_NAME}`
@@ -70,10 +67,7 @@ export const IntroductionPage = () => {
 
   const PrivacyHeader = () => {
     return (
-      <span
-        className="intro-panel-header"
-        onClick={() => setActiveKeys((prev) => handleToggle(prev, '2'))}
-      >
+      <span className="intro-panel-header" onClick={() => setActiveKeys(['2', '3'])}>
         Step 2. Choose your privacy setting
       </span>
     );
@@ -85,7 +79,7 @@ export const IntroductionPage = () => {
         <h1>Welcome to {APP_NAME}</h1>
         <Typography.Text>Let's get you started</Typography.Text>
       </div>
-      <Collapse accordion activeKey={activeKeys}>
+      <Collapse activeKey={activeKeys}>
         <Panel header={<LicenseHeader />} key="1">
           <div className="license-panel">
             <Input
@@ -117,10 +111,7 @@ export const IntroductionPage = () => {
         </Panel>
         <Panel header={<PrivacyHeader />} key="2">
           <div className="privacy-panel">
-            <div className="privacy-panel-lr">
-              <Switch className="privacy-toggle" />
-              <span>Enable anonymous & obfuscated logging.</span>
-            </div>
+            <ToggleAnonymousQueries />
             <Paragraph
               ellipsis={{ rows: 1, expandable: true, symbol: 'more' }}
               className="privacy-explainer"
@@ -139,12 +130,11 @@ export const IntroductionPage = () => {
                 <li> We delete this data every 3 months.</li>
               </ul>
             </Paragraph>
-            <ToggleAnonymousQueries />
           </div>
         </Panel>
         <Panel header="Step 2. Try some queries" key="3">
           {Object.entries(listData).map(([key, value]) => (
-            <>
+            <React.Fragment key={key}>
               <List
                 header={<div>{key}</div>}
                 bordered
@@ -158,7 +148,7 @@ export const IntroductionPage = () => {
                 )}
               />
               <div style={{ marginBottom: 20 }}></div>
-            </>
+            </React.Fragment>
           ))}
         </Panel>
       </Collapse>
