@@ -7,9 +7,10 @@
  */
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
-import { debug, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
+import { debug } from 'utils/helpers';
 import {
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,

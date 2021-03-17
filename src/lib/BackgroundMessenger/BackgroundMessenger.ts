@@ -7,11 +7,11 @@
  */
 import {
   CONTENT_PAGE_ELEMENT_ID_LUMOS_HIDDEN,
-  debug,
   LUMOS_APP_URL,
   CLIENT_MESSAGES,
   LUMOS_SERP_CONFIG,
 } from 'lumos-shared-js';
+import { debug } from 'utils/helpers';
 import { v1 as uuidv1 } from 'uuid';
 
 // TODO: rewrite this to an interface communicating with `lumos-web`
