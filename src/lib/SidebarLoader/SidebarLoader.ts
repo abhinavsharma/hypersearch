@@ -6,9 +6,14 @@
  */
 import React, { ReactElement } from 'react';
 import { render } from 'react-dom';
-import { debug, IN_DEBUG_MODE, SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { Sidebar } from 'modules/sidebar';
-import { extractHostnameFromUrl, postAPI, runFunctionWhenDocumentReady } from 'utils/helpers';
+import {
+  extractHostnameFromUrl,
+  postAPI,
+  runFunctionWhenDocumentReady,
+  debug,
+} from 'utils/helpers';
 import {
   CUSTOM_SEARCH_ENGINES,
   ENABLED_AUGMENTATION_TYPES,
@@ -17,6 +22,7 @@ import {
   NUM_DOMAINS_TO_EXCLUDE,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
+  IN_DEBUG_MODE,
 } from 'utils/constants';
 
 /**

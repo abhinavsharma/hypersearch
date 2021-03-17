@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 import { CUSTOM_SEARCH_ENGINES } from 'utils/constants';
-import { debug } from 'lumos-shared-js';
+import { debug } from 'utils/helpers';
 
 class SearchEngineManager {
   throttled: boolean;
