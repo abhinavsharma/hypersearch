@@ -128,7 +128,7 @@ export const isKnowledgePage = (document: Document) =>
   KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
 
 export const debug = (...args: any[]) => {
-  if (IN_DEBUG_MODE || window.FORCE_DEBUG) {
+  if (IN_DEBUG_MODE) {
     console.log('LUMOS SHARED DEBUG: ', ...args);
   }
 };

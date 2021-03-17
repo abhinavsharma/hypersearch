@@ -3,5 +3,5 @@ declare module 'route-lite';
 declare const InstallTrigger: any;
 
 declare interface Window {
-  FORCE_DEBUG: boolean;
+  INSIGHT_FORCE_DEBUG: boolean;
 }
