@@ -97,7 +97,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   };
 
   const extraContent = {
-    left: (
+    right: (
       <AddAugmentationTab
         numInstalledAugmentations={tabs.length}
         active={(forceTab ?? activeKey) === '0'}
