@@ -242,7 +242,7 @@ class SidebarLoader {
         augmentation.id.startsWith('cse-') &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
-        const domainsToLookFor = augmentation.conditions?.condition_list.map((e) => e.value[0]);
+        const domainsToLookFor =  augmentation.actions?.action_list?.[0]?.value
         const matchingDomains = this.domains.filter((value) =>
           domainsToLookFor?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
@@ -419,7 +419,7 @@ class SidebarLoader {
         ...logTabs,
         '\n---\n\tSuggested Augmentations (at least one matching domain)\n---',
         ...logSuggested,
-        '\n---\n\tExcluded Augmentations (at least two matching domains at top three SERP position)\n---',
+        '\n---\n\tExcluded Augmentations (at least NUM_DOMAINS_TO_EXCLUDE matching domains at top NUM_DOMAINS_TO_CONSIDER SERP position)\n---',
         ...logirrelevant,
         '\n---\n\tIs this page a search engine? --- ',
         this.isSerp ? 'Yes' : 'No',
