@@ -18,10 +18,17 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     'insight-sidebar-toggle-button',
   )[0] as HTMLDivElement;
 
+  const activeAugmentationHeader = document.getElementsByClassName(
+    'add-augmentation-tab-header',
+  )[0] as HTMLDivElement;
+
   if (!showButton) return;
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
+    if (activeAugmentationHeader) {
+      activeAugmentationHeader.style.left = '9999px';
+    }
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
       hideButton.style.visibility = 'hidden';
@@ -89,5 +96,10 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       z-index: 9999;
     `,
     );
+    setTimeout(() => {
+      if (activeAugmentationHeader) {
+        activeAugmentationHeader.style.left = '20px';
+      }
+    }, 300);
   }
 };

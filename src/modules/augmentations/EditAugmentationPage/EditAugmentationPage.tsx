@@ -11,6 +11,7 @@ import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
 import { EditAugmentationConditions } from '../EditAugmentationConditions/EditAugmentationConditions';
 import Collapse from 'antd/lib/collapse/Collapse';
+import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 
 const { Panel } = Collapse;
 
@@ -53,8 +54,12 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   }, [SidebarLoader.installedAugmentations]);
 
   const handleClose = () => {
-    setActiveKey(isAdding && !initiatedFromActives ? '1' : '0');
-    goBack();
+    if (!setActiveKey) {
+      goBack();
+    } else {
+      setActiveKey(isAdding && !initiatedFromActives ? '1' : '0');
+      goBack();
+    }
   };
 
   const handleSave = () => {
