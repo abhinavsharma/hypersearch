@@ -53,8 +53,12 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   }, [SidebarLoader.installedAugmentations]);
 
   const handleClose = () => {
-    setActiveKey(isAdding && !initiatedFromActives ? '1' : '0');
-    goBack();
+    if (!setActiveKey) {
+      goBack();
+    } else {
+      setActiveKey(isAdding && !initiatedFromActives ? '1' : '0');
+      goBack();
+    }
   };
 
   const handleSave = () => {

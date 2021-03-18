@@ -242,8 +242,10 @@ class SidebarLoader {
         augmentation.id.startsWith('cse-') &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
-        const domainsToLookCondition = augmentation.conditions?.condition_list.map((e) => e.value[0]);
-        const domainsToLookAction =  augmentation.actions?.action_list?.[0]?.value
+        const domainsToLookCondition = augmentation.conditions?.condition_list.map(
+          (e) => e.value[0],
+        );
+        const domainsToLookAction = augmentation.actions?.action_list?.[0]?.value;
         const matchingDomainsCondition = this.domains.filter((value) =>
           domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
@@ -257,7 +259,7 @@ class SidebarLoader {
               [augmentation.id]: {
                 'Domains to look for': domainsToLookAction,
                 'Matching domains to condition': matchingDomainsCondition,
-                'Matching domains to action': matchingDomainsAction
+                'Matching domains to action': matchingDomainsAction,
               },
             },
             '\n',
@@ -312,12 +314,16 @@ class SidebarLoader {
           const isRelevant =
             matchingDomainsCondition
               .map((domain) =>
-                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1) ? true : false,
+                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1)
+                  ? true
+                  : false,
               )
-              .filter((isMatch) => !!isMatch).length > 0
-            && matchingDomainsAction
+              .filter((isMatch) => !!isMatch).length > 0 &&
+            matchingDomainsAction
               .map((domain) =>
-                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1) ? true : false,
+                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1)
+                  ? true
+                  : false,
               )
               .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
@@ -454,7 +460,6 @@ class SidebarLoader {
    */
   public async loadOrUpdateSidebar(document: Document, url: URL | null) {
     debug('loadOrUpdateSidebar - call\n');
-    await this.getLocalAugmentations();
     this.document = document;
     this.url = url;
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
@@ -574,17 +579,35 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   private async getLocalAugmentations() {
-    const locals = await new Promise((resolve) => chrome.storage.local.get(resolve));
+    const locals: Record<string, AugmentationObject> = await new Promise((resolve) =>
+      chrome.storage.local.get(resolve),
+    );
     this.ignoredAugmentations =
       Object.entries(locals).reduce((a, [key, value]) => {
         key.startsWith('ignored-') && a.push(value);
         return a;
       }, []) ?? [];
     this.installedAugmentations =
-      Object.entries(locals).reduce((a, [key, value]) => {
-        !key.startsWith('ignored-') &&
-          !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi) &&
-          a.push(value);
+      Object.entries(locals).reduce((a, [key, augmentation]) => {
+        if (
+          !key.startsWith('ignored-') &&
+          !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi)
+        ) {
+          const domainsToLookCondition = augmentation.conditions?.condition_list.map(
+            (e) => e.value[0],
+          );
+          const matchingDomainsCondition = this.domains.filter((value) =>
+            domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+          );
+          if (
+            matchingDomainsCondition.length > 0 &&
+            augmentation.conditions.condition_list
+              .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
+              .indexOf(false) === -1
+          ) {
+            a.push(augmentation);
+          }
+        }
         return a;
       }, []) ?? [];
     debug(
@@ -611,6 +634,7 @@ class SidebarLoader {
     if (!(this.url && response)) return null;
     await this.getCustomSearchEngine();
     this.domains = this.getDomains(document);
+    await this.getLocalAugmentations();
     this.tabDomains['original'] = this.getDomains(document);
     this.getTabsAndAugmentations([
       ...response.suggested_augmentations,
