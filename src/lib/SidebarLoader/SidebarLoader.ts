@@ -426,10 +426,12 @@ class SidebarLoader {
       return compareTabs(a, b);
     });
 
-    this.isSerp = !!(
-      this.customSearchEngine?.search_engine_json?.required_prefix +
-      this.customSearchEngine?.search_engine_json?.required_params
-    );
+    this.isSerp =
+      window.location.hostname.replace('www.', '') + window.location.pathname ===
+        this.customSearchEngine?.search_engine_json?.required_prefix &&
+      window.location.search.indexOf(
+        this.customSearchEngine?.search_engine_json?.required_params + '=',
+      ) > -1;
 
     IN_DEBUG_MODE &&
       debug(
@@ -481,7 +483,11 @@ class SidebarLoader {
           this.sidebarTabs.length ||
           this.matchingDisabledInstalledAugmentations.length
         ) {
-          this.createSidebar();
+          if (process.env.PROJECT === 'is' || this.isSerp) {
+            this.createSidebar();
+          } else {
+            return null;
+          }
         }
       });
     });
