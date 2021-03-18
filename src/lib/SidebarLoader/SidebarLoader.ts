@@ -454,14 +454,9 @@ class SidebarLoader {
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
         this.isSerp &&
-          !this.strongPrivacy &&
-          chrome.runtime.sendMessage({
-            type: SEND_LOG_MESSAGE,
-            event: EXTENSION_SERP_LOADED,
-            properties: {
-              query: this.query,
-              url: this.url,
-            },
+          this.sendLogMessage(EXTENSION_SERP_LOADED, {
+            query: this.query,
+            url: this.url,
           });
         if (
           this.isSerp ||
