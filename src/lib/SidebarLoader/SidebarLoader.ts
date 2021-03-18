@@ -25,6 +25,7 @@ import {
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
   ENABLE_INTRO,
+  SUBTABS_CACHE_EXPIRE_MIN,
 } from 'utils/constants';
 
 /**
@@ -164,6 +165,13 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   private styleEl: HTMLStyleElement;
+
+  /**
+   * When user enables strong privacy mode, logging are disabled and subtabs response
+   * is cached for a specified time (not firing on all query). Also in the Insight case
+   * subtabs does not work  outside of search result pages.
+   */
+  public strongPrivacy: boolean;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -439,12 +447,17 @@ class SidebarLoader {
     this.url = url;
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
-    this.fetchSubtabs().then(({ response, strongPrivacy }) => {
+    this.strongPrivacy =
+      ENABLE_INTRO &&
+      (await new Promise((resolve) => chrome.storage.local.get('anonymousQueries', resolve)).then(
+        ({ anonymousQueries }) => anonymousQueries,
+      ));
+    this.fetchSubtabs().then((response) => {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
         this.isSerp &&
-          !strongPrivacy &&
+          !this.strongPrivacy &&
           chrome.runtime.sendMessage({
             type: SEND_LOG_MESSAGE,
             event: EXTENSION_SERP_LOADED,
@@ -627,13 +640,8 @@ class SidebarLoader {
       return (await postAPI('subtabs', { url }, { client: 'desktop' })) as SubtabsResponse;
     };
     let response: SubtabsResponse = Object.create(null);
-    const strongPrivacy =
-      ENABLE_INTRO &&
-      (await new Promise((resolve) => chrome.storage.local.get('anonymousQueries', resolve)).then(
-        ({ anonymousQueries }) => !anonymousQueries,
-      ));
-    debug('\n---\n\tIs strong privacy enabled --- ', strongPrivacy ? 'Yes' : 'No', '\n---');
-    if (strongPrivacy) {
+    debug('\n---\n\tIs strong privacy enabled --- ', this.strongPrivacy ? 'Yes' : 'No', '\n---');
+    if (this.strongPrivacy) {
       const cache = await new Promise((resolve) =>
         chrome.storage.local.get('cachedSubtabs', resolve),
       ).then(({ cachedSubtabs }) => cachedSubtabs);
@@ -652,7 +660,10 @@ class SidebarLoader {
         await new Promise((resolve) =>
           chrome.storage.local.set(
             {
-              cachedSubtabs: { data: response, expire: Date.now() + 30 * 60 * 1000 },
+              cachedSubtabs: {
+                data: response,
+                expire: Date.now() + SUBTABS_CACHE_EXPIRE_MIN * 60 * 1000,
+              },
             },
             () => resolve('Stored'),
           ),
@@ -662,7 +673,7 @@ class SidebarLoader {
       response = await getSubtabs();
     }
     debug('fetchSubtabs - success\n---\n\tSubtabs Response', response, '\n---');
-    return { response, strongPrivacy };
+    return response;
   }
 
   /**

@@ -1,30 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ENABLE_INTRO, EXTENSION_SERP_FILTER_LOADED, SEND_LOG_MESSAGE } from 'utils/constants';
+import React from 'react';
+import { EXTENSION_SERP_FILTER_LOADED, SEND_LOG_MESSAGE } from 'utils/constants';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
-  const [isStrongPrivacyEnabled, setIsStrongPrivacyEnabled] = useState<boolean>(false);
-
-  const getStrongPrivacyPreference = useCallback(
-    async () =>
-      ENABLE_INTRO &&
-      (await new Promise((resolve) =>
-        chrome.storage.local.get('anonymousQueries', resolve),
-      ).then(({ anonymousQueries }) => setIsStrongPrivacyEnabled(!anonymousQueries))),
-    [],
-  );
-
-  useEffect(() => {
-    getStrongPrivacyPreference();
-  }, [getStrongPrivacyPreference]);
-
   return (
     <iframe
       src={unescape(tab.url.href)}
       width={450}
       className="insight-tab-iframe"
       onLoad={() => {
-        !isStrongPrivacyEnabled &&
+        !SidebarLoader.strongPrivacy &&
           chrome.runtime.sendMessage({
             type: SEND_LOG_MESSAGE,
             event: EXTENSION_SERP_FILTER_LOADED,

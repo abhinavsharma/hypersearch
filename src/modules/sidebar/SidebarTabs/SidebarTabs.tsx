@@ -15,7 +15,7 @@ import {
   SidebarTabContainer,
   SidebarTabDomains,
 } from 'modules/sidebar';
-import { debug, extractHostnameFromUrl } from 'utils/helpers';
+import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -23,7 +23,6 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
-  ENABLE_INTRO,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -35,12 +34,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const [activeKey, setActiveKey] = useState<string>(!!tabs.length ? '1' : '0');
 
   const handleLog = useCallback(async (msg) => {
-    const strongPrivacy =
-      ENABLE_INTRO &&
-      (await new Promise((resolve) => chrome.storage.local.get('anonymousQueries', resolve)).then(
-        ({ anonymousQueries }) => !anonymousQueries,
-      ));
-    if (strongPrivacy) return null;
+    if (SidebarLoader.strongPrivacy) return null;
     if (msg.frame.parentFrameId === -1) {
       chrome.runtime.sendMessage({
         type: SEND_LOG_MESSAGE,
