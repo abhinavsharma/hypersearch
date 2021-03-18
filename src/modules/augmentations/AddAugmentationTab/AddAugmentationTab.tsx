@@ -22,7 +22,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       type="link"
       onClick={() => window.open(AIRTABLE_IMPROVE_SEARCH_LINK)}
     >
-      🤔 Report
+      🤔 Report Results
     </Button>,
     <Button
       className="dropdown-button"
@@ -31,14 +31,14 @@ export const AddAugmentationTab: AddAugmentationTab = ({
         chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
       }
     >
-      💪 Create a filter
+      💪 Create a Filter
     </Button>,
     <Button
       className="dropdown-button"
       type="link"
       onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
     >
-      🚀 List filters
+      🚀 List All Filters
     </Button>,
   ];
 

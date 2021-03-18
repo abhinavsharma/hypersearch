@@ -51,6 +51,10 @@
     background: #efefef;
     overflow-y: auto !important;
 
+    .ant-collapse-header {
+      font-weight: bold;
+    }
+
     h2 {
       padding-left: 10px;
       font-size: 16px;
@@ -86,10 +90,6 @@
 
       .ant-col {
         width: 450px;
-
-        &:first-child {
-          font-weight: bold;
-        }
 
         & .ant-switch {
           display: flex;
@@ -227,10 +227,6 @@
 
             .edit-input-action-button {
               margin-left: auto;
-            }
-
-            &:first-child {
-              font-weight: bold !important;
             }
 
             &.value-col {
