@@ -19,7 +19,8 @@
       padding-top: 5px;
     }
 
-    a, button > span {
+    a,
+    button > span {
       color: #999;
     }
   }
@@ -121,9 +122,7 @@
   background: #efefef;
 
   .ant-tabs-nav-more {
-    display: block;
-    outline: none;
-    cursor: default;
+    display: none;
   }
 
   .ant-tabs-ink-bar {
