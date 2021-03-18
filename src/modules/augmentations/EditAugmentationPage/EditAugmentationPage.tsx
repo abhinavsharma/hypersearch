@@ -11,7 +11,6 @@ import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
 import { EditAugmentationConditions } from '../EditAugmentationConditions/EditAugmentationConditions';
 import Collapse from 'antd/lib/collapse/Collapse';
-import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 
 const { Panel } = Collapse;
 
