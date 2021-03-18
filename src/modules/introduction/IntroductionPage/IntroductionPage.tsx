@@ -36,7 +36,7 @@ const listData = {
 export const IntroductionPage = () => {
   const [licenseKey, setLicenseKey] = useState<string>('');
   const [isLicenseActivated, setIsLicenseActivated] = useState<boolean>(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['1', '3']);
+  const [activeKeys, setActiveKeys] = useState<string[]>(['1', '2']);
 
   useEffect(() => {
     document.title = `Welcome to ${APP_NAME}`;
@@ -55,7 +55,7 @@ export const IntroductionPage = () => {
     return (
       <span
         className="intro-panel-header"
-        onClick={() => setActiveKeys(['1', '3'])}
+        onClick={() => setActiveKeys(['1', '2'])}
         dangerouslySetInnerHTML={{
           __html: !isLicenseActivated
             ? `Step 1. Enter your license to activate ${APP_NAME}`
@@ -68,7 +68,7 @@ export const IntroductionPage = () => {
   const PrivacyHeader = () => {
     return (
       <span className="intro-panel-header" onClick={() => setActiveKeys(['2', '3'])}>
-        Step 2. Choose your privacy setting
+        Step 3. Choose your privacy setting
       </span>
     );
   };
@@ -109,7 +109,26 @@ export const IntroductionPage = () => {
             </ul>
           </div>
         </Panel>
-        <Panel header={<PrivacyHeader />} key="2">
+        <Panel header="Step 2. Try some queries" key="2">
+          {Object.entries(listData).map(([key, value]) => (
+            <React.Fragment key={key}>
+              <List
+                header={<div>{key}</div>}
+                bordered
+                dataSource={value}
+                renderItem={(item) => (
+                  <List.Item>
+                    <a target="_blank" href={'https://www.google.com/search?q=' + item.text}>
+                      {item.text}
+                    </a>
+                  </List.Item>
+                )}
+              />
+              <div style={{ marginBottom: 20 }}></div>
+            </React.Fragment>
+          ))}
+        </Panel>
+        <Panel header={<PrivacyHeader />} key="3">
           <div className="privacy-panel">
             <ToggleAnonymousQueries />
             <Paragraph
@@ -131,25 +150,6 @@ export const IntroductionPage = () => {
               </ul>
             </Paragraph>
           </div>
-        </Panel>
-        <Panel header="Step 3. Try some queries" key="3">
-          {Object.entries(listData).map(([key, value]) => (
-            <React.Fragment key={key}>
-              <List
-                header={<div>{key}</div>}
-                bordered
-                dataSource={value}
-                renderItem={(item) => (
-                  <List.Item>
-                    <a target="_blank" href={'https://www.google.com/search?q=' + item.text}>
-                      {item.text}
-                    </a>
-                  </List.Item>
-                )}
-              />
-              <div style={{ marginBottom: 20 }}></div>
-            </React.Fragment>
-          ))}
         </Panel>
       </Collapse>
     </>
