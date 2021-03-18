@@ -53,6 +53,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
             installed: false,
           },
           isAdding: true,
+          setActiveKey,
         }}
         key={tab.id}
       >

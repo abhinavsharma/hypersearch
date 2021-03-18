@@ -9,7 +9,6 @@ import 'antd/lib/button/style/index.css';
 export const AddAugmentationTab: AddAugmentationTab = ({
   active,
   setActiveKey,
-  onClick,
   numInstalledAugmentations,
 }) => {
   const handleClose = () => {
@@ -28,22 +27,25 @@ export const AddAugmentationTab: AddAugmentationTab = ({
     <Button
       className="dropdown-button"
       type="link"
-      onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
+      onClick={() =>
+        chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
+      }
     >
       💪 Create a filter
+    </Button>,
+    <Button
+      className="dropdown-button"
+      type="link"
+      onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
+    >
+      🚀 List filters
     </Button>,
   ];
 
   return !active ? (
-    process.env.PROJECT === 'sc' ? (
-      <div className="add-augmentation-tab">
-        <Dropdown icon="…" items={items} />
-      </div>
-    ) : (
-      <div className="add-augmentation-tab" onClick={onClick}>
-        …
-      </div>
-    )
+    <div className="add-augmentation-tab">
+      <Dropdown icon="…" items={items} />
+    </div>
   ) : (
     <div className={`add-augmentation-tab-header ${active ? 'active' : ''}`}>
       <Button

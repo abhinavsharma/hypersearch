@@ -16,7 +16,7 @@ import 'antd/lib/divider/style/index.css';
 import './ActiveAugmentationsPage.scss';
 import Divider from 'antd/lib/divider';
 
-export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
+export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey }) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>(
     SidebarLoader.installedAugmentations,
   );
@@ -35,7 +35,11 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
         setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
       }
       if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE && msg.create) {
-        goTo(EditAugmentationPage, { augmentation: EMPTY_AUGMENTATION, isAdding: true });
+        goTo(EditAugmentationPage, {
+          augmentation: EMPTY_AUGMENTATION,
+          isAdding: true,
+          setActiveKey,
+        });
       }
     });
   }, []);
@@ -61,7 +65,10 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
               <div className="installed-augmentation-row" key={augmentation.id}>
                 <Link
                   component={EditAugmentationPage}
-                  componentProps={{ augmentation: { ...augmentation, installed: true } }}
+                  componentProps={{
+                    augmentation: { ...augmentation, installed: true },
+                    setActiveKey,
+                  }}
                   key={augmentation.id}
                 >
                   <Button className="installed-augmentation-button installed " type="text" block>
@@ -78,7 +85,12 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
             type="text"
             block
             onClick={() =>
-              goTo(EditAugmentationPage, { augmentation: EMPTY_AUGMENTATION, isAdding: true })
+              goTo(EditAugmentationPage, {
+                augmentation: EMPTY_AUGMENTATION,
+                isAdding: true,
+                initiatedFromActives: true,
+                setActiveKey,
+              })
             }
           >
             ➕ Add filter
@@ -96,6 +108,8 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
                   componentProps={{
                     augmentation: { ...augmentation, installed: false },
                     isAdding: true,
+                    initiatedFromActives: true,
+                    setActiveKey,
                   }}
                   key={augmentation.id}
                 >

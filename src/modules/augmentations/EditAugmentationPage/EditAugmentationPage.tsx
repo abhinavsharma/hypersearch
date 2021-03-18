@@ -7,14 +7,19 @@ import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants
 import { debug } from 'utils/helpers';
 import { EditAugmentationMeta, EditAugmentationActions } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
-import 'antd/lib/collapse/style/index.css'
+import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
 import { EditAugmentationConditions } from '../EditAugmentationConditions/EditAugmentationConditions';
 import Collapse from 'antd/lib/collapse/Collapse';
 
 const { Panel } = Collapse;
 
-export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdding }) => {
+export const EditAugmentationPage: EditAugmentationPage = ({
+  augmentation,
+  isAdding,
+  initiatedFromActives,
+  setActiveKey,
+}) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
   const [name, setName] = useState<string>(augmentation.name);
   const [description, setDescription] = useState<string>(augmentation.description);
@@ -46,6 +51,11 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
   useEffect(() => {
     setInstalledAugmentations(SidebarLoader.installedAugmentations);
   }, [SidebarLoader.installedAugmentations]);
+
+  const handleClose = () => {
+    setActiveKey(isAdding && !initiatedFromActives ? '1' : '0');
+    goBack();
+  };
 
   const handleSave = () => {
     if (isDisabled) return null;
@@ -135,7 +145,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
   return (
     <div className="edit-augmentation-page-container">
       <div className="edit-augmentation-tab-header ant-tabs-tab">
-        <Button type="link" onClick={goBack} className="insight-augmentation-tab-button">
+        <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
           Cancel
         </Button>
         <span>{`${!isAdding ? 'Edit' : 'Add'} filter`}</span>
