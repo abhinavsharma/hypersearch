@@ -583,7 +583,7 @@ class SidebarLoader {
     this.installedAugmentations =
       Object.entries(locals).reduce((a, [key, value]) => {
         !key.startsWith('ignored-') &&
-          !key.match(/(cachedSubtabs|anonymousQueries)/gi) &&
+          !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi) &&
           a.push(value);
         return a;
       }, []) ?? [];
