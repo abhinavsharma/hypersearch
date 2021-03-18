@@ -9,6 +9,10 @@
   padding: 10px 20px 0px 20px;
   flex-wrap: wrap;
 
+  span, a {
+    color: #999;
+  }
+
   button > span {
     color: #999;
   }
@@ -25,6 +29,6 @@
     text-decoration: underline;
     text-decoration-color: #ccc;
     cursor: pointer;
-    color: #333;
+    color: #999;
   }
 }
