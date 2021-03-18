@@ -708,6 +708,33 @@ class SidebarLoader {
       }
     });
   }
+
+  /**
+   * Send a trigger to background page, to send Freshpaint logging.
+   *
+   * @param event - The name of the log event
+   * @param properties - The properties to send along with the event
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
+  public sendLogMessage(event: string, properties: Record<string, any>) {
+    debug(
+      'sendLogMessage - call\n---\n\tEvent',
+      event,
+      '\n\tProperties',
+      properties,
+      '\n\tStrong pricvacy',
+      this.strongPrivacy ? 'Yes' : 'No',
+      '\n---',
+    );
+    !this.strongPrivacy &&
+      chrome.runtime.sendMessage({
+        event,
+        properties,
+        type: SEND_LOG_MESSAGE,
+      });
+  }
 }
 
 /**

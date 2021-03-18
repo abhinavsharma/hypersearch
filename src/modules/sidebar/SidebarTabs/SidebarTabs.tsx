@@ -19,7 +19,6 @@ import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SEND_LOG_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
@@ -36,15 +35,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const handleLog = useCallback(async (msg) => {
     if (SidebarLoader.strongPrivacy) return null;
     if (msg.frame.parentFrameId === -1) {
-      chrome.runtime.sendMessage({
-        type: SEND_LOG_MESSAGE,
-        event: EXTENSION_SERP_LINK_CLICKED,
-        properties: {
-          query: SidebarLoader.query,
-          url: msg.url,
-          position_in_serp:
-            SidebarLoader.domains.indexOf(extractHostnameFromUrl(msg.url).hostname) + 1,
-        },
+      SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
+        query: SidebarLoader.query,
+        url: msg.url,
+        position_in_serp:
+          SidebarLoader.domains.indexOf(extractHostnameFromUrl(msg.url).hostname) + 1,
       });
     } else {
       const sourceTab = tabs.find(
@@ -52,15 +47,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       );
       setTimeout(
         () =>
-          chrome.runtime.sendMessage({
-            type: SEND_LOG_MESSAGE,
-            event: EXTENSION_SERP_FILTER_LINK_CLICKED,
-            properties: {
-              query: SidebarLoader.query,
-              url: msg.url,
-              filter_name: sourceTab.title,
-              position_in_serp: SidebarLoader.tabDomains[sourceTab.id].indexOf(msg.url) + 1,
-            },
+          SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
+            query: SidebarLoader.query,
+            url: msg.url,
+            filter_name: sourceTab.title,
+            position_in_serp: SidebarLoader.tabDomains[sourceTab.id].indexOf(msg.url) + 1,
           }),
         250,
       );
