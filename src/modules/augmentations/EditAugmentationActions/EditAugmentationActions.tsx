@@ -7,11 +7,6 @@ import 'antd/lib/grid/style/index.css';
 export const EditAugmentationActions: EditAugmentationActions = ({ actions, onSave, onDelete }) => {
   return (
     <>
-      <Row className="no-border">
-        <Col>
-          <span className="operation-description">Perform These Actions</span>
-        </Col>
-      </Row>
       {actions.map(({ value, label }) =>
         value.map((action, i) => (
           <EditActionInput

@@ -9,6 +9,10 @@
   padding: 10px 20px 0px 20px;
   flex-wrap: wrap;
 
+  button > span {
+    color: #999;
+  }
+
   .ant-typography {
     margin-bottom: 0;
 

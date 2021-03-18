@@ -7,8 +7,12 @@ import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants
 import { debug } from 'utils/helpers';
 import { EditAugmentationMeta, EditAugmentationActions } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
+import 'antd/lib/collapse/style/index.css'
 import './EditAugmentationPage.scss';
 import { EditAugmentationConditions } from '../EditAugmentationConditions/EditAugmentationConditions';
+import Collapse from 'antd/lib/collapse/Collapse';
+
+const { Panel } = Collapse;
 
 export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdding }) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
@@ -145,32 +149,41 @@ export const EditAugmentationPage: EditAugmentationPage = ({ augmentation, isAdd
         </Button>
       </div>
       <div className="edit-augmentation-page-wrapper">
-        <h2>Edit logic</h2>
-        <div className="edit-augmentation-logic-wrapper">
-          <EditAugmentationActions
-            actions={actions}
-            onSave={handleSaveAction}
-            onDelete={handleDeleteAction}
-          />
-          <EditAugmentationConditions
-            conditions={conditions}
-            setConditions={setConditions}
-            evaluation={conditionEvaluation}
-            setEvaluation={setConditionEvaluation}
-            onAdd={handleAddCondition}
-            onDelete={handleDeleteCondition}
-            onSave={handleSaveCondition}
-          />
-        </div>
-        <EditAugmentationMeta
-          augmentation={augmentation}
-          name={name}
-          description={description}
-          onNameChange={handleEditName}
-          onDescriptionChange={handleEditDescription}
-          enabled={isActive}
-          setEnabled={setIsActive}
-        />
+        <Collapse accordion defaultActiveKey={['1']}>
+          <Panel header="Do this" key="1">
+            <div className="edit-augmentation-logic-wrapper">
+              <EditAugmentationActions
+                actions={actions}
+                onSave={handleSaveAction}
+                onDelete={handleDeleteAction}
+              />
+            </div>
+          </Panel>
+          <Panel header="When" key="2">
+            <div className="edit-augmentation-logic-wrapper">
+              <EditAugmentationConditions
+                conditions={conditions}
+                setConditions={setConditions}
+                evaluation={conditionEvaluation}
+                setEvaluation={setConditionEvaluation}
+                onAdd={handleAddCondition}
+                onDelete={handleDeleteCondition}
+                onSave={handleSaveCondition}
+              />
+            </div>
+          </Panel>
+          <Panel header="About" key="3">
+            <EditAugmentationMeta
+              augmentation={augmentation}
+              name={name}
+              description={description}
+              onNameChange={handleEditName}
+              onDescriptionChange={handleEditDescription}
+              enabled={isActive}
+              setEnabled={setIsActive}
+            />
+          </Panel>
+        </Collapse>
       </div>
     </div>
   );

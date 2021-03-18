@@ -20,13 +20,12 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       <Row className="no-border">
         <Col>
           <span className="operation-description">
-            If{' '}
             <Button
               type="link"
               onClick={() => setEvaluation((prev) => (prev == 'AND' ? 'OR' : 'AND'))}
               className="insight-augmentation-edit-evaluation"
             >
-              <strong>{evaluation == 'AND' ? 'all' : 'any'}</strong>
+              <strong>{evaluation == 'AND' ? 'All' : 'Any'}</strong>
             </Button>
             of these conditions are true
           </span>

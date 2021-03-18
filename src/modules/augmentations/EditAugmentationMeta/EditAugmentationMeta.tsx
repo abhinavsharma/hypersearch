@@ -26,7 +26,7 @@ export const EditAugmentationMeta: EditAugmentationMeta = ({
         </Col>
       </Row>
       <Row>
-        <Col xs={12}>Description</Col>
+        <Col xs={12}>Description (optional)</Col>
         <Col xs={12}>
           <Input onChange={onDescriptionChange} value={description} />
         </Col>
