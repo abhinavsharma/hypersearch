@@ -8,12 +8,13 @@ import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import { useDebouncedFn } from 'beautiful-react-hooks';
 
+// Match any valid domain without protocol. e.g. google.com
+const URL_REGEX = new RegExp(/^[\w][\w\-\._]*\.[\w]{2,}$/gi);
+// Time to wait in ms before saving the action
+const DEBOUNCE_TRESHOLD = 500;
+
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
-);
-
-const PlusCircleTwoTone = React.lazy(
-  async () => await import('@ant-design/icons/PlusCircleTwoTone').then((mod) => mod),
 );
 
 export const EditActionInput: EditActionInput = ({
@@ -27,11 +28,11 @@ export const EditActionInput: EditActionInput = ({
 
   const handleSave = useDebouncedFn(
     (e: string) => {
-      if (e.search(/^[\w\-\._]*\.[\w]{2,}$/gi) === -1) return null;
+      if (e.search(URL_REGEX) === -1) return null;
       saveAction(e);
       setCurrent('');
     },
-    500,
+    DEBOUNCE_TRESHOLD,
     undefined,
     [],
   );
