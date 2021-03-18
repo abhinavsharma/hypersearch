@@ -23,6 +23,8 @@ import {
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
   IN_DEBUG_MODE,
+  DUMMY_SUBTABS_URL,
+  SUBTABS_CACHE_EXPIRE_MIN,
 } from 'utils/constants';
 
 /**
@@ -162,6 +164,13 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   private styleEl: HTMLStyleElement;
+
+  /**
+   * When user enables strong privacy mode, logging are disabled and subtabs response
+   * is cached for a specified time (not firing on all query). Also in the Insight case
+   * subtabs does not work  outside of search result pages.
+   */
+  public strongPrivacy: boolean;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -437,18 +446,17 @@ class SidebarLoader {
     this.url = url;
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
+    this.strongPrivacy = await new Promise((resolve) =>
+      chrome.storage.local.get('anonymousQueries', resolve),
+    ).then(({ anonymousQueries }) => anonymousQueries);
     this.fetchSubtabs().then((response) => {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
         this.isSerp &&
-          chrome.runtime.sendMessage({
-            type: SEND_LOG_MESSAGE,
-            event: EXTENSION_SERP_LOADED,
-            properties: {
-              query: this.query,
-              url: this.url,
-            },
+          this.sendLogMessage(EXTENSION_SERP_LOADED, {
+            query: this.query,
+            url: this.url,
           });
         if (
           this.isSerp ||
@@ -561,7 +569,9 @@ class SidebarLoader {
       }, []) ?? [];
     this.installedAugmentations =
       Object.entries(locals).reduce((a, [key, value]) => {
-        !key.startsWith('ignored-') && a.push(value);
+        !key.startsWith('ignored-') &&
+          !key.match(/(cachedSubtabs|anonymousQueries)/gi) &&
+          a.push(value);
         return a;
       }, []) ?? [];
     debug(
@@ -617,9 +627,45 @@ class SidebarLoader {
    */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
-    const response = await postAPI('subtabs', { url: this.url.href }, { client: 'desktop' });
+    const getSubtabs = async (url = this.url.href) => {
+      debug('\n---\n\tRequest API', url, '\n---');
+      return (await postAPI('subtabs', { url }, { client: 'desktop' })) as SubtabsResponse;
+    };
+    let response: SubtabsResponse = Object.create(null);
+    debug('\n---\n\tIs strong privacy enabled --- ', this.strongPrivacy ? 'Yes' : 'No', '\n---');
+    if (this.strongPrivacy) {
+      const cache = await new Promise((resolve) =>
+        chrome.storage.local.get('cachedSubtabs', resolve),
+      ).then(({ cachedSubtabs }) => cachedSubtabs);
+      if (cache && cache.expire > Date.now()) {
+        debug(
+          '\n---\n\tValid cache data found',
+          cache.data,
+          '\n\tExpires',
+          new Date(cache.expire).toLocaleString(),
+          '\n---',
+        );
+        response = cache.data;
+      } else {
+        debug('\n---\n\tCache not found or expired...\n---');
+        response = await getSubtabs(DUMMY_SUBTABS_URL);
+        await new Promise((resolve) =>
+          chrome.storage.local.set(
+            {
+              cachedSubtabs: {
+                data: response,
+                expire: Date.now() + SUBTABS_CACHE_EXPIRE_MIN * 60 * 1000,
+              },
+            },
+            () => resolve('Stored'),
+          ),
+        );
+      }
+    } else {
+      response = await getSubtabs();
+    }
     debug('fetchSubtabs - success\n---\n\tSubtabs Response', response, '\n---');
-    return response as SubtabsResponse;
+    return response;
   }
 
   /**
@@ -656,6 +702,33 @@ class SidebarLoader {
         this.loadOrUpdateSidebar(document, new URL(msg.url));
       }
     });
+  }
+
+  /**
+   * Send a trigger to background page, to send Freshpaint logging.
+   *
+   * @param event - The name of the log event
+   * @param properties - The properties to send along with the event
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
+  public sendLogMessage(event: string, properties: Record<string, any>) {
+    debug(
+      'sendLogMessage - call\n---\n\tEvent',
+      event,
+      '\n\tProperties',
+      properties,
+      '\n\tStrong pricvacy',
+      this.strongPrivacy ? 'Yes' : 'No',
+      '\n---',
+    );
+    !this.strongPrivacy &&
+      chrome.runtime.sendMessage({
+        event,
+        properties,
+        type: SEND_LOG_MESSAGE,
+      });
   }
 }
 
