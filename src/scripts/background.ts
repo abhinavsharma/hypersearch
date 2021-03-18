@@ -12,7 +12,6 @@ import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altse
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import { debug } from 'utils/helpers';
 import {
-  ENABLE_INTRO,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -140,10 +139,8 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
   );
 });
 // Send a message to open the specified page in the sidebar when the toolbar icon is clicked.
-chrome.browserAction.onClicked.addListener((tab) =>
-  ENABLE_INTRO
-    ? chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') })
-    : chrome.tabs.sendMessage(tab.id, { type: OPEN_AUGMENTATION_BUILDER_MESSAGE }),
+chrome.browserAction.onClicked.addListener(() =>
+  chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') }),
 );
 // The content script does not support the `tabs` property yet, so we have to pass the messages through the background
 // page. By default it will forward any message as is to the client.
@@ -183,6 +180,5 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
   details.reason === 'install' &&
-    ENABLE_INTRO &&
     chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') });
 });

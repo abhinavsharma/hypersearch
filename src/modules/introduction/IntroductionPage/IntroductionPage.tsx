@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Collapse, Input, Button, List, Typography } from 'antd';
 import { APP_NAME } from 'utils/constants';
-import Paragraph from 'antd/lib/typography/Paragraph';
 import { ToggleAnonymousQueries } from 'modules/introduction';
 
 const { Panel } = Collapse;
+const { Paragraph } = Typography;
 
 const listData = {
   'Startups: sources trusted by top founders & investors': [
@@ -132,7 +132,7 @@ export const IntroductionPage = () => {
             </Paragraph>
           </div>
         </Panel>
-        <Panel header="Step 2. Try some queries" key="3">
+        <Panel header="Step 3. Try some queries" key="3">
           {Object.entries(listData).map(([key, value]) => (
             <React.Fragment key={key}>
               <List

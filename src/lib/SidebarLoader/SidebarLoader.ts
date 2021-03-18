@@ -24,7 +24,6 @@ import {
   URL_UPDATED_MESSAGE,
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
-  ENABLE_INTRO,
   SUBTABS_CACHE_EXPIRE_MIN,
 } from 'utils/constants';
 
@@ -447,11 +446,9 @@ class SidebarLoader {
     this.url = url;
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
-    this.strongPrivacy =
-      ENABLE_INTRO &&
-      (await new Promise((resolve) => chrome.storage.local.get('anonymousQueries', resolve)).then(
-        ({ anonymousQueries }) => anonymousQueries,
-      ));
+    this.strongPrivacy = await new Promise((resolve) =>
+      chrome.storage.local.get('anonymousQueries', resolve),
+    ).then(({ anonymousQueries }) => anonymousQueries);
     this.fetchSubtabs().then((response) => {
       if (!response) return;
       runFunctionWhenDocumentReady(this.document, async () => {
