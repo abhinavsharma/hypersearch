@@ -104,7 +104,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         numInstalledAugmentations={tabs.length}
         active={(forceTab ?? activeKey) === '0'}
         setActiveKey={setActiveKey}
-        onClick={() => (activeKey !== '0' || forceTab !== '0') && setActiveKey('0')}
       />
     ),
   };
@@ -117,7 +116,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       tabBarExtraContent={extraContent}
     >
       <TabPane key="0" tab={null} forceRender>
-        <ActiveAugmentationsPage />
+        <ActiveAugmentationsPage setActiveKey={setActiveKey} />
       </TabPane>
       {tabs?.map((tab, i) => {
         const showPopup = tab.isSuggested && activeKey === (i + 1).toString();
