@@ -7,13 +7,13 @@ const { Panel } = Collapse;
 
 const listData = {
 
-  'Startups': [
+  'Startups: sources trusted by top founders & investors': [
     {'text': 'how to raise a seed round'},
     {'text': 'how to hire engineers'},
     {'text': 'how to hire marketers'},
   ],
   
-  'Tech': [
+  'Tech: see sources trusted by engineers, designers, data scientists': [
     {'text': 'best js framework'},
     {'text': 'best machine learning books' }
   ],
@@ -23,8 +23,12 @@ const listData = {
     {'text': 'best ev to buy 2021'},
   ],
 
-  'News': [
+  'News: see different perspectives': [
     {'text': 'will trump run in 2024'},
+  ],
+
+  'Misc: learn new things better & faster with insider trusted sources': [
+    {'text': 'how to build a bunker'},
   ],
 };
 
@@ -109,7 +113,7 @@ export const IntroductionPage = () => {
             </ul>
           </div>
         </Panel>
-        <Panel header={<PrivacyHeader />} key="2">
+        {/* <Panel header={<PrivacyHeader />} key="2">
           <div className="privacy-panel">
             <div className="privacy-panel-lr">
             <Switch className="privacy-toggle" />
@@ -136,8 +140,8 @@ export const IntroductionPage = () => {
             
             
           </div>
-        </Panel>
-        <Panel header="Step 3. Try some queries" key="3">
+        </Panel> */}
+        <Panel header="Step 2. Try some queries" key="3">
           {Object.entries(listData).map(([key, value]) => (
             <>
               <List
