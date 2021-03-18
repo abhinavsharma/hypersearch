@@ -36,7 +36,7 @@ const listData = {
 export const IntroductionPage = () => {
   const [licenseKey, setLicenseKey] = useState<string>('');
   const [isLicenseActivated, setIsLicenseActivated] = useState<boolean>(false);
-  const [activeKeys, setActiveKeys] = useState<string[]>(['1', '2']);
+  const [activeKey, setActiveKey] = useState<string>('1');
 
   useEffect(() => {
     document.title = `Welcome to ${APP_NAME}`;
@@ -44,7 +44,7 @@ export const IntroductionPage = () => {
 
   const handleLicenseSubmit = () => {
     setIsLicenseActivated(true);
-    setActiveKeys(['2', '3']);
+    setActiveKey('2');
   };
 
   const validateLicense = () => {
@@ -55,7 +55,7 @@ export const IntroductionPage = () => {
     return (
       <span
         className="intro-panel-header"
-        onClick={() => setActiveKeys(['1', '2'])}
+        onClick={() => setActiveKey('1')}
         dangerouslySetInnerHTML={{
           __html: !isLicenseActivated
             ? `Step 1. Enter your license to activate ${APP_NAME}`
@@ -67,7 +67,7 @@ export const IntroductionPage = () => {
 
   const PrivacyHeader = () => {
     return (
-      <span className="intro-panel-header" onClick={() => setActiveKeys(['2', '3'])}>
+      <span className="intro-panel-header" onClick={() => setActiveKey('3')}>
         Step 3. Choose your privacy setting
       </span>
     );
@@ -79,7 +79,7 @@ export const IntroductionPage = () => {
         <h1>Welcome to {APP_NAME}</h1>
         <Typography.Text>Let's get you started</Typography.Text>
       </div>
-      <Collapse activeKey={activeKeys}>
+      <Collapse activeKey={activeKey} accordion>
         <Panel header={<LicenseHeader />} key="1">
           <div className="license-panel">
             <Input
