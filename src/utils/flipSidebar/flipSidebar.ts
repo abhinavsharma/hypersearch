@@ -29,6 +29,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     if (activeAugmentationHeader) {
       activeAugmentationHeader.style.left = '9999px';
     }
+    // We need the timeout to ensure the proper animation
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
       hideButton.style.visibility = 'hidden';
@@ -96,6 +97,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       z-index: 9999;
     `,
     );
+    // We need the timeout to ensure the proper animation
     setTimeout(() => {
       if (activeAugmentationHeader) {
         activeAugmentationHeader.style.left = '20px';
