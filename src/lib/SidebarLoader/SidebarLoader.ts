@@ -242,8 +242,10 @@ class SidebarLoader {
         augmentation.id.startsWith('cse-') &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
-        const domainsToLookCondition = augmentation.conditions?.condition_list.map((e) => e.value[0]);
-        const domainsToLookAction =  augmentation.actions?.action_list?.[0]?.value
+        const domainsToLookCondition = augmentation.conditions?.condition_list.map(
+          (e) => e.value[0],
+        );
+        const domainsToLookAction = augmentation.actions?.action_list?.[0]?.value;
         const matchingDomainsCondition = this.domains.filter((value) =>
           domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
@@ -257,7 +259,7 @@ class SidebarLoader {
               [augmentation.id]: {
                 'Domains to look for': domainsToLookAction,
                 'Matching domains to condition': matchingDomainsCondition,
-                'Matching domains to action': matchingDomainsAction
+                'Matching domains to action': matchingDomainsAction,
               },
             },
             '\n',
@@ -312,12 +314,16 @@ class SidebarLoader {
           const isRelevant =
             matchingDomainsCondition
               .map((domain) =>
-                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1) ? true : false,
+                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1)
+                  ? true
+                  : false,
               )
-              .filter((isMatch) => !!isMatch).length > 0
-            && matchingDomainsAction
+              .filter((isMatch) => !!isMatch).length > 0 &&
+            matchingDomainsAction
               .map((domain) =>
-                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1) ? true : false,
+                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1)
+                  ? true
+                  : false,
               )
               .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
@@ -420,10 +426,12 @@ class SidebarLoader {
       return compareTabs(a, b);
     });
 
-    this.isSerp = !!(
-      this.customSearchEngine?.search_engine_json?.required_prefix +
-      this.customSearchEngine?.search_engine_json?.required_params
-    );
+    this.isSerp =
+      window.location.hostname.replace('www.', '') + window.location.pathname ===
+        this.customSearchEngine?.search_engine_json?.required_prefix &&
+      window.location.search.indexOf(
+        this.customSearchEngine?.search_engine_json?.required_params + '=',
+      ) > -1;
 
     IN_DEBUG_MODE &&
       debug(
@@ -476,7 +484,11 @@ class SidebarLoader {
           this.sidebarTabs.length ||
           this.matchingDisabledInstalledAugmentations.length
         ) {
-          this.createSidebar();
+          if (process.env.PROJECT === 'sc' && !this.isSerp) {
+            return null;
+          } else {
+            this.createSidebar();
+          }
         }
       });
     });
