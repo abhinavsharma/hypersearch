@@ -6,6 +6,7 @@ import Button from 'antd/lib/button';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
+import { useDebouncedFn } from 'beautiful-react-hooks';
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
@@ -24,14 +25,20 @@ export const EditActionInput: EditActionInput = ({
 }) => {
   const [current, setCurrent] = useState(action);
 
-  const handleSave = () => {
-    if (!current.length) return null;
-    saveAction(current);
-    setCurrent('');
-  };
+  const handleSave = useDebouncedFn(
+    (e: string) => {
+      if (e.search(/^[\w\-\._]*\.[\w]{2,}$/gi) === -1) return null;
+      saveAction(e);
+      setCurrent('');
+    },
+    500,
+    undefined,
+    [],
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrent(e.target.value);
+    handleSave(e.target.value);
   };
 
   const handleDelete = () => {
@@ -47,17 +54,19 @@ export const EditActionInput: EditActionInput = ({
         ) : (
           <span>{current}</span>
         )}
-        <Button
-          onClick={action.length ? handleDelete : handleSave}
-          className="edit-input-action-button"
-          danger
-          type="link"
-          disabled={noDelete}
-        >
-          <Suspense fallback={null}>
-            {action.length ? <MinusCircleOutlined /> : <PlusCircleTwoTone twoToneColor="#52c41a" />}
-          </Suspense>
-        </Button>
+        {!!action.length && (
+          <Button
+            onClick={handleDelete}
+            className="edit-input-action-button"
+            danger
+            type="link"
+            disabled={noDelete}
+          >
+            <Suspense fallback={null}>
+              <MinusCircleOutlined />
+            </Suspense>
+          </Button>
+        )}
       </Col>
     </Row>
   );
