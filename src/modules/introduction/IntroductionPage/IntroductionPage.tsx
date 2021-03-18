@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Collapse, Input, Button, List, Typography } from 'antd';
 import { APP_NAME } from 'utils/constants';
 import { ToggleAnonymousQueries } from 'modules/introduction';
@@ -34,51 +34,55 @@ const listData = {
 };
 
 export const IntroductionPage = () => {
-  const [licenseKey, setLicenseKey] = useState<string>('');
-  const [isLicenseActivated, setIsLicenseActivated] = useState<boolean>(false);
-  const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKeys, setActiveKeys] = useState<string[]>(['1', '2']);
+  const [license, setLicense] = useState<Record<string, any>>(Object.create(null));
+
+  const getStored = useCallback(async () => {
+    const stored = await new Promise((resolve) =>
+      chrome.storage.local.get('licenseActivated', resolve),
+    ).then(({ licenseActivated }) => licenseActivated as string);
+    if (stored) {
+      setLicense({ isActivated: true, key: stored });
+      setActiveKeys(['2']);
+    }
+  }, []);
 
   useEffect(() => {
     document.title = `Welcome to ${APP_NAME}`;
-  }, []);
+    getStored();
+  }, [getStored]);
 
-  const handleLicenseSubmit = () => {
-    setIsLicenseActivated(true);
-    setActiveKey('2');
+  const handleLicenseSubmit = async () => {
+    setLicense((prev) => ({ ...prev, isActivated: true }));
+    setActiveKeys(['2', '3']);
+    await new Promise((resolve) =>
+      chrome.storage.local.set({ licenseActivated: license.key }, () => resolve(null)),
+    );
   };
 
   const validateLicense = () => {
-    return licenseKey.length === 39 && licenseKey.match(/^[\w-]*$/gi);
+    return license.key?.length === 39 && license.key?.match(/^[\w-]*$/gi);
   };
 
   const LicenseHeader = () => {
     return (
       <span
         className="intro-panel-header"
-        onClick={() => setActiveKey('1')}
         dangerouslySetInnerHTML={{
-          __html: !isLicenseActivated
+          __html: !license.isActivated
             ? `Step 1. Enter your license to activate ${APP_NAME}`
-            : `Step 1. You have successfully activated <strong>${licenseKey}</strong> license key!`,
+            : `Step 1. You have successfully activated <strong>${license.key}</strong> license key!`,
         }}
       />
     );
   };
 
   const ExamplesHeader = () => {
-    return (
-      <span className="intro-panel-header" onClick={() => setActiveKey('2')}>
-        Step 2. Try some queries
-      </span>
-    );
+    return <span className="intro-panel-header">Step 2. Try some queries</span>;
   };
 
   const PrivacyHeader = () => {
-    return (
-      <span className="intro-panel-header" onClick={() => setActiveKey('3')}>
-        Step 3. Choose your privacy setting
-      </span>
-    );
+    return <span className="intro-panel-header">Step 3. Choose your privacy setting</span>;
   };
 
   return (
@@ -87,21 +91,26 @@ export const IntroductionPage = () => {
         <h1>Welcome to {APP_NAME}</h1>
         <Typography.Text>Let's get you started</Typography.Text>
       </div>
-      <Collapse activeKey={activeKey} accordion>
+      <Collapse
+        activeKey={activeKeys}
+        onChange={(e) =>
+          setActiveKeys(Array.isArray(e) ? [...e.filter((i) => i !== '2'), '2'] : [e, '2'])
+        }
+      >
         <Panel header={<LicenseHeader />} key="1">
           <div className="license-panel">
             <Input
               type="text"
               minLength={39}
               maxLength={39}
-              value={licenseKey}
-              onChange={(e) => setLicenseKey(e.target.value)}
-              disabled={isLicenseActivated}
+              value={license.key}
+              onChange={(e) => setLicense({ key: e.target.value })}
+              disabled={license.isActivated}
             />
             <Button
               type="primary"
               onClick={handleLicenseSubmit}
-              disabled={!validateLicense() || isLicenseActivated}
+              disabled={!validateLicense() || license.isActivated}
             >
               Activate
             </Button>
