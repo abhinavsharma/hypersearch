@@ -92,6 +92,7 @@ export const IntroductionPage = () => {
         <Typography.Text>Let's get you started</Typography.Text>
       </div>
       <Collapse
+        accordion
         activeKey={activeKeys}
         onChange={(e) =>
           setActiveKeys(Array.isArray(e) ? [...e.filter((i) => i !== '2'), '2'] : [e, '2'])
