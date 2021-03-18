@@ -484,10 +484,10 @@ class SidebarLoader {
           this.sidebarTabs.length ||
           this.matchingDisabledInstalledAugmentations.length
         ) {
-          if (process.env.PROJECT === 'sc' && !this.isSerp) {
-            return null;
-          } else {
+          if (process.env.PROJECT === 'is' || this.isSerp) {
             this.createSidebar();
+          } else {
+            return null;
           }
         }
       });
