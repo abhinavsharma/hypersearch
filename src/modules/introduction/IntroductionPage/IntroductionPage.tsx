@@ -65,6 +65,14 @@ export const IntroductionPage = () => {
     );
   };
 
+  const ExamplesHeader = () => {
+    return (
+      <span className="intro-panel-header" onClick={() => setActiveKey('2')}>
+        Step 2. Try some queries
+      </span>
+    );
+  };
+
   const PrivacyHeader = () => {
     return (
       <span className="intro-panel-header" onClick={() => setActiveKey('3')}>
@@ -109,7 +117,7 @@ export const IntroductionPage = () => {
             </ul>
           </div>
         </Panel>
-        <Panel header="Step 2. Try some queries" key="2">
+        <Panel header={<ExamplesHeader />} key="2">
           {Object.entries(listData).map(([key, value]) => (
             <React.Fragment key={key}>
               <List
