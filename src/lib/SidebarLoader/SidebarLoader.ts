@@ -242,23 +242,28 @@ class SidebarLoader {
         augmentation.id.startsWith('cse-') &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
-        const domainsToLookFor =  augmentation.actions?.action_list?.[0]?.value
-        const matchingDomains = this.domains.filter((value) =>
-          domainsToLookFor?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+        const domainsToLookCondition = augmentation.conditions?.condition_list.map((e) => e.value[0]);
+        const domainsToLookAction =  augmentation.actions?.action_list?.[0]?.value
+        const matchingDomainsCondition = this.domains.filter((value) =>
+          domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+        );
+        const matchingDomainsAction = this.domains.filter((value) =>
+          domainsToLookAction?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
         IN_DEBUG_MODE &&
           logProcessed.push(
             '\n\t',
             {
               [augmentation.id]: {
-                'Domains to look for': domainsToLookFor,
-                'Matching domains': matchingDomains,
+                'Domains to look for': domainsToLookAction,
+                'Matching domains to condition': matchingDomainsCondition,
+                'Matching domains to action': matchingDomainsAction
               },
             },
             '\n',
           );
         if (
-          matchingDomains.length > 0 &&
+          matchingDomainsCondition.length > 0 &&
           augmentation.conditions.condition_list
             .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
             .indexOf(false) === -1
@@ -305,11 +310,16 @@ class SidebarLoader {
             customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           }
           const isRelevant =
-            matchingDomains
-              .map((i) =>
-                this.domains.find((e) => e.search(new RegExp(`^${i}`, 'gi')) > -1) ? true : false,
+            matchingDomainsCondition
+              .map((domain) =>
+                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1) ? true : false,
               )
-              .filter((i) => !!i).length < NUM_DOMAINS_TO_EXCLUDE;
+              .filter((isMatch) => !!isMatch).length > 0
+            && matchingDomainsAction
+              .map((domain) =>
+                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1) ? true : false,
+              )
+              .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
           IN_DEBUG_MODE &&
             !isRelevant &&
@@ -318,8 +328,9 @@ class SidebarLoader {
               '\n\t',
               {
                 [augmentation.id]: {
-                  'Domains to look for': domainsToLookFor,
-                  'Matching domains': matchingDomains,
+                  'Domains to look for': domainsToLookAction,
+                  'Matching domains for condition': matchingDomainsCondition,
+                  'Matching domains for action': matchingDomainsAction,
                   ...augmentation,
                 },
               },
@@ -340,7 +351,8 @@ class SidebarLoader {
                 const tab = {
                   url: url.url,
                   isAnyUrl,
-                  matchingDomains,
+                  matchingDomainsCondition,
+                  matchingDomainsAction,
                   id: augmentation.id,
                   title: url.title,
                   default: !newTabs.length,
@@ -353,7 +365,8 @@ class SidebarLoader {
             } else {
               const tab = {
                 isAnyUrl,
-                matchingDomains,
+                matchingDomainsCondition,
+                matchingDomainsAction,
                 id: augmentation.id,
                 title: augmentation.name,
                 url: customSearchUrl,
@@ -374,8 +387,8 @@ class SidebarLoader {
 
     const compareTabs = (a: SidebarTab, b: SidebarTab) => {
       const tabRatings = Object.create(null);
-      const aLowest = { name: '', rate: Infinity, domains: a.matchingDomains };
-      const bLowest = { name: '', rate: Infinity, domains: b.matchingDomains };
+      const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
+      const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
       Array.from(new Set(this.domains)).forEach((i, index) => (tabRatings[i] = index));
       const compareDomainList = (domainsA, domainsB) => {
         domainsA.forEach((i) => {
