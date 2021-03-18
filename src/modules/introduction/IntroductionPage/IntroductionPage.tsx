@@ -18,8 +18,9 @@ const listData = {
     {'text': 'best machine learning books' }
   ],
 
-  'Auto': [
+  'eCommerce: see real people\'s perspectives and trusted review sites': [
     {'text': 'best car insurance'},
+    {'text': 'best baby monitor'},
     {'text': 'best ev to buy 2021'},
   ],
 
@@ -29,6 +30,8 @@ const listData = {
 
   'Misc: learn new things better & faster with insider trusted sources': [
     {'text': 'how to build a bunker'},
+    {'text': 'best crypto books'},
+    {'text': 'best red wines for beginners'},
   ],
 };
 
@@ -110,6 +113,7 @@ export const IntroductionPage = () => {
               <li>You should have received this in your welcome email</li>
               <li>Your license is <b>not connected to your identity</b>. You can share it if you wish.</li>
               <li>Each license is limited to a monthly usage limit</li>
+              <li>Some licenses unlock secret features</li>
             </ul>
           </div>
         </Panel>
