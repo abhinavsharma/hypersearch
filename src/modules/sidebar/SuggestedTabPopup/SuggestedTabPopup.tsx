@@ -31,20 +31,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
 
   return (
     <div className="insight-suggested-tab-popup">
-      {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-        <Button
-          type="link"
-          target="_blank"
-          href={
-            'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
-            tab.title +
-            '&prefill_sample_query=' +
-            new URLSearchParams(window.location.search).get('q')
-          }
-        >
-          🤔 Report Filter
-        </Button>
-      )}
+
       <Link
         component={EditAugmentationPage}
         componentProps={{
@@ -61,6 +48,22 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
           ⑃ Fork
         </Button>
       </Link>
+      
+      {tab.isCse && !tab.id.startsWith('cse-custom-') && (
+        <Button
+          type="link"
+          target="_blank"
+          href={
+            'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
+            tab.title +
+            '&prefill_sample_query=' +
+            new URLSearchParams(window.location.search).get('q')
+          }
+        >
+          🤔 Report Filter
+        </Button>
+      )}
+      
       <Button type="link" onClick={() => handleHideSuggested(tab)}>
         × Hide
       </Button>
