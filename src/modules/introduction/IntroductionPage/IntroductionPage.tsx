@@ -13,7 +13,7 @@ const listData = {
     { text: 'how to hire marketers' },
   ],
 
-  'Tech: see sources trusted by engineers, designers, data scientists': [
+  'Dev: see sources trusted by engineers, designers, data scientists': [
     { text: 'best js framework' },
     { text: 'best machine learning books' },
   ],
