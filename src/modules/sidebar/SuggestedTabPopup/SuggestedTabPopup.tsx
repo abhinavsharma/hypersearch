@@ -45,7 +45,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
         key={tab.id}
       >
         <Button type="link" onClick={handleAddSuggested}>
-          ⑃ Fork Locally
+          ⑃ Modify Locally
         </Button>
       </Link>
       
