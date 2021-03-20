@@ -294,23 +294,14 @@ class SidebarLoader {
 
           this.query = new URLSearchParams(this.document.location.search).get('q');
 
-          const multipleUrls: { title: string; url: URL }[] = [];
+          const actionDomains = this.domainsToSearch[augmentation.id];
+          const append =
+            actionDomains.length === 1
+              ? `site:${actionDomains}`
+              : `(${actionDomains.map((x) => `site:${x}`).join(' OR ')})`;
+          customSearchUrl.searchParams.append('q', this.query + ' ' + append);
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
 
-          if (isAnyUrl) {
-            augmentation.actions.action_list[0].value.forEach((i) => {
-              const url = new URL(`https://${i.replace('%s', this.query)}`);
-              url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-              multipleUrls.push({ title: extractHostnameFromUrl(url.href).hostname, url });
-            });
-          } else {
-            const actionDomains = this.domainsToSearch[augmentation.id];
-            const append =
-              actionDomains.length === 1
-                ? `site:${actionDomains}`
-                : `(${actionDomains.map((x) => `site:${x}`).join(' OR ')})`;
-            customSearchUrl.searchParams.append('q', this.query + ' ' + append);
-            customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          }
           const isRelevant =
             matchingDomainsCondition
               .map((domain) =>
@@ -352,42 +343,25 @@ class SidebarLoader {
           }
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
             this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
-            if (!!multipleUrls.length) {
-              multipleUrls.forEach((url) => {
-                const tab = {
-                  url: url.url,
-                  isAnyUrl,
-                  matchingDomainsCondition,
-                  matchingDomainsAction,
-                  id: augmentation.id,
-                  title: url.title,
-                  default: !newTabs.length,
-                  isSuggested: !augmentation.hasOwnProperty('enabled'),
-                  isCse: true,
-                };
-                newTabs.unshift(tab);
-                IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
-              });
-            } else {
-              const tab = {
-                isAnyUrl,
-                matchingDomainsCondition,
-                matchingDomainsAction,
-                id: augmentation.id,
-                title: augmentation.name,
-                url: customSearchUrl,
-                default: !newTabs.length,
-                isSuggested: !augmentation.hasOwnProperty('enabled'),
-                isCse: true,
-              };
-              newTabs.unshift(tab);
-              IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
-            }
+
+            const tab = {
+              isAnyUrl,
+              matchingDomainsCondition,
+              matchingDomainsAction,
+              id: augmentation.id,
+              title: augmentation.name,
+              url: customSearchUrl,
+              default: !newTabs.length,
+              isSuggested: !augmentation.hasOwnProperty('enabled'),
+              isCse: true,
+            };
+            newTabs.unshift(tab);
+            IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
           }
-          augmentation.hasOwnProperty('enabled') &&
-            !augmentation.enabled &&
-            this.matchingDisabledInstalledAugmentations.push(augmentation);
         }
+        augmentation.hasOwnProperty('enabled') &&
+          !augmentation.enabled &&
+          this.matchingDisabledInstalledAugmentations.push(augmentation);
       }
     });
 
