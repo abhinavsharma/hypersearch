@@ -1,74 +1,106 @@
 import React, { Suspense, useState } from 'react';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
-import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
+import { Dropdown } from 'modules/shared';
+import { EditActionValueInput } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
-import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
-import { useDebouncedFn } from 'beautiful-react-hooks';
-
-// Match any valid domain without protocol. e.g. google.com
-const URL_REGEX = new RegExp(/^[\w][\w\-\._]*\.[\w]{2,}$/gi);
-// Time to wait in ms before saving the action
-const DEBOUNCE_TRESHOLD = 500;
+import './EditActionInput.scss';
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
-export const EditActionInput: EditActionInput = ({
-  action,
-  label,
-  noDelete,
-  deleteAction,
-  saveAction,
-}) => {
-  const [current, setCurrent] = useState(action);
-
-  const handleSave = useDebouncedFn(
-    (e: string) => {
-      if (e.search(URL_REGEX) === -1) return null;
-      saveAction(e);
-      setCurrent('');
-    },
-    DEBOUNCE_TRESHOLD,
-    undefined,
-    [],
+export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
+  const [type, setType] = useState<string>(action?.key);
+  const [newLabel, setNewLabel] = useState<string>(
+    action?.label ?? 'Hover to select action type...',
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrent(e.target.value);
-    handleSave(e.target.value);
+  const handleSaveValue = (e: string, i: number) => {
+    const newValue = action.value;
+    newValue[i] = e;
+    saveAction({ ...action, value: newValue });
   };
 
-  const handleDelete = () => {
-    deleteAction(action);
+  const handleValueDelete = (e: string) => {
+    const newValue = action.value.filter((i) => i !== e);
+    if (action.value.length > 1 && action.value[0] !== '') {
+      saveAction({ ...action, value: newValue });
+    } else {
+      deleteAction(action);
+    }
   };
+
+  const AvailableActions = [
+    <Button
+      className="dropdown-button"
+      type="link"
+      onClick={() => {
+        setNewLabel('Search only these domains');
+        setType('search_domains');
+        saveAction({
+          ...action,
+          label: 'Search only these domains',
+          key: 'search_domains',
+          value: [''],
+        });
+      }}
+    >
+      Search only these domains
+    </Button>,
+    <Button
+      className="dropdown-button"
+      type="link"
+      onClick={() => {
+        setNewLabel('Open page');
+        setType('open_url');
+        saveAction({
+          ...action,
+          label: 'Open page',
+          key: 'open_url',
+          value: [''],
+        });
+      }}
+    >
+      Open page
+    </Button>,
+  ];
 
   return (
-    <Row className="edit-input-row action">
-      <Col xs={12}>{label}</Col>
-      <Col xs={12}>
-        {!action.length ? (
-          <Input onChange={handleChange} value={current} />
+    <>
+      <Col xs={12} className="action-value-col">
+        {!action.key ? (
+          <Dropdown button={newLabel} items={AvailableActions} className="edit-action-dropdown" />
         ) : (
-          <span>{current}</span>
-        )}
-        {!!action.length && (
-          <Button
-            onClick={handleDelete}
-            className="edit-input-action-button"
-            danger
-            type="link"
-            disabled={noDelete}
-          >
-            <Suspense fallback={null}>
-              <MinusCircleOutlined />
-            </Suspense>
-          </Button>
+          action.label
         )}
       </Col>
-    </Row>
+      <Col xs={12} className="action-value-col">
+        {(type === 'open_url'
+          ? action.value.slice(0, 1)
+          : Array.from(new Set(action.value.concat('')))
+        ).map((value, i) => {
+          return (
+            type && (
+              <Row key={value + i} className="no-border edit-input-row">
+                <EditActionValueInput saveValue={handleSaveValue} value={value ?? ''} index={i} />
+                <Button
+                  onClick={() => handleValueDelete(value)}
+                  className="edit-input-delete-button"
+                  danger
+                  type="link"
+                >
+                  <Suspense fallback={null}>
+                    <MinusCircleOutlined />
+                  </Suspense>
+                </Button>
+              </Row>
+            )
+          );
+        })}
+      </Col>
+    </>
   );
 };

@@ -171,6 +171,10 @@
           border-bottom: none !important;
         }
 
+        &.no-padding {
+          padding: 0 !important;
+        }
+
         &.condition-footer {
           display: flex;
           justify-content: space-between;
@@ -199,12 +203,11 @@
 
         &.edit-input-row {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           background: white !important;
           min-height: 20px;
           height: auto;
           border-bottom: 1px solid #eee;
-          align-items: center;
           padding: 10px 10px;
 
           &.action {
@@ -223,7 +226,7 @@
 
           .ant-col {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
 
             .edit-input-action-button {
               margin-left: auto;

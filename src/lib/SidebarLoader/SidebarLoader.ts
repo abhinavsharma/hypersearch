@@ -13,6 +13,9 @@ import {
   postAPI,
   runFunctionWhenDocumentReady,
   debug,
+  removeProtocol,
+  isSafari,
+  compareTabs,
 } from 'utils/helpers';
 import {
   CUSTOM_SEARCH_ENGINES,
@@ -211,6 +214,61 @@ class SidebarLoader {
   }
 
   /**
+   * Takes an augmentation and generates meta data from its actions. Meta data
+   * is a list of URL-Title pairs for each tab to open.
+   *
+   * @param augmentation
+   * @returns The list of meta objects for the current augmentation
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
+  private getTabMetas(augmentation: AugmentationObject) {
+    const customSearchUrl = new URL(
+      isSafari()
+        ? 'https://www.ecosia.org/search'
+        : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
+    );
+    // List of domains to search when action key is `search_domains`.
+    let tabAppendages: string[] = [];
+    // A new tab will be created for each action with `open_url` key.
+    const tabsByUrl: { title: string; url: URL }[] = [];
+    // An augmentation can have multiple actions, despite their type. We
+    // assume this case and process the whole `action_list`. In the prev
+    // versions, we only checked the first value, when key was `open_url`.
+    // ! Note: Multiple values in `open_url` is currently not allowed!
+    augmentation.actions.action_list.forEach((action) => {
+      switch (action.key) {
+        case 'open_url':
+          action.value.forEach((val) => {
+            const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
+            url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+            tabsByUrl.push({ title: extractHostnameFromUrl(url.href).hostname, url });
+          });
+          break;
+        case 'search_domains':
+          tabAppendages = tabAppendages.concat(action.value);
+          this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
+            action.value.map((action) => removeProtocol(action)),
+          );
+          break;
+        default:
+          debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
+      }
+    });
+    // Generate a single URL for the sidebar tab from all available `search_domains` action values.
+    const append =
+      tabAppendages.length === 1
+        ? `site:${tabAppendages[0]}`
+        : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
+    customSearchUrl.searchParams.append('q', this.query + ' ' + append);
+    customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+    return tabAppendages.length
+      ? [...tabsByUrl, { url: customSearchUrl }]
+      : (tabsByUrl as { url: URL; title?: string }[]);
+  }
+
+  /**
    * Generate sidebar tabs and suggested augmentations from a provided list of augmentations.
    * When called without arguments, it is using the current installed and suggested values.
    * The method also creates a list of disabled but installed augmentations.
@@ -260,6 +318,7 @@ class SidebarLoader {
                 'Domains to look for': domainsToLookAction,
                 'Matching domains to condition': matchingDomainsCondition,
                 'Matching domains to action': matchingDomainsAction,
+                ...augmentation,
               },
             },
             '\n',
@@ -270,57 +329,28 @@ class SidebarLoader {
             .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
             .indexOf(false) === -1
         ) {
-          const isSafari = () => {
-            const hasVersion = /Version\/(\d{2})/;
-            const hasSafari = /Safari\/(\d{3})/;
-            const hasChrome = /Chrome\/(\d{3})/;
-            const ua = window.navigator.userAgent;
-            return (
-              ua.match(hasVersion) !== null &&
-              ua.match(hasSafari) !== null &&
-              ua.match(hasChrome) === null
-            );
-          };
+          this.tabDomains[augmentation.id] = [];
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
-          const isAnyUrl = !!augmentation.conditions.condition_list.find(
-            (i) => i.key === 'any_url',
-          );
-
-          const customSearchUrl = new URL(
-            isSafari()
-              ? 'https://www.ecosia.org/search'
-              : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
-          );
-
           this.query = new URLSearchParams(this.document.location.search).get('q');
-
-          const actionDomains = this.domainsToSearch[augmentation.id];
-          const append =
-            actionDomains.length === 1
-              ? `site:${actionDomains}`
-              : `(${actionDomains.map((x) => `site:${x}`).join(' OR ')})`;
-          customSearchUrl.searchParams.append('q', this.query + ' ' + append);
-          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-
+          // When an augmentation overlaps with the SERP result in more than NUM_DOMAINS_TO_EXCLUDE
+          // cases, we care that augmentation as ignored and do not list in the sidebar. Both actions
+          // and conditions are taken in concern.
           const isRelevant =
             matchingDomainsCondition
-              .map((domain) =>
-                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1)
-                  ? true
-                  : false,
+              .map(
+                (domain) =>
+                  !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
               )
               .filter((isMatch) => !!isMatch).length > 0 &&
             matchingDomainsAction
-              .map((domain) =>
-                this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1)
-                  ? true
-                  : false,
+              .map(
+                (domain) =>
+                  !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
               )
               .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
           IN_DEBUG_MODE &&
             !isRelevant &&
-            !isAnyUrl &&
             logirrelevant.push(
               '\n\t',
               {
@@ -333,7 +363,6 @@ class SidebarLoader {
               },
               '\n',
             );
-
           if (
             !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
             !augmentation.id.startsWith('cse-custom') &&
@@ -342,21 +371,22 @@ class SidebarLoader {
             this.suggestedAugmentations.push(augmentation);
           }
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
-            this.tabDomains[augmentation.id] = augmentation.actions.action_list[0].value;
-
-            const tab = {
-              isAnyUrl,
-              matchingDomainsCondition,
-              matchingDomainsAction,
-              id: augmentation.id,
-              title: augmentation.name,
-              url: customSearchUrl,
-              default: !newTabs.length,
-              isSuggested: !augmentation.hasOwnProperty('enabled'),
-              isCse: true,
-            };
-            newTabs.unshift(tab);
-            IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
+            this.getTabMetas(augmentation).forEach((meta) => {
+              const tab = {
+                url: meta.url,
+                matchingDomainsCondition,
+                matchingDomainsAction,
+                id: augmentation.id,
+                title: meta.title ?? augmentation.name,
+                default: !newTabs.length,
+                isSuggested: !augmentation.hasOwnProperty('enabled'),
+                isCse: true,
+              };
+              newTabs.unshift(tab);
+              IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
+            });
+          } else {
+            this.matchingDisabledInstalledAugmentations.push(augmentation);
           }
         }
         augmentation.hasOwnProperty('enabled') &&
@@ -365,39 +395,10 @@ class SidebarLoader {
       }
     });
 
-    const compareTabs = (a: SidebarTab, b: SidebarTab) => {
-      const tabRatings = Object.create(null);
-      const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
-      const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
-      Array.from(new Set(this.domains)).forEach((i, index) => (tabRatings[i] = index));
-      const compareDomainList = (domainsA, domainsB) => {
-        domainsA.forEach((i) => {
-          if (tabRatings[i] < aLowest.rate) {
-            aLowest.name = i;
-            aLowest.rate = tabRatings[i];
-          }
-        });
-        domainsB.forEach((i) => {
-          if (tabRatings[i] < bLowest.rate) {
-            bLowest.name = i;
-            bLowest.rate = tabRatings[i];
-          }
-        });
-      };
-      compareDomainList(aLowest.domains, bLowest.domains);
-      if (aLowest.rate === bLowest.rate) {
-        compareDomainList(
-          aLowest.domains.filter((i) => i !== aLowest.name),
-          bLowest.domains.filter((i) => i !== bLowest.name),
-        );
-      }
-      return aLowest.rate > bLowest.rate ? 1 : -1;
-    };
-
     this.sidebarTabs = newTabs.sort((a, b) => {
       if (a.isSuggested && !b.isSuggested) return 1;
       if (!a.isSuggested && b.isSuggested) return -1;
-      return compareTabs(a, b);
+      return compareTabs(a, b, this.domains);
     });
 
     this.isSerp =
