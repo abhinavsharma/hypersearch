@@ -60,7 +60,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
             new URLSearchParams(window.location.search).get('q')
           }
         >
-          🤔 Report Filter
+          🤔 Send Feedback
         </Button>
       )}
       
