@@ -7,6 +7,17 @@
   }
 }
 
+.action-value-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+
+  button {
+    position: absolute;
+    right: 0;
+  }
+}
+
 .action-value-col {
   display: flex;
   flex-direction: column;
@@ -22,7 +33,7 @@
   .edit-input-row {
     display: flex;
     align-items: center !important;
-    flex-flow: nowrap;
+    flex-wrap: nowrap;
   }
 }
 

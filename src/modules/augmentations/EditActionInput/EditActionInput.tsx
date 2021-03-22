@@ -43,7 +43,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           ...action,
           label: 'Search only these domains',
           key: 'search_domains',
-          value: [''],
+          value: [],
         });
       }}
     >
@@ -59,7 +59,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           ...action,
           label: 'Open page',
           key: 'open_url',
-          value: [''],
+          value: [],
         });
       }}
     >
@@ -74,7 +74,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           <Dropdown button={newLabel} items={AvailableActions} className="edit-action-dropdown" />
         ) : (
           <div className="edit-input-row">
-            {action.label}
+            <span>{action.label}</span>
             <Button
               onClick={() => deleteAction(action)}
               className="edit-input-delete-button"
@@ -89,28 +89,25 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
         )}
       </Col>
       <Col xs={12} className="action-value-col">
-        {(type === 'open_url' ? action.value.slice(0, 1) : action.value)
-          .filter((i) => i !== '')
-          .map((value, i) => {
-            return (
-              type && (
-                <Row key={value + i} className="no-border edit-input-row">
-                  {value}
-                  <Button
-                    onClick={() => handleValueDelete(value)}
-                    className="edit-input-delete-button"
-                    danger
-                    type="link"
-                  >
-                    <Suspense fallback={null}>
-                      <MinusCircleOutlined />
-                    </Suspense>
-                  </Button>
-                </Row>
-              )
-            );
-          })}
-        {type && (type !== 'open_url' || action.value[0] === '') && (
+        {action.value.map(
+          (value, i) =>
+            type && (
+              <div key={value + i} className="action-value-row">
+                <span>{value.slice(0, 25) + (value.length > 25 ? '...' : '')}</span>
+                <Button
+                  onClick={() => handleValueDelete(value)}
+                  className="edit-input-delete-button"
+                  danger
+                  type="link"
+                >
+                  <Suspense fallback={null}>
+                    <MinusCircleOutlined />
+                  </Suspense>
+                </Button>
+              </div>
+            ),
+        )}
+        {type && (type !== 'open_url' || action.value.length === 0) && (
           <Row className="no-border edit-input-row">
             <Input.Search
               enterButton="Add"
