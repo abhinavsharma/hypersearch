@@ -18,12 +18,12 @@
     justify-self: center;
     min-height: 50px;
   }
-}
 
-.edit-input-row {
-  display: flex;
-  align-items: center;
-  flex-flow: nowrap;
+  .edit-input-row {
+    display: flex;
+    align-items: center !important;
+    flex-flow: nowrap;
+  }
 }
 
 .edit-input-delete-button {

@@ -3,7 +3,8 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import { Dropdown } from 'modules/shared';
-import { EditActionValueInput } from 'modules/augmentations';
+import Input from 'antd/lib/input';
+import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './EditActionInput.scss';
@@ -13,6 +14,7 @@ const MinusCircleOutlined = React.lazy(
 );
 
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
+  const [newValue, setNewValue] = useState('');
   const [type, setType] = useState<string>(action?.key);
   const [newLabel, setNewLabel] = useState<string>(
     action?.label ?? 'Hover to select action type...',
@@ -22,15 +24,12 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
     const newValue = action.value;
     newValue[i] = e;
     saveAction({ ...action, value: newValue });
+    setNewValue('');
   };
 
   const handleValueDelete = (e: string) => {
     const newValue = action.value.filter((i) => i !== e);
-    if (action.value.length > 1 && action.value[0] !== '') {
-      saveAction({ ...action, value: newValue });
-    } else {
-      deleteAction(action);
-    }
+    saveAction({ ...action, value: newValue });
   };
 
   const AvailableActions = [
@@ -74,32 +73,54 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
         {!action.key ? (
           <Dropdown button={newLabel} items={AvailableActions} className="edit-action-dropdown" />
         ) : (
-          action.label
+          <div className="edit-input-row">
+            {action.label}
+            <Button
+              onClick={() => deleteAction(action)}
+              className="edit-input-delete-button"
+              danger
+              type="link"
+            >
+              <Suspense fallback={null}>
+                <MinusCircleOutlined />
+              </Suspense>
+            </Button>
+          </div>
         )}
       </Col>
       <Col xs={12} className="action-value-col">
-        {(type === 'open_url'
-          ? action.value.slice(0, 1)
-          : Array.from(new Set(action.value.concat('')))
-        ).map((value, i) => {
-          return (
-            type && (
-              <Row key={value + i} className="no-border edit-input-row">
-                <EditActionValueInput saveValue={handleSaveValue} value={value ?? ''} index={i} />
-                <Button
-                  onClick={() => handleValueDelete(value)}
-                  className="edit-input-delete-button"
-                  danger
-                  type="link"
-                >
-                  <Suspense fallback={null}>
-                    <MinusCircleOutlined />
-                  </Suspense>
-                </Button>
-              </Row>
-            )
-          );
-        })}
+        {(type === 'open_url' ? action.value.slice(0, 1) : action.value)
+          .filter((i) => i !== '')
+          .map((value, i) => {
+            return (
+              type && (
+                <Row key={value + i} className="no-border edit-input-row">
+                  {value}
+                  <Button
+                    onClick={() => handleValueDelete(value)}
+                    className="edit-input-delete-button"
+                    danger
+                    type="link"
+                  >
+                    <Suspense fallback={null}>
+                      <MinusCircleOutlined />
+                    </Suspense>
+                  </Button>
+                </Row>
+              )
+            );
+          })}
+        {type && (type !== 'open_url' || action.value[0] === '') && (
+          <Row className="no-border edit-input-row">
+            <Input.Search
+              enterButton="Add"
+              className="add-action-value-input"
+              value={newValue}
+              onChange={(e) => setNewValue(e.target.value)}
+              onSearch={() => handleSaveValue(newValue, action.value.length)}
+            />
+          </Row>
+        )}
       </Col>
     </>
   );
