@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { goBack } from 'route-lite';
+import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { v4 as uuid } from 'uuid';
 import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
 import { debug } from 'utils/helpers';
-import { EditAugmentationMeta, EditAugmentationActions } from 'modules/augmentations';
+import {
+  EditAugmentationMeta,
+  EditAugmentationActions,
+  EditAugmentationConditions,
+} from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
-import { EditAugmentationConditions } from '../EditAugmentationConditions/EditAugmentationConditions';
-import Collapse from 'antd/lib/collapse/Collapse';
 
 const { Panel } = Collapse;
 
@@ -20,6 +23,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   initiatedFromActives,
   setActiveKey,
 }) => {
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
   const [name, setName] = useState<string>(augmentation.name);
   const [description, setDescription] = useState<string>(augmentation.description);
@@ -40,17 +44,31 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             id: i.toString(),
           }))
           .filter((i) => !!i.value[0])
-      : augmentation.conditions.condition_list.map((cond, index) => ({
-          ...cond,
+      : augmentation.conditions.condition_list.map((condition, index) => ({
+          ...condition,
           id: index.toString(),
         })),
   );
 
-  const [actions, setActions] = useState<ActionObject[]>(augmentation.actions.action_list);
+  const [actions, setActions] = useState<CustomAction[]>(
+    augmentation.actions.action_list.map((action, index) => ({
+      ...action,
+      id: index.toString(),
+    })),
+  );
 
   useEffect(() => {
     setInstalledAugmentations(SidebarLoader.installedAugmentations);
   }, [SidebarLoader.installedAugmentations]);
+
+  useEffect(() => {
+    setIsDisabled(
+      !name ||
+        !actions.length ||
+        !conditions.length ||
+        !!actions?.filter((action) => !action.key).length,
+    );
+  }, [name, actions, conditions.length]);
 
   const handleClose = () => {
     if (!setActiveKey) {
@@ -78,7 +96,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({
       },
       actions: {
         ...augmentation.actions,
-        action_list: actions,
+        action_list: actions.map((action) => ({
+          ...action,
+          value: action.value.filter((i) => i !== ''),
+        })),
       },
       enabled: isActive,
       installed: true,
@@ -99,25 +120,48 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     setTimeout(() => goBack(), 100);
   };
 
-  const handleDeleteAction = (e: string) => {
+  const handleSaveAction = (e: CustomAction) => {
     setActions((prev) => {
-      const updated = { ...prev[0], value: prev[0].value.filter((i) => i !== e) };
-      return [updated];
-    });
-  };
-
-  const handleSaveAction = (e: string) => {
-    setActions((prev) => {
-      const updated = prev[0];
-      const existingIndex = updated.value.indexOf(e);
-      if (existingIndex > 1) updated.value.map((cur, index) => (index === existingIndex ? e : cur));
-      else updated.value.push(e);
-      return [updated];
+      // Merge all `search_domains` actions into one action.
+      if (e.key === 'search_domains') {
+        const existing = prev.find((i) => i.key === 'search_domains');
+        if (existing) {
+          existing.value =
+            e.value[0] !== '' && e.value.length !== existing.value.length
+              ? Array.from(new Set(e.value))
+              : Array.from(new Set(existing.value.concat(e.value)));
+          // We also need to remove all the other actions with `search_domains` key, because
+          // when the user adds a new action with that key, A new index will be created anyway.
+          return prev.reduce((newActions, prevAction) => {
+            if (prevAction.id === existing.id) {
+              newActions.push(existing);
+            } else {
+              prevAction.key && prevAction.key !== 'search_domains' && newActions.push(prevAction);
+            }
+            return newActions;
+          }, []);
+        }
+      }
+      return prev.map((i) => {
+        if (i.id === e.id) {
+          return {
+            ...e,
+            key: e.key ?? i.key,
+            label: e.label ?? i.label,
+          };
+        } else {
+          return i;
+        }
+      });
     });
   };
 
   const handleDeleteCondition = (e: CustomCondition) => {
     setConditions((prev) => prev.filter((i) => i.value !== e.value));
+  };
+
+  const handleDeleteAction = (e: CustomAction) => {
+    setActions((prev) => prev.filter((i) => i.id !== e.id));
   };
 
   const handleSaveCondition = (e: CustomCondition) => {
@@ -132,6 +176,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     );
   };
 
+  const handleAddAction = (e: CustomAction) => {
+    setActions((prev) => [...prev, e]);
+  };
+
   const handleAddCondition = (e: CustomCondition) => {
     setConditions((prev) => [...prev, e]);
   };
@@ -143,8 +191,6 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   const handleEditDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
   };
-
-  const isDisabled = !name || !actions.length || !conditions.length;
 
   return (
     <div className="edit-augmentation-page-container">
@@ -168,6 +214,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             <div className="edit-augmentation-logic-wrapper">
               <EditAugmentationActions
                 actions={actions}
+                onAdd={handleAddAction}
                 onSave={handleSaveAction}
                 onDelete={handleDeleteAction}
               />

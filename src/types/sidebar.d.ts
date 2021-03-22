@@ -13,7 +13,6 @@ declare type SidebarTab = {
   readable?: string;
   matchingDomainsCondition?: string[];
   matchingDomainsAction?: string[];
-  isAnyUrl?: boolean;
   isCse?: boolean;
   isSuggested?: boolean;
   isPinnedTab?: boolean;

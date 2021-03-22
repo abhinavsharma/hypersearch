@@ -124,6 +124,8 @@ export const extractHostnameFromUrl = (s: string) => {
   }
 };
 
+export const removeProtocol = (url: string) => url.replace(/^https?:\/\//, '').replace('www.', '');
+
 export const isKnowledgePage = (document: Document) =>
   KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
 
@@ -131,4 +133,43 @@ export const debug = (...args: any[]) => {
   if (IN_DEBUG_MODE) {
     console.log('LUMOS SHARED DEBUG: ', ...args);
   }
+};
+
+export const isSafari = () => {
+  const hasVersion = /Version\/(\d{2})/;
+  const hasSafari = /Safari\/(\d{3})/;
+  const hasChrome = /Chrome\/(\d{3})/;
+  const ua = window.navigator.userAgent;
+  return (
+    ua.match(hasVersion) !== null && ua.match(hasSafari) !== null && ua.match(hasChrome) === null
+  );
+};
+
+export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
+  const tabRatings = Object.create(null);
+  const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
+  const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
+  Array.from(new Set(domains)).forEach((i, index) => (tabRatings[i] = index));
+  const compareDomainList = (domainsA: string[], domainsB: string[]) => {
+    domainsA.forEach((i) => {
+      if (tabRatings[i] < aLowest.rate) {
+        aLowest.name = i;
+        aLowest.rate = tabRatings[i];
+      }
+    });
+    domainsB.forEach((i) => {
+      if (tabRatings[i] < bLowest.rate) {
+        bLowest.name = i;
+        bLowest.rate = tabRatings[i];
+      }
+    });
+  };
+  compareDomainList(aLowest.domains, bLowest.domains);
+  if (aLowest.rate === bLowest.rate) {
+    compareDomainList(
+      aLowest.domains.filter((i) => i !== aLowest.name),
+      bLowest.domains.filter((i) => i !== bLowest.name),
+    );
+  }
+  return aLowest.rate > bLowest.rate ? 1 : -1;
 };
