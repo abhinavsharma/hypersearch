@@ -18,6 +18,7 @@ import {
 import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
+  APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
@@ -107,36 +108,38 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   };
 
   return (
-    <Tabs
-      className="insight-tab-container"
-      renderTabBar={TabBar}
-      activeKey={forceTab ?? activeKey}
-      tabBarExtraContent={extraContent}
-    >
-      <TabPane key="0" tab={null} forceRender>
-        <ActiveAugmentationsPage setActiveKey={setActiveKey} />
-      </TabPane>
-      {tabs?.map((tab, i) => {
-        const showPopup = tab.isSuggested && activeKey === (i + 1).toString();
-        return (
-          <TabPane
-            key={i + 1}
-            tab={<TabTitle tab={tab} index={i} />}
-            forceRender
-            className={`insight-full-tab`}
-          >
-            {tab.url && tab.isCse && (
-              <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
-            )}
-            {showPopup && <SuggestedTabPopup tab={tab} setActiveKey={setActiveKey} />}
-            {tab.readable && <SidebarTabReadable readable={tab.readable} />}
-            {tab.url && <SidebarTabContainer tab={tab} />}
-          </TabPane>
-        );
-      })}
-      <TabPane key="100" tab={null} className={`insight-full-tab`}>
-        <SearchNeedsImprovementPage setActiveKey={setActiveKey} />
-      </TabPane>
-    </Tabs>
+    <>
+      <Tabs
+        className="insight-tab-container"
+        renderTabBar={TabBar}
+        activeKey={forceTab ?? activeKey}
+        tabBarExtraContent={extraContent}
+      >
+        <TabPane key="0" tab={null} forceRender>
+          <ActiveAugmentationsPage setActiveKey={setActiveKey} />
+        </TabPane>
+        {tabs?.map((tab, i) => {
+          const showPopup = tab.isSuggested && activeKey === (i + 1).toString();
+          return (
+            <TabPane
+              key={i + 1}
+              tab={<TabTitle tab={tab} index={i} />}
+              forceRender
+              className={`insight-full-tab`}
+            >
+              {tab.url && tab.isCse && (
+                <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
+              )}
+              {showPopup && <SuggestedTabPopup tab={tab} setActiveKey={setActiveKey} />}
+              {tab.readable && <SidebarTabReadable readable={tab.readable} />}
+              {tab.url && <SidebarTabContainer tab={tab} />}
+            </TabPane>
+          );
+        })}
+        <TabPane key="100" tab={null} className={`insight-full-tab`}>
+          <SearchNeedsImprovementPage setActiveKey={setActiveKey} />
+        </TabPane>
+      </Tabs>
+    </>
   );
 };

@@ -6,9 +6,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     'insight-sidebar-container',
   )[0] as HTMLDivElement;
 
-  const hideButton = document.getElementsByClassName(
-    'insight-sidebar-close-button',
-  )[0] as HTMLDivElement;
+  const nameNub = document.getElementsByClassName('insight-sidebar-title')[0] as HTMLDivElement;
 
   const tabsContainer = document.getElementsByClassName(
     'insight-tab-container',
@@ -16,6 +14,10 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
 
   const showButton = document.getElementsByClassName(
     'insight-sidebar-toggle-button',
+  )[0] as HTMLDivElement;
+
+  const hideButton = document.getElementsByClassName(
+    'insight-sidebar-close-button',
   )[0] as HTMLDivElement;
 
   const activeAugmentationHeader = document.getElementsByClassName(
@@ -26,13 +28,13 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
+    nameNub.setAttribute('style', 'right: 0;');
     if (activeAugmentationHeader) {
-      activeAugmentationHeader.style.left = '9999px';
+      activeAugmentationHeader.style.display = 'none';
     }
     // We need the timeout to ensure the proper animation
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
-      hideButton.style.visibility = 'hidden';
       outerDocument.getElementById('sidebar-root').setAttribute(
         'style',
         `
@@ -46,6 +48,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         width: ${tabsLength === 0 ? '200px' : '150px'} !important;
       `,
       );
+      hideButton.style.visibility = 'hidden';
       outerDocument.getElementById('sidebar-root-iframe').setAttribute(
         'style',
         `
@@ -60,12 +63,15 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         z-index: 9999;
     `,
       );
+      nameNub.setAttribute('style', 'display: none;');
       showButton.style.visibility = 'visible';
       showButton.style.display = 'flex';
     }, 500);
   } else {
     sidebarContainer.style.visibility = 'visible';
     showButton.style.visibility = 'hidden';
+    nameNub.style.display = 'visible';
+    nameNub.setAttribute('style', 'right: 450px;');
     hideButton.style.visibility = 'visible';
     sidebarContainer.style.width = '450px';
     tabsContainer.style.visibility = 'visible';
@@ -73,7 +79,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       'style',
       `
       display: block;
-      width: 465px;
+      width: 480px;
       transition-property: width;
       transition-duration: 0.5s;
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
@@ -87,7 +93,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       right: 0;
       top: 0;
       bottom: 0;
-      width: 465px;
+      width: 480px;
       height: 100%;
       background: transparent;
       border-width: 0 !important;
@@ -101,6 +107,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     setTimeout(() => {
       if (activeAugmentationHeader) {
         activeAugmentationHeader.style.left = '20px';
+        activeAugmentationHeader.style.display = 'flex';
       }
     }, 300);
   }

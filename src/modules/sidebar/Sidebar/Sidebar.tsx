@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
-import { UPDATE_SIDEBAR_TABS_MESSAGE, WINDOW_REQUIRED_MIN_WIDTH } from 'utils/constants';
+import { APP_NAME, UPDATE_SIDEBAR_TABS_MESSAGE, WINDOW_REQUIRED_MIN_WIDTH } from 'utils/constants';
 import { isKnowledgePage } from 'utils/helpers';
 import './Sidebar.scss';
 
@@ -61,6 +61,7 @@ const Sidebar: Sidebar = () => {
         >
           ×
         </div>
+        <div className="insight-sidebar-title">{APP_NAME}</div>
         <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />
       </div>
       <SidebarToggleButton tabs={sidebarTabs} setTab={setForceTab} />

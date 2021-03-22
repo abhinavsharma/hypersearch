@@ -16,7 +16,7 @@
     position: fixed;
     top: 0 !important;
     height: 55px;
-    width: 100%;
+    width: calc(100% - 5px);
     padding: 0;
     background: #efefef !important;
     align-items: center;
