@@ -54,7 +54,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
           type="link"
           target="_blank"
           href={
-            'http://share.insightbrowser.com/14?prefill_Search%20Engine%20Name=' +
+            'https://airtable.com/shrQCthknXg1jf6oU?prefill_Search%20Engine%20Name=' +
             tab.title +
             '&prefill_sample_query=' +
             new URLSearchParams(window.location.search).get('q')
