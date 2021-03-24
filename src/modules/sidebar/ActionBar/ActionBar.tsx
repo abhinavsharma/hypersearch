@@ -48,7 +48,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         key={tab.id}
       >
         <Button type="link" onClick={handleAddSuggested}>
-          {tab.isSuggested ? '⑃ Modify Locally' : '✏️ Modify Local Filter'}
+          {tab.isSuggested ? '⑃ Modify Locally' : '✏️ Modify Local Lens'}
         </Button>
       </Link>
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (

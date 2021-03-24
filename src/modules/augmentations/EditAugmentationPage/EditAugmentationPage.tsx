@@ -198,7 +198,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
         <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
           Cancel
         </Button>
-        <span>{`${!isAdding ? 'Edit' : 'Add'} filter`}</span>
+        <span>{`${!isAdding ? 'Edit' : 'Add'} lens`}</span>
         <Button
           type="link"
           onClick={handleSave}

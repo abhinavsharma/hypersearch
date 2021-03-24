@@ -59,7 +59,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
-            <h2>Your custom filters for this page</h2>
+            <h2>Your custom lenses for this page</h2>
             <h3>{`${SidebarLoader.url.href.slice(0, 60)}...`}</h3>
             {installedAugmentations.map((augmentation) => (
               <div className="installed-augmentation-row" key={augmentation.id}>
@@ -93,13 +93,13 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
               })
             }
           >
-            ➕ Add filter
+            ➕ Add lens
           </Button>
         </Row>
         <Divider />
         <Row>
           <Col>
-            <h2>Suggested filters for this page</h2>
+            <h2>Suggested lenses for this page</h2>
             {suggestedAugmentations
               .filter((i) => i.actions.action_list.some((i) => i.key !== 'inject_js'))
               .map((augmentation) => (
@@ -124,7 +124,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
 
         <Row>
           <Col>
-            <h2>Hidden filters</h2>
+            <h2>Hidden lenses</h2>
             {ignoredAugmentations.map((augmentation) => (
               <Button
                 type="text"

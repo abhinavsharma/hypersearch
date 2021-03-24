@@ -21,7 +21,7 @@ export const SidebarTabDomains: SidebarTabDomains = ({ domains, tab }) => {
       {tab.url.href.search(`${tab.title}`) === -1 ? (
         <>
           <Paragraph ellipsis={!hideShowAllButton && ellipsis}>
-            <span className="domain-list-prefix">Filter&nbsp;sources&nbsp;include&nbsp;</span>
+            <span className="domain-list-prefix">Lens&nbsp;sources&nbsp;include&nbsp;</span>
             {domains.map((domain, index, originalDomainsArray) => (
               <a
                 href={`https://${domain}`}

@@ -43,7 +43,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       </Button>
       <Divider />
       <Button type="text" onClick={handleClick}>
-        Create a filter
+        Create a lens
       </Button>
     </div>
   );

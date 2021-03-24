@@ -31,14 +31,14 @@ export const AddAugmentationTab: AddAugmentationTab = ({
         chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
       }
     >
-      💪 Create a Filter
+      💪 Create a Lens
     </Button>,
     <Button
       className="dropdown-button"
       type="link"
       onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
     >
-      🚀 List All Filters
+      🚀 List All Lenses
     </Button>,
   ];
 
@@ -55,7 +55,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       >
         Close
       </Button>
-      <span>Filters</span>
+      <span>Lenses</span>
     </div>
   );
 };
