@@ -303,7 +303,9 @@ class SidebarLoader {
         const domainsToLookCondition = augmentation.conditions?.condition_list.map(
           (e) => e.value[0],
         );
-        const domainsToLookAction = augmentation.actions?.action_list?.[0]?.value;
+        const domainsToLookAction = augmentation.actions?.action_list?.find(
+          (action) => action.key === 'search_domains',
+        )?.value;
         const matchingDomainsCondition = this.domains.filter((value) =>
           domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
@@ -376,6 +378,7 @@ class SidebarLoader {
                 url: meta.url,
                 matchingDomainsCondition,
                 matchingDomainsAction,
+                isAnyUrlAction: !!meta.title,
                 id: augmentation.id,
                 title: meta.title ?? augmentation.name,
                 default: !newTabs.length,
