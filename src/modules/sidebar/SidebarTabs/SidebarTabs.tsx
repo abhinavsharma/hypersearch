@@ -14,7 +14,7 @@ import {
   SidebarTabContainer,
   SidebarTabDomains,
 } from 'modules/sidebar';
-import { extractHostnameFromUrl } from 'utils/helpers';
+import { extractUrlProperties } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -38,8 +38,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
         query: SidebarLoader.query,
         url: msg.url,
-        position_in_serp:
-          SidebarLoader.domains.indexOf(extractHostnameFromUrl(msg.url).hostname) + 1,
+        position_in_serp: SidebarLoader.domains.indexOf(extractUrlProperties(msg.url).hostname) + 1,
       });
     } else {
       const sourceTab = tabs.find(

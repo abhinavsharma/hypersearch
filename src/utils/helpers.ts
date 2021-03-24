@@ -104,7 +104,7 @@ export const removeWww = (s: string) => {
   return s;
 };
 
-export const extractHostnameFromUrl = (s: string) => {
+export const extractUrlProperties = (s: string) => {
   try {
     let url: string;
     if (s.startsWith('http://') || s.startsWith('https://')) url = s;
@@ -120,7 +120,7 @@ export const extractHostnameFromUrl = (s: string) => {
       full: hostname + raw.pathname,
     };
   } catch (e) {
-    debug('extractHostnameFromUrl - error', e);
+    debug('extractUrlProperties - error', e);
   }
 };
 
