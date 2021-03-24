@@ -6,7 +6,7 @@
 
   // not exactly ad blocking but removing known bad components
   const toRemove = {
-    'google.com': ['header.Fh5muf'],
+    'google.com': ['header.Fh5muf', '.mnr-c.cUnQKe', '[data-hveid=CBYQAA]', '[data-hveid=CAwQAA]'],
     'bing.com': ['header#b_header'],
     'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
   };
