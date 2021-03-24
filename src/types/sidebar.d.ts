@@ -67,6 +67,7 @@ declare type CustomSearchEngine = {
     phone: string;
     pad: string;
     desktop: string;
+    featured: string[];
   };
   search_engine_json: {
     required_params: string[];
