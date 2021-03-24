@@ -9,7 +9,6 @@ import Tabs from 'antd/lib/tabs';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
 import {
-  SearchNeedsImprovementPage,
   SuggestedTabPopup,
   SidebarTabReadable,
   SidebarTabContainer,
@@ -18,7 +17,6 @@ import {
 import { extractHostnameFromUrl } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import {
-  APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
@@ -136,9 +134,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             </TabPane>
           );
         })}
-        <TabPane key="100" tab={null} className={`insight-full-tab`}>
-          <SearchNeedsImprovementPage setActiveKey={setActiveKey} />
-        </TabPane>
       </Tabs>
     </>
   );

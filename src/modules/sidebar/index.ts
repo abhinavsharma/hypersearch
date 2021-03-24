@@ -1,4 +1,3 @@
-export * from './SearchNeedsImprovementPage/SearchNeedsImprovementPage';
 export * from './Sidebar/Sidebar';
 export * from './SidebarTabContainer/SidebarTabContainer';
 export * from './SidebarTabDomains/SidebarTabDomains';

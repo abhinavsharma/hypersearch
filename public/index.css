@@ -19,7 +19,6 @@ iframe {
   height: 100%;
   border-width: 0 !important;
   background: transparent;
-  z-index: 9999;
   border: 0;
 }
 
