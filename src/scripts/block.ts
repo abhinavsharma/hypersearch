@@ -1,3 +1,5 @@
+import { SIDEBAR_Z_INDEX } from 'utils/constants';
+
 (() => {
   const adBlockers = [
     {
@@ -133,7 +135,7 @@
                 font-family: -apple-system, BlinkMacSystemFont, sans-serif;
                 position: absolute; left: 0; top: 0; right: 0; bottom: 0;
                 background: linear-gradient(hsla(0,0%,100%,.9) 0%,#fff);
-                z-index: 1000;`,
+                z-index: ${SIDEBAR_Z_INDEX - 1};`,
       );
       overlay.setAttribute('class', 'adblock');
       const overlaytext = document.createElement('div');

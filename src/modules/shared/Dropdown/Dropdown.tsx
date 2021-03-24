@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SIDEBAR_Z_INDEX } from 'utils/constants';
 import './Dropdown.scss';
 
 export const Dropdown: Dropdown = ({ button, items, className, trigger = 'hover' }) => {
@@ -11,6 +12,7 @@ export const Dropdown: Dropdown = ({ button, items, className, trigger = 'hover'
   return (
     <div
       className={`dropdown ${className ? className : ''}  ${isActive ? 'active' : ''}`}
+      style={{ zIndex: SIDEBAR_Z_INDEX + 2 }}
       onClick={trigger === 'click' ? handleToggle : undefined}
       onMouseEnter={trigger === 'hover' ? handleOpen : undefined}
       onMouseLeave={trigger === 'hover' ? handleClose : undefined}

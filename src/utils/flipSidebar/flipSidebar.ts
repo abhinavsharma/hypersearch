@@ -1,3 +1,5 @@
+import { SIDEBAR_Z_INDEX } from 'utils/constants';
+
 export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
   const document = innerDocument.contentWindow.document.documentElement;
@@ -60,7 +62,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         right: 0;
         bottom: 0;
         background: transparent;
-        z-index: 9999;
+        z-index: ${SIDEBAR_Z_INDEX};
     `,
       );
       nameNub.setAttribute('style', 'display: none;');
@@ -100,7 +102,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       transition-property: width;
       transition-duration: 0.5s;
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-      z-index: 9999;
+      z-index: ${SIDEBAR_Z_INDEX};
     `,
     );
     // We need the timeout to ensure the proper animation

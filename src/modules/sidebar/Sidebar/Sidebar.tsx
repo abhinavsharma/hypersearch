@@ -8,7 +8,12 @@ import React, { useEffect, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
-import { APP_NAME, UPDATE_SIDEBAR_TABS_MESSAGE, WINDOW_REQUIRED_MIN_WIDTH } from 'utils/constants';
+import {
+  APP_NAME,
+  SIDEBAR_Z_INDEX,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+  WINDOW_REQUIRED_MIN_WIDTH,
+} from 'utils/constants';
 import { isKnowledgePage } from 'utils/helpers';
 import './Sidebar.scss';
 
@@ -50,6 +55,7 @@ const Sidebar: Sidebar = () => {
       <div className="insight-sidebar-container">
         <div
           className="insight-sidebar-close-button"
+          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
           onClick={() => {
             setForceTab('1');
             setTimeout(() => {
