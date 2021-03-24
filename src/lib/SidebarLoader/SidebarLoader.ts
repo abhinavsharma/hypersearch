@@ -9,7 +9,7 @@ import { render } from 'react-dom';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { Sidebar } from 'modules/sidebar';
 import {
-  extractHostnameFromUrl,
+  extractUrlProperties,
   postAPI,
   runFunctionWhenDocumentReady,
   debug,
@@ -28,6 +28,7 @@ import {
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
   SUBTABS_CACHE_EXPIRE_MIN,
+  BANNED_DOMAINS,
 } from 'utils/constants';
 
 /**
@@ -215,7 +216,8 @@ class SidebarLoader {
       ),
     );
     return els
-      .map((i) => extractHostnameFromUrl(isBing ? i.textContent : i.getAttribute('href')).full)
+      .map((i) => extractUrlProperties(isBing ? i.textContent : i.getAttribute('href')).full)
+      .filter((domain) => !BANNED_DOMAINS.includes(domain))
       .slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
 
@@ -249,7 +251,7 @@ class SidebarLoader {
           action.value.forEach((val) => {
             const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            tabsByUrl.push({ title: extractHostnameFromUrl(url.href).hostname, url });
+            tabsByUrl.push({ title: extractUrlProperties(url.href).hostname, url });
           });
           break;
         case 'search_domains':
@@ -536,7 +538,7 @@ class SidebarLoader {
   private async getCustomSearchEngine() {
     debug('getCustomSearchEngine - call\n');
     let storedValue: Record<string, CustomSearchEngine>;
-    const { hostname, params } = extractHostnameFromUrl(this.url.href);
+    const { hostname, params } = extractUrlProperties(this.url.href);
     if (!hostname) return null;
     const storageKey = hostname.replace(/\./g, '_');
     storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
