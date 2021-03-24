@@ -31,7 +31,6 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
 
   return (
     <div className="insight-suggested-tab-popup">
-
       <Link
         component={EditAugmentationPage}
         componentProps={{
@@ -48,7 +47,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
           ⑃ Modify Locally
         </Button>
       </Link>
-      
+
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
         <Button
           type="link"
@@ -63,7 +62,7 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
           🤔 Send Feedback
         </Button>
       )}
-      
+
       <Button type="link" onClick={() => handleHideSuggested(tab)}>
         × Hide
       </Button>

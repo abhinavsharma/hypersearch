@@ -8,6 +8,7 @@ declare type AugmentationContext = {
 declare type SidebarTab = {
   id: string;
   title: string;
+  description?: string;
   url: URL;
   default: boolean;
   readable?: string;

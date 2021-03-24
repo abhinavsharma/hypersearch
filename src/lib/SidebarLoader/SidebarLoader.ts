@@ -375,15 +375,16 @@ class SidebarLoader {
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
             this.getTabMetas(augmentation).forEach((meta) => {
               const tab = {
-                url: meta.url,
-                matchingDomainsCondition,
-                matchingDomainsAction,
-                isAnyUrlAction: !!meta.title,
-                id: augmentation.id,
-                title: meta.title ?? augmentation.name,
                 default: !newTabs.length,
-                isSuggested: !augmentation.hasOwnProperty('enabled'),
+                description: augmentation.description,
+                id: augmentation.id,
+                isAnyUrlAction: !!meta.title,
                 isCse: true,
+                isSuggested: !augmentation.hasOwnProperty('enabled'),
+                matchingDomainsAction,
+                matchingDomainsCondition,
+                title: meta.title ?? augmentation.name,
+                url: meta.url,
               };
               newTabs.unshift(tab);
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');

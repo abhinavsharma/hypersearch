@@ -27,6 +27,7 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
+import { SidebarTabDescription } from '../SidebarTabDescription/SidebarTabDescription';
 
 const { TabPane } = Tabs;
 
@@ -127,6 +128,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               forceRender
               className={`insight-full-tab`}
             >
+              {tab.description && <SidebarTabDescription tab={tab} />}
               {tab.url && tab.isCse && (
                 <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
               )}
