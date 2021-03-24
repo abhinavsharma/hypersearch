@@ -9,10 +9,11 @@ import Tabs from 'antd/lib/tabs';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
 import {
-  SuggestedTabPopup,
-  SidebarTabReadable,
+  ActionBar,
   SidebarTabContainer,
+  SidebarTabDescription,
   SidebarTabDomains,
+  SidebarTabReadable,
 } from 'modules/sidebar';
 import { extractUrlProperties } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
@@ -25,7 +26,6 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
-import { SidebarTabDescription } from '../SidebarTabDescription/SidebarTabDescription';
 
 const { TabPane } = Tabs;
 
@@ -117,7 +117,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
           <ActiveAugmentationsPage setActiveKey={setActiveKey} />
         </TabPane>
         {tabs?.map((tab, i) => {
-          const showPopup = tab.isSuggested && activeKey === (i + 1).toString();
           return (
             <TabPane
               key={i + 1}
@@ -129,7 +128,9 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               {tab.url && tab.isCse && (
                 <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
               )}
-              {showPopup && <SuggestedTabPopup tab={tab} setActiveKey={setActiveKey} />}
+              {activeKey === (i + 1).toString() && (
+                <ActionBar tab={tab} setActiveKey={setActiveKey} />
+              )}
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} />}
             </TabPane>

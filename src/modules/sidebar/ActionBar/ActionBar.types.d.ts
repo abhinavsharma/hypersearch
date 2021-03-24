@@ -1,10 +1,10 @@
 import { Dispatch, FunctionComponent, SetStateAction } from 'react';
 
-declare module './SuggestedTabPopup' {
-  type SuggestedTabPopupProps = {
+declare module './ActionBar' {
+  type ActionBarProps = {
     tab: SidebarTab;
     setActiveKey: Dispatch<SetStateAction<string>>;
   };
 
-  type SuggestedTabPopup = FunctionComponent<SuggestedTabPopupProps>;
+  type ActionBar = FunctionComponent<ActionBarProps>;
 }

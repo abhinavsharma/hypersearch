@@ -5,4 +5,4 @@ export * from './SidebarTabDomains/SidebarTabDomains';
 export * from './SidebarTabReadable/SidebarTabReadable';
 export * from './SidebarTabs/SidebarTabs';
 export * from './SidebarToggleButton/SidebarToggleButton';
-export * from './SuggestedTabPopup/SuggestedTabPopup';
+export * from './ActionBar/ActionBar';

@@ -4,8 +4,9 @@ import Button from 'antd/lib/button';
 import { EditAugmentationPage } from 'modules/augmentations/';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { OPEN_AUGMENTATION_BUILDER_MESSAGE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import './ActionBar.scss';
 
-export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
+export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const handleAddSuggested = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
   };
@@ -35,19 +36,21 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
         component={EditAugmentationPage}
         componentProps={{
           augmentation: {
-            ...SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id),
-            installed: false,
+            ...(tab.isSuggested
+              ? SidebarLoader.suggestedAugmentations
+              : SidebarLoader.installedAugmentations
+            ).find((i) => i.id === tab.id),
+            installed: !tab.isSuggested,
           },
-          isAdding: true,
+          isAdding: tab.isSuggested,
           setActiveKey,
         }}
         key={tab.id}
       >
         <Button type="link" onClick={handleAddSuggested}>
-          ⑃ Modify Locally
+          {tab.isSuggested ? '⑃ Modify Locally' : '✏️ Modify Local Filter'}
         </Button>
       </Link>
-
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
         <Button
           type="link"
@@ -62,10 +65,11 @@ export const SuggestedTabPopup: SuggestedTabPopup = ({ tab, setActiveKey }) => {
           🤔 Send Feedback
         </Button>
       )}
-
-      <Button type="link" onClick={() => handleHideSuggested(tab)}>
-        × Hide
-      </Button>
+      {tab.isSuggested && (
+        <Button type="link" onClick={() => handleHideSuggested(tab)}>
+          × Hide
+        </Button>
+      )}
     </div>
   );
 };
