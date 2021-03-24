@@ -28,7 +28,7 @@ import {
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
   SUBTABS_CACHE_EXPIRE_MIN,
-  BANNED_DOMAIN_SELECTORS,
+  BANNED_DOMAINS,
 } from 'utils/constants';
 
 /**
@@ -211,7 +211,7 @@ class SidebarLoader {
     );
     return els
       .map((i) => extractHostnameFromUrl(isBing ? i.textContent : i.getAttribute('href')).full)
-      .filter((domain) => !BANNED_DOMAIN_SELECTORS.includes(domain))
+      .filter((domain) => !BANNED_DOMAINS.includes(domain))
       .slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
 
