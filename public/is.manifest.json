@@ -42,12 +42,5 @@
   "browser_action": {
     "default_title": "Insight"
   },
-  "permissions": [
-    "tabs",
-    "storage",
-    "<all_urls>",
-    "webRequest",
-    "webRequestBlocking",
-    "webNavigation"
-  ]
+  "permissions": ["storage", "<all_urls>", "webRequest", "webRequestBlocking", "webNavigation"]
 }
