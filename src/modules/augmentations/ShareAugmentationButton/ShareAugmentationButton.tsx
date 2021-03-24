@@ -43,7 +43,7 @@ export const ShareAugmentationButton: ShareAugmentationButton = ({ augmentation,
         <Suspense fallback={null}>
           <UploadOutlined />
         </Suspense>
-        <span>Share Filter</span>
+        <span>Share Lens</span>
       </div>
     </Button>
   );
