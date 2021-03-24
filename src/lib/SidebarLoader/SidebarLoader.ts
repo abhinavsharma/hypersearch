@@ -401,12 +401,16 @@ class SidebarLoader {
       return compareTabs(a, b, this.domains);
     });
 
-    this.isSerp =
-      window.location.hostname.replace('www.', '') + window.location.pathname ===
-        this.customSearchEngine?.search_engine_json?.required_prefix &&
-      window.location.search.indexOf(
-        this.customSearchEngine?.search_engine_json?.required_params + '=',
-      ) > -1;
+    const checkRequiredParams = () =>
+      this.customSearchEngine?.search_engine_json?.required_params
+        .map((param) => window.location.search.search(`${param}=`) === -1)
+        .indexOf(true) === -1;
+
+    const checkRequiredPrefix = () =>
+      window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
+      -1;
+
+    this.isSerp = checkRequiredPrefix() && checkRequiredParams();
 
     IN_DEBUG_MODE &&
       debug(
