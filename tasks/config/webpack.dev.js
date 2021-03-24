@@ -11,5 +11,8 @@ module.exports = (env) =>
       followSymlinks: true,
       aggregateTimeout: 500,
     },
+    devServer: {
+      stats: 'errors-only',
+    },
     devtool: 'cheap-module-source-map',
   });

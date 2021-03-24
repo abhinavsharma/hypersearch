@@ -19,7 +19,7 @@ const PATHS = require('../lib/path').default;
     ],
     initial: 1,
   });
-  webpack(config({ PROJECT: project }), (err) => {
+  webpack(config({ PROJECT: project }), (err, stat) => {
     if (err) {
       console.log(chalk.redBright('Unexpected error:', err));
       process.exit(1);
@@ -37,7 +37,19 @@ const PATHS = require('../lib/path').default;
       fs.rename(`${root}/${project}.manifest.json`, `${root}/manifest.json`, handleError);
     }
     console.log(
-      chalk.greenBright(`Compiled successfully at ${new Date(Date.now()).toISOString()}`),
+      !!stat.toJson().errors.length
+        ? chalk.redBright.bold(
+            stat
+              .toJson()
+              .errors.map(
+                (error, i) =>
+                  `\n${i + 1}.) Error in module: ${error.moduleName}\nCheck line: ${
+                    error.loc || 'N/A'
+                  }`,
+              )
+              .join('\n'),
+          )
+        : chalk.greenBright(`Compiled successfully at ${new Date(Date.now()).toISOString()}`),
     );
     built = true;
   });
