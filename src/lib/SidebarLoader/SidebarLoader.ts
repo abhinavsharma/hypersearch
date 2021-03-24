@@ -28,6 +28,7 @@ import {
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
   SUBTABS_CACHE_EXPIRE_MIN,
+  FEATURED_SNIPPET_SELECTORS,
 } from 'utils/constants';
 
 /**
@@ -200,12 +201,22 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public getDomains(document: Document) {
+    let els = [];
     const isGoogle = location.href.search(/google\.com/gi) > -1;
-    //!dev const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
+    const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
     const isBing = location.href.search(/bing\.com/gi) > -1;
-    const els = Array.from(
-      document.querySelectorAll(
-        this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
+    let featuredSnippetSelector = '';
+    if (isGoogle) featuredSnippetSelector = FEATURED_SNIPPET_SELECTORS['google'];
+    if (isDdg) featuredSnippetSelector = FEATURED_SNIPPET_SELECTORS['ddg'];
+    if (isBing) featuredSnippetSelector = FEATURED_SNIPPET_SELECTORS['bing'];
+    if (featuredSnippetSelector) {
+      els = Array.from(document.querySelectorAll(featuredSnippetSelector));
+    }
+    els = els.concat(
+      Array.from(
+        document.querySelectorAll(
+          this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
+        ),
       ),
     );
     return els
