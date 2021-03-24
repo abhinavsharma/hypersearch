@@ -68,7 +68,7 @@
       });
       cleanUp();
       document.getElementsByTagName('html')[0]?.classList.remove('is-not-mobile-device');
-    }, 100);
+    }, 500);
 
     document.addEventListener('DOMNodeInserted', cleanUp);
     document.addEventListener('DOMContentLoaded', cleanUp);
