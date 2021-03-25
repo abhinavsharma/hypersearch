@@ -60,6 +60,7 @@
             'href',
             linkElement.getAttribute('href')?.replace('amp.reddit', 'www.reddit'),
           );
+          linkElement.setAttribute('target', '_blank');
           linkElement.removeAttribute('data-amp-cdn');
           linkElement.removeAttribute('data-amp-sxg');
           linkElement.removeAttribute('data-ved');

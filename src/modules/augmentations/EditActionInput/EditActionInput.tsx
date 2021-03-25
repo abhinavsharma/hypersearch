@@ -17,7 +17,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
   const [newValue, setNewValue] = useState('');
   const [type, setType] = useState<string>(action?.key);
   const [newLabel, setNewLabel] = useState<string>(
-    action?.label ?? 'Hover to select action type...',
+    action?.label ?? 'Choose Action Type',
   );
 
   const handleSaveValue = (e: string, i: number) => {
