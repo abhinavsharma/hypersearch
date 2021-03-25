@@ -150,6 +150,24 @@ class SidebarLoader {
   public ignoredAugmentations: AugmentationObject[];
 
   /**
+   * The list of augmentations that are always displayed on the sidebar
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public pinnedAugmentations: AugmentationObject[];
+
+  /**
+   * The list of augmentations which not matching to the current url by condition
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public otherAugmentations: AugmentationObject[];
+
+  /**
    * The list of locally installed but disabled augmentations.
    *
    * @public
@@ -185,6 +203,8 @@ class SidebarLoader {
     this.customSearchEngine = Object.create(null);
     this.installedAugmentations = [];
     this.suggestedAugmentations = [];
+    this.pinnedAugmentations = [];
+    this.otherAugmentations = [];
     this.ignoredAugmentations = [];
     this.matchingDisabledInstalledAugmentations = [];
   }
@@ -287,9 +307,11 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public getTabsAndAugmentations(
-    augmentations: AugmentationObject[] = this.suggestedAugmentations.concat(
-      this.installedAugmentations,
-    ),
+    augmentations: AugmentationObject[] = [
+      ...this.installedAugmentations,
+      ...this.pinnedAugmentations,
+      ...this.suggestedAugmentations,
+    ],
   ) {
     debug(
       'getTabsAndAugmentations - call\n---\n\tDomains on the current page (in preserved order)\n',
@@ -308,6 +330,7 @@ class SidebarLoader {
         augmentation.id.startsWith('cse-') &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
+        let isRelevant = false;
         const domainsToLookCondition = augmentation.conditions?.condition_list.map(
           (e) => e.value[0],
         );
@@ -333,6 +356,7 @@ class SidebarLoader {
             },
             '\n',
           );
+
         if (
           matchingDomainsCondition.length > 0 &&
           augmentation.conditions.condition_list
@@ -345,7 +369,7 @@ class SidebarLoader {
           // When an augmentation overlaps with the SERP result in more than NUM_DOMAINS_TO_EXCLUDE
           // cases, we care that augmentation as ignored and do not list in the sidebar. Both actions
           // and conditions are taken in concern.
-          const isRelevant =
+          isRelevant =
             matchingDomainsCondition
               .map(
                 (domain) =>
@@ -390,6 +414,7 @@ class SidebarLoader {
                   (i) => i.key === 'any_url',
                 ),
                 isCse: true,
+                isPinned: augmentation.isPinned,
                 isSuggested: !augmentation.hasOwnProperty('enabled'),
                 matchingDomainsAction,
                 matchingDomainsCondition,
@@ -403,6 +428,20 @@ class SidebarLoader {
             this.matchingDisabledInstalledAugmentations.push(augmentation);
           }
         }
+
+        if (
+          !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
+          !augmentation.id.startsWith('cse-custom') &&
+          !augmentation.id.startsWith('ignored')
+        ) {
+          augmentation.installed && console.log(augmentation);
+          this.otherAugmentations.push(augmentation);
+        }
+
+        if (augmentation.installed && !isRelevant) {
+          this.otherAugmentations.push(augmentation);
+        }
+
         augmentation.hasOwnProperty('enabled') &&
           !augmentation.enabled &&
           this.matchingDisabledInstalledAugmentations.push(augmentation);
@@ -604,7 +643,11 @@ class SidebarLoader {
               .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
               .indexOf(false) === -1
           ) {
-            a.push(augmentation);
+            augmentation.isPinned
+              ? this.pinnedAugmentations.push(augmentation)
+              : a.push(augmentation);
+          } else {
+            this.otherAugmentations.push(augmentation);
           }
         }
         return a;
@@ -614,6 +657,8 @@ class SidebarLoader {
       this.installedAugmentations,
       '\n\tIgnored Augmentations',
       this.ignoredAugmentations,
+      '\n\tPinned Augmentations',
+      this.pinnedAugmentations,
       '\n---',
     );
   }
@@ -636,6 +681,7 @@ class SidebarLoader {
     await this.getLocalAugmentations();
     this.tabDomains['original'] = this.getDomains(document);
     this.getTabsAndAugmentations([
+      ...this.pinnedAugmentations,
       ...response.suggested_augmentations,
       ...this.installedAugmentations,
     ]);

@@ -14,10 +14,10 @@ declare type SidebarTab = {
   readable?: string;
   matchingDomainsCondition?: string[];
   matchingDomainsAction?: string[];
+  isPinned?: boolean;
   isAnyUrlAction?: boolean;
   isCse?: boolean;
   isSuggested?: boolean;
-  isPinnedTab?: boolean;
 };
 
 declare type SidebarResponseArrayObject = {
@@ -60,6 +60,8 @@ declare type AugmentationObject = {
   conditions: Condition;
   actions: Action;
   enabled?: boolean;
+  installed?: boolean;
+  isPinned?: boolean;
 };
 
 declare type CustomSearchEngine = {

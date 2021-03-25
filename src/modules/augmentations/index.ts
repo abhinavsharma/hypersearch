@@ -1,4 +1,5 @@
 export * from './ActiveAugmentationsPage/ActiveAugmentationsPage';
+export * from './AugmentationRow/AugmentationRow';
 export * from './AddAugmentationTab/AddAugmentationTab';
 export * from './DeleteAugmentationButton/DeleteAugmentationButton';
 export * from './EditActionInput/EditActionInput';

@@ -63,13 +63,31 @@
         }
       }
 
-      button {
+      .suggested-augmentation-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
         height: 50px;
         background: white;
         text-align: left;
 
-        &:hover {
-          background: #efefef;
+        .augmentation-name {
+          margin-left: 10px;
+        }
+
+        .force-left-margin {
+          margin-left: auto !important;
+        }
+
+        button {
+          border-radius: 3px;
+          color: #2d23af;
+          margin-left: auto;
+
+          &:last-child {
+            margin-left: 5px;
+            margin-right: 10px;
+          }
         }
       }
     }

@@ -3,12 +3,33 @@ import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import { EditAugmentationPage } from 'modules/augmentations/';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import {
+  ANY_URL_CONDITION_TEMPLATE,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+} from 'utils/constants';
 import './ActionBar.scss';
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
+  const augmentation = (tab.isSuggested
+    ? SidebarLoader.suggestedAugmentations
+    : [...SidebarLoader.installedAugmentations, ...SidebarLoader.pinnedAugmentations]
+  ).find((i) => i.id === tab.id);
+
   const handleAddSuggested = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
+  };
+
+  const handleAddPinned = () => {
+    AugmentationManager.addOrEditAugmentation(
+      { ...augmentation, isPinned: true },
+      {
+        conditions: [ANY_URL_CONDITION_TEMPLATE],
+        name: `${tab.title} / Pinned`,
+        isActive: true,
+      },
+    );
   };
 
   const handleHideSuggested = (tab: SidebarTab) => {
@@ -36,10 +57,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         component={EditAugmentationPage}
         componentProps={{
           augmentation: {
-            ...(tab.isSuggested
-              ? SidebarLoader.suggestedAugmentations
-              : SidebarLoader.installedAugmentations
-            ).find((i) => i.id === tab.id),
+            ...augmentation,
             installed: !tab.isSuggested,
           },
           isAdding: tab.isSuggested,
@@ -47,10 +65,23 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         }}
         key={tab.id}
       >
-        <Button type="link" onClick={handleAddSuggested} style={{marginBottom: (tab.isSuggested ? 0 : 7)}}>
+        <Button
+          type="link"
+          onClick={handleAddSuggested}
+          style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+        >
           {tab.isSuggested ? '🔎 Edit Lens Locally' : '✏️ Edit Lens'}
         </Button>
       </Link>
+      {!tab.isPinned && (
+        <Button
+          type="link"
+          onClick={handleAddPinned}
+          style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+        >
+          Always Show
+        </Button>
+      )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
         <Button
           type="link"

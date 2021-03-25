@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Router, { Link, goTo } from 'route-lite';
+import Router, { goTo } from 'route-lite';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { EditAugmentationPage } from 'modules/augmentations';
+import Divider from 'antd/lib/divider';
+import { EditAugmentationPage, AugmentationRow } from 'modules/augmentations';
 import {
   EMPTY_AUGMENTATION,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -14,7 +15,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/divider/style/index.css';
 import './ActiveAugmentationsPage.scss';
-import Divider from 'antd/lib/divider';
 
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey }) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>(
@@ -26,6 +26,12 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
   const [ignoredAugmentations, setIgnoredAugmentations] = useState<AugmentationObject[]>(
     SidebarLoader.ignoredAugmentations,
   );
+  const [pinnedAugmentations, setPinnedAugmentations] = useState<AugmentationObject[]>(
+    SidebarLoader.pinnedAugmentations,
+  );
+  const [otherAugmentations, setOtherAugmentations] = useState<AugmentationObject[]>(
+    SidebarLoader.otherAugmentations,
+  );
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -33,6 +39,8 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         setInstalledAugmentations(SidebarLoader.installedAugmentations);
         setSuggestedAugmentations(SidebarLoader.suggestedAugmentations);
         setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
+        setPinnedAugmentations(SidebarLoader.pinnedAugmentations);
+        setOtherAugmentations(SidebarLoader.otherAugmentations);
       }
       if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE && msg.create) {
         goTo(EditAugmentationPage, {
@@ -44,15 +52,6 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
     });
   }, []);
 
-  const handleUnIgnore = (augmentation: AugmentationObject) => {
-    SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    chrome.storage.local.remove(`ignored-${augmentation.id}`);
-    SidebarLoader.suggestedAugmentations.push(augmentation);
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-  };
-
   return (
     <Router>
       <div className="insight-active-augmentations-page">
@@ -62,20 +61,11 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
             <h2>Your Custom Lenses for This Page</h2>
             <h3>{`${SidebarLoader.url.href.slice(0, 60)}...`}</h3>
             {installedAugmentations.map((augmentation) => (
-              <div className="installed-augmentation-row" key={augmentation.id}>
-                <Link
-                  component={EditAugmentationPage}
-                  componentProps={{
-                    augmentation: { ...augmentation, installed: true },
-                    setActiveKey,
-                  }}
-                  key={augmentation.id}
-                >
-                  <Button className="installed-augmentation-button installed " type="text" block>
-                    {augmentation.name}
-                  </Button>
-                </Link>
-              </div>
+              <AugmentationRow
+                key={augmentation.id}
+                augmentation={augmentation}
+                setActiveKey={setActiveKey}
+              />
             ))}
           </Col>
         </Row>
@@ -103,37 +93,38 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
             {suggestedAugmentations
               .filter((i) => i.actions.action_list.some((i) => i.key !== 'inject_js'))
               .map((augmentation) => (
-                <Link
-                  component={EditAugmentationPage}
-                  componentProps={{
-                    augmentation: { ...augmentation, installed: false },
-                    isAdding: true,
-                    initiatedFromActives: true,
-                    setActiveKey,
-                  }}
+                <AugmentationRow
                   key={augmentation.id}
-                >
-                  <Button type="text" block key={augmentation.id}>
-                    {augmentation.name}
-                  </Button>
-                </Link>
+                  augmentation={augmentation}
+                  setActiveKey={setActiveKey}
+                />
               ))}
           </Col>
         </Row>
         <Divider />
-
+        <Row>
+          <Col>
+            <h2>Hidden Lenses</h2>
+            {ignoredAugmentations.map((augmentation) => (
+              <AugmentationRow
+                ignored
+                key={augmentation.id}
+                augmentation={augmentation}
+                setActiveKey={setActiveKey}
+              />
+            ))}
+          </Col>
+        </Row>
+        <Divider />
         <Row>
           <Col>
             <h2>Other Lenses</h2>
-            {ignoredAugmentations.map((augmentation) => (
-              <Button
-                type="text"
-                block
+            {[...pinnedAugmentations, ...otherAugmentations].map((augmentation) => (
+              <AugmentationRow
                 key={augmentation.id}
-                onClick={() => handleUnIgnore(augmentation)}
-              >
-                {augmentation.name}
-              </Button>
+                augmentation={augmentation}
+                setActiveKey={setActiveKey}
+              />
             ))}
           </Col>
         </Row>
