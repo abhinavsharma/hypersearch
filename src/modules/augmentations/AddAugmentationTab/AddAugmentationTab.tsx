@@ -20,25 +20,25 @@ export const AddAugmentationTab: AddAugmentationTab = ({
     <Button
       className="dropdown-button"
       type="link"
-      onClick={() => window.open(AIRTABLE_IMPROVE_SEARCH_LINK)}
-    >
-      🤔 Report Results
-    </Button>,
-    <Button
-      className="dropdown-button"
-      type="link"
       onClick={() =>
         chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
       }
     >
-      💪 Create a Lens
+      ➕ Add Lens
     </Button>,
     <Button
       className="dropdown-button"
       type="link"
       onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
     >
-      🚀 List All Lenses
+      🔍 List All Lenses
+    </Button>,
+    <Button
+      className="dropdown-button"
+      type="link"
+      onClick={() => window.open(AIRTABLE_IMPROVE_SEARCH_LINK)}
+    >
+      🤔 Send Feedback
     </Button>,
   ];
 
