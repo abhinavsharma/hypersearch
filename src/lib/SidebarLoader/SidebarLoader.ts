@@ -386,7 +386,9 @@ class SidebarLoader {
                 default: !newTabs.length,
                 description: augmentation.description,
                 id: augmentation.id,
-                isAnyUrlAction: !!meta.title,
+                isAnyUrlAction: !!augmentation.conditions.condition_list.find(
+                  (i) => i.key === 'any_url',
+                ),
                 isCse: true,
                 isSuggested: !augmentation.hasOwnProperty('enabled'),
                 matchingDomainsAction,
