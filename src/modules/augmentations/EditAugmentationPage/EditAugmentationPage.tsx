@@ -236,8 +236,8 @@ export const EditAugmentationPage: EditAugmentationPage = ({
           <Panel header="About" key="3">
             <EditAugmentationMeta
               augmentation={augmentation}
-              name={name}
-              description={description}
+              name={isAdding && !!name.length ? `${name} / Modified` : name}
+              description={isAdding ? '' : description}
               onNameChange={handleEditName}
               onDescriptionChange={handleEditDescription}
               enabled={isActive}
