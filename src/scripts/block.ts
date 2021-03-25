@@ -156,7 +156,7 @@ import { SIDEBAR_Z_INDEX } from 'utils/constants';
                 margin-top: 10px;
                 font-size: 16px;`,
       );
-      overlaytextinner.innerText = 'Tap to show likely ad.';
+      overlaytextinner.innerText = 'Click to show likely ad.';
       overlay.appendChild(overlaytext);
       overlaytext.appendChild(overlaytextinner);
       overlay.addEventListener('click', (e) => {
