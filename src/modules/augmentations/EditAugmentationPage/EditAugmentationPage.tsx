@@ -25,7 +25,9 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 }) => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
-  const [name, setName] = useState<string>(augmentation.name);
+  const [name, setName] = useState<string>(
+    isAdding && !!augmentation.name.length ? `${augmentation.name} / Modified` : augmentation.name,
+  );
   const [description, setDescription] = useState<string>(augmentation.description);
   const [isActive, setIsActive] = useState<boolean>(augmentation.enabled || isAdding);
   const [conditionEvaluation, setConditionEvaluation] = useState<Condition['evaluate_with']>(
@@ -236,7 +238,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
           <Panel header="About" key="3">
             <EditAugmentationMeta
               augmentation={augmentation}
-              name={isAdding && !!name.length ? `${name} / Modified` : name}
+              name={name}
               description={isAdding ? '' : description}
               onNameChange={handleEditName}
               onDescriptionChange={handleEditDescription}
