@@ -15,9 +15,6 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
     SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
-    SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
     SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );

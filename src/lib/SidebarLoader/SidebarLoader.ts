@@ -150,15 +150,6 @@ class SidebarLoader {
   public ignoredAugmentations: AugmentationObject[];
 
   /**
-   * The list of augmentations that are always displayed on the sidebar
-   *
-   * @public
-   * @property
-   * @memberof SidebarLoader
-   */
-  public pinnedAugmentations: AugmentationObject[];
-
-  /**
    * The list of augmentations which not matching to the current url by condition
    *
    * @public
@@ -203,7 +194,6 @@ class SidebarLoader {
     this.customSearchEngine = Object.create(null);
     this.installedAugmentations = [];
     this.suggestedAugmentations = [];
-    this.pinnedAugmentations = [];
     this.otherAugmentations = [];
     this.ignoredAugmentations = [];
     this.matchingDisabledInstalledAugmentations = [];
@@ -309,7 +299,6 @@ class SidebarLoader {
   public getTabsAndAugmentations(
     augmentations: AugmentationObject[] = [
       ...this.installedAugmentations,
-      ...this.pinnedAugmentations,
       ...this.suggestedAugmentations,
     ],
   ) {
@@ -414,7 +403,6 @@ class SidebarLoader {
                   (i) => i.key === 'any_url',
                 ),
                 isCse: true,
-                isPinned: augmentation.isPinned,
                 isSuggested: !augmentation.hasOwnProperty('enabled'),
                 matchingDomainsAction,
                 matchingDomainsCondition,
@@ -429,16 +417,15 @@ class SidebarLoader {
           }
         }
 
+        if (augmentation.installed && !isRelevant) {
+          this.otherAugmentations.push(augmentation);
+        }
+
         if (
           !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
           !augmentation.id.startsWith('cse-custom') &&
           !augmentation.id.startsWith('ignored')
         ) {
-          augmentation.installed && console.log(augmentation);
-          this.otherAugmentations.push(augmentation);
-        }
-
-        if (augmentation.installed && !isRelevant) {
           this.otherAugmentations.push(augmentation);
         }
 
@@ -643,9 +630,7 @@ class SidebarLoader {
               .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
               .indexOf(false) === -1
           ) {
-            augmentation.isPinned
-              ? this.pinnedAugmentations.push(augmentation)
-              : a.push(augmentation);
+            a.push(augmentation);
           } else {
             this.otherAugmentations.push(augmentation);
           }
@@ -657,8 +642,6 @@ class SidebarLoader {
       this.installedAugmentations,
       '\n\tIgnored Augmentations',
       this.ignoredAugmentations,
-      '\n\tPinned Augmentations',
-      this.pinnedAugmentations,
       '\n---',
     );
   }
@@ -681,7 +664,6 @@ class SidebarLoader {
     await this.getLocalAugmentations();
     this.tabDomains['original'] = this.getDomains(document);
     this.getTabsAndAugmentations([
-      ...this.pinnedAugmentations,
       ...response.suggested_augmentations,
       ...this.installedAugmentations,
     ]);

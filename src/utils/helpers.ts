@@ -146,8 +146,8 @@ export const isSafari = () => {
 };
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
-  if ((!a.isAnyUrlAction && b.isAnyUrlAction) || (!a.isPinned && b.isPinned)) return -1;
-  if ((a.isAnyUrlAction && !b.isAnyUrlAction) || (a.isPinned && !b.isPinned)) return 1;
+  if (!a.isAnyUrlAction && b.isAnyUrlAction) return -1;
+  if (a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
   const tabRatings = Object.create(null);
   const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
   const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };

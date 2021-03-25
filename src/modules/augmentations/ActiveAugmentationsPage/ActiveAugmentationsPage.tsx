@@ -26,9 +26,6 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
   const [ignoredAugmentations, setIgnoredAugmentations] = useState<AugmentationObject[]>(
     SidebarLoader.ignoredAugmentations,
   );
-  const [pinnedAugmentations, setPinnedAugmentations] = useState<AugmentationObject[]>(
-    SidebarLoader.pinnedAugmentations,
-  );
   const [otherAugmentations, setOtherAugmentations] = useState<AugmentationObject[]>(
     SidebarLoader.otherAugmentations,
   );
@@ -39,7 +36,6 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         setInstalledAugmentations(SidebarLoader.installedAugmentations);
         setSuggestedAugmentations(SidebarLoader.suggestedAugmentations);
         setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
-        setPinnedAugmentations(SidebarLoader.pinnedAugmentations);
         setOtherAugmentations(SidebarLoader.otherAugmentations);
       }
       if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE && msg.create) {
@@ -119,7 +115,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Row>
           <Col>
             <h2>Other Lenses</h2>
-            {[...pinnedAugmentations, ...otherAugmentations].map((augmentation) => (
+            {otherAugmentations.map((augmentation) => (
               <AugmentationRow
                 key={augmentation.id}
                 augmentation={augmentation}

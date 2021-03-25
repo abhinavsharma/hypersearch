@@ -14,23 +14,22 @@ import './ActionBar.scss';
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const augmentation = (tab.isSuggested
     ? SidebarLoader.suggestedAugmentations
-    : [...SidebarLoader.installedAugmentations, ...SidebarLoader.pinnedAugmentations]
+    : SidebarLoader.installedAugmentations
   ).find((i) => i.id === tab.id);
+
+  const isPinned = !!augmentation.conditions.condition_list.find((i) => i.key === 'any_url');
 
   const handleAddSuggested = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
   };
 
   const handleAddPinned = () => {
-    AugmentationManager.addOrEditAugmentation(
-      { ...augmentation, isPinned: true },
-      {
-        conditions: [ANY_URL_CONDITION_TEMPLATE],
-        name: `${tab.title} / Pinned`,
-        isActive: true,
-        isPinning: true,
-      },
-    );
+    AugmentationManager.addOrEditAugmentation(augmentation, {
+      conditions: [ANY_URL_CONDITION_TEMPLATE],
+      name: `${tab.title} / Pinned`,
+      isActive: true,
+      isPinning: true,
+    });
   };
 
   const handleHideSuggested = (tab: SidebarTab) => {
@@ -74,7 +73,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           {tab.isSuggested ? '🔎 Edit Lens Locally' : '✏️ Edit Lens'}
         </Button>
       </Link>
-      {!tab.isPinned && (
+      {!isPinned && (
         <Button
           type="link"
           onClick={handleAddPinned}

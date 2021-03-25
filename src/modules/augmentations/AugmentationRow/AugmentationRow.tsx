@@ -4,20 +4,20 @@ import Button from 'antd/lib/button';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { EditAugmentationPage } from 'modules/augmentations';
 import { ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
-import 'antd/lib/button/style/index.css';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import 'antd/lib/button/style/index.css';
+import './AugmentationRow.scss';
 
 export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, ignored }) => {
+  const isPinned = !!augmentation.conditions.condition_list.find((i) => i.key === 'any_url');
+
   const handlePin = () => {
-    AugmentationManager.addOrEditAugmentation(
-      { ...augmentation, isPinned: true },
-      {
-        name: `${augmentation.name} / Pinned`,
-        conditions: [ANY_URL_CONDITION_TEMPLATE],
-        isActive: augmentation.hasOwnProperty('enabled') ? augmentation.enabled : true,
-        isPinning: true,
-      },
-    );
+    AugmentationManager.addOrEditAugmentation(augmentation, {
+      name: `${augmentation.name} / Pinned`,
+      conditions: [ANY_URL_CONDITION_TEMPLATE],
+      isActive: augmentation.hasOwnProperty('enabled') ? augmentation.enabled : true,
+      isPinning: true,
+    });
   };
 
   const handleUnIgnore = () => {
@@ -32,14 +32,12 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
   return (
     <div className="augmentation-row">
       <span className="augmentation-name">
-        {!augmentation.hasOwnProperty('installed')
-          ? augmentation.name
-          : `${augmentation.name} ${augmentation.isPinned ? '📌' : '◾'}`}
+        {!augmentation.hasOwnProperty('installed') ? augmentation.name : `${augmentation.name} ◾`}
       </span>
       <Button
         size="small"
         type="ghost"
-        className={`${augmentation.isPinned ? 'force-left-margin' : ''}`}
+        className={`${isPinned ? 'force-left-margin' : ''}`}
         onClick={() =>
           goTo(EditAugmentationPage, {
             augmentation,
@@ -56,7 +54,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
           Unhide
         </Button>
       ) : (
-        !augmentation.isPinned && (
+        !isPinned && (
           <Button size="small" type="ghost" onClick={handlePin}>
             Always Show
           </Button>

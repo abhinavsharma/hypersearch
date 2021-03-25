@@ -48,15 +48,10 @@ class AugmentationManager {
       updated,
       '\n---',
     );
-    !augmentation.isPinned
-      ? (SidebarLoader.installedAugmentations = [
-          updated,
-          ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
-        ])
-      : (SidebarLoader.pinnedAugmentations = [
-          updated,
-          ...SidebarLoader.pinnedAugmentations.filter((i) => i.id !== updated.id),
-        ]);
+    SidebarLoader.installedAugmentations = [
+      updated,
+      ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
+    ];
     chrome.storage.local.set({ [id]: updated });
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
