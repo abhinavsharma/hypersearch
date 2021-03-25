@@ -28,6 +28,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         conditions: [ANY_URL_CONDITION_TEMPLATE],
         name: `${tab.title} / Pinned`,
         isActive: true,
+        isPinning: true,
       },
     );
   };

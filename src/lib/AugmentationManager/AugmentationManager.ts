@@ -6,15 +6,20 @@ import { UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
 class AugmentationManager {
   public addOrEditAugmentation(
     augmentation: AugmentationObject,
-    { actions, conditions, conditionEvaluation, description, name, isActive }: AugmentationData,
+    {
+      actions,
+      conditions,
+      conditionEvaluation,
+      description,
+      name,
+      isActive,
+      isPinning,
+    }: AugmentationData,
   ) {
     const customId = `cse-custom-${
       augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
     }-${uuid()}`;
-    const id =
-      augmentation.id.startsWith('cse-custom-') && !augmentation.isPinned
-        ? augmentation.id
-        : customId;
+    const id = augmentation.id.startsWith('cse-custom-') && !isPinning ? augmentation.id : customId;
     const updated = {
       ...augmentation,
       id,

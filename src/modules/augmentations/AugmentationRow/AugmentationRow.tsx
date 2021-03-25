@@ -15,6 +15,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
         name: `${augmentation.name} / Pinned`,
         conditions: [ANY_URL_CONDITION_TEMPLATE],
         isActive: augmentation.hasOwnProperty('enabled') ? augmentation.enabled : true,
+        isPinning: true,
       },
     );
   };

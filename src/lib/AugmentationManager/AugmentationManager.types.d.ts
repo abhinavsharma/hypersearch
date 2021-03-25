@@ -6,6 +6,7 @@ declare module './AugmentationManager' {
     description?: string;
     name?: string;
     isActive?: boolean;
+    isPinning?: boolean;
   };
 }
 
