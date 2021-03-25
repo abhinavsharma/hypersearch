@@ -67,7 +67,7 @@ const Sidebar: Sidebar = () => {
         >
           ×
         </div>
-        <div className="insight-sidebar-title">{APP_NAME}</div>
+        <div className="insight-sidebar-title">🔎&nbsp;&nbsp;Lenses from {APP_NAME}</div>
         <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />
       </div>
       <SidebarToggleButton tabs={sidebarTabs} setTab={setForceTab} />
