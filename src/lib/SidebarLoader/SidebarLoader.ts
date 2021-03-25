@@ -410,7 +410,6 @@ class SidebarLoader {
     });
 
     this.sidebarTabs = newTabs.sort((a, b) => {
-      console.log('called', a, b);
       if (a.isSuggested && !b.isSuggested) return 1;
       if (!a.isSuggested && b.isSuggested) return -1;
       return compareTabs(a, b, this.domains);
