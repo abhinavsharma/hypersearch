@@ -386,7 +386,9 @@ class SidebarLoader {
                 default: !newTabs.length,
                 description: augmentation.description,
                 id: augmentation.id,
-                isAnyUrlAction: !!meta.title,
+                isAnyUrlAction: !!augmentation.conditions.condition_list.find(
+                  (i) => i.key === 'any_url',
+                ),
                 isCse: true,
                 isSuggested: !augmentation.hasOwnProperty('enabled'),
                 matchingDomainsAction,
@@ -408,6 +410,7 @@ class SidebarLoader {
     });
 
     this.sidebarTabs = newTabs.sort((a, b) => {
+      console.log('called', a, b);
       if (a.isSuggested && !b.isSuggested) return 1;
       if (!a.isSuggested && b.isSuggested) return -1;
       return compareTabs(a, b, this.domains);
