@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
+import { v4 as uuid } from 'uuid';
 import { CustomAction, EditActionInput } from 'modules/augmentations';
 import { EMPTY_AUGMENTATION } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
@@ -28,8 +29,8 @@ export const EditAugmentationActions: EditAugmentationActions = ({
 
   return (
     <>
-      {filteredAction.map((action, index) => (
-        <Row className="edit-input-row no-border" key={`${action}-${index}`}>
+      {filteredAction.map((action) => (
+        <Row className="edit-input-row no-border" key={uuid()}>
           <EditActionInput action={action} saveAction={onSave} deleteAction={onDelete} />
         </Row>
       ))}
@@ -40,7 +41,7 @@ export const EditAugmentationActions: EditAugmentationActions = ({
             type="link"
             onClick={() =>
               onAdd({
-                id: actions.length.toString(),
+                id: uuid(),
                 ...EMPTY_AUGMENTATION.actions.action_list[0],
               })
             }

@@ -51,9 +51,9 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   );
 
   const [actions, setActions] = useState<CustomAction[]>(
-    augmentation.actions.action_list.map((action, index) => ({
+    augmentation.actions.action_list.map((action) => ({
       ...action,
-      id: index.toString(),
+      id: uuid(),
     })),
   );
 
