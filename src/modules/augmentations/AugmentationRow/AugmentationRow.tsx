@@ -30,7 +30,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
   };
 
   return (
-    <div className="suggested-augmentation-row">
+    <div className="augmentation-row">
       <span className="augmentation-name">
         {!augmentation.hasOwnProperty('installed')
           ? augmentation.name
