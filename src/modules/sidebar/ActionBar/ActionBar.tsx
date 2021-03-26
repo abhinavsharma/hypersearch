@@ -70,7 +70,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           onClick={handleAddSuggested}
           style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
         >
-          {tab.isSuggested ? '🔎 Edit Lens Locally' : '✏️ Edit Lens'}
+          {tab.isSuggested ? '🔎 Edit Locally' : '✏️ Edit Locally'}
         </Button>
       </Link>
       {!isPinned && (
@@ -79,7 +79,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           onClick={handleAddPinned}
           style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
         >
-          Always Show
+          📌 Pin Locally
         </Button>
       )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (

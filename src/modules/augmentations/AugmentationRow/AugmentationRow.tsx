@@ -56,7 +56,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
       ) : (
         !isPinned && (
           <Button size="small" type="ghost" onClick={handlePin}>
-            Always Show
+            Pin Locally
           </Button>
         )
       )}
