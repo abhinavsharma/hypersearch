@@ -89,7 +89,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             activeKey === '0' ? 'hidden' : ''
           }`}
         >
-          {tab.isSuggested ? tab.title : `${tab.title} ◾`}
+          {tab.isSuggested ? tab.title : `${tab.title} ${tab.isPinned ? '📌' : '◾'}`}
         </span>
       </div>
     );

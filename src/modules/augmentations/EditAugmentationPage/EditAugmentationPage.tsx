@@ -4,8 +4,7 @@ import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { v4 as uuid } from 'uuid';
-import { EMPTY_AUGMENTATION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
-import { debug } from 'utils/helpers';
+import { EMPTY_AUGMENTATION } from 'utils/constants';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
@@ -14,6 +13,7 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 
 const { Panel } = Collapse;
 
@@ -24,9 +24,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   setActiveKey,
 }) => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>();
   const [name, setName] = useState<string>(
-    isAdding && !!augmentation.name.length ? `${augmentation.name} / Modified` : augmentation.name,
+    isAdding && !!augmentation.name.length
+      ? `${augmentation.name} / Modified`
+      : augmentation.name || '🎉 My Lens',
   );
   const [description, setDescription] = useState<string>(augmentation.description);
   const [isActive, setIsActive] = useState<boolean>(augmentation.enabled || isAdding);
@@ -60,10 +61,6 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   );
 
   useEffect(() => {
-    setInstalledAugmentations(SidebarLoader.installedAugmentations);
-  }, [SidebarLoader.installedAugmentations]);
-
-  useEffect(() => {
     setIsDisabled(
       !name ||
         !actions.length ||
@@ -83,42 +80,14 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 
   const handleSave = () => {
     if (isDisabled) return null;
-    const customId = `cse-custom-${
-      augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
-    }-${uuid()}`;
-    const id = augmentation.id.startsWith('cse-custom-') ? augmentation.id : customId;
-    const updated = {
-      ...augmentation,
-      id,
-      name,
+    AugmentationManager.addOrEditAugmentation(augmentation, {
+      actions,
+      conditions,
+      conditionEvaluation,
       description,
-      conditions: {
-        condition_list: conditions,
-        evaluate_with: conditionEvaluation,
-      },
-      actions: {
-        ...augmentation.actions,
-        action_list: actions.map((action) => ({
-          ...action,
-          value: action.value.filter((i) => i !== ''),
-        })),
-      },
-      enabled: isActive,
-      installed: true,
-    };
-    debug(
-      'EditAugmentationPage - save\n---\n\tOriginal',
-      augmentation,
-      '\n\tUpdated',
-      updated,
-      '\n---',
-    );
-    SidebarLoader.installedAugmentations = [
-      updated,
-      ...installedAugmentations.filter((i) => i.id !== updated.id),
-    ];
-    chrome.storage.local.set({ [id]: updated });
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      name,
+      isActive,
+    });
     setTimeout(() => goBack(), 100);
   };
 

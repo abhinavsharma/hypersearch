@@ -17,7 +17,6 @@ declare type SidebarTab = {
   isAnyUrlAction?: boolean;
   isCse?: boolean;
   isSuggested?: boolean;
-  isPinnedTab?: boolean;
 };
 
 declare type SidebarResponseArrayObject = {
@@ -60,6 +59,7 @@ declare type AugmentationObject = {
   conditions: Condition;
   actions: Action;
   enabled?: boolean;
+  installed?: boolean;
 };
 
 declare type CustomSearchEngine = {
