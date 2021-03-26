@@ -58,6 +58,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         componentProps={{
           augmentation: {
             ...augmentation,
+            description: tab.isSuggested ? '' : augmentation.description,
             installed: !tab.isSuggested,
           },
           isAdding: tab.isSuggested,
