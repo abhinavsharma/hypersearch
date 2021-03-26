@@ -29,7 +29,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
       ? `${augmentation.name} / Modified`
       : augmentation.name || '🎉 My Lens',
   );
-  const [description, setDescription] = useState<string>(augmentation.description);
+  const [description, setDescription] = useState<string>(isAdding ? '' : augmentation.description);
   const [isActive, setIsActive] = useState<boolean>(augmentation.enabled || isAdding);
   const [conditionEvaluation, setConditionEvaluation] = useState<Condition['evaluate_with']>(
     augmentation.conditions.evaluate_with,
@@ -208,7 +208,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             <EditAugmentationMeta
               augmentation={augmentation}
               name={name}
-              description={isAdding ? '' : description}
+              description={description}
               onNameChange={handleEditName}
               onDescriptionChange={handleEditDescription}
               enabled={isActive}
