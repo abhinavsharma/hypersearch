@@ -1,7 +1,7 @@
 ((document, window) => {
   // not exactly ad blocking but removing known bad components
   const toRemove = {
-    'google.com': ['header.Fh5muf', '.mnr-c.cUnQKe', '.mnr-c.AuVD'],
+    'google.com': ['header.Fh5muf', '.mnr-c.cUnQKe', '.mnr-c.AuVD', '[data-has-queries]'],
     'bing.com': ['header#b_header'],
     'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
   };
@@ -31,6 +31,13 @@
 
     document.querySelectorAll('span[aria-label="AMP logo"]').forEach((a: HTMLLinkElement) => {
       a.style.display = 'none';
+    });
+
+    document.querySelectorAll('.jGGQ5e').forEach((div: HTMLDivElement) => {
+      div.removeAttribute('jscontroller');
+      div.removeAttribute('jsaction');
+      div.removeAttribute('jsdata');
+      div.removeAttribute('jsname');
     });
 
     let hostname = new URL(window.location.href).hostname;
