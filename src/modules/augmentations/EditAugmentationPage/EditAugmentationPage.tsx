@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import { goBack } from 'route-lite';
 import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { v4 as uuid } from 'uuid';
-import { EMPTY_AUGMENTATION } from 'utils/constants';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import { EMPTY_AUGMENTATION, SEARCH_DOMAINS_ACTION } from 'utils';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
@@ -13,7 +14,6 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 
 const { Panel } = Collapse;
 
@@ -44,12 +44,12 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             value: [
               Array.from(new Set(SidebarLoader.domains.map((domain) => domain.split('/')[0])))[i],
             ],
-            id: i.toString(),
+            id: uuid(),
           }))
-          .filter((i) => !!i.value[0])
-      : augmentation.conditions.condition_list.map((condition, index) => ({
+          .filter(({ value }) => !!value[0])
+      : augmentation.conditions.condition_list.map((condition) => ({
           ...condition,
-          id: index.toString(),
+          id: uuid(),
         })),
   );
 
@@ -94,8 +94,8 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   const handleSaveAction = (e: CustomAction) => {
     setActions((prev) => {
       // Merge all `search_domains` actions into one action.
-      if (e.key === 'search_domains') {
-        const existing = prev.find((i) => i.key === 'search_domains');
+      if (e.key === SEARCH_DOMAINS_ACTION) {
+        const existing = prev.find((i) => i.key === SEARCH_DOMAINS_ACTION);
         if (existing) {
           existing.value =
             e.value[0] !== '' && e.value.length !== existing.value.length
@@ -107,7 +107,9 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             if (prevAction.id === existing.id) {
               newActions.push(existing);
             } else {
-              prevAction.key && prevAction.key !== 'search_domains' && newActions.push(prevAction);
+              prevAction.key &&
+                prevAction.key !== SEARCH_DOMAINS_ACTION &&
+                newActions.push(prevAction);
             }
             return newActions;
           }, []);

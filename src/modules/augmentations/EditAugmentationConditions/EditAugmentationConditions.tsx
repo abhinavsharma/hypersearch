@@ -1,8 +1,10 @@
 import React from 'react';
+import { v4 as uuid } from 'uuid';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import { EditConditionInput } from 'modules/augmentations';
+import { ANY_URL_CONDITION } from 'utils';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
 
@@ -11,10 +13,33 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
   setConditions,
   evaluation,
   setEvaluation,
-  onAdd,
   onSave,
   onDelete,
 }) => {
+  const handleAddCondition = () =>
+    setConditions((prev) => [
+      ...prev.filter((i) => i.key !== ANY_URL_CONDITION),
+      {
+        id: uuid(),
+        key: null,
+        type: 'list',
+        label: null,
+        value: [],
+        isAdding: true,
+      },
+    ]);
+
+  const handleMatchAnyPage = () =>
+    setConditions([
+      {
+        id: '0',
+        key: ANY_URL_CONDITION,
+        label: 'Any page',
+        type: 'list',
+        value: ['.*'],
+      },
+    ]);
+
   return (
     <>
       <Row className="no-border">
@@ -31,53 +56,20 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
           </span>
         </Col>
       </Row>
-      {conditions.map((condition, i) => (
+      {conditions.map((condition) => (
         <EditConditionInput
-          key={condition.value + String(i)}
+          key={uuid()}
           condition={condition}
-          label={condition.label}
-          addCondition={onAdd}
           saveCondition={onSave}
           deleteCondition={onDelete}
-          noDelete={conditions.length === 1}
-          disabled={!condition.value}
         />
       ))}
       <Row className="no-border condition-footer">
-        <Button
-          className="add-operation-button"
-          type="link"
-          onClick={() =>
-            setConditions((prev) => [
-              ...prev.filter((i) => i.key !== 'any_url'),
-              {
-                id: conditions.length.toString(),
-                key: 'search_contains',
-                type: 'list',
-                label: 'Search results contain domain',
-                value: [''],
-                isAdding: true,
-              },
-            ])
-          }
-        >
+        <Button className="add-operation-button" type="link" onClick={handleAddCondition}>
           ➕ Add condition
         </Button>
-        {conditions[0].key !== 'any_url' && (
-          <Button
-            type="link"
-            onClick={() =>
-              setConditions([
-                {
-                  id: '0',
-                  key: 'any_url',
-                  label: 'Any page',
-                  type: 'list',
-                  value: ['.*'],
-                },
-              ])
-            }
-          >
+        {conditions[0]?.key !== ANY_URL_CONDITION && (
+          <Button type="link" onClick={handleMatchAnyPage}>
             Match any page
           </Button>
         )}

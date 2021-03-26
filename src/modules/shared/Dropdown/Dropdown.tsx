@@ -12,7 +12,6 @@ export const Dropdown: Dropdown = ({ button, items, className, trigger = 'hover'
   return (
     <div
       className={`dropdown ${className ? className : ''}  ${isActive ? 'active' : ''}`}
-      style={{ zIndex: SIDEBAR_Z_INDEX + 2 }}
       onClick={trigger === 'click' ? handleToggle : undefined}
       onMouseEnter={trigger === 'hover' ? handleOpen : undefined}
       onMouseLeave={trigger === 'hover' ? handleClose : undefined}
@@ -20,7 +19,7 @@ export const Dropdown: Dropdown = ({ button, items, className, trigger = 'hover'
       {button}
       <div
         className="dropdown-content"
-        /* onMouseLeave={trigger === 'hover' ? handleClose : undefined} */
+        style={{ zIndex: SIDEBAR_Z_INDEX + 3 }}
         onClick={trigger === 'click' ? handleToggle : undefined}
       >
         {items.map((item) => (

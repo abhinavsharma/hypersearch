@@ -1,5 +1,5 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { debug } from 'utils/helpers';
+import { debug } from 'utils';
 
 (async (document: Document, location: Location) => {
   debug(
