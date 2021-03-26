@@ -10,6 +10,7 @@ import './AugmentationRow.scss';
 
 export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, ignored }) => {
   const isPinned = !!augmentation.conditions.condition_list.find((i) => i.key === 'any_url');
+  const isSuggested = !augmentation.hasOwnProperty('enabled');
 
   const handlePin = () => {
     AugmentationManager.addOrEditAugmentation(augmentation, {
@@ -40,7 +41,10 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
         className={`${isPinned ? 'force-left-margin' : ''}`}
         onClick={() =>
           goTo(EditAugmentationPage, {
-            augmentation,
+            augmentation: {
+              ...augmentation,
+              description: isSuggested ? '' : augmentation.description,
+            },
             setActiveKey,
             initiatedFromActives: true,
             isAdding: !augmentation.hasOwnProperty('enabled'),
