@@ -241,7 +241,7 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  private getTabMetas(augmentation: AugmentationObject) {
+  private getTabUrls(augmentation: AugmentationObject) {
     const customSearchUrl = new URL(
       isSafari()
         ? 'https://www.ecosia.org/search'
@@ -250,7 +250,7 @@ class SidebarLoader {
     // List of domains to search when action key is `search_domains`.
     let tabAppendages: string[] = [];
     // A new tab will be created for each action with `open_url` key.
-    const tabsByUrl: { title: string; url: URL }[] = [];
+    const tabsByUrl: URL[] = [];
     // An augmentation can have multiple actions, despite their type. We
     // assume this case and process the whole `action_list`. In the prev
     // versions, we only checked the first value, when key was `open_url`.
@@ -261,7 +261,7 @@ class SidebarLoader {
           action.value.forEach((val) => {
             const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            tabsByUrl.push({ title: extractUrlProperties(url.href).hostname, url });
+            tabsByUrl.push(url);
           });
           break;
         case 'search_domains':
@@ -281,9 +281,7 @@ class SidebarLoader {
         : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
     customSearchUrl.searchParams.append('q', this.query + ' ' + append);
     customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-    return tabAppendages.length
-      ? [...tabsByUrl, { url: customSearchUrl }]
-      : (tabsByUrl as { url: URL; title?: string }[]);
+    return [...tabsByUrl, customSearchUrl];
   }
 
   /**
@@ -394,20 +392,20 @@ class SidebarLoader {
             this.suggestedAugmentations.push(augmentation);
           }
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
-            this.getTabMetas(augmentation).forEach((meta) => {
+            this.getTabUrls(augmentation).forEach((url) => {
               const tab = {
-                default: !newTabs.length,
-                description: augmentation.description,
+                url,
+                matchingDomainsAction,
+                matchingDomainsCondition,
                 id: augmentation.id,
+                isCse: true,
+                isSuggested: !augmentation.hasOwnProperty('enabled'),
+                default: !newTabs.length,
+                title: augmentation.name,
+                description: augmentation.description,
                 isAnyUrlAction: !!augmentation.conditions.condition_list.find(
                   (i) => i.key === 'any_url',
                 ),
-                isCse: true,
-                isSuggested: !augmentation.hasOwnProperty('enabled'),
-                matchingDomainsAction,
-                matchingDomainsCondition,
-                title: meta.title ?? augmentation.name,
-                url: meta.url,
               };
               newTabs.unshift(tab);
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
