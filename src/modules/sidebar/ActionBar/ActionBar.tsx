@@ -70,7 +70,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           onClick={handleAddSuggested}
           style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
         >
-          {tab.isSuggested ? '🔎 Edit Locally' : '✏️ Edit Locally'}
+          {tab.isSuggested ? '✏️ Edit Locally' : '✏️ Edit Locally'}
         </Button>
       </Link>
       {!isPinned && (

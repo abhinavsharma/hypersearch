@@ -9,6 +9,7 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
+  AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME,
   SIDEBAR_Z_INDEX,
   UPDATE_SIDEBAR_TABS_MESSAGE,
@@ -16,6 +17,7 @@ import {
 } from 'utils/constants';
 import { isKnowledgePage } from 'utils/helpers';
 import './Sidebar.scss';
+import Button from 'antd/lib/button';
 
 const Sidebar: Sidebar = () => {
   // We use this state variable to forcibly open a given tab on the sidebar.
@@ -67,7 +69,11 @@ const Sidebar: Sidebar = () => {
         >
           ×
         </div>
-        <div className="insight-sidebar-title">🔎&nbsp;&nbsp;Lenses from {APP_NAME}</div>
+        <div className="insight-sidebar-title">
+          <span>🔎&nbsp;&nbsp;Lenses from {APP_NAME}&nbsp;/&nbsp;</span>
+
+          <a target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>Feedback</a>
+        </div>
         <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />
       </div>
       <SidebarToggleButton tabs={sidebarTabs} setTab={setForceTab} />

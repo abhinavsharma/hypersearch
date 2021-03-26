@@ -73,6 +73,11 @@ body {
   transition-property: right;
   transition-duration: 0.5s;
   transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+
+  a {
+    text-decoration: none;
+    color: #1890ff;
+  }
 }
 
 .insight-sidebar-close-button {
