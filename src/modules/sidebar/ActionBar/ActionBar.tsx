@@ -85,6 +85,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
       )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
         <Button
+          style={{bottom: 4}}
           type="link"
           target="_blank"
           href={

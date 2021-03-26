@@ -1,11 +1,15 @@
 .insight-suggested-tab-popup {
   display: flex;
   justify-content: space-around;
-  padding: 5px 10px 0px;
+  padding: 5px 10px;
   border-bottom: 1px solid #ccc;
 
-  button {
-    padding: 5px;
+  button, a {
+    padding: 0;
+    span {
+      padding: 5px 0;
+      color: #666;
+    }
   }
 
   .insight-suggested-text {
