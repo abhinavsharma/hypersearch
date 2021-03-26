@@ -15,7 +15,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const augmentation = (tab.isSuggested
     ? SidebarLoader.suggestedAugmentations
     : SidebarLoader.installedAugmentations
-  ).find((i) => i.id === tab.id);
+  ).find((augmentationObject) => augmentationObject.id === tab.id);
 
   const isPinned = !!augmentation.conditions.condition_list.find((i) => i.key === 'any_url');
 
