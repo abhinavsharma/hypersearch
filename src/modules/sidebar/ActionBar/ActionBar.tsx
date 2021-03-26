@@ -98,7 +98,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
       )}
       {tab.isSuggested && (
         <Button type="link" onClick={() => handleHideSuggested(tab)}>
-          × Hide
+          × Hide Lens
         </Button>
       )}
     </div>
