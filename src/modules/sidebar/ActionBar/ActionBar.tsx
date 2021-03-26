@@ -93,7 +93,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             new URLSearchParams(window.location.search).get('q')
           }
         >
-          🤔 Send Feedback
+          🤔 Lens Feedback
         </Button>
       )}
       {tab.isSuggested && (
