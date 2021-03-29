@@ -37,7 +37,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
 
   return !active ? (
     <div className="add-augmentation-tab">
-      <Dropdown button="🔍" items={items} />
+      <Dropdown button="☰" items={items} />
     </div>
   ) : (
     <div className={`add-augmentation-tab-header ${active ? 'active' : ''}`}>
