@@ -1,7 +1,15 @@
+import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
+
 ((document, window) => {
   // not exactly ad blocking but removing known bad components
   const toRemove = {
-    'google.com': ['header.Fh5muf', '.mnr-c.cUnQKe', '.mnr-c.AuVD', '[data-has-queries]', '.commercial-unit-mobile-top'],
+    'google.com': [
+      'header.Fh5muf',
+      '.mnr-c.cUnQKe',
+      '.mnr-c.AuVD',
+      '[data-has-queries]',
+      '.commercial-unit-mobile-top',
+    ],
     'bing.com': ['header#b_header'],
     'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
   };
@@ -86,5 +94,41 @@
   document.addEventListener('DOMContentLoaded', () => {
     const domainsContainer = document.querySelector('#message.results--message');
     domainsContainer?.setAttribute('style', 'display: none;');
+
+    if (window.location.href.search(/google\.com/gi) > -1) {
+      const resultNodes = Array.from(document.querySelectorAll('.mnr-c.xpd')) as HTMLElement[];
+      const domains = Array.from(document.querySelectorAll('.mnr-c .KJDcUb a.BmP5tf')).map(
+        ({ href }: HTMLLinkElement) => extractUrlProperties(href).hostname,
+      );
+      const rankedDomains = getRankedDomains(domains);
+      const topPositions = resultNodes.slice(0, 3);
+      const movedDomains = [];
+      const logData = [];
+      resultNodes.forEach((node, index) => {
+        const nodeDomain = extractUrlProperties(
+          node.querySelector('.KJDcUb a.BmP5tf').getAttribute('href'),
+        ).hostname;
+        const rankedPosition = rankedDomains.indexOf(nodeDomain);
+        if (
+          index > 2 &&
+          !movedDomains.find(
+            (domain) => nodeDomain.search(domain) > -1 || domain.search(nodeDomain) > -1,
+          ) &&
+          rankedPosition < 3
+        ) {
+          logData.push({
+            'Domain:': nodeDomain,
+            'Move from index: ': index,
+            'Move to index: ': movedDomains.length,
+          });
+          const originalClone = topPositions[movedDomains.length].cloneNode(true);
+          const replaceClone = resultNodes[index].cloneNode(true);
+          topPositions[movedDomains.length].replaceWith(replaceClone);
+          resultNodes[index].replaceWith(originalClone);
+          movedDomains.push(nodeDomain);
+        }
+      });
+      !!logData.length && debug('Reordered SERP results\n---\n', ...logData, '\n---');
+    }
   });
 })(document, window);
