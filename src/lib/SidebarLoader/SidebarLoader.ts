@@ -250,7 +250,7 @@ class SidebarLoader {
     // List of domains to search when action key is `search_domains`.
     let tabAppendages: string[] = [];
     // A new tab will be created for each action with `open_url` key.
-    const tabsByUrl: URL[] = [];
+    const urls: URL[] = [];
     // An augmentation can have multiple actions, despite their type. We
     // assume this case and process the whole `action_list`. In the prev
     // versions, we only checked the first value, when key was `open_url`.
@@ -261,7 +261,7 @@ class SidebarLoader {
           action.value.forEach((val) => {
             const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            tabsByUrl.push(url);
+            urls.push(url);
           });
           break;
         case 'search_domains':
@@ -269,19 +269,22 @@ class SidebarLoader {
           this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
             action.value.map((action) => removeProtocol(action)),
           );
+          const append =
+            tabAppendages.length === 1
+              ? `site:${tabAppendages[0]}`
+              : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
+          customSearchUrl.searchParams.append('q', this.query + ' ' + append);
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
       }
     });
-    // Generate a single URL for the sidebar tab from all available `search_domains` action values.
-    const append =
-      tabAppendages.length === 1
-        ? `site:${tabAppendages[0]}`
-        : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
-    customSearchUrl.searchParams.append('q', this.query + ' ' + append);
-    customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-    return [...tabsByUrl, customSearchUrl];
+
+    !!customSearchUrl.searchParams.get('q') &&
+      !!customSearchUrl.searchParams.get('q').length &&
+      urls.push(customSearchUrl);
+    return urls;
   }
 
   /**
