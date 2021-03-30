@@ -151,8 +151,6 @@ export const getRankedDomains = (domains: string[]) =>
     .map(([key]) => key);
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
-  if (!a.isAnyUrlAction && b.isAnyUrlAction) return -1;
-  if (a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
   const tabRatings = Object.create(null);
   const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
   const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
