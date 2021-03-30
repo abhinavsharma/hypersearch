@@ -1,107 +1,129 @@
 {
-  "manifest_version": 2,
-  "name": "Search Club",
-  "description": "A community of unbiased experts across every field eradicating misinformation, SEO and charlatan content from the web.",
-  "version": "0.0.84",
-  "web_accessible_resources": ["*.png", "*.svg", "*.html", "*.css"],
-  "icons": {
-    "128": "logo128.png"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://google.com/*",
-        "https://www.google.com/*",
-        "https://duckduckgo.com/*",
-        "https://www.duckduckgo.com/*",
+    "manifest_version": 2,
+    "name": "Search Club",
+    "description": "A community of unbiased experts across every field eradicating misinformation, SEO and charlatan content from the web.",
+    "version": "0.0.85",
+    "web_accessible_resources": [
+        "*.png",
+        "*.svg",
+        "*.html",
+        "*.css"
+    ],
+    "icons": {
+        "128": "logo128.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://google.com/*",
+                "https://www.google.com/*",
+                "https://duckduckgo.com/*",
+                "https://www.duckduckgo.com/*",
+                "https://bing.com/*",
+                "https://www.bing.com/*",
+                "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*",
+                "https://raw.githubusercontent.com/insightbrowser/*",
+                "https://api.perfalytics.com/track"
+            ],
+            "js": [
+                "js/content_script.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "https://google.com/*",
+                "https://www.google.com/*",
+                "https://duckduckgo.com/*",
+                "https://www.duckduckgo.com/*",
+                "https://bing.com/*",
+                "https://www.bing.com/*",
+                "https://api.perfalytics.com/track"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/content_frames.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "https://google.com/*",
+                "https://www.google.com/*",
+                "https://duckduckgo.com/*",
+                "https://www.duckduckgo.com/*",
+                "https://bing.com/*",
+                "https://www.bing.com/*"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/content_blocker.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://google.com/*",
+                "https://www.google.com/*",
+                "https://duckduckgo.com/*",
+                "https://www.duckduckgo.com/*",
+                "https://bing.com/*",
+                "https://www.bing.com/*"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/reorder.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://google.com/*",
+                "https://www.google.com/*",
+                "https://duckduckgo.com/*",
+                "https://www.duckduckgo.com/*",
+                "https://bing.com/*",
+                "https://www.bing.com/*"
+            ],
+            "all_frames": true,
+            "css": [
+                "overwrite.css"
+            ]
+        },
+        {
+            "matches": [
+                "https://cse.google.com/*"
+            ],
+            "all_frames": true,
+            "css": [
+                "google_cse.css"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "js/background.js",
+            "js/hot.js"
+        ]
+    },
+    "browser_action": {
+        "default_title": "Insight"
+    },
+    "permissions": [
+        "cookies",
+        "storage",
+        "webRequest",
+        "webRequestBlocking",
+        "webNavigation",
+        "https://api.perfalytics.com/track",
+        "https://*.ycombinator.com/*",
         "https://bing.com/*",
-        "https://www.bing.com/*",
-        "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*",
+        "https://duckduckgo.com/*",
+        "https://google.com/*",
         "https://raw.githubusercontent.com/insightbrowser/*",
-        "https://api.perfalytics.com/track"
-      ],
-      "js": ["js/content_script.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "https://google.com/*",
-        "https://www.google.com/*",
-        "https://duckduckgo.com/*",
-        "https://www.duckduckgo.com/*",
-        "https://bing.com/*",
         "https://www.bing.com/*",
-        "https://api.perfalytics.com/track"
-      ],
-      "all_frames": true,
-      "js": ["js/content_frames.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "https://google.com/*",
-        "https://www.google.com/*",
-        "https://duckduckgo.com/*",
         "https://www.duckduckgo.com/*",
-        "https://bing.com/*",
-        "https://www.bing.com/*"
-      ],
-      "all_frames": true,
-      "js": ["js/content_blocker.js"],
-      "run_at": "document_end"
-    },
-    {
-      "matches": [
-        "https://google.com/*",
         "https://www.google.com/*",
-        "https://duckduckgo.com/*",
-        "https://www.duckduckgo.com/*",
-        "https://bing.com/*",
-        "https://www.bing.com/*"
-      ],
-      "all_frames": true,
-      "js": ["js/reorder.js"],
-      "run_at": "document_end"
-    },
-    {
-      "matches": [
-        "https://google.com/*",
-        "https://www.google.com/*",
-        "https://duckduckgo.com/*",
-        "https://www.duckduckgo.com/*",
-        "https://bing.com/*",
-        "https://www.bing.com/*"
-      ],
-      "all_frames": true,
-      "css": ["overwrite.css"]
-    },
-    {
-      "matches": ["https://cse.google.com/*"],
-      "all_frames": true,
-      "css": ["google_cse.css"]
-    }
-  ],
-  "background": {
-    "scripts": ["js/background.js", "js/hot.js"]
-  },
-  "browser_action": {
-    "default_title": "Insight"
-  },
-  "permissions": [
-    "cookies",
-    "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "webNavigation",
-    "https://api.perfalytics.com/track",
-    "https://*.ycombinator.com/*",
-    "https://bing.com/*",
-    "https://duckduckgo.com/*",
-    "https://google.com/*",
-    "https://raw.githubusercontent.com/insightbrowser/*",
-    "https://www.bing.com/*",
-    "https://www.duckduckgo.com/*",
-    "https://www.google.com/*",
-    "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*"
-  ]
+        "https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/*"
+    ]
 }
