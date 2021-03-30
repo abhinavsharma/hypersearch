@@ -88,7 +88,7 @@ export const IntroductionPage = () => {
   return (
     <>
       <div className="insight-intro-title">
-        <h1>Welcome to {APP_NAME}</h1>
+        <h1>Hello. Welcome to {APP_NAME}</h1>
         <div className="insight-intro-subtitle">
           <div className="insight-intro-privacy-note">🔒 Your privacy is paramount.</div>
           <Typography.Text>All processing is client-side and never log your visit data unless you opt-in to anonymous sharing.</Typography.Text>
