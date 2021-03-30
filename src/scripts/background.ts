@@ -19,10 +19,6 @@ import {
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
 // ! INITIALIZATION
-// We use this for the logging. This ID will be assigned to the instance, throughout the application
-// lifetime. This way we can follow the exact user actions indentifying them by their ID. Also, we can
-// keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
-const SESSION_ID = uuid();
 // See: https://stackoverflow.com/a/9851769/2826713
 const isFirefox = typeof InstallTrigger !== 'undefined';
 // ! HEADER MODIFICATIONS
@@ -41,7 +37,6 @@ const processCookieString = (header: string) => {
   } else {
     newHeader = newHeader.replace(/SameSite=[\w]*/g, 'SameSite=None');
   }
-  console.log('MODIFIED COOKIE HEADER: ', newHeader);
   return newHeader;
 };
 // Rewrite all request headers to remove CORS related content and allow remote sites to be loaded into
@@ -94,30 +89,22 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     // Bookface needs `_sso.key` cookie to sent with `SameSite=none` to be able to display in iframe.
     chrome.cookies.getAll({ name: '_sso.key' }, (cookies) => {
       const ssoCookie = cookies[0];
-      console.log(ssoCookie);
-      chrome.cookies.set(
-        {
-          domain: ssoCookie.domain,
-          expirationDate: ssoCookie.expirationDate,
-          httpOnly: true,
-          name: '_sso.key',
-          path: '/',
-          value: ssoCookie.value,
-          url: 'https://bookface.ycombinator.com',
-          sameSite: 'no_restriction',
-          secure: true,
-        },
-        (cookie) => {
-          debug('Modified cookie: ', cookie ?? chrome.runtime.lastError.message);
-        },
-      );
+      chrome.cookies.set({
+        domain: ssoCookie.domain,
+        expirationDate: ssoCookie.expirationDate,
+        httpOnly: true,
+        name: '_sso.key',
+        path: '/',
+        value: ssoCookie.value,
+        url: 'https://bookface.ycombinator.com',
+        sameSite: 'no_restriction',
+        secure: true,
+      });
     });
     const requestHeaders = details.requestHeaders.map((requestHeader) => {
-      console.log(requestHeader);
       if (requestHeader.name.toLowerCase() === 'cookie') {
         requestHeader.value = processCookieString(requestHeader.value);
       }
-
       const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
       const urlMatchesSearchPattern =
         specialUrl ||
@@ -193,24 +180,34 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
     case SEND_LOG_MESSAGE:
       debug('handleLogSend - call');
       try {
-        const data: FreshpaintTrackEvent = {
-          event: msg.event,
-          properties: {
-            distinct_id: SESSION_ID,
-            token: FRESHPAINT_API_TOKEN,
-            time: Date.now() / 1000, // ! Time is epoch seconds
-            ...msg.properties,
-          },
-        };
-        axios({
-          url: FRESHPAINT_API_ENDPOINT,
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          data,
-        }).then((result) => {
-          debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
+        // We use this for the logging. This ID will be assigned to the instance, throughout the application
+        // lifetime. This way we can follow the exact user actions indentifying them by their ID. Also, we can
+        // keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
+        chrome.storage.sync.get('distinctId', ({ distinctId }) => {
+          let userId = distinctId;
+          if (!distinctId) {
+            userId = uuid();
+            chrome.storage.sync.set({ distinctId: userId });
+          }
+          const data: FreshpaintTrackEvent = {
+            event: msg.event,
+            properties: {
+              distinct_id: userId,
+              token: FRESHPAINT_API_TOKEN,
+              time: Date.now() / 1000, // ! Time is epoch seconds
+              ...msg.properties,
+            },
+          };
+          axios({
+            url: FRESHPAINT_API_ENDPOINT,
+            method: 'post',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            data,
+          }).then((result) => {
+            debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
+          });
         });
       } catch (e) {
         debug('handleLogSend - error\n---\n\tError', e, '\n---');
