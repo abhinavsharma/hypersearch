@@ -110,6 +110,8 @@ import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
         ).hostname;
         const rankedPosition = rankedDomains.indexOf(nodeDomain);
         if (
+          // Only consider results that are out of top 3 serp results,
+          // not moved yet and present in top 3 ranked results.
           index > 2 &&
           !movedDomains.find(
             (domain) => nodeDomain.search(domain) > -1 || domain.search(nodeDomain) > -1,
@@ -121,6 +123,8 @@ import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
             'Move from index: ': index,
             'Move to index: ': movedDomains.length,
           });
+          // Due to Google's complex nesting, it's easier to replace the elements with
+          // their clone, instead bothering the parent elements at all.
           const originalClone = topPositions[movedDomains.length].cloneNode(true);
           const replaceClone = resultNodes[index].cloneNode(true);
           topPositions[movedDomains.length].replaceWith(replaceClone);
