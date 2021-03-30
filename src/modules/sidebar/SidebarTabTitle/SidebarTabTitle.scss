@@ -1,0 +1,47 @@
+.insight-tab-bar {
+  .insight-tab-pill {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    max-width: 15ch;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ant-tabs-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    width: auto;
+    color: #333;
+    background: #efefef;
+    cursor: pointer;
+    border-radius: 0;
+    border-bottom: 0;
+    white-space: pre-wrap;
+  }
+
+  .ant-tabs-tab-active {
+    color: #333;
+    background-color: white;
+    font-weight: bold;
+  }
+
+  .insight-tab-title {
+    color: #333;
+    padding: 10px 15px;
+
+    &.hidden {
+      display: none;
+    }
+
+    &.active {
+      font-weight: bold;
+      color: #333;
+    }
+  }
+}

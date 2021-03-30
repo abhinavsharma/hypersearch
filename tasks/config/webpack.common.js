@@ -2,6 +2,7 @@
 const { DefinePlugin } = require('webpack');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const CssAutoprefixer = require('autoprefixer');
 const PATHS = require('../lib/path').default;
 
 module.exports = (env) => {
@@ -51,6 +52,14 @@ module.exports = (env) => {
               },
             },
             'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [CssAutoprefixer],
+                },
+              },
+            },
             'sass-loader',
           ],
         },
