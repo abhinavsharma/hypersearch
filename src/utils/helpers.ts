@@ -145,6 +145,11 @@ export const isSafari = () => {
   );
 };
 
+export const getRankedDomains = (domains: string[]) =>
+  [...domains.reduce((a, e) => a.set(e, (a.get(e) || 0) + 1), new Map()).entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([key]) => key);
+
 export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
   if (!a.isAnyUrlAction && b.isAnyUrlAction) return -1;
   if (a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
