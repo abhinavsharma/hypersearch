@@ -1,7 +1,6 @@
 import React from 'react';
 import { goTo } from 'route-lite';
 import Tag from 'antd/lib/tag';
-import Button from 'antd/lib/button';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { EditAugmentationPage } from 'modules/augmentations';
 import { ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
@@ -16,7 +15,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
 
   const handlePin = () => {
     AugmentationManager.addOrEditAugmentation(augmentation, {
-      name: `${augmentation.name} / Pinned`,
+      name: `${augmentation.name} /\u00a0Pinned`,
       conditions: [ANY_URL_CONDITION_TEMPLATE],
       isActive: augmentation.hasOwnProperty('enabled') ? augmentation.enabled : true,
       isPinning: true,

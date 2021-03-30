@@ -14,6 +14,7 @@ import {
   SidebarTabDescription,
   SidebarTabDomains,
   SidebarTabReadable,
+  SidebarTabTitle,
 } from 'modules/sidebar';
 import { extractUrlProperties } from 'utils/helpers';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
@@ -80,21 +81,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
     <DefaultTabBar {...props} className="insight-tab-bar" />
   );
 
-  const TabTitle = ({ tab, index }) => {
-    const handleClick = () => setActiveKey((index + 1).toString());
-    return (
-      <div onClick={handleClick} className="insight-tab-pill">
-        <span
-          className={`insight-tab-title ${activeKey === (index + 1).toString() ? 'active' : ''} ${
-            activeKey === '0' ? 'hidden' : ''
-          }`}
-        >
-          {tab.isSuggested ? tab.title : `${tab.title} ${tab.isPinned ? '📌' : '◾'}`}
-        </span>
-      </div>
-    );
-  };
-
   const extraContent = {
     right: (
       <AddAugmentationTab
@@ -120,7 +106,14 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
           return (
             <TabPane
               key={i + 1}
-              tab={<TabTitle tab={tab} index={i} />}
+              tab={
+                <SidebarTabTitle
+                  tab={tab}
+                  index={i}
+                  setActiveKey={setActiveKey}
+                  activeKey={activeKey}
+                />
+              }
               forceRender
               className={`insight-full-tab`}
             >

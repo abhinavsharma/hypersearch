@@ -25,11 +25,11 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       🔍 List All Lenses
     </Button>,
     <Button
-    className="dropdown-button"
-    type="link"
-    onClick={() =>
-      chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
-    }
+      className="dropdown-button"
+      type="link"
+      onClick={() =>
+        chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
+      }
     >
       ➕ Add Lens
     </Button>,
