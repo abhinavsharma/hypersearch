@@ -30,6 +30,20 @@ const isFirefox = typeof InstallTrigger !== 'undefined';
 const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeaders'].filter(
   (i) => i,
 );
+
+const processCookieString = (header: string) => {
+  let newHeader = header;
+  if (newHeader.search(/Secure/) === -1) {
+    newHeader = newHeader.concat(' Secure');
+  }
+  if (newHeader.search(/SameSite=[\w]*/g) === -1) {
+    newHeader = newHeader.concat(' SameSite=None');
+  } else {
+    newHeader = newHeader.replace(/SameSite=[\w]*/g, 'SameSite=None');
+  }
+  console.log('MODIFIED COOKIE HEADER: ', newHeader);
+  return newHeader;
+};
 // Rewrite all request headers to remove CORS related content and allow remote sites to be loaded into
 // IFrames for example. This is a NOT SAFE solution and ignores any external security concern provided.
 chrome.webRequest.onHeadersReceived.addListener(
@@ -48,7 +62,12 @@ chrome.webRequest.onHeadersReceived.addListener(
 
     const result = {
       responseHeaders: [
-        ...responseHeaders,
+        ...responseHeaders.map((header) => {
+          if (header.name.toLowerCase() === 'set-cookie') {
+            header.value = processCookieString(header.value);
+          }
+          return header;
+        }),
         {
           name: 'Content-Security-Policy',
           value: `frame-ancestors *`,
@@ -72,7 +91,33 @@ chrome.webRequest.onHeadersReceived.addListener(
 // here is to append the URL with a junk string on each request we want mobile page back and check for this junk.
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
+    // Bookface needs `_sso.key` cookie to sent with `SameSite=none` to be able to display in iframe.
+    chrome.cookies.getAll({ name: '_sso.key' }, (cookies) => {
+      const ssoCookie = cookies[0];
+      console.log(ssoCookie);
+      chrome.cookies.set(
+        {
+          domain: ssoCookie.domain,
+          expirationDate: ssoCookie.expirationDate,
+          httpOnly: true,
+          name: '_sso.key',
+          path: '/',
+          value: ssoCookie.value,
+          url: 'https://bookface.ycombinator.com',
+          sameSite: 'no_restriction',
+          secure: true,
+        },
+        (cookie) => {
+          debug('Modified cookie: ', cookie ?? chrome.runtime.lastError.message);
+        },
+      );
+    });
     const requestHeaders = details.requestHeaders.map((requestHeader) => {
+      console.log(requestHeader);
+      if (requestHeader.name.toLowerCase() === 'cookie') {
+        requestHeader.value = processCookieString(requestHeader.value);
+      }
+
       const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
       const urlMatchesSearchPattern =
         specialUrl ||

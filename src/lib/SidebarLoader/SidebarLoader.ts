@@ -215,7 +215,7 @@ class SidebarLoader {
     const isGoogle = location.href.search(/google\.com/gi) > -1;
     // !dev const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
     const isBing = location.href.search(/bing\.com/gi) > -1;
-    this.customSearchEngine?.querySelector.featured?.forEach(
+    this.customSearchEngine?.querySelector?.featured?.forEach(
       (c) => (els = els.concat(Array.from(document.querySelectorAll(c)))),
     );
     els = els.concat(
