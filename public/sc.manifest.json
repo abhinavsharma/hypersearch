@@ -60,6 +60,19 @@
         "https://www.bing.com/*"
       ],
       "all_frames": true,
+      "js": ["js/reorder.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://google.com/*",
+        "https://www.google.com/*",
+        "https://duckduckgo.com/*",
+        "https://www.duckduckgo.com/*",
+        "https://bing.com/*",
+        "https://www.bing.com/*"
+      ],
+      "all_frames": true,
       "css": ["overwrite.css"]
     },
     {
