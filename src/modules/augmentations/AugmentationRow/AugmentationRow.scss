@@ -14,13 +14,15 @@
     margin-left: auto !important;
   }
 
-  button {
+  .augmentation-row-button {
+    cursor: pointer;
     border-radius: 3px;
-    color: #2d23af;
-    margin-left: auto;
+
+    &:first-of-type {
+      margin-left: auto;
+    }
 
     &:last-child {
-      margin-left: 5px;
       margin-right: 10px;
     }
   }
