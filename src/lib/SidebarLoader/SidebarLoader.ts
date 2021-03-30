@@ -437,8 +437,18 @@ class SidebarLoader {
     });
 
     this.sidebarTabs = newTabs.sort((a, b) => {
+      // ! HINT: 1 === leave order, -1 === put B before A
+      const bothSuggested = a.isSuggested && b.isSuggested;
+      if (a.isSuggested && !b.isSuggested && !a.isAnyUrlAction && b.isAnyUrlAction) return -1;
+      if (a.isSuggested && !b.isSuggested && a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
+      if (!a.isSuggested && b.isSuggested && !a.isAnyUrlAction && b.isAnyUrlAction) return -1;
+      if (!a.isSuggested && b.isSuggested && a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
       if (a.isSuggested && !b.isSuggested) return 1;
       if (!a.isSuggested && b.isSuggested) return -1;
+      if (bothSuggested && a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
+      if (bothSuggested && !a.isAnyUrlAction && b.isAnyUrlAction) return -1;
+      if (!a.isAnyUrlAction && b.isAnyUrlAction) return -1;
+      if (a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
       return compareTabs(a, b, this.domains);
     });
 
