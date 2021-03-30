@@ -12,6 +12,7 @@ module.exports = (env) => {
       content_script: path.join(__dirname, PATHS.src + '/scripts/main.ts'),
       content_frames: path.join(__dirname, PATHS.src + '/scripts/frame.ts'),
       content_blocker: path.join(__dirname, PATHS.src + '/scripts/block.ts'),
+      reorder: path.join(__dirname, PATHS.src + '/scripts/reorder.ts'),
       introduction: path.join(__dirname, PATHS.src + '/scripts/introduction.tsx'),
     },
     output: {
