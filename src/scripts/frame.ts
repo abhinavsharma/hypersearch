@@ -1,5 +1,9 @@
 import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
 
+const GOOGLE_SERP_RESULT_DIV_SELECTOR = '.mnr-c.xpd';
+const GOOGLE_SERP_RESULT_A_SELECTOR = '.KJDcUb a.BmP5tf';
+const GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL = '.mnr-c .KJDcUb a.BmP5tf';
+
 ((document, window) => {
   // not exactly ad blocking but removing known bad components
   const toRemove = {
@@ -96,17 +100,19 @@ import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
     domainsContainer?.setAttribute('style', 'display: none;');
 
     if (window.location.href.search(/google\.com/gi) > -1) {
-      const resultNodes = Array.from(document.querySelectorAll('.mnr-c.xpd')) as HTMLElement[];
-      const domains = Array.from(document.querySelectorAll('.mnr-c .KJDcUb a.BmP5tf')).map(
-        ({ href }: HTMLLinkElement) => extractUrlProperties(href).hostname,
-      );
+      const resultNodes = Array.from(
+        document.querySelectorAll(GOOGLE_SERP_RESULT_DIV_SELECTOR),
+      ) as HTMLElement[];
+      const domains = Array.from(
+        document.querySelectorAll(GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL),
+      ).map(({ href }: HTMLLinkElement) => extractUrlProperties(href).hostname);
       const rankedDomains = getRankedDomains(domains);
       const topPositions = resultNodes.slice(0, 3);
       const movedDomains = [];
       const logData = [];
       resultNodes.forEach((node, index) => {
         const nodeDomain = extractUrlProperties(
-          node.querySelector('.KJDcUb a.BmP5tf').getAttribute('href'),
+          node.querySelector(GOOGLE_SERP_RESULT_A_SELECTOR).getAttribute('href'),
         ).hostname;
         const rankedPosition = rankedDomains.indexOf(nodeDomain);
         if (
