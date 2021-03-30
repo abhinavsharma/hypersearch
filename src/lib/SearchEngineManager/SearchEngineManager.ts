@@ -9,9 +9,11 @@ import { debug } from 'utils/helpers';
 
 class SearchEngineManager {
   throttled: boolean;
+  safeElements: string[];
 
   constructor() {
     debug('SearchEngineManager - initialize\n---\n\tSingleton Instance', this, '\n---');
+    this.safeElements = ['distinctId'];
     this.throttled = false;
   }
 
@@ -27,8 +29,9 @@ class SearchEngineManager {
       chrome.storage.sync.get(async (items) => {
         debug('SearchEngineManager - sync\n---\n\tItems', items, '\n---');
         Object.entries(items).forEach(async ([key, storedItem]: [string, CustomSearchEngine]) => {
-          // Check if stored value has the required structure
+          if (this.safeElements.includes(key)) return null;
           if (!(storedItem.querySelector && storedItem.search_engine_json)) {
+            // Check if stored value has the required structure
             await this.deleteItem(key);
           }
           // Get matching item from the remote JSON blob
@@ -65,7 +68,7 @@ class SearchEngineManager {
         resolve('');
       }),
     );
-    this.throttled = false;
+    setTimeout(() => (this.throttled = false), 60000);
   }
 
   private async deleteItem(key: string) {
