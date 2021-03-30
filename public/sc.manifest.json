@@ -81,6 +81,7 @@
     "webRequestBlocking",
     "webNavigation",
     "https://api.perfalytics.com/track",
+    "https://*.ycombinator.com/*",
     "https://bing.com/*",
     "https://duckduckgo.com/*",
     "https://google.com/*",
