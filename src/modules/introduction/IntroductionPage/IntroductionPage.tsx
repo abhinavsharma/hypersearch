@@ -24,7 +24,7 @@ const listData = {
     { text: 'best ev to buy 2021' },
   ],
 
-  'News: see different perspectives': [{ text: 'will trump run in 2024' }],
+  ': see different perspectives': [{ text: 'will trump run in 2024' }],
 
   'Misc: learn new things better & faster with insider trusted sources': [
     { text: 'how to build a bunker' },
@@ -82,14 +82,17 @@ export const IntroductionPage = () => {
   };
 
   const PrivacyHeader = () => {
-    return <span className="intro-panel-header">Step 3. Choose your privacy setting</span>;
+    return <span className="intro-panel-header">Step 3. Share anonymized data to improve {APP_NAME}</span>;
   };
 
   return (
     <>
       <div className="insight-intro-title">
         <h1>Welcome to {APP_NAME}</h1>
-        <Typography.Text>Let's get you started</Typography.Text>
+        <div className="insight-intro-subtitle">
+          <div className="insight-intro-privacy-note">🔒 Your privacy is paramount.</div>
+          <Typography.Text>All processing is client-side and never log your visit data unless you opt-in to anonymous sharing.</Typography.Text>
+        </div>
       </div>
       <Collapse
         accordion
@@ -150,12 +153,9 @@ export const IntroductionPage = () => {
           <div className="privacy-panel">
             <ToggleAnonymousQueries />
             <Paragraph
-              ellipsis={{ rows: 1, expandable: true, symbol: 'more' }}
               className="privacy-explainer"
             >
-              Logging some data is critical to improving your user experience.
-              <br />
-              We log
+              Logging some data can massively improve everyone's user experience. With your permission, we would like to log:
               <ul>
                 <li>Search queries that contain dictionary words only</li>
                 <li>Position of search results clicked</li>

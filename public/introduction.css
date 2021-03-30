@@ -8,6 +8,15 @@
   font-weight: bold;
 }
 
+.insight-intro-subtitle {
+  font-family: Helvetica, sans-serif;
+  max-width: 400px;
+  margin: auto;
+}
+
+.insight-intro-privacy-note { 
+  font-size: 16px;
+}
 .intro-panel-header {
   display: block;
   width: 100%;
