@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabDomains.scss';
 
 const { Paragraph } = Typography;
 
-export const SidebarTabDomains: SidebarTabDomains = ({ domains, tab }) => {
+export const SidebarTabDomains: SidebarTabDomains = ({ domains }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const ellipsis = {
