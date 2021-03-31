@@ -16,9 +16,7 @@ const MinusCircleOutlined = React.lazy(
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
   const [newValue, setNewValue] = useState('');
   const [type, setType] = useState<string>(action?.key);
-  const [newLabel, setNewLabel] = useState<string>(
-    action?.label ?? 'Choose Action Type',
-  );
+  const [newLabel, setNewLabel] = useState<string>(action?.label ?? 'Choose Action Type');
 
   const handleSaveValue = (e: string, i: number) => {
     const newValue = action.value;

@@ -29,6 +29,9 @@ import {
   DUMMY_SUBTABS_URL,
   SUBTABS_CACHE_EXPIRE_MIN,
   BANNED_DOMAINS,
+  SEARCH_DOMAINS_ACTION,
+  SEARCH_QUERY_CONTAINS_CONDITION,
+  ANY_URL_CONDITION,
 } from 'utils/constants';
 
 /**
@@ -325,7 +328,7 @@ class SidebarLoader {
           (e) => e.value[0],
         );
         const domainsToLookAction = augmentation.actions?.action_list?.find(
-          (action) => action.key === 'search_domains',
+          (action) => action.key === SEARCH_DOMAINS_ACTION,
         )?.value;
         const matchingDomainsCondition = this.domains.filter((value) =>
           domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
@@ -333,6 +336,11 @@ class SidebarLoader {
         const matchingDomainsAction = this.domains.filter((value) =>
           domainsToLookAction?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
         );
+        const checkForQuery =
+          augmentation.conditions.condition_list.find(
+            ({ key }) => key === SEARCH_QUERY_CONTAINS_CONDITION,
+          )?.value[0] ?? null;
+        const matchingQueryCondition = checkForQuery && this.query.search(checkForQuery) > -1;
         IN_DEBUG_MODE &&
           logProcessed.push(
             '\n\t',
@@ -360,18 +368,19 @@ class SidebarLoader {
           // cases, we care that augmentation as ignored and do not list in the sidebar. Both actions
           // and conditions are taken in concern.
           isRelevant =
-            matchingDomainsCondition
+            matchingQueryCondition ||
+            (matchingDomainsCondition
               .map(
                 (domain) =>
                   !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
               )
               .filter((isMatch) => !!isMatch).length > 0 &&
-            matchingDomainsAction
-              .map(
-                (domain) =>
-                  !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
-              )
-              .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
+              matchingDomainsAction
+                .map(
+                  (domain) =>
+                    !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
+                )
+                .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE);
 
           IN_DEBUG_MODE &&
             !isRelevant &&
@@ -407,7 +416,7 @@ class SidebarLoader {
                 title: augmentation.name,
                 description: augmentation.description,
                 isAnyUrlAction: !!augmentation.conditions.condition_list.find(
-                  (i) => i.key === 'any_url',
+                  (i) => i.key === ANY_URL_CONDITION,
                 ),
               };
               newTabs.unshift(tab);
@@ -799,6 +808,7 @@ class SidebarLoader {
       '\n---',
     );
     !this.strongPrivacy &&
+      !IN_DEBUG_MODE &&
       chrome.runtime.sendMessage({
         event,
         properties,

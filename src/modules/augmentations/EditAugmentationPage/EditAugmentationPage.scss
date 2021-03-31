@@ -51,13 +51,13 @@
     background: #efefef;
     overflow-y: auto !important;
 
-    .ant-collapse-header {
-      font-weight: bold;
-    }
-
     h2 {
       padding-left: 10px;
       font-size: 16px;
+    }
+
+    .ant-collapse-header {
+      font-weight: bold;
     }
 
     .ant-collapse-content-box {
@@ -185,6 +185,8 @@
         }
 
         .ant-col {
+          display: flex;
+          align-items: center;
           font-weight: normal !important;
 
           &:first-child {
@@ -203,56 +205,12 @@
 
         &.edit-input-row {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           background: white !important;
           min-height: 20px;
           height: auto;
           border-bottom: 1px solid #eee;
           padding: 10px 10px;
-
-          &.action {
-            border-bottom: none;
-
-            .ant-col:last-child {
-              border-left: 1px solid #eee;
-              margin: -10px -10px -10px -1px;
-              padding: 10px 0 10px 10px;
-
-              & .ant-input {
-                margin-right: 10px;
-              }
-            }
-          }
-
-          .ant-col {
-            display: flex;
-            align-items: flex-start;
-
-            .edit-input-action-button {
-              margin-left: auto;
-            }
-
-            &.value-col {
-              padding-left: 10px;
-              margin-right: -10px;
-
-              & > span {
-                display: block;
-                width: 70%;
-              }
-
-              button {
-                margin-left: auto;
-                font-size: 20px;
-              }
-
-              textarea {
-                min-height: 30px;
-                max-height: 100% !important;
-                margin-bottom: 0px !important;
-              }
-            }
-          }
         }
       }
     }
