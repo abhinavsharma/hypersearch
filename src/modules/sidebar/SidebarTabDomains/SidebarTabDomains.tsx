@@ -4,10 +4,11 @@ import Button from 'antd/lib/button';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabDomains.scss';
+import { SEARCH_DOMAINS_ACTION } from 'utils';
 
 const { Paragraph } = Typography;
 
-export const SidebarTabDomains: SidebarTabDomains = ({ domains }) => {
+export const SidebarTabDomains: SidebarTabDomains = ({ domains, tab }) => {
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const ellipsis = {
@@ -16,7 +17,7 @@ export const SidebarTabDomains: SidebarTabDomains = ({ domains }) => {
 
   const handleToggle = () => setExpanded((prev) => !prev);
 
-  return !!domains.length ? (
+  return tab.actionTypes.indexOf(SEARCH_DOMAINS_ACTION) > -1 ? (
     <div className="sidebar-tab-domains">
       <Paragraph ellipsis={!expanded && ellipsis} className={expanded ? 'contents-inline' : ''}>
         <span className="domain-list-prefix">Lens&nbsp;sources&nbsp;include&nbsp;</span>

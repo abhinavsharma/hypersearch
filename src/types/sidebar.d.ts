@@ -11,12 +11,13 @@ declare type SidebarTab = {
   description?: string;
   url: URL;
   default: boolean;
-  readable?: string;
-  matchingDomainsCondition?: string[];
-  matchingDomainsAction?: string[];
-  isAnyUrlAction?: boolean;
+  actionTypes?: string[];
+  conditionTypes?: string[];
   isCse?: boolean;
   isSuggested?: boolean;
+  matchingDomainsAction?: string[];
+  matchingDomainsCondition?: string[];
+  readable?: string;
 };
 
 declare type SidebarResponseArrayObject = {

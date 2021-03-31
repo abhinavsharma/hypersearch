@@ -16,8 +16,6 @@ import {
   removeProtocol,
   isSafari,
   compareTabs,
-} from 'utils/helpers';
-import {
   CUSTOM_SEARCH_ENGINES,
   ENABLED_AUGMENTATION_TYPES,
   EXTENSION_SERP_LOADED,
@@ -31,8 +29,7 @@ import {
   BANNED_DOMAINS,
   SEARCH_DOMAINS_ACTION,
   SEARCH_QUERY_CONTAINS_CONDITION,
-  ANY_URL_CONDITION,
-} from 'utils/constants';
+} from 'utils';
 
 /**
  * ! In order of priority
@@ -415,8 +412,11 @@ class SidebarLoader {
                 default: !newTabs.length,
                 title: augmentation.name,
                 description: augmentation.description,
-                isAnyUrlAction: !!augmentation.conditions.condition_list.find(
-                  (i) => i.key === ANY_URL_CONDITION,
+                actionTypes: Array.from(
+                  new Set(augmentation.actions.action_list.map(({ key }) => key)),
+                ),
+                conditionTypes: Array.from(
+                  new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
                 ),
               };
               newTabs.unshift(tab);
@@ -445,21 +445,7 @@ class SidebarLoader {
       }
     });
 
-    this.sidebarTabs = newTabs.sort((a, b) => {
-      // ! HINT: -1 === leave order, 1 === put B before A
-      const bothSuggested = a.isSuggested && b.isSuggested;
-      if (a.isSuggested && !b.isSuggested && !a.isAnyUrlAction && b.isAnyUrlAction) return -1;
-      if (a.isSuggested && !b.isSuggested && a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
-      if (!a.isSuggested && b.isSuggested && !a.isAnyUrlAction && b.isAnyUrlAction) return -1;
-      if (!a.isSuggested && b.isSuggested && a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
-      if (a.isSuggested && !b.isSuggested) return 1;
-      if (!a.isSuggested && b.isSuggested) return -1;
-      if (bothSuggested && a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
-      if (bothSuggested && !a.isAnyUrlAction && b.isAnyUrlAction) return -1;
-      if (!a.isAnyUrlAction && b.isAnyUrlAction) return -1;
-      if (a.isAnyUrlAction && !b.isAnyUrlAction) return 1;
-      return compareTabs(a, b, this.domains);
-    });
+    this.sidebarTabs = newTabs.sort((a, b) => compareTabs(a, b, this.domains));
 
     const checkRequiredParams = () =>
       this.customSearchEngine?.search_engine_json?.required_params

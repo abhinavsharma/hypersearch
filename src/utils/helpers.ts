@@ -1,5 +1,5 @@
 import { LUMOS_API_URL, LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG } from 'lumos-shared-js';
-import { KP_SELECTORS, IN_DEBUG_MODE } from './constants';
+import { KP_SELECTORS, IN_DEBUG_MODE, ANY_URL_CONDITION } from 'utils';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
 
@@ -151,6 +151,19 @@ export const getRankedDomains = (domains: string[]) =>
     .map(([key]) => key);
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
+  const bothSuggested = a.isSuggested && b.isSuggested;
+  const aIsAny = a.conditionTypes.indexOf(ANY_URL_CONDITION) > -1;
+  const bIsAny = b.conditionTypes.indexOf(ANY_URL_CONDITION) > -1;
+  if (a.isSuggested && !b.isSuggested && !aIsAny && bIsAny) return -1;
+  if (a.isSuggested && !b.isSuggested && aIsAny && !bIsAny) return 1;
+  if (!a.isSuggested && b.isSuggested && !aIsAny && bIsAny) return -1;
+  if (!a.isSuggested && b.isSuggested && aIsAny && !bIsAny) return 1;
+  if (a.isSuggested && !b.isSuggested) return 1;
+  if (!a.isSuggested && b.isSuggested) return -1;
+  if (bothSuggested && aIsAny && !bIsAny) return 1;
+  if (bothSuggested && !aIsAny && bIsAny) return -1;
+  if (!aIsAny && bIsAny) return -1;
+  if (aIsAny && !bIsAny) return 1;
   const tabRatings = Object.create(null);
   const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
   const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
