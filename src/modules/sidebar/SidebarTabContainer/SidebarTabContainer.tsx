@@ -1,8 +1,28 @@
-import React from 'react';
-import { EXTENSION_SERP_FILTER_LOADED, SIDEBAR_WIDTH } from 'utils/constants';
+import React, { useEffect } from 'react';
+import { EXTENSION_SERP_FILTER_LOADED, HIDE_DOMAINS_MESSAGE, SIDEBAR_WIDTH } from 'utils/constants';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
+  useEffect(() => {
+    if (tab.hideDomains.length) {
+      window.top.postMessage(
+        {
+          name: HIDE_DOMAINS_MESSAGE,
+          url: tab.url.href,
+          hideDomains: tab.hideDomains,
+          selector: {
+            link:
+              SidebarLoader.customSearchEngine.querySelector[
+                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+              ],
+            container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
+          },
+        },
+        '*',
+      );
+    }
+  }, []);
+
   return (
     <iframe
       src={unescape(tab.url.href)}

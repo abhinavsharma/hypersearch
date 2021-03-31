@@ -5,6 +5,7 @@ import { EditAugmentationPage } from 'modules/augmentations/';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
+  ANY_URL_CONDITION,
   ANY_URL_CONDITION_TEMPLATE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
@@ -34,7 +35,9 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
     : SidebarLoader.installedAugmentations
   ).find(({ id }) => id === tab.id);
 
-  const isPinned = !!augmentation.conditions.condition_list.find((i) => i.key === 'any_url');
+  const isPinned = !!augmentation.conditions.condition_list.find(
+    (i) => i.key === ANY_URL_CONDITION,
+  );
 
   const handleAddSuggested = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
@@ -105,7 +108,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
       )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
         <Button
-          style={{bottom: 4}}
+          style={{ bottom: 4 }}
           type="link"
           target="_blank"
           href={

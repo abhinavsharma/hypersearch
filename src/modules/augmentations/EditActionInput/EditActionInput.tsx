@@ -8,6 +8,7 @@ import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './EditActionInput.scss';
+import { OPEN_URL_ACTION, SEARCH_DOMAINS_ACTION, SEARCH_HIDE_DOMAIN_ACTION } from 'utils';
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
@@ -36,11 +37,11 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
       type="link"
       onClick={() => {
         setNewLabel('Search only these domains');
-        setType('search_domains');
+        setType(SEARCH_DOMAINS_ACTION);
         saveAction({
           ...action,
           label: 'Search only these domains',
-          key: 'search_domains',
+          key: SEARCH_DOMAINS_ACTION,
           value: [],
         });
       }}
@@ -52,16 +53,32 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
       type="link"
       onClick={() => {
         setNewLabel('Open page');
-        setType('open_url');
+        setType(OPEN_URL_ACTION);
         saveAction({
           ...action,
           label: 'Open page',
-          key: 'open_url',
+          key: OPEN_URL_ACTION,
           value: [],
         });
       }}
     >
       Open page
+    </Button>,
+    <Button
+      className="dropdown-button"
+      type="link"
+      onClick={() => {
+        setNewLabel('Minimize results from domain');
+        setType(SEARCH_HIDE_DOMAIN_ACTION);
+        saveAction({
+          ...action,
+          label: 'Minimize results from domain',
+          key: SEARCH_HIDE_DOMAIN_ACTION,
+          value: [],
+        });
+      }}
+    >
+      Minimize results from domain
     </Button>,
   ];
 
@@ -105,17 +122,19 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
               </div>
             ),
         )}
-        {type && (type !== 'open_url' || action.value.length === 0) && (
-          <Row className="no-border edit-input-row">
-            <Input.Search
-              enterButton="Add"
-              className="add-action-value-input"
-              value={newValue}
-              onChange={(e) => setNewValue(e.target.value)}
-              onSearch={() => handleSaveValue(newValue, action.value.length)}
-            />
-          </Row>
-        )}
+        {type &&
+          (![OPEN_URL_ACTION, SEARCH_HIDE_DOMAIN_ACTION].includes(type) ||
+            action.value.length === 0) && (
+            <Row className="no-border edit-input-row">
+              <Input.Search
+                enterButton="Add"
+                className="add-action-value-input"
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                onSearch={() => handleSaveValue(newValue, action.value.length)}
+              />
+            </Row>
+          )}
       </Col>
     </>
   );

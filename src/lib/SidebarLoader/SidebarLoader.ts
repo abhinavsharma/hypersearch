@@ -16,8 +16,8 @@ import {
   removeProtocol,
   isSafari,
   compareTabs,
+  isAugmentationEnabled,
   CUSTOM_SEARCH_ENGINES,
-  ENABLED_AUGMENTATION_TYPES,
   EXTENSION_SERP_LOADED,
   NUM_DOMAINS_TO_CONSIDER,
   NUM_DOMAINS_TO_EXCLUDE,
@@ -29,6 +29,8 @@ import {
   BANNED_DOMAINS,
   SEARCH_DOMAINS_ACTION,
   SEARCH_QUERY_CONTAINS_CONDITION,
+  SEARCH_HIDE_DOMAIN_ACTION,
+  OPEN_URL_ACTION,
 } from 'utils';
 
 /**
@@ -247,34 +249,53 @@ class SidebarLoader {
         ? 'https://www.ecosia.org/search'
         : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
     );
-    // List of domains to search when action key is `search_domains`.
-    let tabAppendages: string[] = [];
-    // A new tab will be created for each action with `open_url` key.
     const urls: URL[] = [];
+
+    const createSingleDomainUrl = (actionValue: string[]) => {
+      actionValue.forEach((val) => {
+        const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
+        url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+        urls.push(url);
+      });
+    };
+
+    const createMultipleDomainUrl = (actionValue: string[]) => {
+      const tabAppendages = actionValue;
+      this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
+        actionValue.map((value) => removeProtocol(value)),
+      );
+      const append =
+        tabAppendages.length === 1
+          ? `site:${tabAppendages[0]}`
+          : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
+      customSearchUrl.searchParams.append(
+        'q',
+        `${this.query} ${!!actionValue.length ? append : ''}`,
+      );
+      customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+    };
+
     // An augmentation can have multiple actions, despite their type. We
     // assume this case and process the whole `action_list`. In the prev
     // versions, we only checked the first value, when key was `open_url`.
     // ! Note: Multiple values in `open_url` is currently not allowed!
     augmentation.actions.action_list.forEach((action) => {
       switch (action.key) {
-        case 'open_url':
-          action.value.forEach((val) => {
-            const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
-            url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            urls.push(url);
-          });
-          break;
-        case 'search_domains':
-          tabAppendages = tabAppendages.concat(action.value);
-          this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
-            action.value.map((action) => removeProtocol(action)),
+        case SEARCH_HIDE_DOMAIN_ACTION:
+          createMultipleDomainUrl(
+            augmentation.actions.action_list.find(({ key }) => key === SEARCH_DOMAINS_ACTION)
+              ?.value ?? [],
           );
-          const append =
-            tabAppendages.length === 1
-              ? `site:${tabAppendages[0]}`
-              : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
-          customSearchUrl.searchParams.append('q', this.query + ' ' + append);
-          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          break;
+        case OPEN_URL_ACTION:
+          createSingleDomainUrl(action.value);
+          break;
+        case SEARCH_DOMAINS_ACTION:
+          if (
+            !augmentation.actions.action_list.find(({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION)
+          ) {
+            createMultipleDomainUrl(action.value);
+          }
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
@@ -352,12 +373,7 @@ class SidebarLoader {
             '\n',
           );
 
-        if (
-          matchingDomainsCondition.length > 0 &&
-          augmentation.conditions.condition_list
-            .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
-            .indexOf(false) === -1
-        ) {
+        if (matchingDomainsCondition.length > 0 && isAugmentationEnabled(augmentation)) {
           this.tabDomains[augmentation.id] = [];
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
           this.query = new URLSearchParams(this.document.location.search).get('q');
@@ -402,6 +418,7 @@ class SidebarLoader {
           }
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
             this.getTabUrls(augmentation).forEach((url) => {
+              // TODO: pass the whole augmentation object to sidebar tab!
               const tab = {
                 url,
                 matchingDomainsAction,
@@ -418,6 +435,10 @@ class SidebarLoader {
                 conditionTypes: Array.from(
                   new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
                 ),
+                hideDomains:
+                  augmentation.actions.action_list.find(
+                    ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
+                  )?.value ?? [],
               };
               newTabs.unshift(tab);
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
@@ -630,12 +651,7 @@ class SidebarLoader {
           const matchingDomainsCondition = this.domains.filter((value) =>
             domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
           );
-          if (
-            matchingDomainsCondition.length > 0 &&
-            augmentation.conditions.condition_list
-              .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
-              .indexOf(false) === -1
-          ) {
+          if (matchingDomainsCondition.length > 0 && isAugmentationEnabled(augmentation)) {
             a.push(augmentation);
           } else {
             this.otherAugmentations.push(augmentation);

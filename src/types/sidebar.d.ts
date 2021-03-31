@@ -14,6 +14,7 @@ declare type SidebarTab = {
   actionTypes?: string[];
   conditionTypes?: string[];
   isCse?: boolean;
+  hideDomains?: string[];
   isSuggested?: boolean;
   matchingDomainsAction?: string[];
   matchingDomainsCondition?: string[];
@@ -69,6 +70,7 @@ declare type CustomSearchEngine = {
     pad: string;
     desktop: string;
     featured: string[];
+    result_container_selector: string;
   };
   search_engine_json: {
     required_params: string[];
