@@ -3,6 +3,7 @@ declare module './hideSerpResults' {
     nodes: HTMLElement[],
     selector: string,
     details: Record<'text' | 'header', string>,
+    selectorString: string,
   ) => void;
 }
 

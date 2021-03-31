@@ -20,7 +20,12 @@ import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
       while ((node = matchingElements.iterateNext() as HTMLElement)) {
         node && nodes.push(node);
       }
-      hideSerpResults(nodes, adElementSelector, { header: 'Ad', text: 'Click to show likely ad.' });
+      hideSerpResults(
+        nodes,
+        adElementSelector,
+        { header: 'Ad', text: 'Click to show likely ad.' },
+        'blocked-ad',
+      );
     }, 1000);
   });
 })();

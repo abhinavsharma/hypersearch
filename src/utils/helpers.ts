@@ -1,5 +1,10 @@
 import { LUMOS_API_URL, LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG } from 'lumos-shared-js';
-import { KP_SELECTORS, IN_DEBUG_MODE, ANY_URL_CONDITION } from 'utils';
+import {
+  KP_SELECTORS,
+  IN_DEBUG_MODE,
+  ENABLED_AUGMENTATION_TYPES,
+  ANY_URL_CONDITION,
+} from './constants';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
 
@@ -191,3 +196,11 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => 
   }
   return aLowest.rate > bLowest.rate ? 1 : -1;
 };
+
+export const isAugmentationEnabled = (augmentation: AugmentationObject) =>
+  augmentation.conditions.condition_list
+    .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
+    .indexOf(false) === -1 &&
+  augmentation.actions.action_list
+    .map((action) => ENABLED_AUGMENTATION_TYPES.includes(action.key))
+    .indexOf(false) === -1;

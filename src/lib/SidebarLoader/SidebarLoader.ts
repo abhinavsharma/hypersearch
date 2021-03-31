@@ -16,8 +16,8 @@ import {
   removeProtocol,
   isSafari,
   compareTabs,
+  isAugmentationEnabled,
   CUSTOM_SEARCH_ENGINES,
-  ENABLED_AUGMENTATION_TYPES,
   EXTENSION_SERP_LOADED,
   NUM_DOMAINS_TO_CONSIDER,
   NUM_DOMAINS_TO_EXCLUDE,
@@ -29,6 +29,8 @@ import {
   BANNED_DOMAINS,
   SEARCH_DOMAINS_ACTION,
   SEARCH_QUERY_CONTAINS_CONDITION,
+  SEARCH_HIDE_DOMAIN_ACTION,
+  OPEN_URL_ACTION,
 } from 'utils';
 
 /**
@@ -279,17 +281,19 @@ class SidebarLoader {
     // ! Note: Multiple values in `open_url` is currently not allowed!
     augmentation.actions.action_list.forEach((action) => {
       switch (action.key) {
-        case 'hide_domain':
+        case SEARCH_HIDE_DOMAIN_ACTION:
           createMultipleDomainUrl(
-            augmentation.actions.action_list.find(({ key }) => key === 'search_domains')?.value ??
-              [],
+            augmentation.actions.action_list.find(({ key }) => key === SEARCH_DOMAINS_ACTION)
+              ?.value ?? [],
           );
           break;
-        case 'open_url':
+        case OPEN_URL_ACTION:
           createSingleDomainUrl(action.value);
           break;
-        case 'search_domains':
-          if (!augmentation.actions.action_list.find(({ key }) => key === 'hide_domain')) {
+        case SEARCH_DOMAINS_ACTION:
+          if (
+            !augmentation.actions.action_list.find(({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION)
+          ) {
             createMultipleDomainUrl(action.value);
           }
           break;
@@ -369,12 +373,7 @@ class SidebarLoader {
             '\n',
           );
 
-        if (
-          matchingDomainsCondition.length > 0 &&
-          augmentation.conditions.condition_list
-            .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
-            .indexOf(false) === -1
-        ) {
+        if (matchingDomainsCondition.length > 0 && isAugmentationEnabled(augmentation)) {
           this.tabDomains[augmentation.id] = [];
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
           this.query = new URLSearchParams(this.document.location.search).get('q');
@@ -437,8 +436,9 @@ class SidebarLoader {
                   new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
                 ),
                 hideDomains:
-                  augmentation.actions.action_list.find(({ key }) => key === 'hide_domain')
-                    ?.value ?? [],
+                  augmentation.actions.action_list.find(
+                    ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
+                  )?.value ?? [],
               };
               newTabs.unshift(tab);
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
@@ -651,12 +651,7 @@ class SidebarLoader {
           const matchingDomainsCondition = this.domains.filter((value) =>
             domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
           );
-          if (
-            matchingDomainsCondition.length > 0 &&
-            augmentation.conditions.condition_list
-              .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
-              .indexOf(false) === -1
-          ) {
+          if (matchingDomainsCondition.length > 0 && isAugmentationEnabled(augmentation)) {
             a.push(augmentation);
           } else {
             this.otherAugmentations.push(augmentation);

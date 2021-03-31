@@ -1,6 +1,5 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { debug, extractUrlProperties, HIDE_DOMAINS_MESSAGE } from 'utils';
-import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
+import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults } from 'utils';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -13,7 +12,7 @@ import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
   window.top.addEventListener('message', ({ data }) => {
     if (data.name === HIDE_DOMAINS_MESSAGE) {
       const blocks = [];
-      const results = Array.from(document.querySelectorAll(data.selector)) as HTMLElement[];
+      const results = Array.from(document.querySelectorAll(data.selector.link)) as HTMLElement[];
       results.forEach((result) => {
         data.hideDomains.forEach((domain) => {
           let domainName = '';
@@ -22,31 +21,21 @@ import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
           } else {
             domainName = result.textContent;
           }
-          console.log(domainName);
           if (domainName.match(domain)?.length) {
             blocks.push(result);
           }
         });
       });
 
-      let parentSelector = '';
-
-      switch (extractUrlProperties(location.href).hostname) {
-        case 'google.com':
-          parentSelector = '[data-hveid]';
-          break;
-        case 'duckduckgo.com':
-          parentSelector = '.result__body';
-          break;
-        case 'bing.com':
-          parentSelector = '.b_algo';
-          break;
-      }
-
-      hideSerpResults(blocks, parentSelector, {
-        header: 'Hidden',
-        text: 'Click to show hidden result',
-      });
+      hideSerpResults(
+        blocks,
+        data.selector.container,
+        {
+          header: 'Hidden',
+          text: 'Click to show hidden result',
+        },
+        'hidden-domain',
+      );
     }
   });
   const url = new URL(location.href);

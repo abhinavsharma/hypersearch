@@ -3,14 +3,16 @@ import { goTo } from 'route-lite';
 import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { EditAugmentationPage } from 'modules/augmentations';
-import { ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import { ANY_URL_CONDITION, ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './AugmentationRow.scss';
 
 export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, ignored }) => {
-  const isPinned = !!augmentation.conditions.condition_list.find((i) => i.key === 'any_url');
+  const isPinned = !!augmentation.conditions.condition_list.find(
+    (i) => i.key === ANY_URL_CONDITION,
+  );
   const isSuggested = !augmentation.hasOwnProperty('enabled');
 
   const handlePin = () => {

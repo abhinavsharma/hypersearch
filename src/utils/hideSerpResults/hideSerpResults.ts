@@ -1,6 +1,25 @@
 import { SIDEBAR_Z_INDEX } from 'utils/constants';
 
-export const hideSerpResults: HideSerpResults = (nodes, selector, { text, header }) => {
+/**
+ * Create an overlay above the list of HTMLElements
+ *
+ * @param nodes - The list of nodes to overlay
+ * @param selector - The closest selector where the overlay will be placed
+ * @param deatils - `Record<text|header>` - The text content of the overlay
+ * @param selectorString - This string will be placed inside the CSS selectors
+ * @example
+ * ```
+ * insight-${selectorString}-overlay
+ * insight-${selectorString}-text-wrapper
+ * insight-${selectorString}-inner-text
+ * ```
+ */
+export const hideSerpResults: HideSerpResults = (
+  nodes,
+  selector,
+  { text, header },
+  selectorString,
+) => {
   for (const node of nodes) {
     const serpResult = node.closest(selector) as HTMLElement;
     if (!serpResult || serpResult.getAttribute('insight-hidden-result') === 'true') continue;
@@ -8,38 +27,16 @@ export const hideSerpResults: HideSerpResults = (nodes, selector, { text, header
     serpResult.setAttribute('insight-hidden-result', 'true');
 
     const overlay = document.createElement('div');
-    overlay.setAttribute(
-      'style',
-      `
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-        background: linear-gradient(hsla(0,0%,100%,.9) 0%,#fff);
-        z-index: ${SIDEBAR_Z_INDEX - 1};
-      `,
-    );
+    overlay.classList.add(`insight-${selectorString}-overlay`);
+    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 1};`);
     overlay.classList.add('insight-hidden');
 
     const textWrapper = document.createElement('div');
-    textWrapper.setAttribute(
-      'style',
-      `
-        position: absolute; left: 20px; top: 30px;
-        font-weight: bold;
-        font-size: 24px;
-        color:#444;
-      `,
-    );
+    textWrapper.classList.add(`insight-${selectorString}-text-wrapper`);
     textWrapper.innerText = header;
 
     const innerText = document.createElement('div');
-    innerText.setAttribute(
-      'style',
-      `
-        font-weight: normal;
-        margin-top: 10px;
-        font-size: 16px;
-      `,
-    );
+    innerText.classList.add(`insight-${selectorString}-inner-text`);
     innerText.innerText = text;
 
     overlay.appendChild(textWrapper);

@@ -70,6 +70,7 @@ declare type CustomSearchEngine = {
     pad: string;
     desktop: string;
     featured: string[];
+    result_container_selector: string;
   };
   search_engine_json: {
     required_params: string[];

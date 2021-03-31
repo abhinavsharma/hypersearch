@@ -3,3 +3,53 @@ body {
   width: 100% !important;
   max-width: 100% !important;
 }
+
+.insight-blocked-ad-overlay {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(hsla(0, 0%, 100%, 0.9) 0%, #fff);
+}
+
+.insight-blocked-ad-text-wrapper {
+  position: absolute;
+  left: 20px;
+  top: 30px;
+  font-weight: bold;
+  font-size: 24px;
+  color: #444;
+}
+
+.insight-blocked-ad-inner-text {
+  font-weight: normal;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.insight-hidden-domain-overlay {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(hsla(120, 100%, 50%, 0.9) 0%, #304088);
+}
+
+.insight-hidden-domain-text-wrapper {
+  position: absolute;
+  left: 20px;
+  top: 30px;
+  font-weight: bold;
+  font-size: 24px;
+  color: #fff;
+}
+
+.insight-hidden-domain-inner-text {
+  font-weight: normal;
+  margin-top: 10px;
+  font-size: 16px;
+}

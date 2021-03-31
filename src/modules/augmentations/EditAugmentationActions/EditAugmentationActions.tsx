@@ -4,7 +4,7 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import { v4 as uuid } from 'uuid';
 import { CustomAction, EditActionInput } from 'modules/augmentations';
-import { EMPTY_AUGMENTATION } from 'utils/constants';
+import { EMPTY_AUGMENTATION, SEARCH_DOMAINS_ACTION } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 
@@ -17,10 +17,10 @@ export const EditAugmentationActions: EditAugmentationActions = ({
   const [filteredAction, setFilteredActions] = useState<CustomAction[]>(actions);
 
   useEffect(() => {
-    const existingSearchDomains = actions.find((i) => i.key === 'search_domains');
+    const existingSearchDomains = actions.find((i) => i.key === SEARCH_DOMAINS_ACTION);
     if (existingSearchDomains) {
       setFilteredActions(
-        actions.filter((i) => i.id === existingSearchDomains.id || i.key !== 'search_domains'),
+        actions.filter((i) => i.id === existingSearchDomains.id || i.key !== SEARCH_DOMAINS_ACTION),
       );
     } else {
       setFilteredActions(actions);

@@ -10,10 +10,13 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
           name: HIDE_DOMAINS_MESSAGE,
           url: tab.url.href,
           hideDomains: tab.hideDomains,
-          selector:
-            SidebarLoader.customSearchEngine.querySelector[
-              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-            ],
+          selector: {
+            link:
+              SidebarLoader.customSearchEngine.querySelector[
+                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+              ],
+            container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
+          },
         },
         '*',
       );
