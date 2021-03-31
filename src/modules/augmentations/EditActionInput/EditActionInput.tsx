@@ -63,6 +63,22 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
     >
       Open page
     </Button>,
+    <Button
+      className="dropdown-button"
+      type="link"
+      onClick={() => {
+        setNewLabel('Minimize results from domain');
+        setType('hide_domain');
+        saveAction({
+          ...action,
+          label: 'Minimize results from domain',
+          key: 'hide_domain',
+          value: [],
+        });
+      }}
+    >
+      Minimize results from domain
+    </Button>,
   ];
 
   return (
@@ -105,7 +121,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
               </div>
             ),
         )}
-        {type && (type !== 'open_url' || action.value.length === 0) && (
+        {type && (!['open_url', 'hide_domain'].includes(type) || action.value.length === 0) && (
           <Row className="no-border edit-input-row">
             <Input.Search
               enterButton="Add"

@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
+import { isKnowledgePage } from 'utils/helpers';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
@@ -15,9 +16,7 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
-import { isKnowledgePage } from 'utils/helpers';
 import './Sidebar.scss';
-import Button from 'antd/lib/button';
 
 const Sidebar: Sidebar = () => {
   // We use this state variable to forcibly open a given tab on the sidebar.
@@ -71,8 +70,9 @@ const Sidebar: Sidebar = () => {
         </div>
         <div className="insight-sidebar-title">
           <span>🔎&nbsp;&nbsp;Lenses from {APP_NAME}&nbsp;/&nbsp;</span>
-
-          <a target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>Feedback</a>
+          <a target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
+            Feedback
+          </a>
         </div>
         <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />
       </div>

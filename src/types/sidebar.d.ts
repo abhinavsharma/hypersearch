@@ -14,6 +14,7 @@ declare type SidebarTab = {
   actionTypes?: string[];
   conditionTypes?: string[];
   isCse?: boolean;
+  hideDomains?: string[];
   isSuggested?: boolean;
   matchingDomainsAction?: string[];
   matchingDomainsCondition?: string[];

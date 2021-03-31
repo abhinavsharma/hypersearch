@@ -247,34 +247,51 @@ class SidebarLoader {
         ? 'https://www.ecosia.org/search'
         : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
     );
-    // List of domains to search when action key is `search_domains`.
-    let tabAppendages: string[] = [];
-    // A new tab will be created for each action with `open_url` key.
     const urls: URL[] = [];
+
+    const createSingleDomainUrl = (actionValue: string[]) => {
+      actionValue.forEach((val) => {
+        const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
+        url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+        urls.push(url);
+      });
+    };
+
+    const createMultipleDomainUrl = (actionValue: string[]) => {
+      const tabAppendages = actionValue;
+      this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
+        actionValue.map((value) => removeProtocol(value)),
+      );
+      const append =
+        tabAppendages.length === 1
+          ? `site:${tabAppendages[0]}`
+          : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
+      customSearchUrl.searchParams.append(
+        'q',
+        `${this.query} ${!!actionValue.length ? append : ''}`,
+      );
+      customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+    };
+
     // An augmentation can have multiple actions, despite their type. We
     // assume this case and process the whole `action_list`. In the prev
     // versions, we only checked the first value, when key was `open_url`.
     // ! Note: Multiple values in `open_url` is currently not allowed!
     augmentation.actions.action_list.forEach((action) => {
       switch (action.key) {
+        case 'hide_domain':
+          createMultipleDomainUrl(
+            augmentation.actions.action_list.find(({ key }) => key === 'search_domains')?.value ??
+              [],
+          );
+          break;
         case 'open_url':
-          action.value.forEach((val) => {
-            const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
-            url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            urls.push(url);
-          });
+          createSingleDomainUrl(action.value);
           break;
         case 'search_domains':
-          tabAppendages = tabAppendages.concat(action.value);
-          this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
-            action.value.map((action) => removeProtocol(action)),
-          );
-          const append =
-            tabAppendages.length === 1
-              ? `site:${tabAppendages[0]}`
-              : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
-          customSearchUrl.searchParams.append('q', this.query + ' ' + append);
-          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          if (!augmentation.actions.action_list.find(({ key }) => key === 'hide_domain')) {
+            createMultipleDomainUrl(action.value);
+          }
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
@@ -402,6 +419,7 @@ class SidebarLoader {
           }
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
             this.getTabUrls(augmentation).forEach((url) => {
+              // TODO: pass the whole augmentation object to sidebar tab!
               const tab = {
                 url,
                 matchingDomainsAction,
@@ -418,6 +436,9 @@ class SidebarLoader {
                 conditionTypes: Array.from(
                   new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
                 ),
+                hideDomains:
+                  augmentation.actions.action_list.find(({ key }) => key === 'hide_domain')
+                    ?.value ?? [],
               };
               newTabs.unshift(tab);
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');

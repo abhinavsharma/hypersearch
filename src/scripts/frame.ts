@@ -1,4 +1,6 @@
+import { HIDE_DOMAINS_MESSAGE } from 'utils';
 import { extractUrlProperties } from 'utils/helpers';
+import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
