@@ -1,13 +1,11 @@
 .sidebar-tab-domains {
   display: flex;
   height: auto;
-  width: 100%;
-  min-height: 40px;
+  width: calc(100% - 40px);
   background: #f6ffed;
   align-items: center;
-  margin-bottom: 5px;
-  padding: 0px 20px 0px 20px;
   flex-wrap: wrap;
+  padding: 10px 20px 10px 20px;
   border-bottom: 1px solid #ccc;
 
   .domain-list-prefix,
@@ -18,8 +16,12 @@
   .ant-typography {
     margin-bottom: 0;
 
+    &.contents-inline {
+      display: contents;
+    }
+
     &.ant-typography-ellipsis {
-      max-width: 330px;
+      max-width: 300px;
     }
   }
 
@@ -28,5 +30,9 @@
     text-decoration-color: #ccc;
     cursor: pointer;
     color: #333;
+  }
+
+  button {
+    display: inline-flex;
   }
 }
