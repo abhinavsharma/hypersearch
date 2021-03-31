@@ -48,6 +48,14 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
     });
   }, []);
 
+  const augmentationSorter = (a: AugmentationObject, b: AugmentationObject) => {
+    if (!a.installed && b.installed) return 1;
+    return (
+      a.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0) -
+      b.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0)
+    );
+  };
+
   return (
     <Router>
       <div className="insight-active-augmentations-page">
@@ -101,7 +109,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Row>
           <Col>
             <h2>Hidden Lenses</h2>
-            {ignoredAugmentations.map((augmentation) => (
+            {ignoredAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
                 ignored
                 key={augmentation.id}
@@ -115,7 +123,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Row>
           <Col>
             <h2>Other Lenses</h2>
-            {otherAugmentations.map((augmentation) => (
+            {otherAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
                 key={augmentation.id}
                 augmentation={augmentation}
