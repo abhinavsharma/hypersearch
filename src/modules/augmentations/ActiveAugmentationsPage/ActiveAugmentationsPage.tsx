@@ -62,7 +62,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
-            <h2>Your Custom Lenses for This Page</h2>
+            <h2>Your Local Lenses for This Page</h2>
             <h3>{`${SidebarLoader.url.href.slice(0, 60)}...`}</h3>
             {installedAugmentations.map((augmentation) => (
               <AugmentationRow
@@ -93,7 +93,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
-            <h2>Suggested Lenses for This Page</h2>
+            <h2>Suggested for This Page</h2>
             {suggestedAugmentations
               .filter((i) => i.actions.action_list.some((i) => i.key !== 'inject_js'))
               .map((augmentation) => (
@@ -108,7 +108,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
-            <h2>Hidden Lenses</h2>
+            <h2>Hidden</h2>
             {ignoredAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
                 ignored
@@ -122,7 +122,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
-            <h2>Other Lenses</h2>
+            <h2>Other</h2>
             {otherAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
                 key={augmentation.id}

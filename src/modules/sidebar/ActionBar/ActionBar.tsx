@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import { EditAugmentationPage } from 'modules/augmentations/';
@@ -10,6 +10,23 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
 import './ActionBar.scss';
+
+
+const EditOutlined = React.lazy(
+  async () => await import('@ant-design/icons/EditOutlined').then((mod) => mod),
+);
+
+const PushpinOutlined = React.lazy(
+  async () => await import('@ant-design/icons/PushpinOutlined').then((mod) => mod),
+);
+
+const MessageOutlined = React.lazy(
+  async () => await import('@ant-design/icons/MessageOutlined').then((mod) => mod),
+);
+
+const CloseCircleOutlined = React.lazy(
+  async () => await import('@ant-design/icons/CloseCircleOutlined').then((mod) => mod),
+);
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const augmentation = (tab.isSuggested
@@ -70,8 +87,10 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           type="link"
           onClick={handleAddSuggested}
           style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+          icon={<Suspense fallback={null}><EditOutlined /></Suspense>}
         >
-          {tab.isSuggested ? '✏️ Edit Locally' : '✏️ Edit Locally'}
+
+          Edit Locally
         </Button>
       </Link>
       {!isPinned && (
@@ -79,8 +98,9 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           type="link"
           onClick={handleAddPinned}
           style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+          icon={<Suspense fallback={null}><PushpinOutlined /></Suspense>}
         >
-          📌 Pin Locally
+          Pin Locally
         </Button>
       )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
@@ -94,13 +114,17 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             '&prefill_sample_query=' +
             new URLSearchParams(window.location.search).get('q')
           }
+          icon={<Suspense fallback={null}><MessageOutlined /></Suspense>}
         >
-          🤔 Lens Feedback
+          Lens Feedback
         </Button>
       )}
       {tab.isSuggested && (
-        <Button type="link" onClick={() => handleHideSuggested(tab)}>
-          × Hide Lens
+        <Button 
+          type="link" onClick={() => handleHideSuggested(tab)}
+          icon={<Suspense fallback={null}><CloseCircleOutlined /></Suspense>}
+        >
+          Hide Lens
         </Button>
       )}
     </div>
