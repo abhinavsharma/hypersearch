@@ -31,6 +31,7 @@ import {
   SEARCH_QUERY_CONTAINS_CONDITION,
   SEARCH_HIDE_DOMAIN_ACTION,
   OPEN_URL_ACTION,
+  HIDE_TAB_FAKE_URL,
 } from 'utils';
 
 /**
@@ -261,17 +262,21 @@ class SidebarLoader {
 
     const createMultipleDomainUrl = (actionValue: string[]) => {
       const tabAppendages = actionValue;
-      this.tabDomains[augmentation.id] = this.tabDomains[augmentation.id].concat(
-        actionValue.map((value) => removeProtocol(value)),
+      if (!tabAppendages.length) {
+        customSearchUrl.href = HIDE_TAB_FAKE_URL;
+      }
+      this.tabDomains[augmentation.id] = Array.from(
+        new Set(
+          this.tabDomains[augmentation.id].concat(
+            actionValue.map((value) => removeProtocol(value)),
+          ),
+        ),
       );
       const append =
         tabAppendages.length === 1
           ? `site:${tabAppendages[0]}`
           : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
-      customSearchUrl.searchParams.append(
-        'q',
-        `${this.query} ${!!actionValue.length ? append : ''}`,
-      );
+      customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
       customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
     };
 
@@ -435,10 +440,9 @@ class SidebarLoader {
                 conditionTypes: Array.from(
                   new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
                 ),
-                hideDomains:
-                  augmentation.actions.action_list.find(
-                    ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
-                  )?.value ?? [],
+                hideDomains: augmentation.actions.action_list
+                  .filter(({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION)
+                  .map(({ value }) => value[0]),
               };
               newTabs.unshift(tab);
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');

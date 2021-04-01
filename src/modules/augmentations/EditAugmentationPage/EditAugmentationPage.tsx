@@ -5,7 +5,7 @@ import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { EMPTY_AUGMENTATION, SEARCH_DOMAINS_ACTION } from 'utils';
+import { EMPTY_AUGMENTATION, SEARCH_DOMAINS_ACTION, SEARCH_HIDE_DOMAIN_ACTION } from 'utils';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
@@ -23,6 +23,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   initiatedFromActives,
   setActiveKey,
 }) => {
+  const [refreshOnSave, setRefreshOnSave] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>(
     isAdding && !!augmentation.name.length
@@ -80,19 +81,26 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 
   const handleSave = () => {
     if (isDisabled) return null;
-    AugmentationManager.addOrEditAugmentation(augmentation, {
-      actions,
-      conditions,
-      conditionEvaluation,
-      description,
-      name,
-      isActive,
-    });
+    AugmentationManager.addOrEditAugmentation(
+      augmentation,
+      {
+        actions,
+        conditions,
+        conditionEvaluation,
+        description,
+        name,
+        isActive,
+      },
+      refreshOnSave,
+    );
     setTimeout(() => goBack(), 100);
   };
 
   const handleSaveAction = (e: CustomAction) => {
     setActions((prev) => {
+      if (e.key === SEARCH_HIDE_DOMAIN_ACTION) {
+        setRefreshOnSave(true);
+      }
       // Merge all `search_domains` actions into one action.
       if (e.key === SEARCH_DOMAINS_ACTION) {
         const existing = prev.find((i) => i.key === SEARCH_DOMAINS_ACTION);
@@ -134,7 +142,12 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   };
 
   const handleDeleteAction = (e: CustomAction) => {
-    setActions((prev) => prev.filter((i) => i.id !== e.id));
+    setActions((prev) => {
+      if (e.key === SEARCH_HIDE_DOMAIN_ACTION) {
+        setRefreshOnSave(true);
+      }
+      return prev.filter((i) => i.id !== e.id);
+    });
   };
 
   const handleSaveCondition = (e: CustomCondition) => {

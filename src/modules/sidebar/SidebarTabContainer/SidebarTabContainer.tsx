@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react';
-import { EXTENSION_SERP_FILTER_LOADED, HIDE_DOMAINS_MESSAGE, SIDEBAR_WIDTH } from 'utils/constants';
+import {
+  EXTENSION_SERP_FILTER_LOADED,
+  HIDE_DOMAINS_MESSAGE,
+  HIDE_TAB_FAKE_URL,
+  SIDEBAR_WIDTH,
+} from 'utils/constants';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
@@ -23,7 +28,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     }
   }, []);
 
-  return (
+  return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe
       src={unescape(tab.url.href)}
       width={SIDEBAR_WIDTH}
@@ -36,5 +41,5 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         });
       }}
     />
-  );
+  ) : null;
 };

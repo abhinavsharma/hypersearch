@@ -214,6 +214,9 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
       }
       break;
     default:
+      if (msg.refresh) {
+        chrome.tabs.update(sender.tab.id, { active: true, url: sender.tab.url });
+      }
       chrome.tabs.sendMessage(sender.tab.id, msg);
       break;
   }
