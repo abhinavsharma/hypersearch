@@ -31,6 +31,7 @@ import {
   SEARCH_QUERY_CONTAINS_CONDITION,
   SEARCH_HIDE_DOMAIN_ACTION,
   OPEN_URL_ACTION,
+  HIDE_TAB_FAKE_URL,
 } from 'utils';
 
 /**
@@ -262,7 +263,7 @@ class SidebarLoader {
     const createMultipleDomainUrl = (actionValue: string[]) => {
       const tabAppendages = actionValue;
       if (!tabAppendages.length) {
-        customSearchUrl.href = 'hide';
+        customSearchUrl.href = HIDE_TAB_FAKE_URL;
       }
       this.tabDomains[augmentation.id] = Array.from(
         new Set(
