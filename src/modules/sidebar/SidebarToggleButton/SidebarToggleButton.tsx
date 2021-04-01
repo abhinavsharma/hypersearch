@@ -15,10 +15,12 @@ import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   EMPTY_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
-} from 'utils/constants';
+  getFirstValidTabIndex,
+} from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarToggleButton.scss';
+import {} from 'utils';
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
@@ -36,7 +38,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     </List.Item>
   );
 
-  return !!tabs?.length ? (
+  return getFirstValidTabIndex(tabs) !== '0' ? (
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
       <List
         itemLayout="horizontal"

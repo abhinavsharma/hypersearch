@@ -2,17 +2,11 @@ import React from 'react';
 import Button from 'antd/lib/button';
 import { Dropdown } from 'modules/shared';
 import { goBack } from 'route-lite';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
+import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils';
 import './AddAugmentationTab.scss';
 import 'antd/lib/button/style/index.css';
-import { getFirstValidTabIndex } from 'utils';
 
-export const AddAugmentationTab: AddAugmentationTab = ({
-  tabs,
-  active,
-  setActiveKey,
-  numInstalledAugmentations,
-}) => {
+export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActiveKey }) => {
   const handleClose = () => {
     setActiveKey(getFirstValidTabIndex(tabs));
     goBack();
@@ -46,7 +40,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({
       <Button
         type="link"
         onClick={handleClose}
-        className={numInstalledAugmentations ? '' : 'hidden'}
+        className={getFirstValidTabIndex(tabs) !== '0' ? '' : 'hidden'}
       >
         Close
       </Button>

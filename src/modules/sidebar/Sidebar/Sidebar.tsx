@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
-import { isKnowledgePage } from 'utils/helpers';
+import { getFirstValidTabIndex, isKnowledgePage } from 'utils/helpers';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
@@ -42,7 +42,7 @@ const Sidebar: Sidebar = () => {
     // of the number of matching tabs. If there are matching tabs and the sidebar can't expand on
     // load, the height of the toggle button (SidebarToggleButton) is set dynamically.
     const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
-    const isTabsLength = sidebarTabs?.length !== 0;
+    const isTabsLength = getFirstValidTabIndex(sidebarTabs) !== '0';
     const isSearchTabs = sidebarTabs?.find((tab) => tab.isCse);
     if (isSmallWidth || !isTabsLength || !isSearchTabs || isKnowledgePage(document)) {
       flipSidebar(document, 'hide', sidebarTabs?.length);
