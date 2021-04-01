@@ -61,8 +61,8 @@ class AugmentationManager {
         )
         .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
-    const matchingIntent = !!augmentation.conditions.condition_list.reduce(
-      (intents, { key, value }) => {
+    const matchingIntent = !!augmentation.conditions.condition_list
+      .reduce((intents, { key, value }) => {
         if (key === SEARCH_INTENT_IS_CONDITION) {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
@@ -75,13 +75,16 @@ class AugmentationManager {
                   (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
                 ) && intents.push(domain),
             );
-            return intents.concat(Array.from(document.querySelectorAll(matchingIntent.google_css)));
+            if (matchingIntent.google_css) {
+              return intents.concat(
+                Array.from(document.querySelectorAll(matchingIntent.google_css)),
+              );
+            }
           }
         }
         return intents;
-      },
-      [],
-    ).length;
+      }, [])
+      .filter((isMatch) => !!isMatch).length;
 
     return {
       isRelevant: matchingQuery || matchingDomains || matchingIntent,
