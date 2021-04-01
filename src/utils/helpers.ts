@@ -204,3 +204,10 @@ export const isAugmentationEnabled = (augmentation: AugmentationObject) =>
   augmentation.actions.action_list
     .map((action) => ENABLED_AUGMENTATION_TYPES.includes(action.key))
     .indexOf(false) === -1;
+
+export const b64EncodeUnicode = (str: string) =>
+  btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+      String.fromCharCode(parseInt(p1, 16)),
+    ),
+  );
