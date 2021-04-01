@@ -117,12 +117,12 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               forceRender
               className={`insight-full-tab`}
             >
+              {activeKey === (i + 1).toString() && (
+                <ActionBar tab={tab} setActiveKey={setActiveKey} />
+              )}
               {tab.description && <SidebarTabDescription tab={tab} />}
               {tab.url && tab.isCse && (
                 <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
-              )}
-              {activeKey === (i + 1).toString() && (
-                <ActionBar tab={tab} setActiveKey={setActiveKey} />
               )}
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} />}

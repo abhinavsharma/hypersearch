@@ -11,22 +11,27 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
 import './ActionBar.scss';
+import Tooltip from 'antd/lib/tooltip';
+import 'antd/lib/tooltip/style/index.css';
 
-
-const EditOutlined = React.lazy(
-  async () => await import('@ant-design/icons/EditOutlined').then((mod) => mod),
+const BranchesOutlined = React.lazy(
+  async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),
 );
 
 const PushpinOutlined = React.lazy(
   async () => await import('@ant-design/icons/PushpinOutlined').then((mod) => mod),
 );
 
-const MessageOutlined = React.lazy(
-  async () => await import('@ant-design/icons/MessageOutlined').then((mod) => mod),
+const ToolOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ToolOutlined').then((mod) => mod),
 );
 
 const CloseCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/CloseCircleOutlined').then((mod) => mod),
+);
+
+const ShareAltOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ShareAltOutlined').then((mod) => mod),
 );
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
@@ -86,50 +91,76 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         }}
         key={tab.id}
       >
-        <Button
-          type="link"
-          onClick={handleAddSuggested}
-          style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
-          icon={<Suspense fallback={null}><EditOutlined /></Suspense>}
-        >
-
-          Edit Locally
-        </Button>
+        <Tooltip title="Duplicate and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
+          <Button
+            type="link"
+            onClick={handleAddSuggested}
+            style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+            icon={
+              <Suspense fallback={null}>
+                <BranchesOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
       </Link>
       {!isPinned && (
-        <Button
-          type="link"
-          onClick={handleAddPinned}
-          style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
-          icon={<Suspense fallback={null}><PushpinOutlined /></Suspense>}
-        >
-          Pin Locally
-        </Button>
-      )}
-      {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-        <Button
-          style={{ bottom: 4 }}
-          type="link"
-          target="_blank"
-          href={
-            'https://airtable.com/shrQCthknXg1jf6oU?prefill_Search%20Engine%20Name=' +
-            tab.title +
-            '&prefill_sample_query=' +
-            new URLSearchParams(window.location.search).get('q')
-          }
-          icon={<Suspense fallback={null}><MessageOutlined /></Suspense>}
-        >
-          Lens Feedback
-        </Button>
+        <Tooltip title="Always show this lens" destroyTooltipOnHide={{ keepParent: false }}>
+          <Button
+            type="link"
+            onClick={handleAddPinned}
+            style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+            icon={
+              <Suspense fallback={null}>
+                <PushpinOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
       )}
       {tab.isSuggested && (
-        <Button 
-          type="link" onClick={() => handleHideSuggested(tab)}
-          icon={<Suspense fallback={null}><CloseCircleOutlined /></Suspense>}
-        >
-          Hide Lens
-        </Button>
+        <Tooltip title="Hide Lens" destroyTooltipOnHide={{ keepParent: false }}>
+          <Button
+            type="link"
+            onClick={() => handleHideSuggested(tab)}
+            icon={
+              <Suspense fallback={null}>
+                <CloseCircleOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
       )}
+      {tab.isCse && !tab.id.startsWith('cse-custom-') && (
+        <Tooltip title="Improve Lens for Everyone" destroyTooltipOnHide={{ keepParent: false }}>
+          <Button
+            type="link"
+            target="_blank"
+            href={
+              'https://airtable.com/shrQCthknXg1jf6oU?prefill_Search%20Engine%20Name=' +
+              tab.title +
+              '&prefill_sample_query=' +
+              new URLSearchParams(window.location.search).get('q')
+            }
+            icon={
+              <Suspense fallback={null}>
+                <ToolOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
+      )}
+      <Tooltip title="Share Lens" destroyTooltipOnHide={{ keepParent: false }}>
+        <Button
+          type="link"
+          target="_blank"
+          icon={
+            <Suspense fallback={null}>
+              <ShareAltOutlined />
+            </Suspense>
+          }
+        />
+      </Tooltip>
     </div>
   );
 };
