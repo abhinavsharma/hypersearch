@@ -154,6 +154,60 @@
         font-size: 14px;
       }
 
+      .relative {
+        position: relative;
+
+        .ant-select-dropdown {
+          width: 195px !important;
+        }
+      }
+
+      .add-intent-button {
+        border-radius: 0;
+      }
+
+      .search-intent-dropdown {
+        &.ant-slide-up-leave,
+        &.ant-slide-up-leave-active {
+          opacity: 0;
+        }
+
+        &.ant-slide-up-enter,
+        &.ant-slide-up-enter-prepare,
+        &.ant-slide-up-enter-active,
+        &.ant-slide-up-appear,
+        &.ant-slide-up-appear-prepare,
+        &.ant-slide-up-appear-active {
+          pointer-events: auto !important;
+          width: 100%;
+          opacity: 1;
+
+          .ant-select-item-option {
+            align-items: center;
+          }
+        }
+      }
+
+      .search-intent-block {
+        .ant-select {
+          width: 115px;
+        }
+
+        .ant-select-selector {
+          width: 115px;
+          height: auto;
+          border-radius: 0;
+
+          .ant-select-selection-search {
+            right: 0;
+          }
+        }
+
+        .ant-select-arrow {
+          right: 11px;
+        }
+      }
+
       button.insight-augmentation-edit-evaluation {
         margin-left: -5px;
         margin-right: -2px;

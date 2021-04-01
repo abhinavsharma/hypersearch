@@ -185,6 +185,10 @@ class SidebarLoader {
    * When user enables strong privacy mode, logging are disabled and subtabs response
    * is cached for a specified time (not firing on all query). Also in the Insight case
    * subtabs does not work  outside of search result pages.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
    */
   public strongPrivacy: boolean;
 
