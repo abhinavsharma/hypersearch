@@ -23,6 +23,7 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
+  HIDE_TAB_FAKE_URL,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -31,7 +32,11 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
-  const [activeKey, setActiveKey] = useState<string>(!!tabs.length ? '1' : '0');
+  const [activeKey, setActiveKey] = useState<string>(
+    !!tabs.length
+      ? (tabs.findIndex(({ url }) => url.href !== HIDE_TAB_FAKE_URL) + 1).toString()
+      : '0',
+  );
 
   const handleLog = useCallback(async (msg) => {
     if (SidebarLoader.strongPrivacy) return null;

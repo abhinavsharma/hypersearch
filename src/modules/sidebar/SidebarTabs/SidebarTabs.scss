@@ -4,6 +4,10 @@
   min-height: 100vh;
   border-left: 1px solid #ccc;
 
+  .ant-tabs-tab + .ant-tabs-tab {
+    margin: 0;
+  }
+
   .ant-tabs-extra-content {
     cursor: pointer;
     width: 50px;
