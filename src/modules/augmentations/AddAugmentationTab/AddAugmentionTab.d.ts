@@ -5,6 +5,7 @@ declare module './AddAugmentationTab' {
     active: boolean;
     setActiveKey: Dispatch<SetStateAction<string>>;
     numInstalledAugmentations: number;
+    tabs: SidebarTab[];
   };
 
   type AddAugmentationTab = FunctionComponent<AddAugmentationTabProps>;

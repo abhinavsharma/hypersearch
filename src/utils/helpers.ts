@@ -4,7 +4,8 @@ import {
   IN_DEBUG_MODE,
   ENABLED_AUGMENTATION_TYPES,
   ANY_URL_CONDITION,
-} from './constants';
+  HIDE_TAB_FAKE_URL,
+} from 'utils';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
 
@@ -211,3 +212,6 @@ export const b64EncodeUnicode = (str: string) =>
       String.fromCharCode(parseInt(p1, 16)),
     ),
   );
+
+export const getFirstValidTabIndex = (tabs: SidebarTab[]) =>
+  (tabs.findIndex(({ url }) => url.href !== HIDE_TAB_FAKE_URL) + 1).toString();

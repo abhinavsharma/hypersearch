@@ -5,14 +5,16 @@ import { goBack } from 'route-lite';
 import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
 import './AddAugmentationTab.scss';
 import 'antd/lib/button/style/index.css';
+import { getFirstValidTabIndex } from 'utils';
 
 export const AddAugmentationTab: AddAugmentationTab = ({
+  tabs,
   active,
   setActiveKey,
   numInstalledAugmentations,
 }) => {
   const handleClose = () => {
-    setActiveKey('1');
+    setActiveKey(getFirstValidTabIndex(tabs));
     goBack();
   };
 
