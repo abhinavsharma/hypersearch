@@ -23,7 +23,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     }
   }, []);
 
-  return (
+  return tab.url.href !== 'hide' ? (
     <iframe
       src={unescape(tab.url.href)}
       width={SIDEBAR_WIDTH}
@@ -36,5 +36,5 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         });
       }}
     />
-  );
+  ) : null;
 };

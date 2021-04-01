@@ -34,7 +34,11 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
 
   return !!tabs?.length ? (
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
-      <List itemLayout="horizontal" dataSource={tabs} renderItem={ListItem} />
+      <List
+        itemLayout="horizontal"
+        dataSource={tabs.filter(({ url }) => url.href !== 'hide')}
+        renderItem={ListItem}
+      />
     </div>
   ) : (
     <div className="add-augmentation-button insight-sidebar-toggle-button empty">

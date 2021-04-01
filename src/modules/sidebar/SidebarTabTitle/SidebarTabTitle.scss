@@ -6,6 +6,10 @@
     max-width: 15ch;
     align-items: center;
     justify-content: center;
+
+    &.hidden {
+      display: none;
+    }
   }
 
   .ant-tabs-tab {

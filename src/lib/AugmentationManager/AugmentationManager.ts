@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { debug } from 'utils/helpers';
-import { UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import { SEARCH_HIDE_DOMAIN_ACTION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
 
 class AugmentationManager {
   public addOrEditAugmentation(
@@ -15,6 +15,7 @@ class AugmentationManager {
       isActive,
       isPinning,
     }: AugmentationData,
+    refresh?: boolean,
   ) {
     const customId = `cse-custom-${
       augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
@@ -53,7 +54,10 @@ class AugmentationManager {
       ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
     ];
     chrome.storage.local.set({ [id]: updated });
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+    chrome.runtime.sendMessage({
+      type: UPDATE_SIDEBAR_TABS_MESSAGE,
+      refresh,
+    });
   }
 }
 
