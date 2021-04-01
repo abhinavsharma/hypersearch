@@ -2,14 +2,99 @@ import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { b64EncodeUnicode, debug } from 'utils/helpers';
 import {
+  ANY_URL_CONDITION,
   EXTENSION_SHARE_URL,
   EXTENSION_SHORT_SHARE_URL,
+  NUM_DOMAINS_TO_EXCLUDE,
   OPEN_NEW_TAB_MESSAGE,
+  SEARCH_CONTAINS_CONDITION,
+  SEARCH_DOMAINS_ACTION,
+  SEARCH_INTENT_IS_CONDITION,
+  SEARCH_QUERY_CONTAINS_CONDITION,
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
 import md5 from 'md5';
+import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 
 class AugmentationManager {
+  public getAugmentationRelvancy(augmentation: AugmentationObject) {
+    const domainsToLookCondition = augmentation.conditions?.condition_list.reduce(
+      (conditions, { key, value }) =>
+        key === SEARCH_CONTAINS_CONDITION || key === ANY_URL_CONDITION
+          ? conditions.concat(value)
+          : conditions,
+      [],
+    );
+
+    const domainsToLookAction = augmentation.actions?.action_list.reduce(
+      (actions, { key, value }) =>
+        key === SEARCH_DOMAINS_ACTION ? actions.concat(value) : actions,
+      [],
+    );
+
+    const matchingDomainsCondition = SidebarLoader.domains.filter((value) =>
+      domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+    );
+
+    const matchingDomainsAction = SidebarLoader.domains.filter((value) =>
+      domainsToLookAction?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+    );
+
+    const checkForQuery =
+      augmentation.conditions.condition_list.find(
+        ({ key }) => key === SEARCH_QUERY_CONTAINS_CONDITION,
+      )?.value[0] ?? null;
+
+    const matchingQuery = checkForQuery && SidebarLoader.query.search(checkForQuery) > -1;
+
+    const matchingDomains =
+      matchingDomainsCondition
+        .map(
+          (domain) =>
+            !!SidebarLoader.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
+        )
+        .filter((isMatch) => !!isMatch).length > 0 &&
+      matchingDomainsAction
+        .map(
+          (domain) =>
+            !!SidebarLoader.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
+        )
+        .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
+
+    const matchingIntent = !!augmentation.conditions.condition_list
+      .reduce((intents, { key, value }) => {
+        if (key === SEARCH_INTENT_IS_CONDITION) {
+          const matchingIntent = SearchEngineManager.intents.find(
+            ({ intent_id }) => intent_id === value[0],
+          );
+          if (matchingIntent) {
+            const intentDomains = matchingIntent.sites.split(',') ?? [];
+            intentDomains.forEach(
+              (domain) =>
+                !!SidebarLoader.domains.find(
+                  (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
+                ) && intents.push(domain),
+            );
+            if (matchingIntent.google_css) {
+              return intents.concat(
+                Array.from(document.querySelectorAll(matchingIntent.google_css)),
+              );
+            }
+          }
+        }
+        return intents;
+      }, [])
+      .filter((isMatch) => !!isMatch).length;
+
+    return {
+      isRelevant: matchingQuery || matchingDomains || matchingIntent,
+      domainsToLookAction,
+      domainsToLookCondition,
+      matchingDomainsAction,
+      matchingDomainsCondition,
+    };
+  }
+
   public async shareAugmentation(augmentation: AugmentationObject) {
     const encoded = b64EncodeUnicode(JSON.stringify(augmentation));
     await fetch(`${EXTENSION_SHARE_URL}${encodeURIComponent(encoded)}`, {

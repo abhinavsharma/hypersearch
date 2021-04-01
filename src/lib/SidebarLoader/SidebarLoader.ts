@@ -32,7 +32,9 @@ import {
   SEARCH_HIDE_DOMAIN_ACTION,
   OPEN_URL_ACTION,
   HIDE_TAB_FAKE_URL,
+  SEARCH_CONTAINS_CONDITION,
 } from 'utils';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 
 /**
  * ! In order of priority
@@ -185,6 +187,10 @@ class SidebarLoader {
    * When user enables strong privacy mode, logging are disabled and subtabs response
    * is cached for a specified time (not firing on all query). Also in the Insight case
    * subtabs does not work  outside of search result pages.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
    */
   public strongPrivacy: boolean;
 
@@ -346,24 +352,13 @@ class SidebarLoader {
         augmentation.id.startsWith('cse-') &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
-        let isRelevant = false;
-        const domainsToLookCondition = augmentation.conditions?.condition_list.map(
-          (e) => e.value[0],
-        );
-        const domainsToLookAction = augmentation.actions?.action_list?.find(
-          (action) => action.key === SEARCH_DOMAINS_ACTION,
-        )?.value;
-        const matchingDomainsCondition = this.domains.filter((value) =>
-          domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
-        );
-        const matchingDomainsAction = this.domains.filter((value) =>
-          domainsToLookAction?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
-        );
-        const checkForQuery =
-          augmentation.conditions.condition_list.find(
-            ({ key }) => key === SEARCH_QUERY_CONTAINS_CONDITION,
-          )?.value[0] ?? null;
-        const matchingQueryCondition = checkForQuery && this.query.search(checkForQuery) > -1;
+        const {
+          isRelevant,
+          matchingDomainsAction,
+          matchingDomainsCondition,
+          domainsToLookAction,
+        } = AugmentationManager.getAugmentationRelvancy(augmentation);
+
         IN_DEBUG_MODE &&
           logProcessed.push(
             '\n\t',
@@ -378,27 +373,10 @@ class SidebarLoader {
             '\n',
           );
 
-        if (matchingDomainsCondition.length > 0 && isAugmentationEnabled(augmentation)) {
+        if (isRelevant && isAugmentationEnabled(augmentation)) {
           this.tabDomains[augmentation.id] = [];
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
           this.query = new URLSearchParams(this.document.location.search).get('q');
-          // When an augmentation overlaps with the SERP result in more than NUM_DOMAINS_TO_EXCLUDE
-          // cases, we care that augmentation as ignored and do not list in the sidebar. Both actions
-          // and conditions are taken in concern.
-          isRelevant =
-            matchingQueryCondition ||
-            (matchingDomainsCondition
-              .map(
-                (domain) =>
-                  !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
-              )
-              .filter((isMatch) => !!isMatch).length > 0 &&
-              matchingDomainsAction
-                .map(
-                  (domain) =>
-                    !!this.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
-                )
-                .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE);
 
           IN_DEBUG_MODE &&
             !isRelevant &&
@@ -414,6 +392,7 @@ class SidebarLoader {
               },
               '\n',
             );
+
           if (
             !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
             !augmentation.id.startsWith('cse-custom') &&
@@ -421,6 +400,7 @@ class SidebarLoader {
           ) {
             this.suggestedAugmentations.push(augmentation);
           }
+
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
             this.getTabUrls(augmentation).forEach((url) => {
               // TODO: pass the whole augmentation object to sidebar tab!
@@ -608,13 +588,8 @@ class SidebarLoader {
           !key.startsWith('ignored-') &&
           !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi)
         ) {
-          const domainsToLookCondition = augmentation.conditions?.condition_list.map(
-            (e) => e.value[0],
-          );
-          const matchingDomainsCondition = this.domains.filter((value) =>
-            domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
-          );
-          if (matchingDomainsCondition.length > 0 && isAugmentationEnabled(augmentation)) {
+          const { isRelevant } = AugmentationManager.getAugmentationRelvancy(augmentation);
+          if (isRelevant && isAugmentationEnabled(augmentation)) {
             a.push(augmentation);
           } else {
             this.otherAugmentations.push(augmentation);

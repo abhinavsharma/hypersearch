@@ -4,22 +4,70 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import { debug, CUSTOM_SEARCH_ENGINES, extractUrlProperties } from 'utils';
+import { debug, CUSTOM_SEARCH_ENGINES, extractUrlProperties, INTENTS_BLOB_URL } from 'utils';
 
 class SearchEngineManager {
-  public throttled: boolean;
+  /**
+   * The list of available search intents.
+   *
+   * @public
+   * @property
+   * @memberof SearchEngineManager
+   */
+  public intents: SearchIntent[];
+
+  /**
+   * This value is used to decide whether to sync locally stored CSE data.
+   *
+   * @private
+   * @property
+   * @memberof SearchEngineManager
+   */
+  private throttled: boolean;
+
+  /**
+   * The list of storage keys, which will be ignored by the cleanup while sync.
+   *
+   * @private
+   * @property
+   * @memberof SearchEngineManager
+   */
   private safeElements: string[];
+
+  /**
+   * Stored copy of the remote CSE data for efficient sync processing.
+   *
+   * @private
+   * @property
+   * @memberof SearchEngineManager
+   */
   private remoteBlob: Record<string, CustomSearchEngine>;
 
   constructor() {
     debug('SearchEngineManager - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.safeElements = ['distinctId', 'licenseActivated'];
     this.throttled = false;
+    this.getIntents();
+  }
+
+  /**
+   * Get remotely stored search intents blob and store them in the public `intents` property.
+   * This method will be called at instaciation time and available when the sidebar loads.
+   *
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
+  private async getIntents() {
+    const raw = await fetch(INTENTS_BLOB_URL);
+    this.intents = await raw.json();
   }
 
   /**
    * Check the local storage for a stored custom search engine object. If it is not found,
    * the method will fetch avaliable CSEs from remote host and store the matching value.
+   *
+   * TODO: refactor related code to let this be a private method
    *
    * @private
    * @method
@@ -54,6 +102,13 @@ class SearchEngineManager {
     return result;
   }
 
+  /**
+   * Iterate over the locally stored CSE data and remove corrupted data from it.
+   *
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
   public async sync() {
     if (this.throttled) {
       debug('SearchEngineManager - sync - throttle execution');
@@ -119,6 +174,13 @@ class SearchEngineManager {
     setTimeout(() => (this.throttled = false), 6000);
   }
 
+  /**
+   * Remove an item from the local storage;
+   *
+   * @private
+   * @method
+   * @memberof SidebarLoader
+   */
   private async deleteItem(key: string, reason?: string) {
     debug('SearchEngineManager - delete\n---\n\tKey', key, '\n\tReason ', reason, '\n---');
     return await new Promise((resolve) =>
