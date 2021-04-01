@@ -147,8 +147,8 @@ export const EditConditionInput: EditConditionInput = ({
                       onChange={handleSelectIntent}
                       getPopupContainer={() => dropdownRef.current}
                     >
-                      {intents?.map(({ name }) => (
-                        <Option key={name} value={name.toLowerCase()}>
+                      {intents?.map(({ name, intent_id }) => (
+                        <Option key={name} value={intent_id}>
                           {name}
                         </Option>
                       ))}
