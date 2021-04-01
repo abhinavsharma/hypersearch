@@ -7,6 +7,7 @@
 import React, { ReactElement } from 'react';
 import { render } from 'react-dom';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
+import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import { Sidebar } from 'modules/sidebar';
 import {
   extractUrlProperties,
@@ -17,7 +18,6 @@ import {
   isSafari,
   compareTabs,
   isAugmentationEnabled,
-  CUSTOM_SEARCH_ENGINES,
   EXTENSION_SERP_LOADED,
   NUM_DOMAINS_TO_CONSIDER,
   NUM_DOMAINS_TO_EXCLUDE,
@@ -587,47 +587,6 @@ class SidebarLoader {
   }
 
   /**
-   * Check the local storage for a stored custom search engine object. If it is not found,
-   * the method will fetch avaliable CSEs from remote host and store the matching value.
-   *
-   * @private
-   * @method
-   * @memberof SidebarLoader
-   */
-  private async getCustomSearchEngine() {
-    debug('getCustomSearchEngine - call\n');
-    let storedValue: Record<string, CustomSearchEngine>;
-    const { hostname, params } = extractUrlProperties(this.url.href);
-    if (!hostname) return null;
-    const storageKey = hostname.replace(/\./g, '_');
-    storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
-    if (!storedValue?.[storageKey]) {
-      debug('getCustomSearchEngine - fetch from remote\n');
-      const result: CustomSearchEngine = Object.create({});
-      const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
-      const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
-      Object.values(results).forEach((customSearchEngine) => {
-        const hasAllMatchinParams = !customSearchEngine.search_engine_json.required_params.filter(
-          (i) => !params.includes(i),
-        ).length;
-        const hasRequiredPrefix = !!this.url.href.match(
-          customSearchEngine.search_engine_json.required_prefix,
-        )?.length;
-        if (hasAllMatchinParams && hasRequiredPrefix)
-          Object.assign(result, { ...customSearchEngine });
-      });
-      chrome.storage.sync.set({ [storageKey]: result });
-      storedValue = { [storageKey]: result };
-    }
-    this.customSearchEngine = storedValue[storageKey] ?? Object.create(null);
-    debug(
-      'getCustomSearchEngine - processed\n---\n\tCustom Search Engine JSON',
-      this.customSearchEngine,
-      '\n---',
-    );
-  }
-
-  /**
    * Get installed and ignored augmentations from the local storage.
    *
    * @private
@@ -685,7 +644,7 @@ class SidebarLoader {
   private async handleSubtabApiResponse(response: SubtabsResponse) {
     debug('handleSubtabApiResponse - call');
     if (!(this.url && response)) return null;
-    await this.getCustomSearchEngine();
+    this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     this.domains = this.getDomains(document);
     await this.getLocalAugmentations();
     this.tabDomains['original'] = this.getDomains(document);
