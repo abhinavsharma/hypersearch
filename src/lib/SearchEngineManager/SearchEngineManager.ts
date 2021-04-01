@@ -4,8 +4,7 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import { CUSTOM_SEARCH_ENGINES } from 'utils/constants';
-import { debug, extractUrlProperties } from 'utils/helpers';
+import { debug, CUSTOM_SEARCH_ENGINES, extractUrlProperties } from 'utils';
 
 class SearchEngineManager {
   public throttled: boolean;

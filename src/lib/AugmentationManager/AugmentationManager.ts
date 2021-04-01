@@ -1,9 +1,26 @@
 import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { debug } from 'utils/helpers';
-import { SEARCH_HIDE_DOMAIN_ACTION, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils/constants';
+import { b64EncodeUnicode, debug } from 'utils/helpers';
+import {
+  EXTENSION_SHARE_URL,
+  EXTENSION_SHORT_SHARE_URL,
+  OPEN_NEW_TAB_MESSAGE,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+} from 'utils/constants';
+import md5 from 'md5';
 
 class AugmentationManager {
+  public async shareAugmentation(augmentation: AugmentationObject) {
+    const encoded = b64EncodeUnicode(JSON.stringify(augmentation));
+    await fetch(`${EXTENSION_SHARE_URL}${encodeURIComponent(encoded)}`, {
+      mode: 'no-cors',
+    });
+    chrome.runtime.sendMessage({
+      type: OPEN_NEW_TAB_MESSAGE,
+      url: `${EXTENSION_SHORT_SHARE_URL}${md5(encoded).substr(0, 10)}`,
+    });
+  }
+
   public addOrEditAugmentation(
     augmentation: AugmentationObject,
     {

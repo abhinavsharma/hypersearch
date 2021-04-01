@@ -44,6 +44,10 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
     (i) => i.key === ANY_URL_CONDITION,
   );
 
+  const handleShare = () => {
+    AugmentationManager.shareAugmentation(augmentation);
+  };
+
   const handleAddSuggested = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
   };
@@ -153,7 +157,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
       <Tooltip title="Share Lens" destroyTooltipOnHide={{ keepParent: false }}>
         <Button
           type="link"
-          target="_blank"
+          onClick={handleShare}
           icon={
             <Suspense fallback={null}>
               <ShareAltOutlined />

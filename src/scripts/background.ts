@@ -14,6 +14,7 @@ import { debug } from 'utils/helpers';
 import {
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
+  OPEN_NEW_TAB_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
@@ -177,6 +178,9 @@ chrome.browserAction.onClicked.addListener(() =>
 // page. By default it will forward any message as is to the client.
 chrome.runtime.onMessage.addListener((msg, sender) => {
   switch (msg.type) {
+    case OPEN_NEW_TAB_MESSAGE:
+      chrome.tabs.create({ url: msg.url });
+      break;
     case SEND_LOG_MESSAGE:
       debug('handleLogSend - call');
       try {
