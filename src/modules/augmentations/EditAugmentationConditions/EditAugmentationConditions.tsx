@@ -58,7 +58,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       </Row>
       {conditions.map((condition) => (
         <EditConditionInput
-          key={uuid()}
+          key={condition.id}
           condition={condition}
           saveCondition={onSave}
           deleteCondition={onDelete}

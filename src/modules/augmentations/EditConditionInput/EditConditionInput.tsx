@@ -45,13 +45,15 @@ export const EditConditionInput: EditConditionInput = ({
     setIntents(SearchEngineManager.intents);
   }, [SearchEngineManager.intents]);
 
-  const handleSave = () => {
-    const newCondition = { ...condition, key, label, value: [value] };
+  const handleSave = (_value?: string) => {
+    const newCondition = { ...condition, key, label, value: [_value ?? value] };
     saveCondition(newCondition);
   };
 
   const handleChange = ({ target: { value: _value } }: React.ChangeEvent<HTMLInputElement>) => {
     setValue(_value);
+    const newCondition = { ...condition, key, label, value: [_value] };
+    saveCondition(newCondition);
   };
 
   const handleDelete = () => {
@@ -95,7 +97,7 @@ export const EditConditionInput: EditConditionInput = ({
     (value as string).search(inputValue.toLowerCase()) > -1;
 
   const handleSelectIntent = (selectedIntent: string) => {
-    setValue(selectedIntent);
+    handleSave(selectedIntent);
   };
 
   const conditionKeys = [
@@ -137,40 +139,30 @@ export const EditConditionInput: EditConditionInput = ({
             switch (key) {
               case SEARCH_INTENT_IS_CONDITION:
                 return (
-                  <>
-                    <Select
-                      showSearch
-                      defaultValue={value}
-                      placeholder="Search for intents..."
-                      dropdownClassName="search-intent-dropdown"
-                      className="search-intent-block"
-                      filterOption={handleIntentFilter}
-                      onChange={handleSelectIntent}
-                      getPopupContainer={() => dropdownRef.current}
-                    >
-                      {intents?.map(({ name, intent_id }) => (
-                        <Option
-                          key={name}
-                          value={intent_id}
-                          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-                        >
-                          {name}
-                        </Option>
-                      ))}
-                    </Select>
-                    <Button onClick={handleSave} className="add-intent-button" block type="primary">
-                      Add
-                    </Button>
-                  </>
+                  <Select
+                    showSearch
+                    defaultValue={value}
+                    placeholder="Search for intents..."
+                    dropdownClassName="search-intent-dropdown"
+                    className="search-intent-block"
+                    filterOption={handleIntentFilter}
+                    onChange={handleSelectIntent}
+                    getPopupContainer={() => dropdownRef.current}
+                  >
+                    {intents?.map(({ name, intent_id }) => (
+                      <Option key={name} value={intent_id} style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}>
+                        {name}
+                      </Option>
+                    ))}
+                  </Select>
                 );
               case SEARCH_CONTAINS_CONDITION:
               case SEARCH_QUERY_CONTAINS_CONDITION:
                 return (
-                  <Input.Search
+                  <Input
+                    key={condition.id}
                     className="add-condition-value-input"
                     onChange={handleChange}
-                    onSearch={handleSave}
-                    enterButton="Add"
                     value={value}
                   />
                 );
