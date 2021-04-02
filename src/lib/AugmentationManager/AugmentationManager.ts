@@ -17,7 +17,7 @@ import md5 from 'md5';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 
 class AugmentationManager {
-  public getAugmentationRelvancy(augmentation: AugmentationObject) {
+  public getAugmentationRelevancy(augmentation: AugmentationObject) {
     const domainsToLookCondition = augmentation.conditions?.condition_list.reduce(
       (conditions, { key, value }) =>
         key === SEARCH_CONTAINS_CONDITION || key === ANY_URL_CONDITION
@@ -33,11 +33,11 @@ class AugmentationManager {
     );
 
     const matchingDomainsCondition = SidebarLoader.domains.filter((value) =>
-      domainsToLookCondition?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+      domainsToLookCondition?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
     );
 
     const matchingDomainsAction = SidebarLoader.domains.filter((value) =>
-      domainsToLookAction?.find((i) => value.search(new RegExp(`^${i}`, 'gi')) > -1),
+      domainsToLookAction?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
     );
 
     const checkForQuery =
@@ -45,19 +45,19 @@ class AugmentationManager {
         ({ key }) => key === SEARCH_QUERY_CONTAINS_CONDITION,
       )?.value[0] ?? null;
 
-    const matchingQuery = checkForQuery && SidebarLoader.query.search(checkForQuery) > -1;
+    const matchingQuery = checkForQuery && SidebarLoader.query?.search(checkForQuery) > -1;
 
     const matchingDomains =
       matchingDomainsCondition
         .map(
           (domain) =>
-            !!SidebarLoader.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
+            !!SidebarLoader.domains.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length > 0 &&
       matchingDomainsAction
         .map(
           (domain) =>
-            !!SidebarLoader.domains.find((e) => e.search(new RegExp(`^${domain}`, 'gi')) > -1),
+            !!SidebarLoader.domains.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 

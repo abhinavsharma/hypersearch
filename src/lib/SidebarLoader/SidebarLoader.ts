@@ -20,7 +20,6 @@ import {
   isAugmentationEnabled,
   EXTENSION_SERP_LOADED,
   NUM_DOMAINS_TO_CONSIDER,
-  NUM_DOMAINS_TO_EXCLUDE,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
   IN_DEBUG_MODE,
@@ -28,11 +27,9 @@ import {
   SUBTABS_CACHE_EXPIRE_MIN,
   BANNED_DOMAINS,
   SEARCH_DOMAINS_ACTION,
-  SEARCH_QUERY_CONTAINS_CONDITION,
   SEARCH_HIDE_DOMAIN_ACTION,
   OPEN_URL_ACTION,
   HIDE_TAB_FAKE_URL,
-  SEARCH_CONTAINS_CONDITION,
 } from 'utils';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 
@@ -357,7 +354,7 @@ class SidebarLoader {
           matchingDomainsAction,
           matchingDomainsCondition,
           domainsToLookAction,
-        } = AugmentationManager.getAugmentationRelvancy(augmentation);
+        } = AugmentationManager.getAugmentationRelevancy(augmentation);
 
         IN_DEBUG_MODE &&
           logProcessed.push(
@@ -588,7 +585,7 @@ class SidebarLoader {
           !key.startsWith('ignored-') &&
           !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi)
         ) {
-          const { isRelevant } = AugmentationManager.getAugmentationRelvancy(augmentation);
+          const { isRelevant } = AugmentationManager.getAugmentationRelevancy(augmentation);
           if (isRelevant && isAugmentationEnabled(augmentation)) {
             a.push(augmentation);
           } else {
