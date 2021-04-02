@@ -19,7 +19,7 @@ import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 class AugmentationManager {
   public processOpenPageActionString(value: string) {
     let url = `https://${removeProtocol(value)}`;
-    if (value.search(/%s[^r]?/gi) > -1) {
+    if (value.search(/%s[^r]+|%s$/gi) > -1) {
       url = url.replace('%s', SidebarLoader.query);
     }
     if (value.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
