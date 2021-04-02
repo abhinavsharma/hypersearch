@@ -61,6 +61,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     (document.querySelectorAll(selector) ?? []) as NodeListOf<ALLOWED_ELEMENT>;
 
   const cleanupFrame = () => {
+    getElements('html')?.[0].classList.remove('is-not-mobile-device');
     getElements('#message.results--message')?.[0]?.setAttribute('style', 'display: none;');
     CLEAN_ELEMENTS_FROM[LOCAL_HOSTNAME]?.forEach((selector) =>
       getElements(selector).forEach((el) => clearElement(el)),
