@@ -1,6 +1,4 @@
-import { HIDE_DOMAINS_MESSAGE } from 'utils';
 import { extractUrlProperties } from 'utils/helpers';
-import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
@@ -73,7 +71,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     REMOVE_ELEMENTS_FROM[LOCAL_HOSTNAME]?.forEach((selector) =>
       getElements(selector).forEach((el) => removeElement(el)),
     );
-    getElements('a').forEach((el) => {
+    getElements('a.BmP5tf').forEach((el) => {
       clearElement(el);
       const href = el.getAttribute('href');
       const target = el.getAttribute('target');
