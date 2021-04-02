@@ -255,14 +255,6 @@ class SidebarLoader {
     );
     const urls: URL[] = [];
 
-    const createSingleDomainUrl = (actionValue: string[]) => {
-      actionValue.forEach((val) => {
-        const url = new URL(`https://${removeProtocol(val).replace('%s', this.query)}`);
-        url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-        urls.push(url);
-      });
-    };
-
     const createMultipleDomainUrl = (actionValue: string[]) => {
       const tabAppendages = actionValue;
       if (!tabAppendages.length) {
@@ -296,7 +288,11 @@ class SidebarLoader {
           );
           break;
         case OPEN_URL_ACTION:
-          createSingleDomainUrl(action.value);
+          action.value.forEach((value) => {
+            const url = AugmentationManager.processOpenPageActionString(value);
+            url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+            urls.push(url);
+          });
           break;
         case SEARCH_DOMAINS_ACTION:
           if (
