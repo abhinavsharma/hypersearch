@@ -1,19 +1,21 @@
-.insight-suggested-tab-popup {
-  display: flex;
-  justify-content: space-around;
-  border-bottom: 1px solid #ccc;
+#actionbar {
+  .insight-suggested-tab-popup {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #ccc;
 
-  button,
-  a {
-    padding: 0;
-    span {
-      padding: 5px 0;
-      color: #666;
+    button,
+    a {
+      padding: 0;
+      span {
+        padding: 5px 0;
+        color: #666;
+      }
     }
-  }
 
-  .insight-suggested-text {
-    padding-top: 5px;
+    .insight-suggested-text {
+      padding-top: 5px;
+    }
   }
 
   .tooltip-container {
