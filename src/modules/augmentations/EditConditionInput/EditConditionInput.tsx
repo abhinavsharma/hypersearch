@@ -117,7 +117,6 @@ export const EditConditionInput: EditConditionInput = ({
             <Dropdown button={label} items={conditionKeys} className="edit-action-dropdown" />
           ) : (
             <>
-              <span>{condition.label}</span>
               <Button
                 onClick={handleDelete}
                 className="edit-input-delete-button"
@@ -128,6 +127,7 @@ export const EditConditionInput: EditConditionInput = ({
                   <MinusCircleOutlined />
                 </Suspense>
               </Button>
+              <span>{condition.label}</span>
             </>
           )}
         </Col>

@@ -89,7 +89,6 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           <Dropdown button={newLabel} items={AvailableActions} className="edit-action-dropdown" />
         ) : (
           <div className="edit-input-row">
-            <span>{action.label}</span>
             <Button
               onClick={() => deleteAction(action)}
               className="edit-input-delete-button"
@@ -100,6 +99,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
                 <MinusCircleOutlined />
               </Suspense>
             </Button>
+            <span>{action.label}</span>
           </div>
         )}
       </Col>

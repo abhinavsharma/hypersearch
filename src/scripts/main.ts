@@ -31,8 +31,8 @@ import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults } from 'utils';
         blocks,
         data.selector.container,
         {
-          header: 'Hidden',
-          text: 'Click to show hidden result',
+          header: '🙈 Result muted by a lens. Click to see',
+          text: 'Click to show',
         },
         'hidden-domain',
       );
