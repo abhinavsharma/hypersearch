@@ -16,14 +16,19 @@ const MinusCircleOutlined = React.lazy(
 
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
   const [newValue, setNewValue] = useState('');
-  const [type, setType] = useState<string>(action?.key);
+  const [key, setKey] = useState<string>(action?.key);
   const [newLabel, setNewLabel] = useState<string>(action?.label ?? 'Choose Action Type');
 
   const handleSaveValue = (e: string, i: number) => {
-    const newValue = action.value;
-    newValue[i] = e;
-    saveAction({ ...action, value: newValue });
+    const valueToSave = action.value;
+    valueToSave[i] = e;
+    saveAction({ ...action, value: valueToSave });
     setNewValue('');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewValue(e.target.value);
+    saveAction({ ...action, value: [e.target.value] });
   };
 
   const handleValueDelete = (e: string) => {
@@ -37,7 +42,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
       type="link"
       onClick={() => {
         setNewLabel('Search only these domains');
-        setType(SEARCH_DOMAINS_ACTION);
+        setKey(SEARCH_DOMAINS_ACTION);
         saveAction({
           ...action,
           label: 'Search only these domains',
@@ -53,7 +58,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
       type="link"
       onClick={() => {
         setNewLabel('Open page');
-        setType(OPEN_URL_ACTION);
+        setKey(OPEN_URL_ACTION);
         saveAction({
           ...action,
           label: 'Open page',
@@ -69,7 +74,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
       type="link"
       onClick={() => {
         setNewLabel('Minimize results from domain');
-        setType(SEARCH_HIDE_DOMAIN_ACTION);
+        setKey(SEARCH_HIDE_DOMAIN_ACTION);
         saveAction({
           ...action,
           label: 'Minimize results from domain',
@@ -104,37 +109,42 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
         )}
       </Col>
       <Col xs={12} className="action-value-col">
-        {action.value.map(
-          (value, i) =>
-            type && (
-              <div key={value + i} className="action-value-row">
-                <span>{value.slice(0, 25) + (value.length > 25 ? '...' : '')}</span>
-                <Button
-                  onClick={() => handleValueDelete(value)}
-                  className="edit-input-delete-button"
-                  danger
-                  type="link"
-                >
-                  <Suspense fallback={null}>
-                    <MinusCircleOutlined />
-                  </Suspense>
-                </Button>
-              </div>
-            ),
+        {key === SEARCH_DOMAINS_ACTION &&
+          action.value.map((value, i) => (
+            <div key={value + i} className="action-value-row">
+              <span>{value.slice(0, 25) + (value.length > 25 ? '...' : '')}</span>
+              <Button
+                onClick={() => handleValueDelete(value)}
+                className="edit-input-delete-button"
+                danger
+                type="link"
+              >
+                <Suspense fallback={null}>
+                  <MinusCircleOutlined />
+                </Suspense>
+              </Button>
+            </div>
+          ))}
+        {key && key === SEARCH_DOMAINS_ACTION ? (
+          <Row className="no-border edit-input-row">
+            <Input.Search
+              enterButton="Add"
+              className="add-action-value-input"
+              value={newValue}
+              onChange={(e) => setNewValue(e.target.value)}
+              onSearch={() => handleSaveValue(newValue, action.value.length)}
+            />
+          </Row>
+        ) : (
+          <Row className="no-border edit-input-row">
+            <Input
+              key={action.id}
+              className="add-action-value-input"
+              value={action.value}
+              onChange={handleChange}
+            />
+          </Row>
         )}
-        {type &&
-          (![OPEN_URL_ACTION, SEARCH_HIDE_DOMAIN_ACTION].includes(type) ||
-            action.value.length === 0) && (
-            <Row className="no-border edit-input-row">
-              <Input.Search
-                enterButton="Add"
-                className="add-action-value-input"
-                value={newValue}
-                onChange={(e) => setNewValue(e.target.value)}
-                onSearch={() => handleSaveValue(newValue, action.value.length)}
-              />
-            </Row>
-          )}
       </Col>
     </>
   );

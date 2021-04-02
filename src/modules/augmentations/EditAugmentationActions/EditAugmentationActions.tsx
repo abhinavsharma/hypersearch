@@ -30,7 +30,7 @@ export const EditAugmentationActions: EditAugmentationActions = ({
   return (
     <>
       {filteredAction.map((action) => (
-        <Row className="edit-input-row no-border" key={uuid()}>
+        <Row className="edit-input-row no-border" key={action.id}>
           <EditActionInput action={action} saveAction={onSave} deleteAction={onDelete} />
         </Row>
       ))}

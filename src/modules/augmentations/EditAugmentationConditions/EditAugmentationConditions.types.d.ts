@@ -3,7 +3,7 @@ import { CustomCondition } from 'modules/augmentations';
 
 declare module './EditAugmentationConditions' {
   type EditAugmentationConditionsProps = {
-    conditions: ConditionObject[];
+    conditions: CustomCondition[];
     setConditions: Dispatch<SetStateAction<CustomCondition[]>>;
     evaluation: 'AND' | 'OR';
     setEvaluation: Dispatch<SetStateAction<'AND' | 'OR'>>;
