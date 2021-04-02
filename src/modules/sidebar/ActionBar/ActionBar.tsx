@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
@@ -9,6 +9,7 @@ import {
   ANY_URL_CONDITION,
   ANY_URL_CONDITION_TEMPLATE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  SIDEBAR_Z_INDEX,
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
@@ -49,6 +50,7 @@ const SmallDashOutlined = React.lazy(
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const [isSharing, setIsSharing] = useState<boolean>(false);
+  const tooltipContainer = useRef(null);
 
   const augmentation =
     (tab.isSuggested
@@ -111,7 +113,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           }}
           key={tab.id}
         >
-          <Tooltip title="Edit local lens" destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip
+            title="Edit local lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
             <Button
               type="link"
               onClick={handleOpenAugmentationBuilder}
@@ -138,7 +145,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           }}
           key={tab.id}
         >
-          <Tooltip title="Duplicate lens and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip
+            title="Duplicate lens and edit locally"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
             <Button
               type="link"
               onClick={handleOpenAugmentationBuilder}
@@ -153,7 +165,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Link>
       )}
       {!isPinned && (
-        <Tooltip title="Always show this lens" destroyTooltipOnHide={{ keepParent: false }}>
+        <Tooltip
+          title="Always show this lens"
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
           <Button
             type="link"
             onClick={handleAddPinned}
@@ -167,7 +184,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Tooltip>
       )}
       {augmentation.installed && (
-        <Tooltip title="Delete local lens" destroyTooltipOnHide={{ keepParent: false }}>
+        <Tooltip
+          title="Delete local lens"
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
           <Button
             type="link"
             onClick={handleRemoveInstalled}
@@ -181,7 +203,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Tooltip>
       )}
       {tab.isSuggested && (
-        <Tooltip title="Hide Lens" destroyTooltipOnHide={{ keepParent: false }}>
+        <Tooltip
+          title="Hide Lens"
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
           <Button
             type="link"
             onClick={() => handleHideSuggested(tab)}
@@ -194,7 +221,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Tooltip>
       )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-        <Tooltip title="Improve lens for everyone" destroyTooltipOnHide={{ keepParent: false }}>
+        <Tooltip
+          title="Improve lens for everyone"
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
           <Button
             type="link"
             target="_blank"
@@ -215,6 +247,8 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
       <Tooltip
         title={isSharing ? 'Please wait...' : 'Share lens'}
         destroyTooltipOnHide={{ keepParent: false }}
+        getPopupContainer={() => tooltipContainer.current}
+        placement="bottom"
       >
         <Button
           type="link"
@@ -227,6 +261,11 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           }
         />
       </Tooltip>
+      <div
+        className="tooltip-container"
+        ref={tooltipContainer}
+        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+      />
     </div>
   );
 };

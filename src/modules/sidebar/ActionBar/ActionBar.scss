@@ -15,4 +15,10 @@
   .insight-suggested-text {
     padding-top: 5px;
   }
+
+  .tooltip-container {
+    .ant-tooltip-inner {
+      min-height: 0;
+    }
+  }
 }
