@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
@@ -9,6 +9,7 @@ import {
   ANY_URL_CONDITION,
   ANY_URL_CONDITION_TEMPLATE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  SIDEBAR_Z_INDEX,
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
@@ -49,6 +50,7 @@ const SmallDashOutlined = React.lazy(
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const [isSharing, setIsSharing] = useState<boolean>(false);
+  const tooltipContainer = useRef(null);
 
   const augmentation =
     (tab.isSuggested
@@ -101,132 +103,171 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   };
 
   return (
-    <div className="insight-suggested-tab-popup">
-      {augmentation.installed ? (
-        <Link
-          component={EditAugmentationPage}
-          componentProps={{
-            augmentation,
-            setActiveKey,
-          }}
-          key={tab.id}
-        >
-          <Tooltip title="Edit local lens" destroyTooltipOnHide={{ keepParent: false }}>
+    <div id="actionbar">
+      <div className="insight-suggested-tab-popup">
+        {augmentation.installed ? (
+          <Link
+            component={EditAugmentationPage}
+            componentProps={{
+              augmentation,
+              setActiveKey,
+            }}
+            key={tab.id}
+          >
+            <Tooltip
+              title="Edit local lens"
+              destroyTooltipOnHide={{ keepParent: false }}
+              getPopupContainer={() => tooltipContainer.current}
+              placement="bottom"
+            >
+              <Button
+                type="link"
+                onClick={handleOpenAugmentationBuilder}
+                style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+                icon={
+                  <Suspense fallback={null}>
+                    <EditOutlined />
+                  </Suspense>
+                }
+              />
+            </Tooltip>
+          </Link>
+        ) : (
+          <Link
+            component={EditAugmentationPage}
+            componentProps={{
+              augmentation: {
+                ...augmentation,
+                description: tab.isSuggested ? '' : augmentation.description,
+                installed: !tab.isSuggested,
+              },
+              isAdding: tab.isSuggested,
+              setActiveKey,
+            }}
+            key={tab.id}
+          >
+            <Tooltip
+              title="Duplicate lens and edit locally"
+              destroyTooltipOnHide={{ keepParent: false }}
+              getPopupContainer={() => tooltipContainer.current}
+              placement="bottom"
+            >
+              <Button
+                type="link"
+                onClick={handleOpenAugmentationBuilder}
+                style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+                icon={
+                  <Suspense fallback={null}>
+                    <BranchesOutlined />
+                  </Suspense>
+                }
+              />
+            </Tooltip>
+          </Link>
+        )}
+        {!isPinned && (
+          <Tooltip
+            title="Always show this lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
             <Button
               type="link"
-              onClick={handleOpenAugmentationBuilder}
+              onClick={handleAddPinned}
               style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
               icon={
                 <Suspense fallback={null}>
-                  <EditOutlined />
+                  <PushpinOutlined />
                 </Suspense>
               }
             />
           </Tooltip>
-        </Link>
-      ) : (
-        <Link
-          component={EditAugmentationPage}
-          componentProps={{
-            augmentation: {
-              ...augmentation,
-              description: tab.isSuggested ? '' : augmentation.description,
-              installed: !tab.isSuggested,
-            },
-            isAdding: tab.isSuggested,
-            setActiveKey,
-          }}
-          key={tab.id}
-        >
-          <Tooltip title="Duplicate lens and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
+        )}
+        {augmentation.installed && (
+          <Tooltip
+            title="Delete local lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
             <Button
               type="link"
-              onClick={handleOpenAugmentationBuilder}
+              onClick={handleRemoveInstalled}
               style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
               icon={
                 <Suspense fallback={null}>
-                  <BranchesOutlined />
+                  <DeleteOutlined style={{ color: 'red' }} />
                 </Suspense>
               }
             />
           </Tooltip>
-        </Link>
-      )}
-      {!isPinned && (
-        <Tooltip title="Always show this lens" destroyTooltipOnHide={{ keepParent: false }}>
+        )}
+        {tab.isSuggested && (
+          <Tooltip
+            title="Hide Lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              onClick={() => handleHideSuggested(tab)}
+              icon={
+                <Suspense fallback={null}>
+                  <CloseCircleOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        )}
+        {tab.isCse && !tab.id.startsWith('cse-custom-') && (
+          <Tooltip
+            title="Improve lens for everyone"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              target="_blank"
+              href={
+                'https://airtable.com/shrQCthknXg1jf6oU?prefill_Search%20Engine%20Name=' +
+                tab.title +
+                '&prefill_sample_query=' +
+                new URLSearchParams(window.location.search).get('q')
+              }
+              icon={
+                <Suspense fallback={null}>
+                  <ToolOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        )}
+        <Tooltip
+          title={isSharing ? 'Please wait...' : 'Share lens'}
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
           <Button
             type="link"
-            onClick={handleAddPinned}
-            style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+            onClick={handleShare}
+            disabled={isSharing}
             icon={
               <Suspense fallback={null}>
-                <PushpinOutlined />
+                {isSharing ? <SmallDashOutlined /> : <ShareAltOutlined />}
               </Suspense>
             }
           />
         </Tooltip>
-      )}
-      {augmentation.installed && (
-        <Tooltip title="Delete local lens" destroyTooltipOnHide={{ keepParent: false }}>
-          <Button
-            type="link"
-            onClick={handleRemoveInstalled}
-            style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
-            icon={
-              <Suspense fallback={null}>
-                <DeleteOutlined style={{ color: 'red' }} />
-              </Suspense>
-            }
-          />
-        </Tooltip>
-      )}
-      {tab.isSuggested && (
-        <Tooltip title="Hide Lens" destroyTooltipOnHide={{ keepParent: false }}>
-          <Button
-            type="link"
-            onClick={() => handleHideSuggested(tab)}
-            icon={
-              <Suspense fallback={null}>
-                <CloseCircleOutlined />
-              </Suspense>
-            }
-          />
-        </Tooltip>
-      )}
-      {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-        <Tooltip title="Improve lens for everyone" destroyTooltipOnHide={{ keepParent: false }}>
-          <Button
-            type="link"
-            target="_blank"
-            href={
-              'https://airtable.com/shrQCthknXg1jf6oU?prefill_Search%20Engine%20Name=' +
-              tab.title +
-              '&prefill_sample_query=' +
-              new URLSearchParams(window.location.search).get('q')
-            }
-            icon={
-              <Suspense fallback={null}>
-                <ToolOutlined />
-              </Suspense>
-            }
-          />
-        </Tooltip>
-      )}
-      <Tooltip
-        title={isSharing ? 'Please wait...' : 'Share lens'}
-        destroyTooltipOnHide={{ keepParent: false }}
-      >
-        <Button
-          type="link"
-          onClick={handleShare}
-          disabled={isSharing}
-          icon={
-            <Suspense fallback={null}>
-              {isSharing ? <SmallDashOutlined /> : <ShareAltOutlined />}
-            </Suspense>
-          }
-        />
-      </Tooltip>
+      </div>
+      <div
+        className="tooltip-container"
+        ref={tooltipContainer}
+        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+      />
     </div>
   );
 };
