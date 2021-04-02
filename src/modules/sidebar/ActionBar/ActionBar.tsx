@@ -1,6 +1,7 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
+import Tooltip from 'antd/lib/tooltip';
 import { EditAugmentationPage } from 'modules/augmentations/';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
@@ -10,9 +11,9 @@ import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
-import './ActionBar.scss';
-import Tooltip from 'antd/lib/tooltip';
+import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
+import './ActionBar.scss';
 
 const BranchesOutlined = React.lazy(
   async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),
@@ -34,21 +35,38 @@ const ShareAltOutlined = React.lazy(
   async () => await import('@ant-design/icons/ShareAltOutlined').then((mod) => mod),
 );
 
-export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
-  const augmentation = (tab.isSuggested
-    ? SidebarLoader.suggestedAugmentations
-    : SidebarLoader.installedAugmentations
-  ).find(({ id }) => id === tab.id);
+const EditOutlined = React.lazy(
+  async () => await import('@ant-design/icons/EditOutlined').then((mod) => mod),
+);
 
-  const isPinned = !!augmentation.conditions.condition_list.find(
+const DeleteOutlined = React.lazy(
+  async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
+);
+
+const SmallDashOutlined = React.lazy(
+  async () => await import('@ant-design/icons/SmallDashOutlined').then((mod) => mod),
+);
+
+export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
+  const [isSharing, setIsSharing] = useState<boolean>(false);
+
+  const augmentation =
+    (tab.isSuggested
+      ? SidebarLoader.suggestedAugmentations
+      : SidebarLoader.installedAugmentations
+    ).find(({ id }) => id === tab.id) ?? Object.create(null);
+
+  const isPinned = !!augmentation.conditions?.condition_list.find(
     (i) => i.key === ANY_URL_CONDITION,
   );
 
-  const handleShare = () => {
-    AugmentationManager.shareAugmentation(augmentation);
+  const handleShare = async () => {
+    setIsSharing(true);
+    await AugmentationManager.shareAugmentation(augmentation);
+    setIsSharing(false);
   };
 
-  const handleAddSuggested = () => {
+  const handleOpenAugmentationBuilder = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
   };
 
@@ -60,6 +78,8 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
       isPinning: true,
     });
   };
+
+  const handleRemoveInstalled = () => AugmentationManager.removeInstalledAugmentation(augmentation);
 
   const handleHideSuggested = (tab: SidebarTab) => {
     const augmentation = SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id);
@@ -82,32 +102,56 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
 
   return (
     <div className="insight-suggested-tab-popup">
-      <Link
-        component={EditAugmentationPage}
-        componentProps={{
-          augmentation: {
-            ...augmentation,
-            description: tab.isSuggested ? '' : augmentation.description,
-            installed: !tab.isSuggested,
-          },
-          isAdding: tab.isSuggested,
-          setActiveKey,
-        }}
-        key={tab.id}
-      >
-        <Tooltip title="Duplicate and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
-          <Button
-            type="link"
-            onClick={handleAddSuggested}
-            style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
-            icon={
-              <Suspense fallback={null}>
-                <BranchesOutlined />
-              </Suspense>
-            }
-          />
-        </Tooltip>
-      </Link>
+      {augmentation.installed ? (
+        <Link
+          component={EditAugmentationPage}
+          componentProps={{
+            augmentation,
+            setActiveKey,
+          }}
+          key={tab.id}
+        >
+          <Tooltip title="Edit installed lens" destroyTooltipOnHide={{ keepParent: false }}>
+            <Button
+              type="link"
+              onClick={handleOpenAugmentationBuilder}
+              style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+              icon={
+                <Suspense fallback={null}>
+                  <EditOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        </Link>
+      ) : (
+        <Link
+          component={EditAugmentationPage}
+          componentProps={{
+            augmentation: {
+              ...augmentation,
+              description: tab.isSuggested ? '' : augmentation.description,
+              installed: !tab.isSuggested,
+            },
+            isAdding: tab.isSuggested,
+            setActiveKey,
+          }}
+          key={tab.id}
+        >
+          <Tooltip title="Duplicate and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
+            <Button
+              type="link"
+              onClick={handleOpenAugmentationBuilder}
+              style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+              icon={
+                <Suspense fallback={null}>
+                  <BranchesOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        </Link>
+      )}
       {!isPinned && (
         <Tooltip title="Always show this lens" destroyTooltipOnHide={{ keepParent: false }}>
           <Button
@@ -117,6 +161,20 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             icon={
               <Suspense fallback={null}>
                 <PushpinOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
+      )}
+      {augmentation.installed && (
+        <Tooltip title="Remove installed lens" destroyTooltipOnHide={{ keepParent: false }}>
+          <Button
+            type="link"
+            onClick={handleRemoveInstalled}
+            style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+            icon={
+              <Suspense fallback={null}>
+                <DeleteOutlined style={{ color: 'red' }} />
               </Suspense>
             }
           />
@@ -154,13 +212,17 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           />
         </Tooltip>
       )}
-      <Tooltip title="Share Lens" destroyTooltipOnHide={{ keepParent: false }}>
+      <Tooltip
+        title={isSharing ? 'Please wait...' : 'Share Lens'}
+        destroyTooltipOnHide={{ keepParent: false }}
+      >
         <Button
           type="link"
           onClick={handleShare}
+          disabled={isSharing}
           icon={
             <Suspense fallback={null}>
-              <ShareAltOutlined />
+              {isSharing ? <SmallDashOutlined /> : <ShareAltOutlined />}
             </Suspense>
           }
         />

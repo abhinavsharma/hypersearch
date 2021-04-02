@@ -6,7 +6,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
   return (
     <div
       onClick={handleClick}
-      className={`insight-tab-pill ${tab.url.href === 'hide' ? 'hidden' : ''}`}
+      className={`insight-tab-pill ${tab.url?.href === 'hide' ? 'hidden' : ''}`}
     >
       <span
         className={`insight-tab-title ${activeKey === (index + 1).toString() ? 'active' : ''} ${

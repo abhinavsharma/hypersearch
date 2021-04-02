@@ -33,16 +33,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
-  const handleDelete = () => {
-    SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    chrome.storage.local.remove(augmentation.id);
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-  };
+  const handleDelete = () => AugmentationManager.removeInstalledAugmentation(augmentation);
 
   const handleEdit = () =>
     goTo(EditAugmentationPage, {

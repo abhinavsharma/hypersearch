@@ -2,10 +2,12 @@
   .insight-tab-pill {
     display: flex;
     height: 100%;
+    min-height: 55px;
     width: 100%;
     max-width: 15ch;
     align-items: center;
     justify-content: center;
+    white-space: break-spaces;
 
     &.hidden {
       display: none;
@@ -26,7 +28,6 @@
     cursor: pointer;
     border-radius: 0;
     border-bottom: 0;
-    white-space: pre-wrap;
   }
 
   .ant-tabs-tab-active {

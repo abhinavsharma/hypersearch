@@ -18,7 +18,7 @@ import './EditAugmentationPage.scss';
 const { Panel } = Collapse;
 
 export const EditAugmentationPage: EditAugmentationPage = ({
-  augmentation,
+  augmentation = Object.create(null),
   isAdding,
   initiatedFromActives,
   setActiveKey,

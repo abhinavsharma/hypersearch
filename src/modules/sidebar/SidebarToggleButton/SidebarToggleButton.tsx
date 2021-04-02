@@ -42,7 +42,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
       <List
         itemLayout="horizontal"
-        dataSource={tabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL)}
+        dataSource={tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)}
         renderItem={ListItem}
       />
     </div>

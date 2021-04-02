@@ -17,6 +17,17 @@ import md5 from 'md5';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 
 class AugmentationManager {
+  public removeInstalledAugmentation(augmentation: AugmentationObject) {
+    SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    chrome.storage.local.remove(augmentation.id);
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  }
+
   public getAugmentationRelevancy(augmentation: AugmentationObject) {
     const domainsToLookCondition = augmentation.conditions?.condition_list.reduce(
       (conditions, { key, value }) =>

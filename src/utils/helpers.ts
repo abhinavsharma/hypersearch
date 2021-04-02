@@ -214,4 +214,7 @@ export const b64EncodeUnicode = (str: string) =>
   );
 
 export const getFirstValidTabIndex = (tabs: SidebarTab[]) =>
-  (tabs.findIndex(({ url }) => url.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+  (tabs.findIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+
+export const makeEllipsis = (s: string, limit: number) =>
+  s.length > limit ? s.slice(0, limit) + '...' : s;
