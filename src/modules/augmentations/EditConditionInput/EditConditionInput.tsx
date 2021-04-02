@@ -19,6 +19,7 @@ import {
   ANY_URL_CONDITION,
   SEARCH_INTENT_IS_CONDITION,
   SEARCH_INTENT_IS_BUTTON_TEXT,
+  SIDEBAR_Z_INDEX,
 } from 'utils';
 
 const { Option } = Select;
@@ -112,7 +113,7 @@ export const EditConditionInput: EditConditionInput = ({
   return (
     <>
       <Row className="edit-input-row">
-        <Col xs={13}>
+        <Col xs={13} className="condition-label">
           {!key ? (
             <Dropdown button={label} items={conditionKeys} className="edit-action-dropdown" />
           ) : (
@@ -148,7 +149,11 @@ export const EditConditionInput: EditConditionInput = ({
                       getPopupContainer={() => dropdownRef.current}
                     >
                       {intents?.map(({ name, intent_id }) => (
-                        <Option key={name} value={intent_id}>
+                        <Option
+                          key={name}
+                          value={intent_id}
+                          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+                        >
                           {name}
                         </Option>
                       ))}
