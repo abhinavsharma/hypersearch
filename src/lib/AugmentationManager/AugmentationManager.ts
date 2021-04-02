@@ -22,15 +22,13 @@ class AugmentationManager {
     if (value.search(/%s[^r]?/gi) > -1) {
       url = url.replace('%s', SidebarLoader.query);
     }
-    if (process.env.PROJECT === 'is') {
-      if (value.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
-      if (value.search(/%sr[\d]{1,}/gi) > -1) {
-        const domainIndices = url.match(/%sr[\d]/gi) ?? [];
-        domainIndices.forEach((value) => {
-          const index = value.split('%sr')[1];
-          url = url.replace(`%sr${index}`, SidebarLoader.domains[index]);
-        });
-      }
+    if (value.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
+    if (value.search(/%sr[\d]{1,}/gi) > -1) {
+      const domainIndices = url.match(/%sr[\d]/gi) ?? [];
+      domainIndices.forEach((value) => {
+        const index = value.split('%sr')[1];
+        url = url.replace(`%sr${index}`, SidebarLoader.domains[index]);
+      });
     }
     return new URL(url);
   }
