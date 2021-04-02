@@ -160,6 +160,11 @@
         .ant-select-dropdown {
           width: 195px !important;
         }
+
+        .ant-select-item-option {
+          pointer-events: auto !important;
+          align-items: center;
+        }
       }
 
       .add-intent-button {
@@ -183,6 +188,7 @@
           opacity: 1;
 
           .ant-select-item-option {
+            pointer-events: auto !important;
             align-items: center;
           }
         }
@@ -265,6 +271,10 @@
           height: auto;
           border-bottom: 1px solid #eee;
           padding: 10px 10px;
+
+          .condition-label {
+            align-items: center;
+          }
         }
       }
     }
