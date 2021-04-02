@@ -111,7 +111,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           }}
           key={tab.id}
         >
-          <Tooltip title="Edit installed lens" destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip title="Edit local lens" destroyTooltipOnHide={{ keepParent: false }}>
             <Button
               type="link"
               onClick={handleOpenAugmentationBuilder}
@@ -138,7 +138,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           }}
           key={tab.id}
         >
-          <Tooltip title="Duplicate and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip title="Duplicate lens and edit locally" destroyTooltipOnHide={{ keepParent: false }}>
             <Button
               type="link"
               onClick={handleOpenAugmentationBuilder}
@@ -167,7 +167,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Tooltip>
       )}
       {augmentation.installed && (
-        <Tooltip title="Remove installed lens" destroyTooltipOnHide={{ keepParent: false }}>
+        <Tooltip title="Delete local lens" destroyTooltipOnHide={{ keepParent: false }}>
           <Button
             type="link"
             onClick={handleRemoveInstalled}
@@ -194,7 +194,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Tooltip>
       )}
       {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-        <Tooltip title="Improve Lens for Everyone" destroyTooltipOnHide={{ keepParent: false }}>
+        <Tooltip title="Improve lens for everyone" destroyTooltipOnHide={{ keepParent: false }}>
           <Button
             type="link"
             target="_blank"
@@ -213,7 +213,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         </Tooltip>
       )}
       <Tooltip
-        title={isSharing ? 'Please wait...' : 'Share Lens'}
+        title={isSharing ? 'Please wait...' : 'Share lens'}
         destroyTooltipOnHide={{ keepParent: false }}
       >
         <Button
