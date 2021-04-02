@@ -48,6 +48,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       const sourceTab = tabs.find(
         (i) => unescape(i.url.href) === msg.frame.url.replace('www.', ''),
       );
+      if (!sourceTab) return null;
       setTimeout(
         () =>
           SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
