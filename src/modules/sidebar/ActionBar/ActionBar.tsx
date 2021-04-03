@@ -223,7 +223,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         )}
         {tab.isCse && !tab.id.startsWith('cse-custom-') && (
           <Tooltip
-            title="Improve lens for everyone"
+            title="Suggest improvements to lens"
             destroyTooltipOnHide={{ keepParent: false }}
             getPopupContainer={() => tooltipContainer.current}
             placement="bottom"
