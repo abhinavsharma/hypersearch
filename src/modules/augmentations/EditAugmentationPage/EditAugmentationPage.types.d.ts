@@ -6,7 +6,7 @@ declare module './EditAugmentationPage' {
   };
 
   type EditAugmentationPageProps = {
-    augmentation: CustomAugmentationObject;
+    augmentation: AugmentationObject;
     isAdding?: boolean;
     initiatedFromActives: boolean;
     setActiveKey: Dispatch<SetStateAction<string>>;

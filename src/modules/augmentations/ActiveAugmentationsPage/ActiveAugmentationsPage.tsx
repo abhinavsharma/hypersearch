@@ -38,12 +38,13 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
         setOtherAugmentations(SidebarLoader.otherAugmentations);
       }
-      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE && msg.create) {
-        goTo(EditAugmentationPage, {
-          augmentation: EMPTY_AUGMENTATION,
-          isAdding: true,
-          setActiveKey,
-        });
+      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
+        (msg.augmentation || msg.create) &&
+          goTo(EditAugmentationPage, {
+            augmentation: msg.create ? EMPTY_AUGMENTATION : msg.augmentation,
+            isAdding: msg.create,
+            setActiveKey,
+          });
       }
     });
   }, []);

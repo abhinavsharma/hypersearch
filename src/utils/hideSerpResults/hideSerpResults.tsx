@@ -1,4 +1,8 @@
+import React from 'react';
+import { render } from 'react-dom';
 import { SIDEBAR_Z_INDEX } from 'utils/constants';
+import { HideResultOverlays } from 'modules/overlays';
+import 'antd/lib/button/style/index.css';
 
 /**
  * Create an overlay above the list of HTMLElements
@@ -19,10 +23,16 @@ export const hideSerpResults: HideSerpResults = (
   selector,
   { text, header },
   selectorString,
+  augmentations,
 ) => {
   for (const node of nodes) {
     const serpResult = node.closest(selector) as HTMLElement;
-    if (!serpResult || serpResult.getAttribute('insight-hidden-result') === 'true') continue;
+    if (!serpResult) continue;
+
+    if (serpResult.getAttribute('insight-hidden-result') === 'true') {
+      const existingOverlay = serpResult.querySelector('.insight-hidden-domain-overlay');
+      existingOverlay && serpResult.removeChild(existingOverlay);
+    }
 
     serpResult.setAttribute('insight-hidden-result', 'true');
 
@@ -39,9 +49,18 @@ export const hideSerpResults: HideSerpResults = (
     innerText.classList.add(`insight-${selectorString}-inner-text`);
     innerText.innerText = text;
 
+    if (augmentations?.length) {
+      overlay.setAttribute(
+        'insight-blocked-by',
+        augmentations.reduce((a, { id }) => a.concat(` ${id}`), ''),
+      );
+      const buttonRoot = document.createElement('div');
+      buttonRoot.classList.add(`insight-${selectorString}-button-root`);
+      render(<HideResultOverlays augmentations={augmentations} />, buttonRoot);
+      textWrapper.appendChild(buttonRoot);
+    }
     overlay.appendChild(textWrapper);
     textWrapper.appendChild(innerText);
-
     overlay.addEventListener('click', (e) => {
       if (serpResult.getAttribute('insight-hidden-result-protected') !== 'true') {
         e.preventDefault();

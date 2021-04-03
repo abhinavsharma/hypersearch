@@ -4,6 +4,10 @@ body {
   max-width: 100% !important;
 }
 
+.insight-open-augmentation-builder-button {
+  margin-top: 10px;
+}
+
 .insight-blocked-ad-overlay {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   position: absolute;
@@ -11,7 +15,7 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(hsla(0, 0%, 100%, 0.90) 0%, #fff);
+  background: linear-gradient(hsla(0, 0%, 100%, 0.9) 0%, #fff);
 }
 
 .insight-blocked-ad-text-wrapper {
@@ -40,7 +44,6 @@ body {
 }
 
 .insight-hidden-domain-text-wrapper {
-  position: absolute;
   bottom: 50%;
   font-size: 14px;
   color: #777;
@@ -50,5 +53,12 @@ body {
   font-weight: normal;
   margin-top: 10px;
   font-size: 16px;
-  display: none;
+}
+
+.insight-hidden-domain-button-root {
+  display: inline;
+}
+
+.insight-hide-domain-action-button {
+  padding: 0 2px !important;
 }

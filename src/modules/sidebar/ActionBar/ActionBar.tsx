@@ -9,12 +9,13 @@ import {
   ANY_URL_CONDITION,
   ANY_URL_CONDITION_TEMPLATE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  SEARCH_HIDE_DOMAIN_ACTION,
   SIDEBAR_Z_INDEX,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
+import { getFirstValidTabIndex } from 'utils';
 
 const BranchesOutlined = React.lazy(
   async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),
@@ -52,7 +53,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const [isSharing, setIsSharing] = useState<boolean>(false);
   const tooltipContainer = useRef(null);
 
-  const augmentation =
+  const augmentation: AugmentationObject =
     (tab.isSuggested
       ? SidebarLoader.suggestedAugmentations
       : SidebarLoader.installedAugmentations
@@ -69,7 +70,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   };
 
   const handleOpenAugmentationBuilder = () => {
-    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
+    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, augmentation });
   };
 
   const handleAddPinned = () => {
@@ -81,25 +82,18 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
     });
   };
 
-  const handleRemoveInstalled = () => AugmentationManager.removeInstalledAugmentation(augmentation);
+  const handleRemoveInstalled = () => {
+    setActiveKey(
+      getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
+    );
+    AugmentationManager.removeInstalledAugmentation(augmentation);
+  };
 
   const handleHideSuggested = (tab: SidebarTab) => {
-    const augmentation = SidebarLoader.suggestedAugmentations.find((i) => i.id === tab.id);
-    SidebarLoader.ignoredAugmentations.push(augmentation);
-    chrome.storage.local.set({
-      [`ignored-${tab.id}`]: augmentation,
-    });
-    SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
-      (i) => i.id !== augmentation.id,
+    setActiveKey(
+      getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
     );
-    const numInstalledAugmentations = SidebarLoader.installedAugmentations.filter(
-      (i) => !!i.enabled,
-    ).length;
-    const numSuggestedAugmentations = SidebarLoader.suggestedAugmentations.length;
-    !numSuggestedAugmentations && !numInstalledAugmentations
-      ? setActiveKey('0')
-      : setActiveKey('1');
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+    AugmentationManager.disableSuggestedAugmentation(augmentation);
   };
 
   return (
