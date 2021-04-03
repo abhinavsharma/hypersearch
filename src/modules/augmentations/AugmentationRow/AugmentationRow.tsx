@@ -65,13 +65,13 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
       ) : (
         !isPinned && (
           <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
-            Pin Locally
+            Always Show
           </Tag>
         )
       )}
       {augmentation.installed ? (
         <Tag className="augmentation-row-button" color="volcano" onClick={handleDelete}>
-          Remove
+          Delete
         </Tag>
       ) : null}
     </div>

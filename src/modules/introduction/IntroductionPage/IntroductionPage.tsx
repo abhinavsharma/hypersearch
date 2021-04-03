@@ -24,7 +24,7 @@ const listData = {
     { text: 'best ev to buy 2021' },
   ],
 
-  ': see different perspectives': [{ text: 'will trump run in 2024' }],
+  'News: see different perspectives': [{ text: 'will trump run in 2024' }],
 
   'Misc: learn new things better & faster with insider trusted sources': [
     { text: 'how to build a bunker' },
