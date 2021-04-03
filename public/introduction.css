@@ -1,5 +1,5 @@
 .insight-intro-title {
-  text-align: center;
+  text-align: left;
   padding: 50px;
   font-family: 'DM Serif Display', serif;
 }
@@ -11,7 +11,6 @@
 .insight-intro-subtitle {
   font-family: Helvetica, sans-serif;
   max-width: 400px;
-  margin: auto;
 }
 
 .insight-intro-privacy-note { 

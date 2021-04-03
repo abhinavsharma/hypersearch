@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { Collapse, Input, Button, List, Typography } from 'antd';
 import { APP_NAME } from 'utils/constants';
 import { ToggleAnonymousQueries } from 'modules/introduction';
@@ -6,7 +6,17 @@ import { ToggleAnonymousQueries } from 'modules/introduction';
 const { Panel } = Collapse;
 const { Paragraph } = Typography;
 
+const LockFilled = React.lazy(
+  async () => await import('@ant-design/icons/LockFilled').then((mod) => mod),
+);
+
 const listData = {
+
+  'News: see different perspectives': [
+    { text: 'climate change news' },
+    { text: 'will trump run in 2024' }
+  ],
+
   'Startups: sources trusted by top founders & investors': [
     { text: 'how to raise a seed round' },
     { text: 'how to hire engineers' },
@@ -18,13 +28,11 @@ const listData = {
     { text: 'best machine learning books' },
   ],
 
-  "eCommerce: see real people's perspectives and trusted review sites": [
+  "Shopping: see real people's perspectives and trusted review sites": [
     { text: 'best car insurance' },
     { text: 'best baby monitor' },
     { text: 'best ev to buy 2021' },
   ],
-
-  'News: see different perspectives': [{ text: 'will trump run in 2024' }],
 
   'Misc: learn new things better & faster with insider trusted sources': [
     { text: 'how to build a bunker' },
@@ -71,7 +79,7 @@ export const IntroductionPage = () => {
         dangerouslySetInnerHTML={{
           __html: !license.isActivated
             ? `Step 1. Enter your license to activate ${APP_NAME}`
-            : `Step 1. You have successfully activated <strong>${license.key}</strong> license key!`,
+            : `Step 1. Activated license <strong>${license.key}</strong>.`,
         }}
       />
     );
@@ -90,7 +98,11 @@ export const IntroductionPage = () => {
       <div className="insight-intro-title">
         <h1>Hello. Welcome to {APP_NAME}</h1>
         <div className="insight-intro-subtitle">
-          <div className="insight-intro-privacy-note">🔒 Your privacy is paramount.</div>
+          <div className="insight-intro-privacy-note">
+            <Suspense fallback={null}>
+              <LockFilled />
+            </Suspense>
+            Your privacy is paramount.</div>
           <Typography.Text>All processing is client-side and never log your visit data unless you opt-in to anonymous sharing.</Typography.Text>
         </div>
       </div>
