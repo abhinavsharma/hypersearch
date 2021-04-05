@@ -5,10 +5,12 @@ import {
   ANY_URL_CONDITION,
   EXTENSION_SHARE_URL,
   EXTENSION_SHORT_SHARE_URL,
+  HIDE_DOMAINS_MESSAGE,
   NUM_DOMAINS_TO_EXCLUDE,
   OPEN_NEW_TAB_MESSAGE,
   SEARCH_CONTAINS_CONDITION,
   SEARCH_DOMAINS_ACTION,
+  SEARCH_HIDE_DOMAIN_ACTION,
   SEARCH_INTENT_IS_CONDITION,
   SEARCH_QUERY_CONTAINS_CONDITION,
   UPDATE_SIDEBAR_TABS_MESSAGE,
@@ -44,7 +46,7 @@ class AugmentationManager {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
-  public removeInstalledAugmentation(augmentation: AugmentationObject) {
+  public removeInstalledAugmentation(augmentation: AugmentationObject, refresh?: boolean) {
     SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
@@ -52,6 +54,12 @@ class AugmentationManager {
       (i) => i.id !== augmentation.id,
     );
     chrome.storage.local.remove(augmentation.id);
+    const hasHideDomains = !!augmentation.actions.action_list.find(
+      ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
+    );
+    if (hasHideDomains) {
+      window.top.postMessage({ name: HIDE_DOMAINS_MESSAGE, remove: augmentation.id }, '*');
+    }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
@@ -155,7 +163,6 @@ class AugmentationManager {
       isActive,
       isPinning,
     }: AugmentationData,
-    refresh?: boolean,
   ) {
     const customId = `cse-custom-${
       augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
@@ -182,6 +189,32 @@ class AugmentationManager {
       enabled: isActive ?? augmentation.enabled,
       installed: true,
     };
+    chrome.storage.local.set({ [id]: updated });
+    const hasHideActions = updated.actions.action_list.filter(
+      ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
+    );
+    if (!!hasHideActions.length) {
+      window.parent.postMessage(
+        {
+          augmentation: updated,
+          name: HIDE_DOMAINS_MESSAGE,
+          hideDomains: hasHideActions.map(({ value }) => value[0]),
+          selector: {
+            link:
+              SidebarLoader.customSearchEngine.querySelector[
+                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+              ],
+            container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
+          },
+        },
+        '*',
+      );
+    }
+    SidebarLoader.installedAugmentations = [
+      updated,
+      ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
+    ];
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
     debug(
       'EditAugmentationPage - save\n---\n\tOriginal',
       augmentation,
@@ -189,15 +222,6 @@ class AugmentationManager {
       updated,
       '\n---',
     );
-    SidebarLoader.installedAugmentations = [
-      updated,
-      ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
-    ];
-    chrome.storage.local.set({ [id]: updated });
-    chrome.runtime.sendMessage({
-      type: UPDATE_SIDEBAR_TABS_MESSAGE,
-      refresh,
-    });
   }
 }
 

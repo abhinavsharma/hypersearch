@@ -24,6 +24,7 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
+  HIDE_TAB_FAKE_URL,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -33,7 +34,9 @@ const { TabPane } = Tabs;
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const [activeKey, setActiveKey] = useState<string>(
-    !!tabs.length ? getFirstValidTabIndex(tabs) : '0',
+    !!tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length
+      ? getFirstValidTabIndex(tabs)
+      : '0',
   );
 
   const handleLog = useCallback(async (msg) => {

@@ -8,12 +8,19 @@ import {
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
+  const augmentation =
+    (tab.isSuggested
+      ? SidebarLoader.suggestedAugmentations
+      : SidebarLoader.installedAugmentations
+    ).find(({ id }) => id === tab.id) ?? Object.create(null);
+
   useEffect(() => {
     if (tab.hideDomains.length) {
       window.top.postMessage(
         {
+          augmentation,
           name: HIDE_DOMAINS_MESSAGE,
-          url: tab.url.href,
+          tab: tab.id,
           hideDomains: tab.hideDomains,
           selector: {
             link:

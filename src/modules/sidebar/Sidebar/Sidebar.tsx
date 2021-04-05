@@ -12,11 +12,13 @@ import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME,
+  DISABLE_SUGGESTED_AUGMENTATION,
   SIDEBAR_Z_INDEX,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
 import './Sidebar.scss';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 
 const Sidebar: Sidebar = () => {
   // We use this state variable to forcibly open a given tab on the sidebar.
@@ -30,12 +32,16 @@ const Sidebar: Sidebar = () => {
     // deleted or modified. To keep the sidebar up-to-date we generate sidebar tabs from
     // the actually installed augmentations and non-serp subtabs.
     chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === UPDATE_SIDEBAR_TABS_MESSAGE) {
-        SidebarLoader.getTabsAndAugmentations();
-        setSidebarTabs((prev = []) => [
-          ...SidebarLoader.sidebarTabs,
-          ...prev.filter((i) => !i.isCse),
-        ]);
+      switch (msg.type) {
+        case UPDATE_SIDEBAR_TABS_MESSAGE:
+          SidebarLoader.getTabsAndAugmentations();
+          setSidebarTabs((prev = []) => [
+            ...SidebarLoader.sidebarTabs,
+            ...prev.filter((i) => !i.isCse),
+          ]);
+          break;
+        case DISABLE_SUGGESTED_AUGMENTATION:
+          AugmentationManager.disableSuggestedAugmentation(msg.augmentation);
       }
     });
     // When one of the following conditions are met, we hide the sidebar by default, regardless

@@ -3,7 +3,12 @@ import { goTo } from 'route-lite';
 import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { EditAugmentationPage } from 'modules/augmentations';
-import { ANY_URL_CONDITION, ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils';
+import {
+  ANY_URL_CONDITION,
+  ANY_URL_CONDITION_TEMPLATE,
+  SEARCH_HIDE_DOMAIN_ACTION,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+} from 'utils';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -37,7 +42,9 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
-  const handleDelete = () => AugmentationManager.removeInstalledAugmentation(augmentation);
+  const handleDelete = () => {
+    AugmentationManager.removeInstalledAugmentation(augmentation);
+  };
 
   const handleEdit = () =>
     goTo(EditAugmentationPage, {
@@ -68,9 +75,11 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
         </Tag>
       ) : (
         <>
-          <Tag className="augmentation-row-button" color="geekblue" onClick={handleHide}>
-            Hide
-          </Tag>
+          {isSuggested && (
+            <Tag className="augmentation-row-button" color="geekblue" onClick={handleHide}>
+              Hide
+            </Tag>
+          )}
           {!isPinned && (
             <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
               Always Show
