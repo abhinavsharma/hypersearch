@@ -2,7 +2,7 @@ import { extractUrlProperties } from 'utils/helpers';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
-  'duckduckgo.com': ['.result'],
+  'duckduckgo.com': ['.result', '.result__body', '.result__snippet'],
 };
 
 const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
@@ -28,6 +28,10 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
   const APP_FRAME = window.location !== window.parent.location;
 
   const clearElement = (el: ALLOWED_ELEMENT) => {
+    el.onclick = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+    };
     if (el?.href) {
       el.href = el.getAttribute('href');
       if (el.href.indexOf('?') === -1) el.href = el.href + '?';
@@ -77,7 +81,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
       getElements(selector).forEach((el) => removeElement(el)),
     );
     getElements('a').forEach((el) => {
-      clearElement(el);
+      //clearElement(el);
       const href = el.getAttribute('href');
       if (href?.search(/amp(\.|-)reddit(\.|-)com/gi) > -1) {
         const redditLink = href.match(/reddit\.com[\w\/?=%_-]*/gi)[0];
@@ -93,6 +97,8 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
         e.preventDefault();
         window.open(el.getAttribute('href'));
       };
+      const target = el.getAttribute('target');
+      if (target !== '_blank') el.setAttribute('target', '_blank');
     });
   };
 
