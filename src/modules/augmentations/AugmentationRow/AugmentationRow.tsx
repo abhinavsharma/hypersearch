@@ -24,6 +24,10 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
     });
   };
 
+  const handleHide = () => {
+    AugmentationManager.disableSuggestedAugmentation(augmentation);
+  };
+
   const handleUnIgnore = () => {
     SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
       (i) => i.id !== augmentation.id,
@@ -63,12 +67,18 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
           Unhide
         </Tag>
       ) : (
-        !isPinned && (
-          <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
-            Always Show
+        <>
+          <Tag className="augmentation-row-button" color="geekblue" onClick={handleHide}>
+            Hide
           </Tag>
-        )
+          {!isPinned && (
+            <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
+              Always Show
+            </Tag>
+          )}
+        </>
       )}
+
       {augmentation.installed ? (
         <Tag className="augmentation-row-button" color="volcano" onClick={handleDelete}>
           Delete
