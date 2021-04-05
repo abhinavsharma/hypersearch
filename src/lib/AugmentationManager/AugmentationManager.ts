@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { b64EncodeUnicode, debug } from 'utils/helpers';
+import { b64EncodeUnicode, debug, removeProtocol } from 'utils/helpers';
 import {
   ANY_URL_CONDITION,
   EXTENSION_SHARE_URL,
@@ -17,6 +17,22 @@ import md5 from 'md5';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 
 class AugmentationManager {
+  public processOpenPageActionString(value: string) {
+    let url = `https://${removeProtocol(value)}`;
+    if (value.search(/%s[^r]+|%s$/gi) > -1) {
+      url = url.replace('%s', SidebarLoader.query);
+    }
+    if (value.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
+    if (value.search(/%sr[\d]{1,}/gi) > -1) {
+      const domainIndices = url.match(/%sr[\d]/gi) ?? [];
+      domainIndices.forEach((value) => {
+        const index = value.split('%sr')[1];
+        url = url.replace(`%sr${index}`, SidebarLoader.domains[index]);
+      });
+    }
+    return new URL(url);
+  }
+
   public removeInstalledAugmentation(augmentation: AugmentationObject) {
     SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
       (i) => i.id !== augmentation.id,
