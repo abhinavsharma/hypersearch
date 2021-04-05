@@ -33,6 +33,18 @@ class AugmentationManager {
     return new URL(url);
   }
 
+  public disableSuggestedAugmentation(augmentation: AugmentationObject) {
+    console.log(augmentation.id);
+    SidebarLoader.ignoredAugmentations.push(augmentation);
+    chrome.storage.local.set({
+      [`ignored-${augmentation.id}`]: augmentation,
+    });
+    SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  }
+
   public removeInstalledAugmentation(augmentation: AugmentationObject) {
     SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
       (i) => i.id !== augmentation.id,
