@@ -79,8 +79,6 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     getElements('a').forEach((el) => {
       clearElement(el);
       const href = el.getAttribute('href');
-      const target = el.getAttribute('target');
-      if (target !== '_blank') el.setAttribute('target', '_blank');
       if (href?.search(/amp(\.|-)reddit(\.|-)com/gi) > -1) {
         const redditLink = href.match(/reddit\.com[\w\/?=%_-]*/gi)[0];
         el.setAttribute('href', `https://www.${redditLink}`);
@@ -90,6 +88,11 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
         el.setAttribute('href', el.getAttribute('href').replace('amp.reddit', 'www.reddit'));
         el.setAttribute('rel', 'noopener noreferrer');
       }
+      el.onclick = (e: MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        window.open(el.getAttribute('href'));
+      };
     });
   };
 
