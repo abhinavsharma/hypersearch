@@ -34,7 +34,6 @@ class AugmentationManager {
   }
 
   public disableSuggestedAugmentation(augmentation: AugmentationObject) {
-    console.log(augmentation.id);
     SidebarLoader.ignoredAugmentations.push(augmentation);
     chrome.storage.local.set({
       [`ignored-${augmentation.id}`]: augmentation,
