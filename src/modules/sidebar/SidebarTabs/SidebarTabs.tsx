@@ -4,7 +4,7 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import React, { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Tabs from 'antd/lib/tabs';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
@@ -48,35 +48,32 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   );
 
   const handleExpand = () => {
-    SidebarLoader.isExpanded = true;
+    SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
     expandSidebar();
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
-  const extraContent = useMemo(
-    () => ({
-      left: (
-        <Suspense fallback={null}>
-          {isExpanded ? (
-            <Button type="text" className="expand-icon" onClick={() => null}>
-              Back
-            </Button>
-          ) : (
-            <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
-          )}
-        </Suspense>
-      ),
-      right: (
-        <AddAugmentationTab
-          tabs={tabs}
-          numInstalledAugmentations={tabs.length}
-          active={(forceTab ?? activeKey) === '0'}
-          setActiveKey={setActiveKey}
-        />
-      ),
-    }),
-    [isExpanded],
-  );
+  const extraContent = {
+    left: (
+      <Suspense fallback={null}>
+        {isExpanded ? (
+          <Button type="text" className="expand-icon" onClick={handleExpand}>
+            Back
+          </Button>
+        ) : (
+          <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
+        )}
+      </Suspense>
+    ),
+    right: (
+      <AddAugmentationTab
+        tabs={tabs}
+        numInstalledAugmentations={tabs.length}
+        active={(forceTab ?? activeKey) === '0'}
+        setActiveKey={setActiveKey}
+      />
+    ),
+  };
 
   const handleLog = useCallback(async (msg) => {
     if (SidebarLoader.strongPrivacy) return null;

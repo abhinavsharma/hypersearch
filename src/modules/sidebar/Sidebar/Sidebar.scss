@@ -28,7 +28,8 @@ body {
   }
 
   &.expanded {
-    .insight-full-tab {
+    .insight-full-tab,
+    .ant-tabs-content-holder {
       background: #f1f3f4 !important;
     }
 
@@ -41,6 +42,44 @@ body {
 
       .expand-icon {
         font-size: 16px;
+      }
+    }
+
+    .insight-active-augmentations-page,
+    .edit-augmentation-page-wrapper {
+      transform: translate(-50%, 0px);
+      left: 50%;
+      max-width: 900px;
+      position: absolute;
+      width: 100%;
+    }
+
+    .edit-augmentation-tab-header {
+      width: 100%;
+      left: 0 !important;
+
+      & > span {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
+        margin-left: 0 !important;
+      }
+
+      & > button:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .add-augmentation-tab-header {
+      &.active {
+        left: 0 !important;
+
+        & > span {
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, 0);
+          margin-left: 0 !important;
+        }
       }
     }
   }
