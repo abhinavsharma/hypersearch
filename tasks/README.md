@@ -17,7 +17,7 @@ To support both with the same workflow, we provide custom build tasks.
 
 - `ship-is` - Build the production version of **Insight** extension, then create a release and push to GitHub.
 
-- `ship-sc` - Same as for **Insight**, but this creates a **Search Club** release
+- `ship-sc` - Same as for **Insight**, but this creates a **Insight Lens** release
 
 Development configuration creates source-maps and loads the extension. Hot Module Replacement done by a custom background script which is only run when extension is installed via development mode. In production, we omit this functionality.
 

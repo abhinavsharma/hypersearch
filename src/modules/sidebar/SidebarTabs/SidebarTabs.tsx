@@ -32,7 +32,9 @@ import {
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
+import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabs.scss';
+import Tooltip from 'antd/lib/tooltip';
 
 const { TabPane } = Tabs;
 
@@ -58,11 +60,20 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
     left: (
       <Suspense fallback={null}>
         {isExpanded ? (
-          <Button type="text" className="expand-icon" onClick={handleExpand}>
-            Back
-          </Button>
+          <Tooltip
+            title="Back to Search Engine (← key)"
+            destroyTooltipOnHide={{ keepParent: false }}>
+            <Button type="text" className="expand-icon" onClick={handleExpand}>
+              Back
+            </Button>
+          </Tooltip>
+
         ) : (
-          <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
+          <Tooltip
+              title="Fullscreen (→ key)"
+              destroyTooltipOnHide={{ keepParent: false }}>
+            <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
+          </Tooltip>
         )}
       </Suspense>
     ),

@@ -12,7 +12,9 @@ import {
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
+import 'antd/lib/tooltip/style/index.css';
 import './AugmentationRow.scss';
+import Tooltip from 'antd/lib/tooltip';
 
 export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, ignored }) => {
   const isPinned = !!augmentation.conditions.condition_list.find(
@@ -62,13 +64,17 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
       <span className="augmentation-name">
         {!augmentation.hasOwnProperty('installed') ? augmentation.name : `${augmentation.name} ◾`}
       </span>
-      <Tag
-        color="geekblue"
-        className={`augmentation-row-button force-left-margin`}
-        onClick={handleEdit}
-      >
-        Edit Locally
-      </Tag>
+      <Tooltip
+        title={augmentation.hasOwnProperty('installed') ? null : "Duplicate and edit locally"}
+        destroyTooltipOnHide={{ keepParent: false }}>
+        <Tag
+          color="geekblue"
+          className={`augmentation-row-button force-left-margin`}
+          onClick={handleEdit}
+        >
+          {augmentation.hasOwnProperty('installed') ? 'Edit' : 'Fork'}
+        </Tag>
+      </Tooltip>
       {ignored ? (
         <Tag className="augmentation-row-button" color="geekblue" onClick={handleUnIgnore}>
           Unhide

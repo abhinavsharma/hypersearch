@@ -63,7 +63,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
-            <h2>Your Local Lenses for This Page</h2>
+            <h2>Your Local Lenses Matching This Page</h2>
             <h3>{`${SidebarLoader.url.href.slice(0, 60)}...`}</h3>
             {installedAugmentations.map((augmentation) => (
               <AugmentationRow

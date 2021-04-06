@@ -24,8 +24,8 @@ const PushpinOutlined = React.lazy(
   async () => await import('@ant-design/icons/PushpinOutlined').then((mod) => mod),
 );
 
-const ToolOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ToolOutlined').then((mod) => mod),
+const MessageOutlined = React.lazy(
+  async () => await import('@ant-design/icons/MessageOutlined').then((mod) => mod),
 );
 
 const CloseCircleOutlined = React.lazy(
@@ -140,7 +140,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             key={tab.id}
           >
             <Tooltip
-              title="Duplicate lens and edit locally"
+              title="Fork: Duplicate lens and edit locally"
               destroyTooltipOnHide={{ keepParent: false }}
               getPopupContainer={() => tooltipContainer.current}
               placement="bottom"
@@ -232,7 +232,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               }
               icon={
                 <Suspense fallback={null}>
-                  <ToolOutlined />
+                  <MessageOutlined />
                 </Suspense>
               }
             />

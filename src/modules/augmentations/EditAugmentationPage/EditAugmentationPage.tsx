@@ -190,18 +190,8 @@ export const EditAugmentationPage: EditAugmentationPage = ({
         </Button>
       </div>
       <div className="edit-augmentation-page-wrapper">
-        <Collapse accordion defaultActiveKey={['1']}>
-          <Panel header="Do this" key="1">
-            <div className="edit-augmentation-logic-wrapper">
-              <EditAugmentationActions
-                actions={actions}
-                onAdd={handleAddAction}
-                onSave={handleSaveAction}
-                onDelete={handleDeleteAction}
-              />
-            </div>
-          </Panel>
-          <Panel header="When" key="2">
+        <Collapse accordion defaultActiveKey={['2']}>
+          <Panel header="When" key="1">
             <div className="edit-augmentation-logic-wrapper">
               <EditAugmentationConditions
                 conditions={conditions}
@@ -211,6 +201,16 @@ export const EditAugmentationPage: EditAugmentationPage = ({
                 onAdd={handleAddCondition}
                 onDelete={handleDeleteCondition}
                 onSave={handleSaveCondition}
+              />
+            </div>
+          </Panel>
+          <Panel header="Then" key="2">
+            <div className="edit-augmentation-logic-wrapper">
+              <EditAugmentationActions
+                actions={actions}
+                onAdd={handleAddAction}
+                onSave={handleSaveAction}
+                onDelete={handleDeleteAction}
               />
             </div>
           </Panel>
