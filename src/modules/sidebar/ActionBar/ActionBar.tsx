@@ -6,16 +6,15 @@ import { EditAugmentationPage } from 'modules/augmentations/';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
+  getFirstValidTabIndex,
   ANY_URL_CONDITION,
   ANY_URL_CONDITION_TEMPLATE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SEARCH_HIDE_DOMAIN_ACTION,
   SIDEBAR_Z_INDEX,
-} from 'utils/constants';
+} from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
-import { getFirstValidTabIndex } from 'utils';
 
 const BranchesOutlined = React.lazy(
   async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),

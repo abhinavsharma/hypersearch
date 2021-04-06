@@ -2,13 +2,11 @@ import { SIDEBAR_Z_INDEX } from 'utils/constants';
 
 export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
-  const document = innerDocument.contentWindow.document.documentElement;
+  const document = innerDocument.contentWindow.document;
 
-  const sidebarContainer = document.getElementsByClassName(
-    'insight-sidebar-container',
-  )[0] as HTMLDivElement;
+  const sidebarContainer = document.getElementById('insight-sidebar-container');
 
-  const nameNub = document.getElementsByClassName('insight-sidebar-title')[0] as HTMLDivElement;
+  const nameNub = document.getElementById('insight-sidebar-title') as HTMLDivElement;
 
   const tabsContainer = document.getElementsByClassName(
     'insight-tab-container',
@@ -18,15 +16,13 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     'insight-sidebar-toggle-button',
   )[0] as HTMLDivElement;
 
-  const hideButton = document.getElementsByClassName(
-    'insight-sidebar-close-button',
-  )[0] as HTMLDivElement;
+  const hideButton = document.getElementById('insight-sidebar-close-button') as HTMLDivElement;
 
   const activeAugmentationHeader = document.getElementsByClassName(
     'add-augmentation-tab-header',
   )[0] as HTMLDivElement;
 
-  if (!showButton) return;
+  if (!showButton || innerDocument.classList.contains('insight-expanded')) return;
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';

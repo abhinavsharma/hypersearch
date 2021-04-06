@@ -1,20 +1,59 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import {
   EXTENSION_SERP_FILTER_LOADED,
   HIDE_DOMAINS_MESSAGE,
   HIDE_TAB_FAKE_URL,
-  SIDEBAR_WIDTH,
-} from 'utils/constants';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+  expandSidebar,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+  SWITCH_TO_TAB,
+  getFirstValidTabIndex,
+} from 'utils';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
   const augmentation =
     (tab.isSuggested
       ? SidebarLoader.suggestedAugmentations
       : SidebarLoader.installedAugmentations
     ).find(({ id }) => id === tab.id) ?? Object.create(null);
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
+    if (event.code === 'ArrowRight') {
+      if (!SidebarLoader.isExpanded) {
+        SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
+        expandSidebar();
+        chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      } else {
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index:
+            Number(SidebarLoader.currentTab) === validTabs.length
+              ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
+              : (Number(SidebarLoader.currentTab) + 1).toString(),
+        });
+      }
+    }
+    if (event.code === 'ArrowLeft') {
+      if (!SidebarLoader.isExpanded) return;
+      if (SidebarLoader.currentTab === getFirstValidTabIndex(SidebarLoader.sidebarTabs)) {
+        SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
+        expandSidebar();
+        chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      } else {
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index: (Number(SidebarLoader.currentTab) - 1).toString(),
+        });
+      }
+    }
+  };
+
   useEffect(() => {
+    frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
+
     if (tab.hideDomains.length) {
       window.top.postMessage(
         {
@@ -33,12 +72,14 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         '*',
       );
     }
+
+    return () => frameRef.current?.contentWindow.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe
+      ref={frameRef}
       src={unescape(tab.url.href)}
-      width={SIDEBAR_WIDTH}
       className="insight-tab-iframe"
       onLoad={() => {
         SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {

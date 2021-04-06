@@ -8,6 +8,7 @@ import React, { ReactElement } from 'react';
 import { render } from 'react-dom';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { Sidebar } from 'modules/sidebar';
 import {
   extractUrlProperties,
@@ -30,8 +31,11 @@ import {
   SEARCH_HIDE_DOMAIN_ACTION,
   OPEN_URL_ACTION,
   HIDE_TAB_FAKE_URL,
+  expandSidebar,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+  SWITCH_TO_TAB,
+  getFirstValidTabIndex,
 } from 'utils';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 
 /**
  * ! In order of priority
@@ -190,6 +194,24 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public strongPrivacy: boolean;
+
+  /**
+   * True when the sidebar is in the expnaded state.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public isExpanded: boolean;
+
+  /**
+   * The index of the currently visible sidebar tab.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public currentTab: string;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -473,6 +495,8 @@ class SidebarLoader {
 
     this.isSerp = checkRequiredPrefix() && checkRequiredParams();
 
+    this.currentTab = (this.sidebarTabs.findIndex((tab) => !tab.hideDomains.length) + 1).toString();
+
     /** DEV START **/
     IN_DEBUG_MODE &&
       debug(
@@ -558,6 +582,40 @@ class SidebarLoader {
     const iframe = document.createElement('iframe');
     iframe.id = frameId;
     el.appendChild(iframe);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const validTabs = this.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
+      if (event.code === 'ArrowRight') {
+        if (!this.isExpanded) {
+          expandSidebar();
+          chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+        } else {
+          chrome.runtime.sendMessage({
+            type: SWITCH_TO_TAB,
+            index:
+              Number(this.currentTab) === validTabs.length
+                ? getFirstValidTabIndex(this.sidebarTabs)
+                : (Number(this.currentTab) + 1).toString(),
+          });
+        }
+      }
+      if (event.code === 'ArrowLeft') {
+        if (!this.isExpanded) return;
+        if (this.currentTab === getFirstValidTabIndex(this.sidebarTabs)) {
+          this.isExpanded = false;
+          expandSidebar();
+          chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+        } else {
+          chrome.runtime.sendMessage({
+            type: SWITCH_TO_TAB,
+            index: (Number(this.currentTab) - 1).toString(),
+          });
+        }
+      }
+    };
+
+    el.addEventListener('keydown', handleKeyDown, true);
+    iframe.contentWindow.document.addEventListener('keydown', handleKeyDown, true);
     const injector = () => {
       const doc = iframe.contentWindow.document.documentElement;
       // Webpack merges all SCSS files into a single <style> element. We initialize

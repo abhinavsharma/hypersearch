@@ -4,8 +4,9 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Tabs from 'antd/lib/tabs';
+import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
 import {
@@ -25,6 +26,9 @@ import {
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
   HIDE_TAB_FAKE_URL,
+  expandSidebar,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+  SWITCH_TO_TAB,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -32,12 +36,45 @@ import './SidebarTabs.scss';
 
 const { TabPane } = Tabs;
 
+const FullscreenOutlined = React.lazy(
+  async () => await import('@ant-design/icons/FullscreenOutlined').then((mod) => mod),
+);
+
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
   const [activeKey, setActiveKey] = useState<string>(
     !!tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length
       ? getFirstValidTabIndex(tabs)
       : '0',
   );
+
+  const handleExpand = () => {
+    SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
+    expandSidebar();
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  };
+
+  const extraContent = {
+    left: (
+      <Suspense fallback={null}>
+        {isExpanded ? (
+          <Button type="text" className="expand-icon" onClick={handleExpand}>
+            Back
+          </Button>
+        ) : (
+          <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
+        )}
+      </Suspense>
+    ),
+    right: (
+      <AddAugmentationTab
+        tabs={tabs}
+        numInstalledAugmentations={tabs.length}
+        active={(forceTab ?? activeKey) === '0'}
+        setActiveKey={setActiveKey}
+      />
+    ),
+  };
 
   const handleLog = useCallback(async (msg) => {
     if (SidebarLoader.strongPrivacy) return null;
@@ -78,26 +115,25 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         case SEND_FRAME_INFO_MESSAGE:
           handleLog(msg);
           break;
+        case SWITCH_TO_TAB:
+          setActiveKey(msg.index);
         default:
           break;
       }
     });
   }, [tabs]);
 
+  useEffect(() => {
+    setIsExpanded(SidebarLoader.isExpanded);
+  }, [SidebarLoader.isExpanded]);
+
+  useEffect(() => {
+    SidebarLoader.currentTab = activeKey;
+  }, [activeKey]);
+
   const TabBar: TabBar = (props, DefaultTabBar) => (
     <DefaultTabBar {...props} className="insight-tab-bar" />
   );
-
-  const extraContent = {
-    right: (
-      <AddAugmentationTab
-        tabs={tabs}
-        numInstalledAugmentations={tabs.length}
-        active={(forceTab ?? activeKey) === '0'}
-        setActiveKey={setActiveKey}
-      />
-    ),
-  };
 
   return (
     <>

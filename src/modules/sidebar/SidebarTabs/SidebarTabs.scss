@@ -11,6 +11,14 @@
   .ant-tabs-extra-content {
     cursor: pointer;
     width: 50px;
+
+    .expand-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      outline: 0;
+    }
   }
 
   .insight-tab-bar {
@@ -44,6 +52,12 @@
   flex-grow: 1;
   border: none;
   padding: 0 0 50px 0;
+
+  &.insight-expanded {
+    width: 100% !important;
+    max-width: 900px !important;
+    align-self: center;
+  }
 }
 
 .insight-readable-content {
