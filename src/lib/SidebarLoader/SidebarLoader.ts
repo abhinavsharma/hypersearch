@@ -218,6 +218,8 @@ class SidebarLoader {
    */
   public getDomains(document: Document) {
     let els = [];
+    // On Google, we have to use the `pad` selector, since the desktop referencing to the
+    // `<cite>` tag, however the process needs the actual link's `href` attribute.
     const isGoogle = location.href.search(/google\.com/gi) > -1;
     // !dev const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
     const isBing = location.href.search(/bing\.com/gi) > -1;
@@ -238,16 +240,18 @@ class SidebarLoader {
   }
 
   /**
-   * Takes an augmentation and generates meta data from its actions. Meta data
-   * is a list of URL-Title pairs for each tab to open.
+   * Takes an augmentation and returns the corresponding URLs that the sidebar tabs are genereated form.
    *
    * @param augmentation
-   * @returns The list of meta objects for the current augmentation
+   * @returns The list URLs generated from the augmentation's actions.
    * @private
    * @method
    * @memberof SidebarLoader
    */
   private getTabUrls(augmentation: AugmentationObject) {
+    // This URL will be used as the source of the sidebar tab IFrame. It is composed by the existing SEARCH_DOMAINS_ACTION
+    // values, by appending the current search query with *(site: <domain_'> OR <domain_2> ... )* to filter results. The
+    // hostname and query parameters are coming from the local/remote search engine data according to the current SERP.
     const customSearchUrl = new URL(
       isSafari()
         ? 'https://www.ecosia.org/search'
@@ -275,18 +279,17 @@ class SidebarLoader {
       customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
     };
 
-    // An augmentation can have multiple actions, despite their type. We
-    // assume this case and process the whole `action_list`. In the prev
-    // versions, we only checked the first value, when key was `open_url`.
-    // ! Note: Multiple values in `open_url` is currently not allowed!
     augmentation.actions.action_list.forEach((action) => {
       switch (action.key) {
+        // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
+        // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case SEARCH_HIDE_DOMAIN_ACTION:
           createMultipleDomainUrl(
             augmentation.actions.action_list.find(({ key }) => key === SEARCH_DOMAINS_ACTION)
               ?.value ?? [],
           );
           break;
+        // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
         case OPEN_URL_ACTION:
           action.value.forEach((value) => {
             const url = AugmentationManager.processOpenPageActionString(value);
@@ -294,6 +297,7 @@ class SidebarLoader {
             urls.push(url);
           });
           break;
+        // The most generic case is SEARCH_DOMAINS_ACTION. See: `customSearchUrl` for details.
         case SEARCH_DOMAINS_ACTION:
           if (
             !augmentation.actions.action_list.find(({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION)
@@ -352,6 +356,7 @@ class SidebarLoader {
           domainsToLookAction,
         } = AugmentationManager.getAugmentationRelevancy(augmentation);
 
+        /** DEV START **/
         IN_DEBUG_MODE &&
           logProcessed.push(
             '\n\t',
@@ -365,12 +370,16 @@ class SidebarLoader {
             },
             '\n',
           );
+        /** DEV END  **/
 
         if (isRelevant && isAugmentationEnabled(augmentation)) {
-          this.tabDomains[augmentation.id] = [];
-          this.domainsToSearch[augmentation.id] = augmentation.actions.action_list?.[0]?.value;
           this.query = new URLSearchParams(this.document.location.search).get('q');
+          this.tabDomains[augmentation.id] = [];
+          this.domainsToSearch[augmentation.id] = augmentation.actions.action_list.find(
+            ({ key }) => key === SEARCH_DOMAINS_ACTION,
+          )?.value;
 
+          /** DEV START **/
           IN_DEBUG_MODE &&
             !isRelevant &&
             logirrelevant.push(
@@ -385,7 +394,10 @@ class SidebarLoader {
               },
               '\n',
             );
+          /** DEV END **/
 
+          // When the augmnetation is enabled, but it looks like that its a suggested augmentation, we put
+          // it to the suggested list, except its already there.
           if (
             !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
             !augmentation.id.startsWith('cse-custom') &&
@@ -394,6 +406,7 @@ class SidebarLoader {
             this.suggestedAugmentations.push(augmentation);
           }
 
+          // Create sidebar tabs from the list of matching enabled relevant installed and suggested augmentations.
           if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
             this.getTabUrls(augmentation).forEach((url) => {
               // TODO: pass the whole augmentation object to sidebar tab!
@@ -413,12 +426,16 @@ class SidebarLoader {
                 conditionTypes: Array.from(
                   new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
                 ),
-                hideDomains: augmentation.actions.action_list
-                  .filter(({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION)
-                  .map(({ value }) => value[0]),
+                hideDomains: augmentation.actions.action_list.reduce((a, { key, value }) => {
+                  if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
+                  return a;
+                }, []),
               };
               newTabs.unshift(tab);
+
+              /** DEV START **/
               IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
+              /** DEV END **/
             });
           } else {
             this.matchingDisabledInstalledAugmentations.push(augmentation);
@@ -456,6 +473,7 @@ class SidebarLoader {
 
     this.isSerp = checkRequiredPrefix() && checkRequiredParams();
 
+    /** DEV START **/
     IN_DEBUG_MODE &&
       debug(
         'getTabsAndAugmentations - processed',
@@ -471,6 +489,7 @@ class SidebarLoader {
         ...logProcessed,
         '\n---',
       );
+    /** DEV END **/
   }
 
   /**
@@ -487,13 +506,16 @@ class SidebarLoader {
     debug('loadOrUpdateSidebar - call\n');
     this.document = document;
     this.url = url;
+    // The first `<style>` element is injected by webpack. We have to remove this if its not
+    // getting cleaned up by the host site itself. Otherwise style collisions can happen.
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
+    // When the user applies strong privacy, we load the (existing) cached results of subtabs.
     this.strongPrivacy = await new Promise((resolve) =>
       chrome.storage.local.get('anonymousQueries', resolve),
     ).then(({ anonymousQueries }) => anonymousQueries);
-    this.fetchSubtabs().then((response) => {
-      if (!response) return;
+    const response = await this.fetchSubtabs();
+    response &&
       runFunctionWhenDocumentReady(this.document, async () => {
         await this.handleSubtabApiResponse(response);
         this.isSerp &&
@@ -513,7 +535,6 @@ class SidebarLoader {
           }
         }
       });
-    });
   }
 
   /**
@@ -579,6 +600,7 @@ class SidebarLoader {
       Object.entries(locals).reduce((a, [key, augmentation]) => {
         if (
           !key.startsWith('ignored-') &&
+          // TODO - Extract this to constant
           !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi)
         ) {
           const { isRelevant } = AugmentationManager.getAugmentationRelevancy(augmentation);

@@ -1,7 +1,17 @@
+/**
+ * @module AugmentationManager
+ * @author Matyas Angyal<matyas@laso.ai>
+ * @license (C) Insight
+ * @version 1.0.0
+ */
+import md5 from 'md5';
 import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { b64EncodeUnicode, debug, removeProtocol } from 'utils/helpers';
+import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import {
+  b64EncodeUnicode,
+  debug,
+  removeProtocol,
   ANY_URL_CONDITION,
   EXTENSION_SHARE_URL,
   EXTENSION_SHORT_SHARE_URL,
@@ -14,11 +24,29 @@ import {
   SEARCH_INTENT_IS_CONDITION,
   SEARCH_QUERY_CONTAINS_CONDITION,
   UPDATE_SIDEBAR_TABS_MESSAGE,
-} from 'utils/constants';
-import md5 from 'md5';
-import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
+} from 'utils';
 
 class AugmentationManager {
+  /**
+   * Process the value of an `OPEN_URL_ACTION` by interpolating the matchers.
+   *
+   * **AVAILABLE MATCHERS**
+   *  - `%s` - Replaced by the search query
+   *  - `%u` - Replaced by the original URL
+   *  - `%sr` - Replaced by the matching search result's URL
+   * (works only with `SEARCH_CONTAINS_CONDITION`)
+   *  - `%sr[\d]` - Replaced by the corresponding search result
+   * (e.g.: `%sr1` -> Replaced by the first result of the main serp)
+   *  - `%m` - Replaced by the matching regular expression (`regexp` conditions)
+   *  - `%m[\d]` - Replaced by the *nth matching regex group*
+   *
+   * See: https://bit.ly/3rUCl5d
+   *
+   * @param value - The action's value
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public processOpenPageActionString(value: string) {
     let url = `https://${removeProtocol(value)}`;
     if (value.search(/%s[^r]+|%s$/gi) > -1) {
@@ -35,6 +63,16 @@ class AugmentationManager {
     return new URL(url);
   }
 
+  /**
+   * Takes an augmentation as first parameter and puts it to the ignored list. Also,
+   * this method will trigger an update on the sidebar. When an augmentation is ignored,
+   * a storage key will be created for it, to prevent the loader processing it next time.
+   *
+   * @param augmentation - The augmentation object
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public disableSuggestedAugmentation(augmentation: AugmentationObject) {
     SidebarLoader.ignoredAugmentations.push(augmentation);
     chrome.storage.local.set({
@@ -46,7 +84,17 @@ class AugmentationManager {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
-  public removeInstalledAugmentation(augmentation: AugmentationObject, refresh?: boolean) {
+  /**
+   * Remove an installed augmnetation form the sidebar and the storage as well. When the corresponding
+   * augmentation has `SEARCH_HIDE_DOMAIN_ACTION`, this method will trigger a `postMessage` to update the
+   * related overlay on the host page. This method will trigger a sidebar update.
+   *
+   * @param augmentation - The augmentation object
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
+  public removeInstalledAugmentation(augmentation: AugmentationObject) {
     SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
@@ -63,6 +111,17 @@ class AugmentationManager {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
+  /**
+   * Takes an augmentation as parameter and returns its corresponding relevancy data. The relevancy
+   * is depending on the augmentation's matching condition and actions. We assume an augmentation is
+   * relevant when either has a matching query, domain or intent condition.
+   *
+   * @param augmentation - The augmentation object
+   * @returns The augmentation's relevancy object
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public getAugmentationRelevancy(augmentation: AugmentationObject) {
     const domainsToLookCondition = augmentation.conditions?.condition_list.reduce(
       (conditions, { key, value }) =>
@@ -141,6 +200,16 @@ class AugmentationManager {
     };
   }
 
+  /**
+   * Encode the augmentation passed as first parameter to a valid base64 string and query
+   * `extensions.insightbrowser.com` for creating a remote entry. When the remote process
+   * was successful, the method will trigger a message to open the shareable page.
+   *
+   * @param augmentation - The augmentation object
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public async shareAugmentation(augmentation: AugmentationObject) {
     const encoded = b64EncodeUnicode(JSON.stringify(augmentation));
     await fetch(`${EXTENSION_SHARE_URL}${encodeURIComponent(encoded)}`, {
@@ -152,6 +221,19 @@ class AugmentationManager {
     });
   }
 
+  /**
+   * Takes an augmentation as first parameter and its details as the second. The augmentation
+   * will be modified according to the given details. Since this method will create a local copy,
+   * the result will be stored as an installed augmentation. This method will update the sidebar.
+   * When the updated augmentation has `SEARCH_HIDE_DOMAIN_ACTION`, the host page will be updated
+   * to make overlays according to the related action.
+   *
+   * @param augmentation - The augmentation object
+   * @param details - The modified augmentation details
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public addOrEditAugmentation(
     augmentation: AugmentationObject,
     {
@@ -225,6 +307,9 @@ class AugmentationManager {
   }
 }
 
+/**
+ * Static instance of the augmentation manager.
+ */
 const instance = new AugmentationManager();
 
 export default instance;
