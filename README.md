@@ -30,9 +30,6 @@ Alternatively, `make setup` is available executing the same commands as above. H
 
 ## Development
 
-*Note: The application is using a custom fork of [webpack-chrome-extension-reloader](https://www.npmjs.com/package/webpack-chrome-extension-reloader)
-to make it compatible with [Webpack 5](https://webpack.js.org/concepts/). This module provides HMR functionality for rapid development.*
-
 - `make dev`  - Prompts for which project to build.
 
 Initially this will build the source code for the selected project and run the HMR server. Once, it's loaded, the related build folder can be loaded into the browser and the extension will auto-reload on every code change.
@@ -71,3 +68,31 @@ See: [ARCHITECTURE.md](https://github.com/lumosbrowser/lumos-extension/blob/mast
 
 - `make ship-{is|sc}` - This command will create a new production build and a **release package** in the `releases` folder. After the process,
 the new package can be distibuted among extension stores.
+
+## Useful Tools
+
+#### Storage Area Explorer - [Download](https://chrome.google.com/webstore/detail/storage-area-explorer/ocfjjjjhkpapocigimmppepjgfdecjkb?hl=en)
+
+A Chrome extension for managing the local/sync storage of the browser. *Note: in order to access the extension's storage, you have to open the background page from the **Extensions** tab of Google Chrome. See [this preview video](https://share.getcloudapp.com/OAuPLDN2) for details on how to do that.*
+
+#### VSCode Plugins
+
+- **[Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)** - Auto rename paired HTML/XML tag.
+
+- **[Better Comments](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)** - Improve your code commenting by annotating with alert, informational, TODOs, and more!
+
+- **[Bracket Pair Colorizer](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer)** - A customizable extension for colorizing matching brackets.
+
+- **[CodeMetrics](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-codemetrics)** - Computes complexity in TypeScript / JavaScript files.
+
+- **[Document This](https://marketplace.visualstudio.com/items?itemName=oouo-diogo-perdigao.docthis)** - Automatically generates detailed JSDoc comments in TypeScript and JavaScript files.
+
+- **[Import Cost](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost)** - Display import/require package size in the editor.
+
+- **[Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced)** - Markdown Preview Enhanced ported to vscode.
+
+- **[Margin Colours](https://marketplace.visualstudio.com/items?itemName=chinchiheather.vscode-margin-colours)** - Display colour badge next to line numbers when any hex, rgb(a) or hsl(a) colours are written in a file.
+
+- **[NPM Intellisense](https://marketplace.visualstudio.com/items?itemName=christian-kohler.npm-intellisense)** - Visual Studio Code plugin that autocompletes npm modules in import statements.
+
+- **[Sort](https://marketplace.visualstudio.com/items?itemName=henriiik.vscode-sort)** - Sort lines or words.
