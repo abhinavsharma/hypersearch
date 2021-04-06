@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Search Club",
     "description": "A community of unbiased experts across every field eradicating misinformation, SEO and charlatan content from the web.",
-    "version": "0.0.86",
+    "version": "0.0.87",
     "web_accessible_resources": [
         "*.png",
         "*.svg",
