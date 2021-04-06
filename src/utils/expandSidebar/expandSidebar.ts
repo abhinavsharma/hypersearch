@@ -11,12 +11,12 @@ export const expandSidebar = () => {
   const sidebarTitle = frameDocument.getElementById('insight-sidebar-title');
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
-  if (!sidebarRoot.classList.contains('expanded')) {
+  if (!sidebarRoot.classList.contains('insight-expanded')) {
     if (sidebarContainer.style.width === '0px') {
       flipSidebar(document, 'show', 1);
     }
     document.documentElement.style.overflow = 'hidden';
-    sidebarRoot.classList.add('expanded');
+    sidebarRoot.classList.add('insight-expanded');
     sidebarRoot.setAttribute(
       'style',
       `
@@ -33,7 +33,7 @@ export const expandSidebar = () => {
       z-index: 9999;
     `,
     );
-    sidebarRootIframe.classList.add('expanded');
+    sidebarRootIframe.classList.add('insight-expanded');
     sidebarRootIframe.setAttribute(
       'style',
       `
@@ -51,7 +51,7 @@ export const expandSidebar = () => {
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
     `,
     );
-    sidebarContainer.classList.add('expanded');
+    sidebarContainer.classList.add('insight-expanded');
     sidebarContainer.setAttribute(
       'style',
       `
@@ -70,11 +70,11 @@ export const expandSidebar = () => {
     closeButton.style.visibility = 'hidden';
     sidebarTitle.style.display = 'none';
     sidebarTitle.style.visibility = 'hidden';
-    tabFrames.forEach((frame) => frame.classList.add('expanded'));
+    tabFrames.forEach((frame) => frame.classList.add('insight-expanded'));
   } else {
-    sidebarRoot.classList.remove('expanded');
-    sidebarRootIframe.classList.remove('expanded');
-    sidebarContainer.classList.remove('expanded');
+    sidebarRoot.classList.remove('insight-expanded');
+    sidebarRootIframe.classList.remove('insight-expanded');
+    sidebarContainer.classList.remove('insight-expanded');
     document.documentElement.style.overflow = 'auto';
     closeButton.style.display = 'flex';
     closeButton.style.visibility = 'visible';

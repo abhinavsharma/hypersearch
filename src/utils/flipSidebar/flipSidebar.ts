@@ -22,7 +22,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     'add-augmentation-tab-header',
   )[0] as HTMLDivElement;
 
-  if (!showButton || innerDocument.classList.contains('expanded')) return;
+  if (!showButton || innerDocument.classList.contains('insight-expanded')) return;
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
