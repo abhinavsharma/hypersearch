@@ -12,6 +12,9 @@ export const expandSidebar = () => {
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
   if (!sidebarRoot.classList.contains('expanded')) {
+    if (sidebarContainer.style.width === '0px') {
+      flipSidebar(document, 'show', 1);
+    }
     document.documentElement.style.overflow = 'hidden';
     sidebarRoot.classList.add('expanded');
     sidebarRoot.setAttribute(
@@ -69,7 +72,6 @@ export const expandSidebar = () => {
     sidebarTitle.style.visibility = 'hidden';
     tabFrames.forEach((frame) => frame.classList.add('expanded'));
   } else {
-    console.log('is hiding now...');
     sidebarRoot.classList.remove('expanded');
     sidebarRootIframe.classList.remove('expanded');
     sidebarContainer.classList.remove('expanded');

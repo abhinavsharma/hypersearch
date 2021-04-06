@@ -1,5 +1,14 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults } from 'utils';
+import {
+  debug,
+  HIDE_DOMAINS_MESSAGE,
+  hideSerpResults,
+  expandSidebar,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+  HIDE_TAB_FAKE_URL,
+  getFirstValidTabIndex,
+  SWITCH_TO_TAB,
+} from 'utils';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -9,6 +18,41 @@ import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults } from 'utils';
     process.env.PROJECT === 'is' ? 'Insight' : 'SearchClub',
     '\n---',
   );
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
+    if (event.code === 'ArrowRight') {
+      if (!SidebarLoader.isExpanded) {
+        SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
+        expandSidebar();
+        chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      } else {
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index:
+            Number(SidebarLoader.currentTab) === validTabs.length
+              ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
+              : (Number(SidebarLoader.currentTab) + 1).toString(),
+        });
+      }
+    }
+    if (event.code === 'ArrowLeft') {
+      if (!SidebarLoader.isExpanded) return;
+      if (SidebarLoader.currentTab === getFirstValidTabIndex(SidebarLoader.sidebarTabs)) {
+        SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
+        expandSidebar();
+        chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      } else {
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index: (Number(SidebarLoader.currentTab) - 1).toString(),
+        });
+      }
+    }
+  };
+
+  document.addEventListener('keydown', handleKeyDown, true);
+
   let blockingAugmentations: AugmentationObject[] = [];
   window.top.addEventListener('message', ({ data }) => {
     if (data.name === HIDE_DOMAINS_MESSAGE) {

@@ -25,7 +25,6 @@ const Sidebar: Sidebar = () => {
   const [forceTab, setForceTab] = useState<string | null>(null);
   // The matching tabs for the current page. We load these tabs into the sidebar.
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
-  // Passing actual tabDomains through context. This is a workaround for Ant Tab prerender.
   // SIDE-EFFECTS
   useEffect(() => {
     // Set up a listener for a message when an augmentation has been either installed

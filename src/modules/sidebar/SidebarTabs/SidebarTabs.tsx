@@ -28,6 +28,7 @@ import {
   HIDE_TAB_FAKE_URL,
   expandSidebar,
   UPDATE_SIDEBAR_TABS_MESSAGE,
+  SWITCH_TO_TAB,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -114,6 +115,8 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         case SEND_FRAME_INFO_MESSAGE:
           handleLog(msg);
           break;
+        case SWITCH_TO_TAB:
+          setActiveKey(msg.index);
         default:
           break;
       }
@@ -123,6 +126,10 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   useEffect(() => {
     setIsExpanded(SidebarLoader.isExpanded);
   }, [SidebarLoader.isExpanded]);
+
+  useEffect(() => {
+    SidebarLoader.currentTab = activeKey;
+  }, [activeKey]);
 
   const TabBar: TabBar = (props, DefaultTabBar) => (
     <DefaultTabBar {...props} className="insight-tab-bar" />
