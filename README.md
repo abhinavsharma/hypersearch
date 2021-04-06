@@ -62,7 +62,7 @@ Safari: [Building a Safari App Extension](https://developer.apple.com/documentat
 
 ## Architecture
 
-See: [ARCHITECTURE.md](https://github.com/lumosbrowser/lumos-extension/blob/master/ARCHITECTURE.md)
+See: [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Deployment
 
