@@ -38,7 +38,6 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe
       src={unescape(tab.url.href)}
-      width={SIDEBAR_WIDTH}
       className="insight-tab-iframe"
       onLoad={() => {
         SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {

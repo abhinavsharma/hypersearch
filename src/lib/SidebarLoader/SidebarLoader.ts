@@ -191,6 +191,15 @@ class SidebarLoader {
    */
   public strongPrivacy: boolean;
 
+  /**
+   * True when the sidebar is in the expnaded state;
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public isExpanded: boolean;
+
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
