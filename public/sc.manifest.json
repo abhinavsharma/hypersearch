@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Insight Lens",
-    "description": "A community of unbiased experts across every field eradicating misinformation, SEO and charlatan content from the web.",
+    "description": "Search for anything like an insider while keeping your history private and secure.",
     "version": "0.0.87",
     "web_accessible_resources": [
         "*.png",
