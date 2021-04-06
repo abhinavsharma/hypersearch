@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #efefef !important;
+  background: #f9f9f9 !important;
   margin-top: -65px;
   align-items: flex-start !important;
 
@@ -18,7 +18,7 @@
     height: 55px;
     width: calc(100% - 5px);
     padding: 0;
-    background: #efefef !important;
+    background: #f9f9f9 !important;
     align-items: center;
 
     & > button {
@@ -49,7 +49,7 @@
     top: 75px;
     bottom: 0px;
     padding-bottom: 30px;
-    background: #efefef;
+    background: #f9f9f9;
     overflow-y: auto !important;
 
     h2 {
@@ -141,7 +141,7 @@
             font-weight: bold;
 
             &:hover {
-              background: #efefef;
+              background: #f9f9f9;
             }
           }
         }
@@ -226,7 +226,7 @@
       }
 
       .ant-row {
-        background: #efefef !important;
+        background: #f9f9f9 !important;
 
         &.no-border {
           border-bottom: none !important;
