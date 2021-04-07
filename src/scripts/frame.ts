@@ -7,14 +7,15 @@ const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
 
 const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': [
+    '[aria-label=Ads]',
     'header.Fh5muf',
     '.mnr-c.cUnQKe',
     '.mnr-c.AuVD',
     '[data-has-queries]',
     '.commercial-unit-mobile-top',
   ],
-  'bing.com': ['header#b_header'],
-  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
+  'bing.com': ['header#b_header', '.b_ad'],
+  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap', '#ads', '.results--ads'],
 };
 
 const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
