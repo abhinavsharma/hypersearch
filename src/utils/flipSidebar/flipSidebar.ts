@@ -64,6 +64,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       nameNub.setAttribute('style', 'display: none;');
       showButton.style.visibility = 'visible';
       showButton.style.display = 'flex';
+      showButton.style.flexDirection = 'column';
     }, 500);
   } else {
     sidebarContainer.style.visibility = 'visible';

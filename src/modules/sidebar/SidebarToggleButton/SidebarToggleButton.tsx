@@ -16,6 +16,7 @@ import {
   EMPTY_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
   getFirstValidTabIndex,
+  APP_NAME,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -40,6 +41,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
 
   return getFirstValidTabIndex(tabs) !== '0' ? (
     <div onClick={handleClick} className="insight-sidebar-toggle-button">
+      <div className="insight-sidebar-toggle-appname">{APP_NAME}</div>
       <List
         itemLayout="horizontal"
         dataSource={tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)}
@@ -48,6 +50,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     </div>
   ) : (
     <div className="add-augmentation-button insight-sidebar-toggle-button empty">
+      <div className="insight-sidebar-toggle-appname">{APP_NAME}</div>
       <Button type="text" target="blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
         🤔 Send Feedback
       </Button>
