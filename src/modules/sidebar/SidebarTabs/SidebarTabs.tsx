@@ -133,12 +133,10 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   }, [tabs]);
 
   useEffect(() => {
-    console.log('Fired! isExpanded', SidebarLoader.isExpanded);
     setIsExpanded(SidebarLoader.isExpanded);
   }, [SidebarLoader.isExpanded]);
 
   useEffect(() => {
-    console.log('Fired! Active Key:', activeKey);
     SidebarLoader.currentTab = activeKey;
   }, [activeKey]);
 
