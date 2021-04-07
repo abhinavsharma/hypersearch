@@ -11,6 +11,11 @@ export const expandSidebar = () => {
   const sidebarTitle = frameDocument.getElementById('insight-sidebar-title');
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
+  console.log(
+    'Fired!',
+    sidebarContainer.style.width,
+    sidebarRoot.classList.contains('insight-expanded'),
+  );
   if (!sidebarRoot.classList.contains('insight-expanded')) {
     if (sidebarContainer.style.width === '0px') {
       flipSidebar(document, 'show', 1);
@@ -91,6 +96,9 @@ export const expandSidebar = () => {
       width: 480px;
     `,
     );
-    flipSidebar(document, 'show', 1);
+    tabFrames.forEach((frame) => frame.classList.remove('insight-expanded'));
+    if (sidebarContainer.style.width === '0px') {
+      flipSidebar(document, 'show', 1);
+    }
   }
 };

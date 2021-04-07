@@ -62,16 +62,14 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         {isExpanded ? (
           <Tooltip
             title="Back to Search Engine (← key)"
-            destroyTooltipOnHide={{ keepParent: false }}>
+            destroyTooltipOnHide={{ keepParent: false }}
+          >
             <Button type="text" className="expand-icon" onClick={handleExpand}>
               Back
             </Button>
           </Tooltip>
-
         ) : (
-          <Tooltip
-              title="Fullscreen (→ key)"
-              destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip title="Fullscreen (→ key)" destroyTooltipOnHide={{ keepParent: false }}>
             <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
           </Tooltip>
         )}
@@ -135,10 +133,12 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   }, [tabs]);
 
   useEffect(() => {
+    console.log('Fired! isExpanded', SidebarLoader.isExpanded);
     setIsExpanded(SidebarLoader.isExpanded);
   }, [SidebarLoader.isExpanded]);
 
   useEffect(() => {
+    console.log('Fired! Active Key:', activeKey);
     SidebarLoader.currentTab = activeKey;
   }, [activeKey]);
 

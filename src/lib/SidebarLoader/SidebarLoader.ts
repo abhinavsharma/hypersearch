@@ -588,6 +588,7 @@ class SidebarLoader {
       if (event.code === 'ArrowRight') {
         if (!this.isExpanded) {
           expandSidebar();
+          this.isExpanded = true;
           chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
         } else {
           chrome.runtime.sendMessage({
