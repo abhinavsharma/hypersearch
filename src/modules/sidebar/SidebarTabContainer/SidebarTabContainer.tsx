@@ -9,6 +9,7 @@ import {
   SWITCH_TO_TAB,
   getFirstValidTabIndex,
   shouldPreventEventBubble,
+  getLastValidTabIndex,
 } from 'utils';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
@@ -22,7 +23,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (shouldPreventEventBubble(event)) return;
-    const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
+    const currentTabIndex = Number(SidebarLoader.currentTab);
     if (event.code === 'ArrowRight') {
       if (!SidebarLoader.isExpanded) {
         SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
@@ -32,9 +33,12 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         chrome.runtime.sendMessage({
           type: SWITCH_TO_TAB,
           index:
-            Number(SidebarLoader.currentTab) === validTabs.length
+            currentTabIndex === SidebarLoader.sidebarTabs.length
               ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
-              : (Number(SidebarLoader.currentTab) + 1).toString(),
+              : (
+                  currentTabIndex +
+                  Number(getFirstValidTabIndex(SidebarLoader.sidebarTabs.slice(currentTabIndex)))
+                ).toString(),
         });
       }
     }
@@ -47,7 +51,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       } else {
         chrome.runtime.sendMessage({
           type: SWITCH_TO_TAB,
-          index: (Number(SidebarLoader.currentTab) - 1).toString(),
+          index: getLastValidTabIndex(SidebarLoader.sidebarTabs.slice(0, currentTabIndex - 1)),
         });
       }
     }

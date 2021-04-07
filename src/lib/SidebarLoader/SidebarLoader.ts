@@ -36,6 +36,7 @@ import {
   SWITCH_TO_TAB,
   getFirstValidTabIndex,
   shouldPreventEventBubble,
+  getLastValidTabIndex,
 } from 'utils';
 
 /**
@@ -586,7 +587,7 @@ class SidebarLoader {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (shouldPreventEventBubble(event)) return;
-      const validTabs = this.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
+      const currentTabIndex = Number(this.currentTab);
       if (event.code === 'ArrowRight') {
         if (!this.isExpanded) {
           expandSidebar();
@@ -596,9 +597,12 @@ class SidebarLoader {
           chrome.runtime.sendMessage({
             type: SWITCH_TO_TAB,
             index:
-              Number(this.currentTab) === validTabs.length
+              currentTabIndex === this.sidebarTabs.length
                 ? getFirstValidTabIndex(this.sidebarTabs)
-                : (Number(this.currentTab) + 1).toString(),
+                : (
+                    currentTabIndex +
+                    Number(getFirstValidTabIndex(this.sidebarTabs.slice(currentTabIndex)))
+                  ).toString(),
           });
         }
       }
@@ -611,7 +615,7 @@ class SidebarLoader {
         } else {
           chrome.runtime.sendMessage({
             type: SWITCH_TO_TAB,
-            index: (Number(this.currentTab) - 1).toString(),
+            index: getLastValidTabIndex(this.sidebarTabs.slice(0, currentTabIndex - 1)),
           });
         }
       }

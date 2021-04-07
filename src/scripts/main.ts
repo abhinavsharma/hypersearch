@@ -5,10 +5,10 @@ import {
   hideSerpResults,
   expandSidebar,
   UPDATE_SIDEBAR_TABS_MESSAGE,
-  HIDE_TAB_FAKE_URL,
   getFirstValidTabIndex,
   SWITCH_TO_TAB,
   shouldPreventEventBubble,
+  getLastValidTabIndex,
 } from 'utils';
 
 (async (document: Document, location: Location) => {
@@ -22,7 +22,7 @@ import {
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (shouldPreventEventBubble(event)) return;
-    const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
+    const currentTabIndex = Number(SidebarLoader.currentTab);
     if (event.code === 'ArrowRight') {
       if (!SidebarLoader.isExpanded) {
         SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
@@ -32,9 +32,12 @@ import {
         chrome.runtime.sendMessage({
           type: SWITCH_TO_TAB,
           index:
-            Number(SidebarLoader.currentTab) === validTabs.length
+            currentTabIndex === SidebarLoader.sidebarTabs.length
               ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
-              : (Number(SidebarLoader.currentTab) + 1).toString(),
+              : (
+                  currentTabIndex +
+                  Number(getFirstValidTabIndex(SidebarLoader.sidebarTabs.slice(currentTabIndex)))
+                ).toString(),
         });
       }
     }
@@ -47,7 +50,7 @@ import {
       } else {
         chrome.runtime.sendMessage({
           type: SWITCH_TO_TAB,
-          index: (Number(SidebarLoader.currentTab) - 1).toString(),
+          index: getLastValidTabIndex(SidebarLoader.sidebarTabs.slice(0, currentTabIndex - 1)),
         });
       }
     }

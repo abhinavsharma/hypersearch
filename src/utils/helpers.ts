@@ -217,6 +217,31 @@ export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
   return (tabs.findIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
 };
 
+/**
+ * Returns the index of the last element in the array where predicate is true, and -1
+ * otherwise.
+ *
+ * @param array The source array to search in
+ * @param predicate find calls predicate once for each element of the array, in descending
+ * order, until it finds one where predicate returns true. If such an element is found,
+ * findLastIndex immediately returns that element index. Otherwise, findLastIndex returns -1.
+ *
+ * See: https://stackoverflow.com/a/53187807/2826713
+ */
+Object.defineProperty(Array.prototype, 'findLastIndex', {
+  value: function <T>(this: Array<any>, predicate: (value: T, index: number, obj: T[]) => boolean) {
+    let l = this.length;
+    while (l--) {
+      if (predicate(this[l], l, this)) return l;
+    }
+    return -1;
+  },
+});
+
+export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
+  return (tabs.findLastIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+};
+
 export const makeEllipsis = (s: string, limit: number) =>
   s.length > limit ? s.slice(0, limit) + '...' : s;
 
