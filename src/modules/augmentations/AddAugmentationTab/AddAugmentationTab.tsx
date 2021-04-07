@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Button from 'antd/lib/button';
 import { Dropdown } from 'modules/shared';
 import { goBack } from 'route-lite';
 import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils';
 import './AddAugmentationTab.scss';
 import 'antd/lib/button/style/index.css';
+
+const ZoomInOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
+);
+
+const UnorderedListOutlined = React.lazy(
+  async () => await import('@ant-design/icons/UnorderedListOutlined').then((mod) => mod),
+);
 
 export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActiveKey }) => {
   const handleClose = () => {
@@ -18,7 +26,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
       type="link"
       onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
     >
-      🔍 List All Lenses
+      <Suspense fallback={null}><UnorderedListOutlined /></Suspense> List All Lenses
     </Button>,
     <Button
       className="dropdown-button"
@@ -27,7 +35,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
         chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
       }
     >
-      ➕ Add Lens
+      <Suspense fallback={null}><ZoomInOutlined /></Suspense> Create New Lens
     </Button>,
   ];
 

@@ -88,7 +88,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
               })
             }
           >
-            ➕ Add lens
+            ➕ Create New Lens
           </Button>
         </Row>
         <Divider />
