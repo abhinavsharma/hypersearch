@@ -8,6 +8,7 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   getFirstValidTabIndex,
+  shouldPreventEventBubble,
 } from 'utils';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
@@ -20,6 +21,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     ).find(({ id }) => id === tab.id) ?? Object.create(null);
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (shouldPreventEventBubble(event)) return;
     const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
     if (event.code === 'ArrowRight') {
       if (!SidebarLoader.isExpanded) {

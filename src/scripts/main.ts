@@ -8,6 +8,7 @@ import {
   HIDE_TAB_FAKE_URL,
   getFirstValidTabIndex,
   SWITCH_TO_TAB,
+  shouldPreventEventBubble,
 } from 'utils';
 
 (async (document: Document, location: Location) => {
@@ -20,6 +21,7 @@ import {
   );
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (shouldPreventEventBubble(event)) return;
     const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
     if (event.code === 'ArrowRight') {
       if (!SidebarLoader.isExpanded) {

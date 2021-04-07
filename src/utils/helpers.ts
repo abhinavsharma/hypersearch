@@ -219,3 +219,10 @@ export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
 
 export const makeEllipsis = (s: string, limit: number) =>
   s.length > limit ? s.slice(0, limit) + '...' : s;
+
+export const shouldPreventEventBubble = (event: KeyboardEvent) => {
+  return (
+    !!event.target.constructor.toString().match('HTMLInputElement') ||
+    !!event.target.constructor.toString().match('HTMLTextAreaElement')
+  );
+};
