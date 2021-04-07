@@ -7,6 +7,7 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import Divider from 'antd/lib/divider';
 import { EditAugmentationPage, AugmentationRow } from 'modules/augmentations';
 import {
+  APP_NAME,
   EMPTY_AUGMENTATION,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
@@ -99,6 +100,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Row>
           <Col>
             <h2>Suggested for This Page</h2>
+            <h3>Lenses suggested by {APP_NAME} for this page.</h3>
             {suggestedAugmentations
               .filter((i) => i.actions.action_list.some((i) => i.key !== 'inject_js'))
               .map((augmentation) => (
@@ -114,6 +116,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Row>
           <Col>
             <h2>Hidden</h2>
+            <h3>Lenses you have hidden.</h3>
             {ignoredAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
                 ignored
@@ -128,6 +131,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Row>
           <Col>
             <h2>Other</h2>
+            <h3>Lenses not matching this page.</h3>
             {otherAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
                 key={augmentation.id}
