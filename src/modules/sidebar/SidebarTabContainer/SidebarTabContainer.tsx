@@ -20,6 +20,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     ).find(({ id }) => id === tab.id) ?? Object.create(null);
 
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.target.constructor.toString().match('HTMLInputElement')) return;
     const validTabs = SidebarLoader.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
     if (event.code === 'ArrowRight') {
       if (!SidebarLoader.isExpanded) {
