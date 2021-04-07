@@ -13,7 +13,6 @@ const LockFilled = React.lazy(
 const listData = {
 
   'News: see different perspectives': [
-    { text: 'climate change news' },
     { text: 'will trump run in 2024' }
   ],
 
