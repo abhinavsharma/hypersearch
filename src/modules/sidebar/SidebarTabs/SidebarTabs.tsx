@@ -61,7 +61,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       <Suspense fallback={null}>
         {isExpanded ? (
           <Tooltip
-            title="Back to Search Engine (← key)"
+            title='Back to Search Engine ("F" key)'
             destroyTooltipOnHide={{ keepParent: false }}
           >
             <Button type="text" className="expand-icon" onClick={handleExpand}>
@@ -69,7 +69,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             </Button>
           </Tooltip>
         ) : (
-          <Tooltip title="Fullscreen (→ key)" destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
             <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
           </Tooltip>
         )}
@@ -178,7 +178,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
                 <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
               )}
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
-              {tab.url && <SidebarTabContainer tab={tab} />}
+              {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
             </TabPane>
           );
         })}
