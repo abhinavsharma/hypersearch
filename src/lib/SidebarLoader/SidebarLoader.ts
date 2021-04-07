@@ -35,6 +35,7 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   getFirstValidTabIndex,
+  shouldPreventEventBubble,
 } from 'utils';
 
 /**
@@ -584,7 +585,7 @@ class SidebarLoader {
     el.appendChild(iframe);
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.target.constructor.toString().match('HTMLInputElement')) return;
+      if (shouldPreventEventBubble(event)) return;
       const validTabs = this.sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL);
       if (event.code === 'ArrowRight') {
         if (!this.isExpanded) {
