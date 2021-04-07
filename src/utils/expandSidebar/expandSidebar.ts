@@ -92,8 +92,6 @@ export const expandSidebar = () => {
     `,
     );
     tabFrames.forEach((frame) => frame.classList.remove('insight-expanded'));
-    if (sidebarContainer.style.width === '0px') {
-      flipSidebar(document, 'show', 1);
-    }
+    flipSidebar(document, 'show', 1);
   }
 };
