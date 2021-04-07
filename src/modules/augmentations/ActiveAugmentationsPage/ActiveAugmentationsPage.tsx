@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Router, { goTo } from 'route-lite';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
@@ -15,6 +15,10 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/divider/style/index.css';
 import './ActiveAugmentationsPage.scss';
+
+const ZoomInOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
+);
 
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey }) => {
   const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>(
@@ -88,7 +92,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
               })
             }
           >
-            ➕ Create New Lens
+            <Suspense fallback={null}><ZoomInOutlined /></Suspense> Create New Lens
           </Button>
         </Row>
         <Divider />

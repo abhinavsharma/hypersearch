@@ -38,8 +38,12 @@ import Tooltip from 'antd/lib/tooltip';
 
 const { TabPane } = Tabs;
 
-const FullscreenOutlined = React.lazy(
-  async () => await import('@ant-design/icons/FullscreenOutlined').then((mod) => mod),
+const DoubleLeftOutlined = React.lazy(
+  async () => await import('@ant-design/icons/DoubleLeftOutlined').then((mod) => mod),
+);
+
+const DoubleRightOutlined = React.lazy(
+  async () => await import('@ant-design/icons/DoubleRightOutlined').then((mod) => mod),
 );
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
@@ -65,12 +69,12 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             destroyTooltipOnHide={{ keepParent: false }}
           >
             <Button type="text" className="expand-icon" onClick={handleExpand}>
-              Back
+              <DoubleRightOutlined />
             </Button>
           </Tooltip>
         ) : (
           <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <FullscreenOutlined onClick={handleExpand} className="expand-icon" />
+            <DoubleLeftOutlined onClick={handleExpand} className="expand-icon" />
           </Tooltip>
         )}
       </Suspense>
