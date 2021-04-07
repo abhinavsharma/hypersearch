@@ -1,0 +1,53 @@
+#queries-frame-container {
+  padding: 150px 0;
+
+  .ant-list {
+    margin-top: 20px;
+
+    a {
+      font-size: 18px;
+      text-decoration: underline;
+      color: rgba(255, 255, 255, 0.75);
+
+      &:visited,
+      &:link {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      &:hover,
+      &:focus,
+      &:active {
+        color: rgba(255, 255, 255, 1);
+      }
+    }
+
+    .ant-list-header {
+      display: flex;
+
+      h3,
+      button {
+        display: inline;
+      }
+
+      button {
+        margin-right: 15px;
+        color: rgba(255, 255, 255, 0.45);
+
+        span {
+          font-size: 28px;
+        }
+
+        &:visited,
+        &:link {
+          color: rgba(255, 255, 255, 0.45);
+        }
+
+        &:hover,
+        &:focus,
+        &:active {
+          color: rgba(255, 255, 255, 1);
+        }
+      }
+    }
+  }
+}

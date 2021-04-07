@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;800&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif !important;
+
+  .horizontal-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #insight-intro-container {
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 1200px;
+
+    h1 {
+      font-size: 150px;
+      margin-bottom: 0px;
+    }
+
+    h2 {
+      font-size: 64px;
+      margin: 0;
+    }
+
+    button.step-button {
+      display: flex;
+      font-size: 24px;
+      height: auto;
+      margin-top: 50px;
+
+      &:not([disabled]) {
+        &:visited,
+        &:link {
+          color: rgba(255, 255, 255, 0.85);
+          border-color: #434343;
+        }
+
+        &:hover,
+        &:focus,
+        &:active {
+          color: rgba(255, 255, 255, 1);
+          border-color: rgba(255, 255, 255, 0.85);
+        }
+      }
+    }
+
+    input {
+      &:hover,
+      &:focus,
+      &:active {
+        color: rgba(255, 255, 255, 1);
+        border-color: rgba(255, 255, 255, 0.85);
+      }
+    }
+
+    .ant-steps {
+      .ant-steps-item {
+        &:not(.ant-steps-item-active),
+        &:not(.ant-steps-item-disabled) {
+          .ant-steps-item-container:hover {
+            .ant-steps-item-title {
+              color: #ffffff;
+            }
+          }
+        }
+
+        &.ant-steps-item-disabled {
+          .ant-steps-item-container:hover {
+            .ant-steps-item-title {
+              color: rgba(255, 255, 255, 0.45);
+            }
+          }
+        }
+      }
+
+      .ant-steps-item-container {
+        .ant-steps-item-icon {
+          border-color: #ffffff;
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+
+          span {
+            color: #ffffff;
+          }
+        }
+      }
+
+      .ant-steps-item-process {
+        .ant-steps-item-container {
+          .ant-steps-item-icon {
+            background: #ffffff;
+
+            span {
+              color: #000000;
+            }
+          }
+        }
+      }
+
+      .ant-steps-item-finish {
+        .ant-steps-item-container {
+          .ant-steps-item-content {
+            .ant-steps-item-title:after {
+              background-color: #ffffff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
