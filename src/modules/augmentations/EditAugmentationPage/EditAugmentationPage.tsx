@@ -32,7 +32,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>(
     isAdding && !!augmentation.name.length
-      ? `${augmentation.name} / Modified`
+      ? `${augmentation.name} / Forked`
       : augmentation.name || '🎉 My Lens',
   );
   const [description, setDescription] = useState<string>(isAdding ? '' : augmentation.description);

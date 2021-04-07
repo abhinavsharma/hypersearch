@@ -74,9 +74,9 @@ const Sidebar: Sidebar = () => {
           ×
         </div>
         <div id="insight-sidebar-title">
-          <span>🔎&nbsp;&nbsp;Lenses from {APP_NAME}&nbsp;/&nbsp;</span>
+          <span>{APP_NAME}&nbsp;/&nbsp;</span>
           <a target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
-            Feedback
+            Send Feedback
           </a>
         </div>
         <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />

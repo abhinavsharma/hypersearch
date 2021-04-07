@@ -62,7 +62,11 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
   return (
     <div className="augmentation-row">
       <span className="augmentation-name">
-        {!augmentation.hasOwnProperty('installed') ? augmentation.name : `${augmentation.name} ◾`}
+        {augmentation.hasOwnProperty('installed') ? 
+        <Tooltip
+          title={"Local"}
+          destroyTooltipOnHide={{ keepParent: false }}>{augmentation.name}
+        </Tooltip> : augmentation.name}
       </span>
       <Tooltip
         title={augmentation.hasOwnProperty('installed') ? null : "Duplicate and edit locally"}
