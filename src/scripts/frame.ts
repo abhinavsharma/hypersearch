@@ -5,17 +5,22 @@ const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'duckduckgo.com': ['.result', '.result__body', '.result__snippet'],
 };
 
+const REMOVE_ADS = {
+  'google.com': ['[aria-label=Ads]'],
+  'bing.com': ['.b_ad'],
+  'duckduckgo.com': ['#ads', '.results--ads'],
+};
+
 const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': [
-    '[aria-label=Ads]',
     'header.Fh5muf',
     '.mnr-c.cUnQKe',
     '.mnr-c.AuVD',
     '[data-has-queries]',
     '.commercial-unit-mobile-top',
   ],
-  'bing.com': ['header#b_header', '.b_ad'],
-  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap', '#ads', '.results--ads'],
+  'bing.com': ['header#b_header'],
+  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
 };
 
 const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
@@ -81,6 +86,11 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     REMOVE_ELEMENTS_FROM[LOCAL_HOSTNAME]?.forEach((selector) =>
       getElements(selector).forEach((el) => removeElement(el)),
     );
+    if (window.location !== window.parent.location) {
+      REMOVE_ADS[LOCAL_HOSTNAME]?.forEach((selector) =>
+        getElements(selector).forEach((el) => removeElement(el)),
+      );
+    }
     getElements('a').forEach((el) => {
       //clearElement(el);
       const href = el.getAttribute('href');

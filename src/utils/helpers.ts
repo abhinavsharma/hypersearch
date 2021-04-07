@@ -228,15 +228,20 @@ export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
  *
  * See: https://stackoverflow.com/a/53187807/2826713
  */
-Object.defineProperty(Array.prototype, 'findLastIndex', {
-  value: function <T>(this: Array<any>, predicate: (value: T, index: number, obj: T[]) => boolean) {
-    let l = this.length;
-    while (l--) {
-      if (predicate(this[l], l, this)) return l;
-    }
-    return -1;
-  },
-});
+if (!Array.prototype.hasOwnProperty('findLastIndex')) {
+  Object.defineProperty(Array.prototype, 'findLastIndex', {
+    value: function <T>(
+      this: Array<any>,
+      predicate: (value: T, index: number, obj: T[]) => boolean,
+    ) {
+      let l = this.length;
+      while (l--) {
+        if (predicate(this[l], l, this)) return l;
+      }
+      return -1;
+    },
+  });
+}
 
 export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
   return (tabs.findLastIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
