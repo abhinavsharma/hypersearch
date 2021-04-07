@@ -10,6 +10,10 @@ body {
   list-style: none;
   text-align: left;
   background: transparent;
+
+  .ant-tooltip-inner {
+    min-height: 0;
+  }
 }
 
 #insight-sidebar-container {
