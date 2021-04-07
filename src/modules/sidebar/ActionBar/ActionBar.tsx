@@ -214,30 +214,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        {tab.isCse && !tab.id.startsWith('cse-custom-') && (
-          <Tooltip
-            title="Suggest improvements to lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
-            placement="bottom"
-          >
-            <Button
-              type="link"
-              target="_blank"
-              href={
-                'https://airtable.com/shrQCthknXg1jf6oU?prefill_Search%20Engine%20Name=' +
-                tab.title +
-                '&prefill_sample_query=' +
-                new URLSearchParams(window.location.search).get('q')
-              }
-              icon={
-                <Suspense fallback={null}>
-                  <MessageOutlined />
-                </Suspense>
-              }
-            />
-          </Tooltip>
-        )}
         <Tooltip
           title={isSharing ? 'Please wait...' : 'Share lens'}
           destroyTooltipOnHide={{ keepParent: false }}
