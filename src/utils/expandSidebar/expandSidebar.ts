@@ -88,7 +88,7 @@ export const expandSidebar = () => {
       top: 0;
       bottom: 0;
       right: 0;
-      width: 480px;
+      width: 450px;
     `,
     );
     tabFrames.forEach((frame) => frame.classList.remove('insight-expanded'));
