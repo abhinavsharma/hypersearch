@@ -1,23 +1,33 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
-import { Dropdown } from 'modules/shared';
+import Select from 'antd/lib/select';
 import Input from 'antd/lib/input';
+import { OPEN_URL_ACTION, SEARCH_DOMAINS_ACTION, SEARCH_HIDE_DOMAIN_ACTION } from 'utils';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
+import 'antd/lib/select/style/index.css';
 import './EditActionInput.scss';
-import { OPEN_URL_ACTION, SEARCH_DOMAINS_ACTION, SEARCH_HIDE_DOMAIN_ACTION } from 'utils';
+
+const { Option } = Select;
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
+const ACTION_LABELS = {
+  'Search only these domains': SEARCH_DOMAINS_ACTION,
+  'Open page': OPEN_URL_ACTION,
+  'Minimize results from domain': SEARCH_HIDE_DOMAIN_ACTION,
+};
+
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
   const [newValue, setNewValue] = useState('');
   const [key, setKey] = useState<string>(action?.key);
-  const [newLabel, setNewLabel] = useState<string>(action?.label ?? 'Choose Action Type');
+  const [newLabel, setNewLabel] = useState<string>(action?.label);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSaveValue = (e: string, i: number) => {
     const valueToSave = action.value;
@@ -36,62 +46,33 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
     saveAction({ ...action, value: newValue });
   };
 
-  const AvailableActions = [
-    <Button
-      className="dropdown-button"
-      type="link"
-      onClick={() => {
-        setNewLabel('Search only these domains');
-        setKey(SEARCH_DOMAINS_ACTION);
-        saveAction({
-          ...action,
-          label: 'Search only these domains',
-          key: SEARCH_DOMAINS_ACTION,
-          value: [],
-        });
-      }}
-    >
-      Search only these domains
-    </Button>,
-    <Button
-      className="dropdown-button"
-      type="link"
-      onClick={() => {
-        setNewLabel('Open page');
-        setKey(OPEN_URL_ACTION);
-        saveAction({
-          ...action,
-          label: 'Open page',
-          key: OPEN_URL_ACTION,
-          value: [],
-        });
-      }}
-    >
-      Open page
-    </Button>,
-    <Button
-      className="dropdown-button"
-      type="link"
-      onClick={() => {
-        setNewLabel('Minimize results from domain');
-        setKey(SEARCH_HIDE_DOMAIN_ACTION);
-        saveAction({
-          ...action,
-          label: 'Minimize results from domain',
-          key: SEARCH_HIDE_DOMAIN_ACTION,
-          value: [],
-        });
-      }}
-    >
-      Minimize results from domain
-    </Button>,
-  ];
+  const handleLabelChange = (label: string) => {
+    setNewLabel(label);
+    setKey(ACTION_LABELS[label]);
+    saveAction({
+      ...action,
+      label,
+      key: ACTION_LABELS[label],
+      value: [],
+    });
+  };
 
   return (
-    <>
+    <Row className="edit-input-row">
       <Col xs={12} className="action-value-col">
         {!action.key ? (
-          <Dropdown button={newLabel} items={AvailableActions} className="edit-action-dropdown" />
+          <Select
+            className="label-select"
+            placeholder="Add new action"
+            onChange={handleLabelChange}
+            getPopupContainer={() => dropdownRef.current}
+          >
+            {Object.keys(ACTION_LABELS).map((key) => (
+              <Option key={key} value={key}>
+                {key}
+              </Option>
+            ))}
+          </Select>
         ) : (
           <div className="edit-input-row">
             <Button
@@ -125,7 +106,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
               </Button>
             </div>
           ))}
-        {key && key === SEARCH_DOMAINS_ACTION ? (
+        {key === SEARCH_DOMAINS_ACTION ? (
           <Row className="no-border edit-input-row">
             <Input.Search
               enterButton="Add"
@@ -136,16 +117,19 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
             />
           </Row>
         ) : (
-          <Row className="no-border edit-input-row">
-            <Input
-              key={action.id}
-              className="add-action-value-input"
-              value={action.value}
-              onChange={handleChange}
-            />
-          </Row>
+          key && (
+            <Row className="no-border edit-input-row">
+              <Input
+                key={action.id}
+                className="add-action-value-input"
+                value={action.value}
+                onChange={handleChange}
+              />
+            </Row>
+          )
         )}
       </Col>
-    </>
+      <div className="relative" ref={dropdownRef} />
+    </Row>
   );
 };

@@ -5,38 +5,44 @@ import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
 import Select, { OptionProps } from 'antd/lib/select';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
-import { Dropdown } from 'modules/shared';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import {
   SEARCH_CONTAINS_CONDITION,
-  EMPTY_CONDITION_LABEL,
-  SEARCH_DOMAINS_BUTTON_TEXT,
-  SEARCH_QUERY_BUTTON_TEXT,
   SEARCH_QUERY_CONTAINS_CONDITION,
   ANY_URL_CONDITION,
   SEARCH_INTENT_IS_CONDITION,
-  SEARCH_INTENT_IS_BUTTON_TEXT,
   SIDEBAR_Z_INDEX,
 } from 'utils';
 
-const { Option } = Select;
+const { OptGroup, Option } = Select;
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
+const SEARCH_CONDITION_LABELS = {
+  'Search results contain domain': SEARCH_CONTAINS_CONDITION,
+  'Search query contains': SEARCH_QUERY_CONTAINS_CONDITION,
+  'Search intent is': SEARCH_INTENT_IS_CONDITION,
+};
+
+const OTHER_CONDITION_LABELS = {
+  'Match any page (removes other conditions)': ANY_URL_CONDITION,
+};
+
 export const EditConditionInput: EditConditionInput = ({
   condition,
   saveCondition,
   deleteCondition,
+  handleAnyUrl,
 }) => {
   const defaultValue = '';
   const { value: originalValue } = condition;
   const [key, setKey] = useState<string>(condition?.key);
-  const [label, setLabel] = useState<string>(condition?.label ?? EMPTY_CONDITION_LABEL);
+  const [label, setLabel] = useState<string>(condition?.label);
   const [value, setValue] = useState(originalValue?.[0] ?? defaultValue);
   const [intents, setIntents] = useState<any[]>();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -60,39 +66,6 @@ export const EditConditionInput: EditConditionInput = ({
     deleteCondition(condition);
   };
 
-  const handleSearchQuery = () => {
-    setLabel('Search query contains');
-    setKey(SEARCH_QUERY_CONTAINS_CONDITION);
-    saveCondition({
-      ...condition,
-      label: 'Search query contains',
-      key: SEARCH_QUERY_CONTAINS_CONDITION,
-      value: [],
-    });
-  };
-
-  const handleSearchDomains = () => {
-    setLabel('Search results contain domain');
-    setKey(SEARCH_CONTAINS_CONDITION);
-    saveCondition({
-      ...condition,
-      label: 'Search results contain domain',
-      key: SEARCH_CONTAINS_CONDITION,
-      value: [],
-    });
-  };
-
-  const handleSearchIntent = () => {
-    setLabel('Search intent is');
-    setKey(SEARCH_INTENT_IS_CONDITION);
-    saveCondition({
-      ...condition,
-      label: 'Search intent is',
-      key: SEARCH_INTENT_IS_CONDITION,
-      value: [],
-    });
-  };
-
   const handleIntentFilter = (inputValue: string, { value }: OptionProps) =>
     (value as string).search(inputValue.toLowerCase()) > -1;
 
@@ -100,24 +73,47 @@ export const EditConditionInput: EditConditionInput = ({
     handleSave(selectedIntent);
   };
 
-  const conditionKeys = [
-    <Button className="dropdown-button" type="link" onClick={handleSearchQuery}>
-      {SEARCH_QUERY_BUTTON_TEXT}
-    </Button>,
-    <Button className="dropdown-button" type="link" onClick={handleSearchDomains}>
-      {SEARCH_DOMAINS_BUTTON_TEXT}
-    </Button>,
-    <Button className="dropdown-button" type="link" onClick={handleSearchIntent}>
-      {SEARCH_INTENT_IS_BUTTON_TEXT}
-    </Button>,
-  ];
+  const handleLabelChange = (value: string) => {
+    if (SEARCH_CONDITION_LABELS[value]) {
+      setLabel(value);
+      setKey(SEARCH_CONDITION_LABELS[value]);
+      saveCondition({
+        ...condition,
+        label: value,
+        key: SEARCH_CONDITION_LABELS[value],
+        value: [],
+      });
+    }
+    OTHER_CONDITION_LABELS[value] === ANY_URL_CONDITION && handleAnyUrl();
+  };
 
   return (
     <>
       <Row className="edit-input-row">
         <Col xs={13} className="condition-label">
           {!key ? (
-            <Dropdown button={label} items={conditionKeys} className="edit-action-dropdown" />
+            <Select
+              className="label-select"
+              placeholder="Add new condition"
+              onChange={handleLabelChange}
+              getPopupContainer={() => dropdownRef.current}
+            >
+              <OptGroup label="Search">
+                {Object.keys(SEARCH_CONDITION_LABELS).map((key) => (
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
+                ))}
+              </OptGroup>
+              <OptGroup label="Other">
+                OTHER_CONDITION_LABELS
+                {Object.keys(OTHER_CONDITION_LABELS).map((key) => (
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
+                ))}
+              </OptGroup>
+            </Select>
           ) : (
             <>
               <Button

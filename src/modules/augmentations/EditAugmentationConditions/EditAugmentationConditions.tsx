@@ -13,28 +13,24 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
   setConditions,
   evaluation,
   setEvaluation,
+  onAdd,
   onSave,
   onDelete,
 }) => {
-  const handleAddCondition = () =>
-    setConditions((prev) => [
-      ...prev.filter((i) => i.key !== ANY_URL_CONDITION),
-      {
-        id: uuid(),
-        key: null,
-        type: 'list',
-        label: null,
-        value: [],
-        isAdding: true,
-      },
-    ]);
+  const newCondition = {
+    id: uuid(),
+    key: null,
+    type: 'list',
+    label: null,
+    value: [],
+  };
 
   const handleMatchAnyPage = () =>
     setConditions([
       {
         id: '0',
         key: ANY_URL_CONDITION,
-        label: 'Any page',
+        label: 'Match any page',
         type: 'list',
         value: ['.*'],
       },
@@ -59,21 +55,19 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       {conditions.map((condition) => (
         <EditConditionInput
           key={condition.id}
+          handleAnyUrl={handleMatchAnyPage}
           condition={condition}
           saveCondition={onSave}
           deleteCondition={onDelete}
         />
       ))}
-      <Row className="no-border condition-footer">
-        <Button className="add-operation-button" type="link" onClick={handleAddCondition}>
-          ➕ Add condition
-        </Button>
-        {conditions[0]?.key !== ANY_URL_CONDITION && (
-          <Button type="link" onClick={handleMatchAnyPage}>
-            Match any page
-          </Button>
-        )}
-      </Row>
+      <EditConditionInput
+        key={newCondition.id}
+        handleAnyUrl={handleMatchAnyPage}
+        condition={newCondition}
+        saveCondition={onAdd}
+        deleteCondition={onDelete}
+      />
     </>
   );
 };
