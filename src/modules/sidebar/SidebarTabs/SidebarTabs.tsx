@@ -60,19 +60,26 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
+  const handleClose = () => {
+    flipSidebar(document, 'hide', tabs.length);
+  };
+
   const extraContent = {
     left: (
       <Suspense fallback={null}>
-        {isExpanded ? (
-          <Tooltip
-            title='Back to Search Engine ("F" key)'
-            destroyTooltipOnHide={{ keepParent: false }}
+        <Tooltip
+          title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar'}
+          destroyTooltipOnHide={{ keepParent: false }}
+        >
+          <Button
+            type="text"
+            className="expand-icon"
+            onClick={isExpanded ? handleExpand : handleClose}
           >
-            <Button type="text" className="expand-icon" onClick={handleExpand}>
-              <DoubleRightOutlined />
-            </Button>
-          </Tooltip>
-        ) : (
+            <DoubleRightOutlined />
+          </Button>
+        </Tooltip>
+        {!isExpanded && (
           <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
             <DoubleLeftOutlined onClick={handleExpand} className="expand-icon" />
           </Tooltip>

@@ -59,20 +59,6 @@ const Sidebar: Sidebar = () => {
   return (
     <>
       <div id="insight-sidebar-container">
-        <div
-          id="insight-sidebar-close-button"
-          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-          onClick={() => {
-            setForceTab('1');
-            setTimeout(() => {
-              // The timeout will guarantee that the sidebar is collapsing properly.
-              flipSidebar(document, 'hide', sidebarTabs.length);
-            }, 100);
-            setForceTab(null);
-          }}
-        >
-          ×
-        </div>
         <div id="insight-sidebar-title">
           <span>{APP_NAME}&nbsp;/&nbsp;</span>
           <a target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>

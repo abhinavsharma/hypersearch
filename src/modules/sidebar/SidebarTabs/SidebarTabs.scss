@@ -11,13 +11,18 @@
   .ant-tabs-extra-content {
     cursor: pointer;
     width: 50px;
+    padding: 5px;
 
     .expand-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 18px;
       outline: 0;
+
+      &:first-of-type {
+        margin-bottom: 5px;
+      }
     }
   }
 

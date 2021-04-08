@@ -2,21 +2,21 @@ import React from 'react';
 import { goTo } from 'route-lite';
 import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import Tooltip from 'antd/lib/tooltip';
 import { EditAugmentationPage } from 'modules/augmentations';
-import {
-  ANY_URL_CONDITION,
-  ANY_URL_CONDITION_TEMPLATE,
-  SEARCH_HIDE_DOMAIN_ACTION,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-} from 'utils';
+import { ANY_URL_CONDITION, ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './AugmentationRow.scss';
-import Tooltip from 'antd/lib/tooltip';
 
-export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, ignored }) => {
+export const AugmentationRow: AugmentationRow = ({
+  augmentation,
+  setActiveKey,
+  ignored,
+  other,
+}) => {
   const isPinned = !!augmentation.conditions.condition_list.find(
     (i) => i.key === ANY_URL_CONDITION,
   );
@@ -62,15 +62,18 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
   return (
     <div className="augmentation-row">
       <span className="augmentation-name">
-        {augmentation.hasOwnProperty('installed') ? 
-        <Tooltip
-          title={"Local"}
-          destroyTooltipOnHide={{ keepParent: false }}>{augmentation.name}
-        </Tooltip> : augmentation.name}
+        {augmentation.hasOwnProperty('installed') ? (
+          <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
+            {augmentation.name}
+          </Tooltip>
+        ) : (
+          augmentation.name
+        )}
       </span>
       <Tooltip
-        title={augmentation.hasOwnProperty('installed') ? null : "Duplicate and edit locally"}
-        destroyTooltipOnHide={{ keepParent: false }}>
+        title={augmentation.hasOwnProperty('installed') ? null : 'Duplicate and edit locally'}
+        destroyTooltipOnHide={{ keepParent: false }}
+      >
         <Tag
           color="geekblue"
           className={`augmentation-row-button force-left-margin`}
@@ -85,7 +88,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, setActiveKey, i
         </Tag>
       ) : (
         <>
-          {isSuggested && (
+          {isSuggested && !other && (
             <Tag className="augmentation-row-button" color="geekblue" onClick={handleHide}>
               Hide
             </Tag>

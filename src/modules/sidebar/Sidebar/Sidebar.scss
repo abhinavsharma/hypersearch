@@ -45,7 +45,7 @@ body {
       width: auto;
 
       .expand-icon {
-        font-size: 16px;
+        margin: 0;
       }
     }
 
@@ -109,31 +109,5 @@ body {
   a {
     text-decoration: none;
     color: #1890ff;
-  }
-}
-
-#insight-sidebar-close-button {
-  outline: 0;
-  cursor: pointer;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: white;
-  border-radius: 50%;
-  font-size: 18px;
-  top: 20px;
-  left: -11.5px;
-  width: 20px;
-  height: 18px;
-  border: 1px solid #ccc;
-  color: #aaa;
-  padding-bottom: 3px;
-  padding-top: -3px;
-
-  &.hidden {
-    background: transparent;
-    color: transparent;
-    transition: all 800ms ease-out;
   }
 }

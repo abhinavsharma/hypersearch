@@ -16,8 +16,6 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     'insight-sidebar-toggle-button',
   )[0] as HTMLDivElement;
 
-  const hideButton = document.getElementById('insight-sidebar-close-button') as HTMLDivElement;
-
   const activeAugmentationHeader = document.getElementsByClassName(
     'add-augmentation-tab-header',
   )[0] as HTMLDivElement;
@@ -46,7 +44,6 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
         width: ${tabsLength === 0 ? '200px' : '150px'} !important;
       `,
       );
-      hideButton.style.visibility = 'hidden';
       outerDocument.getElementById('sidebar-root-iframe').setAttribute(
         'style',
         `
@@ -71,7 +68,6 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
     showButton.style.visibility = 'hidden';
     nameNub.style.display = 'visible';
     nameNub.setAttribute('style', 'right: 450px;');
-    hideButton.style.visibility = 'visible';
     sidebarContainer.style.width = '450px';
     tabsContainer.style.visibility = 'visible';
     outerDocument.getElementById('sidebar-root').setAttribute(

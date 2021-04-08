@@ -137,6 +137,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
             <h3>Lenses not matching this page.</h3>
             {otherAugmentations.sort(augmentationSorter).map((augmentation) => (
               <AugmentationRow
+                other
                 key={augmentation.id}
                 augmentation={augmentation}
                 setActiveKey={setActiveKey}

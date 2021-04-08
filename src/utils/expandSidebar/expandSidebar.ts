@@ -7,7 +7,6 @@ export const expandSidebar = () => {
   const sidebarContainer = frameDocument.getElementById(
     'insight-sidebar-container',
   ) as HTMLDivElement;
-  const closeButton = frameDocument.getElementById('insight-sidebar-close-button');
   const sidebarTitle = frameDocument.getElementById('insight-sidebar-title');
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
@@ -66,8 +65,6 @@ export const expandSidebar = () => {
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
     `,
     );
-    closeButton.style.display = 'none';
-    closeButton.style.visibility = 'hidden';
     sidebarTitle.style.display = 'none';
     sidebarTitle.style.visibility = 'hidden';
     tabFrames.forEach((frame) => frame.classList.add('insight-expanded'));
@@ -76,8 +73,6 @@ export const expandSidebar = () => {
     sidebarRootIframe.classList.remove('insight-expanded');
     sidebarContainer.classList.remove('insight-expanded');
     document.documentElement.style.overflow = 'auto';
-    closeButton.style.display = 'flex';
-    closeButton.style.visibility = 'visible';
     sidebarTitle.style.display = 'block';
     sidebarTitle.style.visibility = 'visible';
     sidebarContainer.setAttribute(
