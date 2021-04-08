@@ -41,9 +41,9 @@ export const EditConditionInput: EditConditionInput = ({
 }) => {
   const defaultValue = '';
   const { value: originalValue } = condition;
-  const [key, setKey] = useState<string>(condition?.key);
-  const [label, setLabel] = useState<string>(condition?.label);
-  const [value, setValue] = useState(originalValue?.[0] ?? defaultValue);
+  const [newKey, setNewKey] = useState<string>(condition?.key);
+  const [newLabel, setNewLabel] = useState<string>(condition?.label);
+  const [newValue, setNewValue] = useState(originalValue?.[0] ?? defaultValue);
   const [intents, setIntents] = useState<any[]>();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -51,14 +51,14 @@ export const EditConditionInput: EditConditionInput = ({
     setIntents(SearchEngineManager.intents);
   }, [SearchEngineManager.intents]);
 
-  const handleSave = (_value?: string) => {
-    const newCondition = { ...condition, key, label, value: [_value ?? value] };
+  const handleSave = (value?: string) => {
+    const newCondition = { ...condition, key: newKey, label: newLabel, value: [value ?? newValue] };
     saveCondition(newCondition);
   };
 
-  const handleChange = ({ target: { value: _value } }: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(_value);
-    const newCondition = { ...condition, key, label, value: [_value] };
+  const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setNewValue(value);
+    const newCondition = { ...condition, key: newKey, label: newLabel, value: [value] };
     saveCondition(newCondition);
   };
 
@@ -73,25 +73,25 @@ export const EditConditionInput: EditConditionInput = ({
     handleSave(selectedIntent);
   };
 
-  const handleLabelChange = (value: string) => {
-    if (SEARCH_CONDITION_LABELS[value]) {
-      setLabel(value);
-      setKey(SEARCH_CONDITION_LABELS[value]);
+  const handleLabelChange = (label: string) => {
+    if (SEARCH_CONDITION_LABELS[label]) {
+      setNewLabel(label);
+      setNewKey(SEARCH_CONDITION_LABELS[label]);
       saveCondition({
         ...condition,
-        label: value,
-        key: SEARCH_CONDITION_LABELS[value],
+        label,
+        key: SEARCH_CONDITION_LABELS[label],
         value: [],
       });
     }
-    OTHER_CONDITION_LABELS[value] === ANY_URL_CONDITION && handleAnyUrl();
+    OTHER_CONDITION_LABELS[label] === ANY_URL_CONDITION && handleAnyUrl();
   };
 
   return (
     <>
       <Row className="edit-input-row">
         <Col xs={13} className="condition-label">
-          {!key ? (
+          {!newKey ? (
             <Select
               className="label-select"
               placeholder="Add new condition"
@@ -132,12 +132,12 @@ export const EditConditionInput: EditConditionInput = ({
         </Col>
         <Col xs={11} className="value-col">
           {(() => {
-            switch (key) {
+            switch (newKey) {
               case SEARCH_INTENT_IS_CONDITION:
                 return (
                   <Select
                     showSearch
-                    defaultValue={value}
+                    defaultValue={newValue}
                     placeholder="Search for intents..."
                     dropdownClassName="search-intent-dropdown"
                     className="search-intent-block"
@@ -159,7 +159,7 @@ export const EditConditionInput: EditConditionInput = ({
                     key={condition.id}
                     className="add-condition-value-input"
                     onChange={handleChange}
-                    value={value}
+                    value={newValue}
                   />
                 );
               case ANY_URL_CONDITION:

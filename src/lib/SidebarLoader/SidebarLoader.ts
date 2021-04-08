@@ -291,6 +291,9 @@ class SidebarLoader {
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case SEARCH_HIDE_DOMAIN_ACTION:
+          const fakeUrl = emptyUrl();
+          fakeUrl.href = HIDE_TAB_FAKE_URL;
+          urls.push(fakeUrl);
           break;
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
         case OPEN_URL_ACTION:

@@ -123,7 +123,11 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public getAugmentationRelevancy(augmentation: AugmentationObject) {
-    const domainsToLookCondition = augmentation.conditions?.condition_list.reduce(
+    if (!augmentation?.actions || !augmentation.conditions) {
+      return Object.create(null);
+    }
+
+    const domainsToLookCondition = augmentation.conditions.condition_list.reduce(
       (conditions, { key, value }) =>
         key === SEARCH_CONTAINS_CONDITION || key === ANY_URL_CONDITION
           ? conditions.concat(value)
@@ -146,7 +150,7 @@ class AugmentationManager {
     );
 
     const checkForQuery =
-      augmentation.conditions.condition_list.find(
+      augmentation.conditions?.condition_list.find(
         ({ key }) => key === SEARCH_QUERY_CONTAINS_CONDITION,
       )?.value[0] ?? null;
 

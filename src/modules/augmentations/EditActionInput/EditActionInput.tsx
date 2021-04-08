@@ -25,20 +25,20 @@ const ACTION_LABELS = {
 
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
   const [newValue, setNewValue] = useState('');
-  const [key, setKey] = useState<string>(action?.key);
+  const [newKey, setNewKey] = useState<string>(action?.key);
   const [newLabel, setNewLabel] = useState<string>(action?.label);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSaveValue = (e: string, i: number) => {
     const valueToSave = action.value;
     valueToSave[i] = e;
-    saveAction({ ...action, value: valueToSave });
+    saveAction({ ...action, label: newLabel, key: newKey, value: valueToSave });
     setNewValue('');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewValue(e.target.value);
-    saveAction({ ...action, value: [e.target.value] });
+    saveAction({ ...action, label: newLabel, key: newKey, value: [e.target.value] });
   };
 
   const handleValueDelete = (e: string) => {
@@ -48,7 +48,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
 
   const handleLabelChange = (label: string) => {
     setNewLabel(label);
-    setKey(ACTION_LABELS[label]);
+    setNewKey(ACTION_LABELS[label]);
     saveAction({
       ...action,
       label,
@@ -90,7 +90,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
         )}
       </Col>
       <Col xs={12} className="action-value-col">
-        {key === SEARCH_DOMAINS_ACTION &&
+        {newKey === SEARCH_DOMAINS_ACTION &&
           action.value.map((value, i) => (
             <div key={value + i} className="action-value-row">
               <span>{value.slice(0, 25) + (value.length > 25 ? '...' : '')}</span>
@@ -106,7 +106,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
               </Button>
             </div>
           ))}
-        {key === SEARCH_DOMAINS_ACTION ? (
+        {newKey === SEARCH_DOMAINS_ACTION ? (
           <Row className="no-border edit-input-row">
             <Input.Search
               enterButton="Add"
@@ -117,7 +117,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
             />
           </Row>
         ) : (
-          key && (
+          newKey && (
             <Row className="no-border edit-input-row">
               <Input
                 key={action.id}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { EditActionInput } from 'modules/augmentations';
-import { EMPTY_AUGMENTATION } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 

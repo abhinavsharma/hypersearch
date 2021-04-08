@@ -5,7 +5,7 @@ import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { EMPTY_AUGMENTATION, getFirstValidTabIndex } from 'utils';
+import { getFirstValidTabIndex } from 'utils';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
@@ -18,7 +18,7 @@ import './EditAugmentationPage.scss';
 const { Panel } = Collapse;
 
 export const EditAugmentationPage: EditAugmentationPage = ({
-  augmentation = Object.create(null),
+  augmentation = Object.create(null) as AugmentationObject,
   isAdding,
   initiatedFromActives,
   setActiveKey,
@@ -36,15 +36,18 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   );
 
   const [conditions, setConditions] = useState<CustomCondition[]>(
-    isAdding && !augmentation.conditions.condition_list[0].value.length
+    isAdding
       ? Array(5)
           .fill(null)
           .map((_, i) => ({
-            ...EMPTY_AUGMENTATION.conditions.condition_list[0],
+            id: uuid(),
+            evaluation: 'contains',
+            key: 'search_contains',
+            label: 'Search results contain domain',
+            type: 'list',
             value: [
               Array.from(new Set(SidebarLoader.domains.map((domain) => domain.split('/')[0])))[i],
             ],
-            id: uuid(),
           }))
           .filter(({ value }) => !!value[0])
       : augmentation.conditions.condition_list.map((condition) => ({
@@ -94,19 +97,11 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   };
 
   const handleSaveAction = (e: CustomAction) => {
-    setActions((prev) =>
-      prev.map((i) => {
-        if (i.id === e.id) {
-          return {
-            ...e,
-            key: e.key ?? i.key,
-            label: e.label ?? i.label,
-          };
-        } else {
-          return i;
-        }
-      }),
-    );
+    setActions((prev) => prev.map((i) => (i.id === e.id ? e : i)));
+  };
+
+  const handleSaveCondition = (e: CustomCondition) => {
+    setConditions((prev) => prev.map((i) => (i.id === e.id ? e : i)));
   };
 
   const handleDeleteCondition = (e: CustomCondition) => {
@@ -115,18 +110,6 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 
   const handleDeleteAction = (e: CustomAction) => {
     setActions((prev) => prev.filter((i) => i.id !== e.id));
-  };
-
-  const handleSaveCondition = (e: CustomCondition) => {
-    setConditions((prev) =>
-      prev.map((i) => {
-        if (i.id === e.id) {
-          return e;
-        } else {
-          return i;
-        }
-      }),
-    );
   };
 
   const handleAddAction = (e: CustomAction) => {
