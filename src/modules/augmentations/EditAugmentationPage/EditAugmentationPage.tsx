@@ -5,7 +5,7 @@ import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { EMPTY_AUGMENTATION, getFirstValidTabIndex, SEARCH_DOMAINS_ACTION } from 'utils';
+import { EMPTY_AUGMENTATION, getFirstValidTabIndex } from 'utils';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
@@ -97,30 +97,8 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   };
 
   const handleSaveAction = (e: CustomAction) => {
-    setActions((prev) => {
-      // Merge all `search_domains` actions into one action.
-      if (e.key === SEARCH_DOMAINS_ACTION) {
-        const existing = prev.find((i) => i.key === SEARCH_DOMAINS_ACTION);
-        if (existing) {
-          existing.value =
-            e.value[0] !== '' && e.value.length !== existing.value.length
-              ? Array.from(new Set(e.value))
-              : Array.from(new Set(existing.value.concat(e.value)));
-          // We also need to remove all the other actions with `search_domains` key, because
-          // when the user adds a new action with that key, A new index will be created anyway.
-          return prev.reduce((newActions, prevAction) => {
-            if (prevAction.id === existing.id) {
-              newActions.push(existing);
-            } else {
-              prevAction.key &&
-                prevAction.key !== SEARCH_DOMAINS_ACTION &&
-                newActions.push(prevAction);
-            }
-            return newActions;
-          }, []);
-        }
-      }
-      return prev.map((i) => {
+    setActions((prev) =>
+      prev.map((i) => {
         if (i.id === e.id) {
           return {
             ...e,
@@ -130,8 +108,8 @@ export const EditAugmentationPage: EditAugmentationPage = ({
         } else {
           return i;
         }
-      });
-    });
+      }),
+    );
   };
 
   const handleDeleteCondition = (e: CustomCondition) => {

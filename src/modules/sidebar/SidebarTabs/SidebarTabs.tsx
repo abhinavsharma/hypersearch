@@ -186,7 +186,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               )}
               {tab.description && <SidebarTabDescription tab={tab} />}
               {tab.url && tab.isCse && (
-                <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id]} />
+                <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id][tab.url]} />
               )}
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}

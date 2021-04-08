@@ -91,7 +91,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public tabDomains: Record<string, string[]>;
+  public tabDomains: Record<string, string[]> | Record<string, string[]>[];
 
   /**
    * The current document object.
@@ -273,45 +273,18 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   private getTabUrls(augmentation: AugmentationObject) {
-    // This URL will be used as the source of the sidebar tab IFrame. It is composed by the existing SEARCH_DOMAINS_ACTION
-    // values, by appending the current search query with *(site: <domain_'> OR <domain_2> ... )* to filter results. The
-    // hostname and query parameters are coming from the local/remote search engine data according to the current SERP.
-    const customSearchUrl = new URL(
-      isSafari()
-        ? 'https://www.ecosia.org/search'
-        : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
-    );
     const urls: URL[] = [];
-
-    const createMultipleDomainUrl = (actionValue: string[]) => {
-      const tabAppendages = actionValue;
-      if (!tabAppendages.length) {
-        customSearchUrl.href = HIDE_TAB_FAKE_URL;
-      }
-      this.tabDomains[augmentation.id] = Array.from(
-        new Set(
-          this.tabDomains[augmentation.id].concat(
-            actionValue.map((value) => removeProtocol(value)),
-          ),
-        ),
+    const emptyUrl = () =>
+      new URL(
+        isSafari()
+          ? 'https://www.ecosia.org/search'
+          : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
       );
-      const append =
-        tabAppendages.length === 1
-          ? `site:${tabAppendages[0]}`
-          : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
-      customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
-      customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-    };
-
-    augmentation.actions.action_list.forEach((action) => {
+    augmentation.actions.action_list.forEach((action, index) => {
       switch (action.key) {
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case SEARCH_HIDE_DOMAIN_ACTION:
-          createMultipleDomainUrl(
-            augmentation.actions.action_list.find(({ key }) => key === SEARCH_DOMAINS_ACTION)
-              ?.value ?? [],
-          );
           break;
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
         case OPEN_URL_ACTION:
@@ -321,22 +294,31 @@ class SidebarLoader {
             urls.push(url);
           });
           break;
-        // The most generic case is SEARCH_DOMAINS_ACTION. See: `customSearchUrl` for details.
+        // A new sidebar tab url will be composed by each SEARCH_DOMAINS_ACTION values, by appending
+        // the current search query with *(site: <domain_'> OR <domain_2> ... )* to filter results. The
+        // hostname and query parameters are coming from the local/remote search engine data.
         case SEARCH_DOMAINS_ACTION:
-          if (
-            !augmentation.actions.action_list.find(({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION)
-          ) {
-            createMultipleDomainUrl(action.value);
+          const customSearchUrl = emptyUrl();
+          const tabAppendages = action.value;
+          if (!tabAppendages.length) {
+            customSearchUrl.href = HIDE_TAB_FAKE_URL;
           }
+
+          const append =
+            tabAppendages.length === 1
+              ? `site:${tabAppendages[0]}`
+              : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
+          customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          urls.push(customSearchUrl);
+          this.tabDomains[augmentation.id][customSearchUrl.href] = action.value.map((value) =>
+            removeProtocol(value),
+          );
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
       }
     });
-
-    !!customSearchUrl.searchParams.get('q') &&
-      !!customSearchUrl.searchParams.get('q').length &&
-      urls.push(customSearchUrl);
     return urls;
   }
 
