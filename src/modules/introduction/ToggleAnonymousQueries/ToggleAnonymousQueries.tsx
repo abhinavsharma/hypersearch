@@ -29,14 +29,15 @@ export const ToggleAnonymousQueries = () => {
       <Title level={3}>{checked ? 'Anonymized Server Calls' : '100% Local'}</Title>
       {checked ? (
         <>
-          <p>No data is ever sent to our servers.</p>
-          <p>Suggestions are limited on non-Google sites.</p>
-        </>
-      ) : (
-        <>
           <p>Allows us to make more suggestions on more sites.</p>
           <p>We don't log any identifiable data, not even your IP address.</p>
         </>
+      ) : (
+        <>
+          <p>No data is ever sent to our servers.</p>
+          <p>Suggestions are limited to Google, DuckDuckGo and Bing.</p>
+        </>
+        
       )}
     </div>
   );

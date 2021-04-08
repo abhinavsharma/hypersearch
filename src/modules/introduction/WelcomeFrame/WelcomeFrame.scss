@@ -3,7 +3,7 @@
 
   #fade-section {
     opacity: 0;
-    transition: opacity 1500ms 0s ease-in;
+    transition: opacity 800ms 0s ease-in;
 
     &.fade-section-visible {
       opacity: 1;

@@ -27,7 +27,7 @@ export const PrivacyFrame = () => {
           className="step-button"
           onClick={handleNext}
         >
-          Next Step
+          Next
         </Button>
       </div>
     </>

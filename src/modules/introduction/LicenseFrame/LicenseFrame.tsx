@@ -50,7 +50,7 @@ export const LicenseFrame = () => {
         minLength={39}
         maxLength={39}
         value={stepContext.license.key}
-        placeholder="Paste here the key you received..."
+        placeholder="If you have a special access key, paste it here"
         onChange={(e) => stepContext.setLicense({ key: e.target.value })}
         disabled={stepContext.license.isActivated}
       />
@@ -63,16 +63,16 @@ export const LicenseFrame = () => {
           onClick={handleLicenseSubmit}
           disabled={!validateLicense() || stepContext.license.isActivated}
         >
-          Next Step
+          Next
         </Button>
         <Button
-          type="ghost"
-          shape="round"
+          type="link"
           size="large"
+          style={{color: 'white'}}
           className="step-button"
           onClick={handleNext}
         >
-          Use Free Tier
+          Use Free Plan
         </Button>
       </div>
     </div>

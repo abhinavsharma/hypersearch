@@ -18,12 +18,12 @@ export const WelcomeFrame = () => {
   return (
     <div id="welcome-frame-container">
       <Title level={1} className="main-title">
-        <Typist cursor={{ show: false }} avgTypingDelay={200} onTypingDone={handleTyped}>
-          Hello!
+        <Typist cursor={{ show: false }} avgTypingDelay={80} onTypingDone={handleTyped}>
+          Hello
         </Typist>
       </Title>
       <div id="fade-section" className={titleLoaded ? 'fade-section-visible' : ''}>
-        <Title level={2}>Prepare to supercharge search</Title>
+        <Title level={2}>Ready to supercharge search?</Title>
         <Button
           type="ghost"
           shape="round"
@@ -31,7 +31,7 @@ export const WelcomeFrame = () => {
           className="step-button"
           onClick={handleNext}
         >
-          Get Started
+          Yes
         </Button>
       </div>
     </div>
