@@ -4,6 +4,7 @@ import { CustomCondition } from '..';
 declare module './EditConditionInput' {
   type EditConditionInputProps = {
     condition: CustomCondition;
+    handleAnyUrl: () => void;
     saveCondition: (e: CustomCondition) => void;
     deleteCondition: (e: CustomCondition) => void;
   };

@@ -34,7 +34,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       {
         id: '0',
         key: ANY_URL_CONDITION,
-        label: 'Any page',
+        label: 'Match any page',
         type: 'list',
         value: ['.*'],
       },
@@ -59,6 +59,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       {conditions.map((condition) => (
         <EditConditionInput
           key={condition.id}
+          handleAnyUrl={handleMatchAnyPage}
           condition={condition}
           saveCondition={onSave}
           deleteCondition={onDelete}
@@ -68,11 +69,6 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
         <Button className="add-operation-button" type="link" onClick={handleAddCondition}>
           ➕ Add condition
         </Button>
-        {conditions[0]?.key !== ANY_URL_CONDITION && (
-          <Button type="link" onClick={handleMatchAnyPage}>
-            Match any page
-          </Button>
-        )}
       </Row>
     </>
   );

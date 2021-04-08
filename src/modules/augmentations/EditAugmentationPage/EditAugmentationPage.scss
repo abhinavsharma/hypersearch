@@ -159,10 +159,6 @@
       .relative {
         position: relative;
 
-        .ant-select-dropdown {
-          width: 195px !important;
-        }
-
         .ant-select-item-option {
           pointer-events: auto !important;
           align-items: center;
@@ -173,10 +169,21 @@
         border-radius: 0;
       }
 
-      .search-intent-dropdown {
+      .label-select {
+        width: 200px;
+
+        .ant-select-selector {
+          width: auto;
+        }
+      }
+
+      .ant-select-dropdown {
+        width: 195px !important;
+
         &.ant-slide-up-leave,
         &.ant-slide-up-leave-active {
           opacity: 0;
+          z-index: -1;
         }
 
         &.ant-slide-up-enter,
@@ -188,6 +195,7 @@
           pointer-events: auto !important;
           width: 100%;
           opacity: 1;
+          z-index: 9999;
 
           .ant-select-item-option {
             pointer-events: auto !important;
