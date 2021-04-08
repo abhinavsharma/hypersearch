@@ -215,8 +215,19 @@ class SidebarLoader {
    */
   public currentTab: string;
 
+  /**
+   * If true, prevent the sidebar from auto-expanding, even when
+   * othe expand conditions are true.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public preventAutoExpand: boolean;
+
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
+    this.preventAutoExpand = false;
     this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
     this.tabDomains = Object.create(null);
     this.sidebarTabs = [];
@@ -360,7 +371,12 @@ class SidebarLoader {
           matchingDomainsAction,
           matchingDomainsCondition,
           domainsToLookAction,
+          hasPreventAutoexpand,
         } = AugmentationManager.getAugmentationRelevancy(augmentation);
+
+        if (hasPreventAutoexpand) {
+          this.preventAutoExpand = hasPreventAutoexpand;
+        }
 
         /** DEV START **/
         IN_DEBUG_MODE &&

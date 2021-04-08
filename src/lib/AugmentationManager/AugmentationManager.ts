@@ -166,12 +166,17 @@ class AugmentationManager {
         )
         .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
+    let hasPreventAutoexpand = false;
+
     const matchingIntent = !!augmentation.conditions.condition_list
       .reduce((intents, { key, value }) => {
         if (key === SEARCH_INTENT_IS_CONDITION) {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
           );
+          if (!!matchingIntent.stay_collapsed) {
+            hasPreventAutoexpand = true;
+          }
           if (matchingIntent) {
             const intentDomains = matchingIntent.sites.split(',') ?? [];
             intentDomains.forEach(
@@ -193,6 +198,7 @@ class AugmentationManager {
 
     return {
       isRelevant: matchingQuery || matchingDomains || matchingIntent,
+      hasPreventAutoexpand,
       domainsToLookAction,
       domainsToLookCondition,
       matchingDomainsAction,

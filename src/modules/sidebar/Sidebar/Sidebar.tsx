@@ -14,7 +14,6 @@ import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME,
   DISABLE_SUGGESTED_AUGMENTATION,
-  SIDEBAR_Z_INDEX,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
@@ -49,7 +48,13 @@ const Sidebar: Sidebar = () => {
     const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
     const isTabsLength = getFirstValidTabIndex(sidebarTabs) !== '0';
     const isSearchTabs = sidebarTabs?.find((tab) => tab.isCse);
-    if (isSmallWidth || !isTabsLength || !isSearchTabs || isKnowledgePage(document)) {
+    if (
+      isSmallWidth ||
+      !isTabsLength ||
+      !isSearchTabs ||
+      isKnowledgePage(document) ||
+      SidebarLoader.preventAutoExpand
+    ) {
       flipSidebar(document, 'hide', sidebarTabs?.length);
     } else {
       flipSidebar(document, 'show', sidebarTabs?.length);
