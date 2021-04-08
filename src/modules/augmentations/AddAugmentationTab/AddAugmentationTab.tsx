@@ -26,7 +26,10 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
       type="link"
       onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
     >
-      <Suspense fallback={null}><UnorderedListOutlined /></Suspense> List All Lenses
+      <Suspense fallback={null}>
+        <UnorderedListOutlined />
+      </Suspense>
+      List All Lenses
     </Button>,
     <Button
       className="dropdown-button"
@@ -35,7 +38,10 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
         chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
       }
     >
-      <Suspense fallback={null}><ZoomInOutlined /></Suspense> Create New Lens
+      <Suspense fallback={null}>
+        <ZoomInOutlined />
+      </Suspense>
+      Create New Lens
     </Button>,
   ];
 
