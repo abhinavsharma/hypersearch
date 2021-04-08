@@ -31,12 +31,7 @@ import {
   SEARCH_HIDE_DOMAIN_ACTION,
   OPEN_URL_ACTION,
   HIDE_TAB_FAKE_URL,
-  expandSidebar,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-  SWITCH_TO_TAB,
-  getFirstValidTabIndex,
-  shouldPreventEventBubble,
-  getLastValidTabIndex,
+  keyboardHandler,
 } from 'utils';
 
 /**
@@ -580,40 +575,7 @@ class SidebarLoader {
     const iframe = document.createElement('iframe');
     iframe.id = frameId;
     el.appendChild(iframe);
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (shouldPreventEventBubble(event)) return;
-      const currentTabIndex = Number(this.currentTab);
-      if (event.code === 'KeyF') {
-        this.isExpanded = !this.isExpanded;
-        expandSidebar();
-        chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-      }
-      if (this.isExpanded) {
-        switch (event.code) {
-          case 'ArrowRight':
-            chrome.runtime.sendMessage({
-              type: SWITCH_TO_TAB,
-              index:
-                currentTabIndex === this.sidebarTabs.length
-                  ? getFirstValidTabIndex(this.sidebarTabs)
-                  : (
-                      currentTabIndex +
-                      Number(getFirstValidTabIndex(this.sidebarTabs.slice(currentTabIndex)))
-                    ).toString(),
-            });
-            break;
-          case 'ArrowLeft':
-            const lastIndex = getLastValidTabIndex(this.sidebarTabs.slice(0, currentTabIndex - 1));
-            chrome.runtime.sendMessage({
-              type: SWITCH_TO_TAB,
-              index: lastIndex === '0' ? getLastValidTabIndex(this.sidebarTabs) : lastIndex,
-            });
-            break;
-        }
-      }
-    };
-
+    const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, this);
     el.addEventListener('keydown', handleKeyDown, true);
     iframe.contentWindow.document.addEventListener('keydown', handleKeyDown, true);
     const injector = () => {
