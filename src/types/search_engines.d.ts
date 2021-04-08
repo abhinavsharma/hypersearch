@@ -17,4 +17,5 @@ declare type SearchIntent = {
   intent_id: string;
   google_css: string;
   sites: string;
+  stay_collapsed: boolean;
 };
