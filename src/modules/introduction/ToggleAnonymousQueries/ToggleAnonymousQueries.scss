@@ -1,0 +1,41 @@
+#privacy-toggle-container {
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    margin-top: 20px;
+    font-size: 36px;
+    font-weight: 200;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 18px;
+  }
+
+  .privacy-toggle-button {
+    margin-top: 20px;
+    width: 100px;
+    height: 45px;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+
+    .ant-switch-handle {
+      width: 40px;
+      height: 40px;
+
+      &:before {
+        border-radius: 40px;
+      }
+    }
+
+    &.ant-switch-checked {
+      background-color: transparent;
+
+      .ant-switch-handle {
+        left: calc(100% - 42px);
+      }
+    }
+  }
+}

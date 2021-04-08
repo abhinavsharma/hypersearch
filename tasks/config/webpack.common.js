@@ -39,6 +39,7 @@ module.exports = (env) => {
           // method agains CSS-in-JS libraries, show that SaSS has better performance,
           // also smaller bundle size and memory pollution.
           test: /\.s?[ac]ss$/i,
+          exclude: [path.join(__dirname, PATHS.src + '/modules/introduction')],
           use: [
             {
               loader: 'style-loader',
@@ -48,6 +49,29 @@ module.exports = (env) => {
               // state which is not acceptable. As a workarond we use this configuration.
               options: {
                 insert: 'html',
+                injectType: 'singletonStyleTag',
+              },
+            },
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [CssAutoprefixer],
+                },
+              },
+            },
+            'sass-loader',
+          ],
+        },
+        {
+          test: /\.s?[ac]ss$/i,
+          include: [path.join(__dirname, PATHS.src + '/modules/introduction')],
+          use: [
+            {
+              loader: 'style-loader',
+              options: {
+                insert: 'body',
                 injectType: 'singletonStyleTag',
               },
             },
