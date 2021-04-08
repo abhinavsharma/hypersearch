@@ -1,16 +1,5 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import {
-  debug,
-  HIDE_DOMAINS_MESSAGE,
-  hideSerpResults,
-  expandSidebar,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-  getFirstValidTabIndex,
-  SWITCH_TO_TAB,
-  shouldPreventEventBubble,
-  getLastValidTabIndex,
-  flipSidebar,
-} from 'utils';
+import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler } from 'utils';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -20,53 +9,8 @@ import {
     process.env.PROJECT === 'is' ? 'Insight' : 'SearchClub',
     '\n---',
   );
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (shouldPreventEventBubble(event)) return;
-    const currentTabIndex = Number(SidebarLoader.currentTab);
-    const handleToggle = () => {
-      SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
-      expandSidebar();
-      chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-    };
-    switch (event.code) {
-      case 'KeyF':
-        handleToggle();
-        break;
-      case 'KeyP':
-        SidebarLoader.isExpanded && handleToggle();
-        flipSidebar(document, 'show', SidebarLoader.sidebarTabs.length);
-        break;
-      case 'KeyH':
-        SidebarLoader.isExpanded && handleToggle();
-        flipSidebar(document, 'hide', SidebarLoader.sidebarTabs.length);
-        break;
-      case 'ArrowRight':
-        chrome.runtime.sendMessage({
-          type: SWITCH_TO_TAB,
-          index:
-            currentTabIndex === SidebarLoader.sidebarTabs.length
-              ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
-              : (
-                  currentTabIndex +
-                  Number(getFirstValidTabIndex(SidebarLoader.sidebarTabs.slice(currentTabIndex)))
-                ).toString(),
-        });
-        break;
-      case 'ArrowLeft':
-        const lastIndex = getLastValidTabIndex(
-          SidebarLoader.sidebarTabs.slice(0, currentTabIndex - 1),
-        );
-        chrome.runtime.sendMessage({
-          type: SWITCH_TO_TAB,
-          index: lastIndex === '0' ? getLastValidTabIndex(SidebarLoader.sidebarTabs) : lastIndex,
-        });
-        break;
-    }
-  };
-
+  const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
   document.addEventListener('keydown', handleKeyDown, true);
-
   let blockingAugmentations: AugmentationObject[] = [];
   window.top.addEventListener('message', ({ data }) => {
     if (data.name === HIDE_DOMAINS_MESSAGE) {
