@@ -93,7 +93,10 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
               })
             }
           >
-            <Suspense fallback={null}><ZoomInOutlined /></Suspense> Create New Lens
+            <Suspense fallback={null}>
+              <ZoomInOutlined />
+            </Suspense>{' '}
+            Create New Lens
           </Button>
         </Row>
         <Divider />

@@ -5,13 +5,7 @@ import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import {
-  EMPTY_AUGMENTATION,
-  getFirstValidTabIndex,
-  HIDE_DOMAINS_MESSAGE,
-  SEARCH_DOMAINS_ACTION,
-  SEARCH_HIDE_DOMAIN_ACTION,
-} from 'utils';
+import { EMPTY_AUGMENTATION, getFirstValidTabIndex, SEARCH_DOMAINS_ACTION } from 'utils';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
@@ -96,7 +90,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({
       name,
       isActive,
     });
-    setTimeout(() => goBack(), 100);
+    setTimeout(() => {
+      goBack();
+      goBack();
+    }, 100);
   };
 
   const handleSaveAction = (e: CustomAction) => {
