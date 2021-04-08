@@ -13,21 +13,17 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
   setConditions,
   evaluation,
   setEvaluation,
+  onAdd,
   onSave,
   onDelete,
 }) => {
-  const handleAddCondition = () =>
-    setConditions((prev) => [
-      ...prev.filter((i) => i.key !== ANY_URL_CONDITION),
-      {
-        id: uuid(),
-        key: null,
-        type: 'list',
-        label: null,
-        value: [],
-        isAdding: true,
-      },
-    ]);
+  const newCondition = {
+    id: uuid(),
+    key: null,
+    type: 'list',
+    label: null,
+    value: [],
+  };
 
   const handleMatchAnyPage = () =>
     setConditions([
@@ -65,11 +61,13 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
           deleteCondition={onDelete}
         />
       ))}
-      <Row className="no-border condition-footer">
-        <Button className="add-operation-button" type="link" onClick={handleAddCondition}>
-          ➕ Add condition
-        </Button>
-      </Row>
+      <EditConditionInput
+        key={newCondition.id}
+        handleAnyUrl={handleMatchAnyPage}
+        condition={newCondition}
+        saveCondition={onAdd}
+        deleteCondition={onDelete}
+      />
     </>
   );
 };

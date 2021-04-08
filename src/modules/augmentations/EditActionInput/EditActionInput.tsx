@@ -58,18 +58,19 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
   };
 
   return (
-    <>
+    <Row className="edit-input-row">
       <Col xs={12} className="action-value-col">
         {!action.key ? (
           <Select
             className="label-select"
-            placeholder="Choose Action Type"
-            defaultValue={newLabel}
+            placeholder="Add new action"
             onChange={handleLabelChange}
             getPopupContainer={() => dropdownRef.current}
           >
             {Object.keys(ACTION_LABELS).map((key) => (
-              <Option value={key}>{key}</Option>
+              <Option key={key} value={key}>
+                {key}
+              </Option>
             ))}
           </Select>
         ) : (
@@ -105,7 +106,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
               </Button>
             </div>
           ))}
-        {key && key === SEARCH_DOMAINS_ACTION ? (
+        {key === SEARCH_DOMAINS_ACTION ? (
           <Row className="no-border edit-input-row">
             <Input.Search
               enterButton="Add"
@@ -129,6 +130,6 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
         )}
       </Col>
       <div className="relative" ref={dropdownRef} />
-    </>
+    </Row>
   );
 };

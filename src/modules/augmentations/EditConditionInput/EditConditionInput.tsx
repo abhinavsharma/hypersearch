@@ -94,20 +94,23 @@ export const EditConditionInput: EditConditionInput = ({
           {!key ? (
             <Select
               className="label-select"
-              placeholder="Choose Condition Type"
-              defaultValue={label}
+              placeholder="Add new condition"
               onChange={handleLabelChange}
               getPopupContainer={() => dropdownRef.current}
             >
               <OptGroup label="Search">
                 {Object.keys(SEARCH_CONDITION_LABELS).map((key) => (
-                  <Option value={key}>{key}</Option>
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
                 ))}
               </OptGroup>
               <OptGroup label="Other">
                 OTHER_CONDITION_LABELS
                 {Object.keys(OTHER_CONDITION_LABELS).map((key) => (
-                  <Option value={key}>{key}</Option>
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
                 ))}
               </OptGroup>
             </Select>
