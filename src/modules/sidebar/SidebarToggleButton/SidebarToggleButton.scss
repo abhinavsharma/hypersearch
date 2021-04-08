@@ -19,7 +19,13 @@
     font-weight: bold;
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
-    text-align: center;
+    position: relative;
+
+    .insight-sidebar-toggle-appname-text {
+      position: absolute;
+    bottom: 9px;
+    left: 20px;
+    }
   }
 
   .ant-list-items {
