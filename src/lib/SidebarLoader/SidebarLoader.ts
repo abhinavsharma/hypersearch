@@ -280,7 +280,7 @@ class SidebarLoader {
           ? 'https://www.ecosia.org/search'
           : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
       );
-    augmentation.actions.action_list.forEach((action, index) => {
+    augmentation.actions.action_list.forEach((action) => {
       switch (action.key) {
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
