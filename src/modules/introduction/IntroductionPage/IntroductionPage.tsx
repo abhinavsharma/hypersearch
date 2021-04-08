@@ -12,10 +12,6 @@ const LockFilled = React.lazy(
 
 const listData = {
 
-  'News: see different perspectives': [
-    { text: 'will trump run in 2024' }
-  ],
-
   'Startups: sources trusted by top founders & investors': [
     { text: 'how to raise a seed round' },
     { text: 'how to hire engineers' },
@@ -31,6 +27,10 @@ const listData = {
     { text: 'best car insurance' },
     { text: 'best baby monitor' },
     { text: 'best ev to buy 2021' },
+  ],
+
+  'News: see different perspectives': [
+    { text: 'will trump run in 2024' }
   ],
 
   'Misc: learn new things better & faster with insider trusted sources': [
