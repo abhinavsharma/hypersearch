@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Input, Button, Typography } from 'antd';
 import { StepContext } from 'modules/introduction';
-import { APP_NAME } from 'utils';
+import { APP_NAME, SYNC_LICENSE_KEY } from 'utils';
 import './LicenseFrame.scss';
 
 const { Title } = Typography;
@@ -15,7 +15,7 @@ export const LicenseFrame = () => {
   const handleLicenseSubmit = async () => {
     stepContext.setLicense((prev) => ({ ...prev, isActivated: true }));
     await new Promise((resolve) =>
-      chrome.storage.local.set({ licenseActivated: stepContext.license.key }, () => resolve(null)),
+      chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: stepContext.license.key }, () => resolve(null)),
     );
     handleNext();
   };
@@ -26,8 +26,8 @@ export const LicenseFrame = () => {
 
   const getStored = useCallback(async () => {
     const stored = await new Promise((resolve) =>
-      chrome.storage.local.get('licenseActivated', resolve),
-    ).then(({ licenseActivated }) => licenseActivated as string);
+      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
+    ).then((result) => result[SYNC_LICENSE_KEY] as string);
     if (stored) {
       stepContext.setLicense({ isActivated: true, key: stored });
       handleNext();
@@ -68,7 +68,7 @@ export const LicenseFrame = () => {
         <Button
           type="link"
           size="large"
-          style={{color: 'white'}}
+          style={{ color: 'white' }}
           className="step-button"
           onClick={handleNext}
         >

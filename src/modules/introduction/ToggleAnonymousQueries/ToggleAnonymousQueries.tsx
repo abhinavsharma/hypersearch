@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Switch, Typography } from 'antd';
+import { SYNC_PRIVACY_KEY } from 'utils';
 import './ToggleAnonymousQueries.scss';
 
 const { Title } = Typography;
@@ -9,8 +10,8 @@ export const ToggleAnonymousQueries = () => {
 
   const getStorageValue = useCallback(async () => {
     const isAnonymous = await new Promise((resolve) =>
-      chrome.storage.local.get('anonymousQueries', resolve),
-    ).then(({ anonymousQueries }) => anonymousQueries);
+      chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
+    ).then((result) => result[SYNC_PRIVACY_KEY]);
     setChecked(isAnonymous);
   }, []);
 
@@ -18,9 +19,9 @@ export const ToggleAnonymousQueries = () => {
     getStorageValue();
   }, [getStorageValue]);
 
-  const handleToggle = (anonymousQueries: boolean) => {
-    setChecked(anonymousQueries);
-    chrome.storage.local.set({ anonymousQueries });
+  const handleToggle = (value: boolean) => {
+    setChecked(value);
+    chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: value });
   };
 
   return (
@@ -37,7 +38,6 @@ export const ToggleAnonymousQueries = () => {
           <p>No data is ever sent to our servers.</p>
           <p>Suggestions are limited to Google, DuckDuckGo and Bing.</p>
         </>
-        
       )}
     </div>
   );

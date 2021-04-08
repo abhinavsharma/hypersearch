@@ -17,6 +17,7 @@ import {
   OPEN_NEW_TAB_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
+  SYNC_DISTINCT_KEY,
   URL_UPDATED_MESSAGE,
 } from 'utils/constants';
 // ! INITIALIZATION
@@ -187,11 +188,11 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
         // We use this for the logging. This ID will be assigned to the instance, throughout the application
         // lifetime. This way we can follow the exact user actions indentifying them by their ID. Also, we can
         // keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
-        chrome.storage.sync.get('distinctId', ({ distinctId }) => {
-          let userId = distinctId;
-          if (!distinctId) {
+        chrome.storage.sync.get(SYNC_DISTINCT_KEY, (result) => {
+          let userId = result[SYNC_DISTINCT_KEY];
+          if (!userId) {
             userId = uuid();
-            chrome.storage.sync.set({ distinctId: userId });
+            chrome.storage.sync.set({ [SYNC_DISTINCT_KEY]: userId });
           }
           const data: FreshpaintTrackEvent = {
             event: msg.event,

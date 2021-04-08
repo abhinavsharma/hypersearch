@@ -1,7 +1,8 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button, List, Typography } from 'antd';
-import { APP_NAME } from 'utils';
+import { StepContext } from 'modules/introduction';
+import { APP_NAME, SYNC_FINISHED_KEY } from 'utils';
 import './QueriesFrame.scss';
 
 const { Title } = Typography;
@@ -41,8 +42,22 @@ const entries = Object.entries(LIST_DATA);
 
 export const QueriesFrame = () => {
   const [index, setIndex] = useState(0);
+  const stepContext = useContext(StepContext);
 
-  const handleRandomize = () => setIndex(Math.floor(Math.random() * entries.length));
+  const handleRandomize = () => {
+    let newIndex = Math.floor(Math.random() * entries.length);
+    while (newIndex === index) {
+      newIndex = Math.floor(Math.random() * entries.length);
+    }
+    setIndex(newIndex);
+  };
+
+  useEffect(() => {
+    if (!stepContext.finished) {
+      chrome.storage.sync.set({ [SYNC_FINISHED_KEY]: true });
+      stepContext.setFinished(true);
+    }
+  }, []);
 
   const [key, value] = entries[index];
 
