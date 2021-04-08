@@ -40,7 +40,7 @@ const LIST_DATA = {
 const entries = Object.entries(LIST_DATA);
 
 export const QueriesFrame = () => {
-  const [index, setIndex] = useState(Math.floor(Math.random() * entries.length));
+  const [index, setIndex] = useState(0);
 
   const handleRandomize = () => setIndex(Math.floor(Math.random() * entries.length));
 
