@@ -10,6 +10,7 @@ import {
   getFirstValidTabIndex,
   shouldPreventEventBubble,
   getLastValidTabIndex,
+  flipSidebar,
 } from 'utils';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab, currentTab }) => {
@@ -24,35 +25,44 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, currentTab }) =>
   const handleKeyDown = (event: KeyboardEvent) => {
     if (shouldPreventEventBubble(event)) return;
     const currentTabIndex = Number(currentTab);
-    if (event.code === 'KeyF') {
+    const handleToggle = () => {
       SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
       expandSidebar();
       chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-    }
-    if (SidebarLoader.isExpanded) {
-      switch (event.code) {
-        case 'ArrowRight':
-          chrome.runtime.sendMessage({
-            type: SWITCH_TO_TAB,
-            index:
-              currentTabIndex === SidebarLoader.sidebarTabs.length
-                ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
-                : (
-                    currentTabIndex +
-                    Number(getFirstValidTabIndex(SidebarLoader.sidebarTabs.slice(currentTabIndex)))
-                  ).toString(),
-          });
-          break;
-        case 'ArrowLeft':
-          const lastIndex = getLastValidTabIndex(
-            SidebarLoader.sidebarTabs.slice(0, currentTabIndex - 1),
-          );
-          chrome.runtime.sendMessage({
-            type: SWITCH_TO_TAB,
-            index: lastIndex === '0' ? getLastValidTabIndex(SidebarLoader.sidebarTabs) : lastIndex,
-          });
-          break;
-      }
+    };
+    switch (event.code) {
+      case 'KeyF':
+        handleToggle();
+        break;
+      case 'KeyP':
+        SidebarLoader.isExpanded && handleToggle();
+        flipSidebar(document, 'show', SidebarLoader.sidebarTabs.length);
+        break;
+      case 'KeyH':
+        SidebarLoader.isExpanded && handleToggle();
+        flipSidebar(document, 'hide', SidebarLoader.sidebarTabs.length);
+        break;
+      case 'ArrowRight':
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index:
+            currentTabIndex === SidebarLoader.sidebarTabs.length
+              ? getFirstValidTabIndex(SidebarLoader.sidebarTabs)
+              : (
+                  currentTabIndex +
+                  Number(getFirstValidTabIndex(SidebarLoader.sidebarTabs.slice(currentTabIndex)))
+                ).toString(),
+        });
+        break;
+      case 'ArrowLeft':
+        const lastIndex = getLastValidTabIndex(
+          SidebarLoader.sidebarTabs.slice(0, currentTabIndex - 1),
+        );
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index: lastIndex === '0' ? getLastValidTabIndex(SidebarLoader.sidebarTabs) : lastIndex,
+        });
+        break;
     }
   };
 
