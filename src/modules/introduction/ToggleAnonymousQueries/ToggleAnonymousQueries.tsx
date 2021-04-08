@@ -27,7 +27,7 @@ export const ToggleAnonymousQueries = () => {
   return (
     <div id="privacy-toggle-container">
       <Switch className="privacy-toggle-button" checked={checked} onChange={handleToggle} />
-      <Title level={3}>{checked ? 'Anonymized Server Calls' : '100% Local'}</Title>
+      <Title level={3}>{checked ? 'Anonymized Server Calls' : 'Local Processing'}</Title>
       {checked ? (
         <>
           <p>Allows us to make more suggestions on more sites.</p>
