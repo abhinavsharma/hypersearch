@@ -621,7 +621,7 @@ class SidebarLoader {
         if (
           !key.startsWith('ignored-') &&
           // TODO - Extract this to constant
-          !key.match(/(cachedSubtabs|anonymousQueries|licenseActivated)/gi)
+          !key.match(/(cachedSubtabs)/gi)
         ) {
           const { isRelevant } = AugmentationManager.getAugmentationRelevancy(augmentation);
           if (isRelevant && isAugmentationEnabled(augmentation)) {

@@ -4,7 +4,16 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import { debug, CUSTOM_SEARCH_ENGINES, extractUrlProperties, INTENTS_BLOB_URL } from 'utils';
+import {
+  debug,
+  CUSTOM_SEARCH_ENGINES,
+  extractUrlProperties,
+  INTENTS_BLOB_URL,
+  SYNC_LICENSE_KEY,
+  SYNC_FINISHED_KEY,
+  SYNC_PRIVACY_KEY,
+  SYNC_DISTINCT_KEY,
+} from 'utils';
 
 class SearchEngineManager {
   /**
@@ -45,7 +54,7 @@ class SearchEngineManager {
 
   constructor() {
     debug('SearchEngineManager - initialize\n---\n\tSingleton Instance', this, '\n---');
-    this.safeElements = ['distinctId', 'licenseActivated'];
+    this.safeElements = [SYNC_DISTINCT_KEY, SYNC_LICENSE_KEY, SYNC_PRIVACY_KEY, SYNC_FINISHED_KEY];
     this.throttled = false;
     this.getIntents();
   }
