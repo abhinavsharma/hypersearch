@@ -70,18 +70,19 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   }, [name, actions, conditions.length]);
 
   const handleClose = () => {
-    if (!setActiveKey) {
-      goBack();
-    } else {
+    goBack();
+    goBack();
+    if (setActiveKey) {
       setActiveKey(
         isAdding && !initiatedFromActives ? getFirstValidTabIndex(SidebarLoader.sidebarTabs) : '0',
       );
-      goBack();
     }
   };
 
   const handleSave = () => {
     if (isDisabled) return null;
+    goBack();
+    goBack();
     AugmentationManager.addOrEditAugmentation(augmentation, {
       actions,
       conditions,
@@ -90,10 +91,6 @@ export const EditAugmentationPage: EditAugmentationPage = ({
       name,
       isActive,
     });
-    setTimeout(() => {
-      goBack();
-      goBack();
-    }, 100);
   };
 
   const handleSaveAction = (e: CustomAction) => {
