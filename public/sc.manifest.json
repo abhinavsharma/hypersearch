@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Insight Lens",
     "description": "Search for anything like an insider while keeping your history private and secure.",
-    "version": "0.0.92",
+    "version": "0.0.94",
     "web_accessible_resources": [
         "*.png",
         "*.svg",
