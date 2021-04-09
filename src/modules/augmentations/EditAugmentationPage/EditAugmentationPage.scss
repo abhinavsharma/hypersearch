@@ -282,6 +282,10 @@
           border-bottom: 1px solid #eee;
           padding: 10px 10px;
 
+          &.edit-input-new-item-row {
+            width: 820px;
+          }
+
           .condition-label {
             align-items: center;
           }

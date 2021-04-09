@@ -89,10 +89,11 @@ export const EditConditionInput: EditConditionInput = ({
 
   return (
     <>
-      <Row className="edit-input-row">
-        <Col xs={13} className="condition-label">
+      <Row className={newKey ? "edit-input-row": "edit-input-row edit-input-new-item-row"}>
+        <Col xs={12} className="condition-label">
           {!newKey ? (
             <Select
+              style={{width: '100%'}}
               className="label-select"
               placeholder="Add new condition"
               onChange={handleLabelChange}

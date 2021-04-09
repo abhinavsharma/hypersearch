@@ -58,10 +58,11 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
   };
 
   return (
-    <Row className="edit-input-row">
+    <Row className={action.key ? "edit-input-row": "edit-input-row edit-input-new-item-row"}>
       <Col xs={12} className="action-value-col">
         {!action.key ? (
           <Select
+            style={{width: '100%'}}
             className="label-select"
             placeholder="Add new action"
             onChange={handleLabelChange}
