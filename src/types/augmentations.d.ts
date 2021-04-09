@@ -31,4 +31,5 @@ declare type AugmentationObject = {
   actions: Action;
   enabled?: boolean;
   installed?: boolean;
+  pinned?: boolean;
 };

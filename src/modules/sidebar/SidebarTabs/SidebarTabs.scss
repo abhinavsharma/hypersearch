@@ -9,9 +9,13 @@
   }
 
   .ant-tabs-extra-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     width: 50px;
-    padding: 5px;
+    min-height: 60px;
 
     .expand-icon {
       display: flex;

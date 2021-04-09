@@ -25,8 +25,8 @@ import {
   SEARCH_QUERY_CONTAINS_CONDITION,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   IGNORED_PREFIX,
-  CSE_PREFIX,
   INSTALLED_PREFIX,
+  PINNED_PREFIX,
 } from 'utils';
 
 class AugmentationManager {
@@ -81,9 +81,53 @@ class AugmentationManager {
     chrome.storage.local.set({
       [`${IGNORED_PREFIX}-${augmentation.id}`]: augmentation,
     });
+    SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
     SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  }
+
+  public enableSuggestedAugmentation(augmentation: AugmentationObject) {
+    SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    chrome.storage.local.remove(`${IGNORED_PREFIX}-${augmentation.id}`);
+    augmentation.pinned
+      ? SidebarLoader.pinnedAugmentations.push(augmentation)
+      : SidebarLoader.suggestedAugmentations.push(augmentation);
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  }
+
+  public pinAugmentation(augmentation: AugmentationObject) {
+    augmentation.pinned = true;
+    SidebarLoader.pinnedAugmentations.push(augmentation);
+    chrome.storage.local.set({
+      [`${PINNED_PREFIX}-${augmentation.id}`]: augmentation,
+    });
+    augmentation.installed
+      ? (SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
+          (i) => i.id !== augmentation.id,
+        ))
+      : (SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
+          (i) => i.id !== augmentation.id,
+        ));
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  }
+
+  public unpinAugmentation(augmentation: AugmentationObject) {
+    augmentation.pinned = false;
+    SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    chrome.storage.local.remove(`${PINNED_PREFIX}-${augmentation.id}`);
+    !this.getAugmentationRelevancy(augmentation).isRelevant
+      ? SidebarLoader.otherAugmentations.push(augmentation)
+      : augmentation.installed
+      ? SidebarLoader.installedAugmentations.push(augmentation)
+      : SidebarLoader.suggestedAugmentations.push(augmentation);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
@@ -98,6 +142,10 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public removeInstalledAugmentation(augmentation: AugmentationObject) {
+    this.unpinAugmentation(augmentation);
+    SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
     SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
@@ -125,7 +173,16 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public getAugmentationRelevancy(augmentation: AugmentationObject) {
+  public getAugmentationRelevancy(
+    augmentation: AugmentationObject,
+  ): {
+    isRelevant: boolean;
+    hasPreventAutoexpand: boolean;
+    domainsToLookAction: string[];
+    domainsToLookCondition: string[];
+    matchingDomainsAction: string[];
+    matchingDomainsCondition: string[];
+  } & NullPrototype<any> {
     if (!augmentation?.actions || !augmentation.conditions) {
       return Object.create(null);
     }
@@ -204,7 +261,7 @@ class AugmentationManager {
       .filter((isMatch) => !!isMatch).length;
 
     return {
-      isRelevant: matchingQuery || matchingDomains || matchingIntent,
+      isRelevant: matchingQuery || matchingDomains || matchingIntent || augmentation.pinned,
       hasPreventAutoexpand,
       domainsToLookAction,
       domainsToLookCondition,

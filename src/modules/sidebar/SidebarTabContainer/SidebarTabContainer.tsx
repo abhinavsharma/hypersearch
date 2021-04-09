@@ -5,25 +5,32 @@ import {
   HIDE_DOMAINS_MESSAGE,
   HIDE_TAB_FAKE_URL,
   keyboardHandler,
+  SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const augmentation =
-    (tab.isSuggested
+    (!tab.augmentation.hasOwnProperty('enabled')
       ? SidebarLoader.suggestedAugmentations
       : SidebarLoader.installedAugmentations
     ).find(({ id }) => id === tab.id) ?? Object.create(null);
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
+
+  const hideDomains = tab.augmentation.actions.action_list.reduce((a, { key, value }) => {
+    if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
+    return a;
+  }, []);
+
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
-    if (tab.hideDomains.length) {
+    if (hideDomains) {
       window.top.postMessage(
         {
           augmentation,
+          hideDomains,
           name: HIDE_DOMAINS_MESSAGE,
           tab: tab.id,
-          hideDomains: tab.hideDomains,
           selector: {
             link:
               SidebarLoader.customSearchEngine.querySelector[

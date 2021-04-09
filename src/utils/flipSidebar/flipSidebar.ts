@@ -17,7 +17,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
   )[0] as HTMLDivElement;
 
   const activeAugmentationHeader = document.getElementsByClassName(
-    'add-augmentation-tab-header',
+    'builder-header',
   )[0] as HTMLDivElement;
 
   if (!showButton || innerDocument.classList.contains('insight-expanded')) return;

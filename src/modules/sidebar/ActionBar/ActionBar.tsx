@@ -5,16 +5,11 @@ import Tooltip from 'antd/lib/tooltip';
 import { EditAugmentationPage } from 'modules/augmentations/';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import {
-  getFirstValidTabIndex,
-  ANY_URL_CONDITION,
-  ANY_URL_CONDITION_TEMPLATE,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_Z_INDEX,
-} from 'utils';
+import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_Z_INDEX } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
+import tabs from 'antd/lib/tabs';
 
 const BranchesOutlined = React.lazy(
   async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),
@@ -24,8 +19,8 @@ const PushpinOutlined = React.lazy(
   async () => await import('@ant-design/icons/PushpinOutlined').then((mod) => mod),
 );
 
-const MessageOutlined = React.lazy(
-  async () => await import('@ant-design/icons/MessageOutlined').then((mod) => mod),
+const PushpinFilled = React.lazy(
+  async () => await import('@ant-design/icons/PushpinFilled').then((mod) => mod),
 );
 
 const CloseCircleOutlined = React.lazy(
@@ -52,57 +47,47 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const [isSharing, setIsSharing] = useState<boolean>(false);
   const tooltipContainer = useRef(null);
 
-  const augmentation: AugmentationObject =
-    (tab.isSuggested
-      ? SidebarLoader.suggestedAugmentations
-      : SidebarLoader.installedAugmentations
-    ).find(({ id }) => id === tab.id) ?? Object.create(null);
-
-  const isPinned = !!augmentation.conditions?.condition_list.find(
-    (i) => i.key === ANY_URL_CONDITION,
-  );
-
   const handleShare = async () => {
     setIsSharing(true);
-    await AugmentationManager.shareAugmentation(augmentation);
+    await AugmentationManager.shareAugmentation(tab.augmentation);
     setIsSharing(false);
   };
 
   const handleOpenAugmentationBuilder = () => {
-    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, augmentation });
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      augmentation: tab.augmentation,
+    });
   };
 
-  const handleAddPinned = () => {
-    AugmentationManager.addOrEditAugmentation(augmentation, {
-      conditions: [ANY_URL_CONDITION_TEMPLATE],
-      name: `${tab.title} / Pinned`,
-      isActive: true,
-      isPinning: true,
-    });
+  const handlePin = () => AugmentationManager.pinAugmentation(tab.augmentation);
+  const handleUnpin = () => {
+    AugmentationManager.unpinAugmentation(tab.augmentation);
+    setActiveKey(getFirstValidTabIndex(SidebarLoader.sidebarTabs));
   };
 
   const handleRemoveInstalled = () => {
     setActiveKey(
       getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
     );
-    AugmentationManager.removeInstalledAugmentation(augmentation);
+    AugmentationManager.removeInstalledAugmentation(tab.augmentation);
   };
 
   const handleHideSuggested = (tab: SidebarTab) => {
     setActiveKey(
       getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
     );
-    AugmentationManager.disableSuggestedAugmentation(augmentation);
+    AugmentationManager.disableSuggestedAugmentation(tab.augmentation);
   };
 
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
-        {augmentation.installed ? (
+        {tab.augmentation.installed ? (
           <Link
             component={EditAugmentationPage}
             componentProps={{
-              augmentation,
+              augmentation: tab.augmentation,
               setActiveKey,
             }}
             key={tab.id}
@@ -116,7 +101,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               <Button
                 type="link"
                 onClick={handleOpenAugmentationBuilder}
-                style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
                 icon={
                   <Suspense fallback={null}>
                     <EditOutlined />
@@ -130,11 +114,11 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             component={EditAugmentationPage}
             componentProps={{
               augmentation: {
-                ...augmentation,
-                description: tab.isSuggested ? '' : augmentation.description,
-                installed: !tab.isSuggested,
+                ...tab.augmentation,
+                description: !tab.augmentation.installed ? '' : tab.augmentation.description,
+                installed: tab.augmentation.installed,
               },
-              isAdding: tab.isSuggested,
+              isAdding: !tab.augmentation.installed,
               setActiveKey,
             }}
             key={tab.id}
@@ -148,7 +132,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               <Button
                 type="link"
                 onClick={handleOpenAugmentationBuilder}
-                style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
                 icon={
                   <Suspense fallback={null}>
                     <BranchesOutlined />
@@ -158,17 +141,33 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             </Tooltip>
           </Link>
         )}
-        {!isPinned && (
+        {tab.augmentation.pinned ? (
           <Tooltip
-            title="Always show this lens"
+            title="Unpin this lens"
             destroyTooltipOnHide={{ keepParent: false }}
             getPopupContainer={() => tooltipContainer.current}
             placement="bottom"
           >
             <Button
               type="link"
-              onClick={handleAddPinned}
-              style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
+              onClick={handleUnpin}
+              icon={
+                <Suspense fallback={null}>
+                  <PushpinFilled />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip
+            title="Temporarily pin this lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              onClick={handlePin}
               icon={
                 <Suspense fallback={null}>
                   <PushpinOutlined />
@@ -177,7 +176,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        {augmentation.installed && (
+        {tab.augmentation.installed && (
           <Tooltip
             title="Delete local lens"
             destroyTooltipOnHide={{ keepParent: false }}
@@ -187,7 +186,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             <Button
               type="link"
               onClick={handleRemoveInstalled}
-              style={{ marginBottom: tab.isSuggested ? 0 : 7 }}
               icon={
                 <Suspense fallback={null}>
                   <DeleteOutlined style={{ color: 'red' }} />
@@ -196,7 +194,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        {tab.isSuggested && (
+        {!tab.augmentation.installed && (
           <Tooltip
             title="Hide Lens"
             destroyTooltipOnHide={{ keepParent: false }}

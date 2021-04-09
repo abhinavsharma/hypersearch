@@ -157,15 +157,23 @@ export const getRankedDomains = (domains: string[]) =>
     .map(([key]) => key);
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
-  const bothSuggested = a.isSuggested && b.isSuggested;
-  const aIsAny = a.conditionTypes.indexOf(ANY_URL_CONDITION) > -1;
-  const bIsAny = b.conditionTypes.indexOf(ANY_URL_CONDITION) > -1;
-  if (a.isSuggested && !b.isSuggested && !aIsAny && bIsAny) return -1;
-  if (a.isSuggested && !b.isSuggested && aIsAny && !bIsAny) return 1;
-  if (!a.isSuggested && b.isSuggested && !aIsAny && bIsAny) return -1;
-  if (!a.isSuggested && b.isSuggested && aIsAny && !bIsAny) return 1;
-  if (a.isSuggested && !b.isSuggested) return 1;
-  if (!a.isSuggested && b.isSuggested) return -1;
+  const aConditions = Array.from(
+    new Set(a.augmentation.conditions.condition_list.map(({ key }) => key)),
+  );
+  const bConditions = Array.from(
+    new Set(b.augmentation.conditions.condition_list.map(({ key }) => key)),
+  );
+  const aSuggested = !a.augmentation.hasOwnProperty('enabled');
+  const bSuggested = !b.augmentation.hasOwnProperty('enabled');
+  const bothSuggested = aSuggested && bSuggested;
+  const aIsAny = aConditions.indexOf(ANY_URL_CONDITION) > -1;
+  const bIsAny = bConditions.indexOf(ANY_URL_CONDITION) > -1;
+  if (aSuggested && !bSuggested && !aIsAny && bIsAny) return -1;
+  if (aSuggested && !bSuggested && aIsAny && !bIsAny) return 1;
+  if (!aSuggested && bSuggested && !aIsAny && bIsAny) return -1;
+  if (!aSuggested && bSuggested && aIsAny && !bIsAny) return 1;
+  if (aSuggested && !bSuggested) return 1;
+  if (!aSuggested && bSuggested) return -1;
   if (bothSuggested && aIsAny && !bIsAny) return 1;
   if (bothSuggested && !aIsAny && bIsAny) return -1;
   if (!aIsAny && bIsAny) return -1;

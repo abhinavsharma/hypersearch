@@ -34,12 +34,11 @@ import {
   keyboardHandler,
   IGNORED_PREFIX,
   CSE_PREFIX,
-  INSTALLED_PREFIX,
+  PINNED_PREFIX,
 } from 'utils';
 
 /**
  * ! In order of priority
- * TODO: Lower complexity of getTabsAndAugmentations method
  * TODO: Decouple custom search engine handler
  * TODO: Decouple Subtabs functionality
  */
@@ -165,6 +164,15 @@ class SidebarLoader {
   public otherAugmentations: AugmentationObject[];
 
   /**
+   * The list of pinned augmentations.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public pinnedAugmentations: AugmentationObject[];
+
+  /**
    * The list of locally installed but disabled augmentations.
    *
    * @public
@@ -233,6 +241,7 @@ class SidebarLoader {
     this.customSearchEngine = Object.create(null);
     this.installedAugmentations = [];
     this.suggestedAugmentations = [];
+    this.pinnedAugmentations = [];
     this.otherAugmentations = [];
     this.ignoredAugmentations = [];
     this.matchingDisabledInstalledAugmentations = [];
@@ -346,6 +355,7 @@ class SidebarLoader {
    */
   public getTabsAndAugmentations(
     augmentations: AugmentationObject[] = [
+      ...this.pinnedAugmentations,
       ...this.installedAugmentations,
       ...this.suggestedAugmentations,
     ],
@@ -375,9 +385,7 @@ class SidebarLoader {
           hasPreventAutoexpand,
         } = AugmentationManager.getAugmentationRelevancy(augmentation);
 
-        if (hasPreventAutoexpand) {
-          this.preventAutoExpand = hasPreventAutoexpand;
-        }
+        if (hasPreventAutoexpand) this.preventAutoExpand = hasPreventAutoexpand;
 
         /** DEV START **/
         IN_DEBUG_MODE &&
@@ -398,9 +406,13 @@ class SidebarLoader {
         if (isRelevant && isAugmentationEnabled(augmentation)) {
           this.query = new URLSearchParams(this.document.location.search).get('q');
           this.tabDomains[augmentation.id] = [];
-          this.domainsToSearch[augmentation.id] = augmentation.actions.action_list.find(
-            ({ key }) => key === SEARCH_DOMAINS_ACTION,
-          )?.value;
+          this.domainsToSearch[augmentation.id] = augmentation.actions.action_list.reduce(
+            (a, { key, value }) => {
+              if (key === SEARCH_DOMAINS_ACTION) a = a.concat(value);
+              return a;
+            },
+            [],
+          );
 
           /** DEV START **/
           IN_DEBUG_MODE &&
@@ -419,67 +431,35 @@ class SidebarLoader {
             );
           /** DEV END **/
 
-          // When the augmnetation is enabled, but it looks like that its a suggested augmentation, we put
-          // it to the suggested list, except its already there.
-          if (
-            !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-            !augmentation.id.startsWith(INSTALLED_PREFIX) &&
-            isRelevant
+          if (augmentation.hasOwnProperty('enabled')) {
+            !augmentation.enabled && this.matchingDisabledInstalledAugmentations.push(augmentation);
+          } else if (
+            !this.suggestedAugmentations.find(({ id }) => id === augmentation.id) &&
+            !this.pinnedAugmentations.find(({ id }) => id === augmentation.id)
           ) {
             this.suggestedAugmentations.push(augmentation);
           }
 
-          // Create sidebar tabs from the list of matching enabled relevant installed and suggested augmentations.
-          if (augmentation.enabled || (!augmentation.hasOwnProperty('enabled') && isRelevant)) {
-            this.getTabUrls(augmentation).forEach((url) => {
-              // TODO: pass the whole augmentation object to sidebar tab!
-              const tab = {
-                url,
-                matchingDomainsAction,
-                matchingDomainsCondition,
-                id: augmentation.id,
-                isCse: true,
-                isSuggested: !augmentation.hasOwnProperty('enabled'),
-                default: !newTabs.length,
-                title: augmentation.name,
-                description: augmentation.description,
-                actionTypes: Array.from(
-                  new Set(augmentation.actions.action_list.map(({ key }) => key)),
-                ),
-                conditionTypes: Array.from(
-                  new Set(augmentation.conditions.condition_list.map(({ key }) => key)),
-                ),
-                hideDomains: augmentation.actions.action_list.reduce((a, { key, value }) => {
-                  if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
-                  return a;
-                }, []),
-              };
-              newTabs.unshift(tab);
+          this.getTabUrls(augmentation).forEach((url) => {
+            const tab: SidebarTab = {
+              url,
+              augmentation,
+              matchingDomainsAction,
+              matchingDomainsCondition,
+              id: augmentation.id,
+              isCse: true,
+              title: augmentation.name,
+              description: augmentation.description,
+            };
+            newTabs.unshift(tab);
 
-              /** DEV START **/
-              IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
-              /** DEV END **/
-            });
-          } else {
-            this.matchingDisabledInstalledAugmentations.push(augmentation);
-          }
-        }
-
-        if (augmentation.installed && !isRelevant) {
+            /** DEV START **/
+            IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
+            /** DEV END **/
+          });
+        } else {
           this.otherAugmentations.push(augmentation);
         }
-
-        if (
-          !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-          !augmentation.id.startsWith(INSTALLED_PREFIX) &&
-          !augmentation.id.startsWith(IGNORED_PREFIX)
-        ) {
-          this.otherAugmentations.push(augmentation);
-        }
-
-        augmentation.hasOwnProperty('enabled') &&
-          !augmentation.enabled &&
-          this.matchingDisabledInstalledAugmentations.push(augmentation);
       }
     });
 
@@ -623,12 +603,20 @@ class SidebarLoader {
         case IGNORED_PREFIX:
           this.ignoredAugmentations.push(augmentation);
           break;
+        case PINNED_PREFIX:
+          this.pinnedAugmentations.push(augmentation);
+          this.installedAugmentations = this.installedAugmentations.filter(
+            ({ id }) => id !== augmentation.id,
+          );
+          break;
         case CSE_PREFIX:
           const { isRelevant } = AugmentationManager.getAugmentationRelevancy(augmentation);
-          if (isRelevant && isAugmentationEnabled(augmentation)) {
-            this.installedAugmentations.push(augmentation);
-          } else {
-            this.otherAugmentations.push(augmentation);
+          if (!this.pinnedAugmentations.find(({ id }) => id === augmentation.id)) {
+            if (isRelevant && isAugmentationEnabled(augmentation)) {
+              this.installedAugmentations.push(augmentation);
+            } else {
+              this.otherAugmentations.push(augmentation);
+            }
           }
           break;
         default:
@@ -640,6 +628,8 @@ class SidebarLoader {
       this.installedAugmentations,
       '\n\tIgnored Augmentations',
       this.ignoredAugmentations,
+      '\n\tPinned Augmentations',
+      this.pinnedAugmentations,
       '\n---',
     );
   }
@@ -662,8 +652,11 @@ class SidebarLoader {
     await this.getLocalAugmentations();
     this.tabDomains['original'] = this.getDomains(document);
     this.getTabsAndAugmentations([
-      ...response.suggested_augmentations,
+      ...this.pinnedAugmentations,
       ...this.installedAugmentations,
+      ...response.suggested_augmentations.filter(
+        (augmentation) => !this.pinnedAugmentations.find(({ id }) => id === augmentation.id),
+      ),
     ]);
     const subtabs: SidebarTab[] = response.subtabs
       .slice(1, response.subtabs.length)

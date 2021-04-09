@@ -6,6 +6,7 @@ declare module './AugmentationRow' {
     setActiveKey: Dispatch<SetStateAction<string>>;
     ignored?: boolean;
     other?: boolean;
+    pinned?: boolean;
   };
 
   type AugmentationRow = FunctionComponent<AugmentationRowProps>;

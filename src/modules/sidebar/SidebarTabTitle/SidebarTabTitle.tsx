@@ -3,7 +3,6 @@ import React from 'react';
 import './SidebarTabTitle.scss';
 import 'antd/lib/tooltip/style/index.css';
 
-
 export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setActiveKey }) => {
   const handleClick = () => setActiveKey((index + 1).toString());
   return (
@@ -16,15 +15,15 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
           activeKey === '0' ? 'hidden' : ''
         }`}
       >
-        {tab.isSuggested ? 
-        <Tooltip
-          title={"Suggested"}
-          destroyTooltipOnHide={{ keepParent: false }}>{tab.title}
-        </Tooltip> : 
-        <Tooltip
-          title={"Local"}
-          destroyTooltipOnHide={{ keepParent: false }}>{tab.title} {`\u00a0◾`}
-        </Tooltip>}
+        {!tab.augmentation.installed ? (
+          <Tooltip title={'Suggested'} destroyTooltipOnHide={{ keepParent: false }}>
+            {tab.title}
+          </Tooltip>
+        ) : (
+          <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
+            {tab.title} {`\u00a0◾`}
+          </Tooltip>
+        )}
       </span>
     </div>
   );
