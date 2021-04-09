@@ -30,13 +30,13 @@ export const ToggleAnonymousQueries = () => {
       <Title level={3}>{checked ? 'Anonymized Server Calls' : 'Local Processing'}</Title>
       {checked ? (
         <>
-          <p>Allows us to make more suggestions on more sites.</p>
+          <p>More and better suggestions from our servers</p>
           <p>We don't log any identifiable data, not even your IP address.</p>
         </>
       ) : (
         <>
+          <p>Fewer suggestions but maximum possible privacy.</p>
           <p>No data is ever sent to our servers.</p>
-          <p>Suggestions are limited to Google, DuckDuckGo and Bing.</p>
         </>
       )}
     </div>

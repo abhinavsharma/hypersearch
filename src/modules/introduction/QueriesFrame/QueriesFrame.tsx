@@ -73,10 +73,10 @@ export const QueriesFrame = () => {
   return (
     <>
       <Helmet>
-        <title>{APP_NAME} - Ready!</title>
+        <title>{APP_NAME} - Try Searching</title>
       </Helmet>
       <div id="queries-frame-container">
-        <Title level={2}>Ready! Try some queries</Title>
+        <Title level={2}>Ready, Set, Search!</Title>
         <List
           header={header}
           dataSource={value}

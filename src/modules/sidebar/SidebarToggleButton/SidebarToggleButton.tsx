@@ -63,11 +63,12 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   ) : (
     <Tooltip title={'Preview sidebar ("P" key)'} destroyTooltipOnHide={{ keepParent: false }}>
       <div className="add-augmentation-button insight-sidebar-toggle-button empty">
-        <div className="insight-sidebar-toggle-appname">{APP_NAME}</div>
+        <div className="insight-sidebar-toggle-appname insight-center">
+          <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
+        </div>
         <Button type="text" target="blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
-          🤔 Send Feedback
+          Send Feedback
         </Button>
-        <Divider />
         <Button type="text" onClick={handleClick}>
           Create a lens
         </Button>

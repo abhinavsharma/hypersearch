@@ -1,4 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;800&display=swap');
+
 
 body {
   font-family: 'Inter', sans-serif !important;
@@ -17,17 +19,27 @@ body {
     max-width: 1200px;
 
     h1 {
+      color: #fff !important;
+      font-family: 'DM Serif Display', serif;
       font-size: 150px;
+      font-weight: 400;
       margin-bottom: 0px;
     }
 
     h2 {
+      color: #fff !important;
       font-size: 64px;
       margin: 0;
       font-weight: 500;
     }
 
     #license-frame-container {
+      button.step-button:nth-of-type(1) {
+        &:disabled {
+          border: none;
+        }
+      }
+
       button.step-button:nth-of-type(2) {
         border: none;
       }
