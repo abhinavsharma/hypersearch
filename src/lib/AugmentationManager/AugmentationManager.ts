@@ -300,6 +300,7 @@ class AugmentationManager {
               SidebarLoader.customSearchEngine.querySelector[
                 window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
               ],
+            featured: SidebarLoader.customSearchEngine.querySelector.featured,
             container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
           },
         },
