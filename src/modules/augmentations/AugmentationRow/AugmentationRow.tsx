@@ -4,7 +4,12 @@ import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import Tooltip from 'antd/lib/tooltip';
 import { EditAugmentationPage } from 'modules/augmentations';
-import { ANY_URL_CONDITION, ANY_URL_CONDITION_TEMPLATE, UPDATE_SIDEBAR_TABS_MESSAGE } from 'utils';
+import {
+  ANY_URL_CONDITION,
+  ANY_URL_CONDITION_TEMPLATE,
+  IGNORED_PREFIX,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
+} from 'utils';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -39,7 +44,7 @@ export const AugmentationRow: AugmentationRow = ({
     SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
-    chrome.storage.local.remove(`ignored-${augmentation.id}`);
+    chrome.storage.local.remove(`${IGNORED_PREFIX}-${augmentation.id}`);
     SidebarLoader.suggestedAugmentations.push(augmentation);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };

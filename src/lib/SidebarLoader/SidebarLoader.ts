@@ -32,6 +32,9 @@ import {
   OPEN_URL_ACTION,
   HIDE_TAB_FAKE_URL,
   keyboardHandler,
+  IGNORED_PREFIX,
+  CSE_PREFIX,
+  INSTALLED_PREFIX,
 } from 'utils';
 
 /**
@@ -361,7 +364,7 @@ class SidebarLoader {
     augmentations.forEach((augmentation: AugmentationObject) => {
       if (
         this.customSearchEngine &&
-        augmentation.id.startsWith('cse-') &&
+        augmentation.id.startsWith(CSE_PREFIX) &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
       ) {
         const {
@@ -420,7 +423,7 @@ class SidebarLoader {
           // it to the suggested list, except its already there.
           if (
             !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-            !augmentation.id.startsWith('cse-custom') &&
+            !augmentation.id.startsWith(INSTALLED_PREFIX) &&
             isRelevant
           ) {
             this.suggestedAugmentations.push(augmentation);
@@ -468,8 +471,8 @@ class SidebarLoader {
 
         if (
           !this.suggestedAugmentations.find((i) => i.id === augmentation.id) &&
-          !augmentation.id.startsWith('cse-custom') &&
-          !augmentation.id.startsWith('ignored')
+          !augmentation.id.startsWith(INSTALLED_PREFIX) &&
+          !augmentation.id.startsWith(IGNORED_PREFIX)
         ) {
           this.otherAugmentations.push(augmentation);
         }
@@ -614,27 +617,24 @@ class SidebarLoader {
     const locals: Record<string, AugmentationObject> = await new Promise((resolve) =>
       chrome.storage.local.get(resolve),
     );
-    this.ignoredAugmentations =
-      Object.entries(locals).reduce((a, [key, value]) => {
-        key.startsWith('ignored-') && a.push(value);
-        return a;
-      }, []) ?? [];
-    this.installedAugmentations =
-      Object.entries(locals).reduce((a, [key, augmentation]) => {
-        if (
-          !key.startsWith('ignored-') &&
-          // TODO - Extract this to constant
-          !key.match(/(cachedSubtabs)/gi)
-        ) {
+    Object.entries(locals).forEach(([key, augmentation]) => {
+      const flag = key.split('-')[0];
+      switch (flag) {
+        case IGNORED_PREFIX:
+          this.ignoredAugmentations.push(augmentation);
+          break;
+        case CSE_PREFIX:
           const { isRelevant } = AugmentationManager.getAugmentationRelevancy(augmentation);
           if (isRelevant && isAugmentationEnabled(augmentation)) {
-            a.push(augmentation);
+            this.installedAugmentations.push(augmentation);
           } else {
             this.otherAugmentations.push(augmentation);
           }
-        }
-        return a;
-      }, []) ?? [];
+          break;
+        default:
+          break;
+      }
+    });
     debug(
       'getLocalAugmentations - call\n---\n\tInstalled Augmentations',
       this.installedAugmentations,

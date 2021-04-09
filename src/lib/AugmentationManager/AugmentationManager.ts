@@ -24,6 +24,9 @@ import {
   SEARCH_INTENT_IS_CONDITION,
   SEARCH_QUERY_CONTAINS_CONDITION,
   UPDATE_SIDEBAR_TABS_MESSAGE,
+  IGNORED_PREFIX,
+  CSE_PREFIX,
+  INSTALLED_PREFIX,
 } from 'utils';
 
 class AugmentationManager {
@@ -76,7 +79,7 @@ class AugmentationManager {
   public disableSuggestedAugmentation(augmentation: AugmentationObject) {
     SidebarLoader.ignoredAugmentations.push(augmentation);
     chrome.storage.local.set({
-      [`ignored-${augmentation.id}`]: augmentation,
+      [`${IGNORED_PREFIX}-${augmentation.id}`]: augmentation,
     });
     SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
       (i) => i.id !== augmentation.id,
@@ -256,10 +259,11 @@ class AugmentationManager {
       isPinning,
     }: AugmentationData,
   ) {
-    const customId = `cse-custom-${
+    const customId = `${INSTALLED_PREFIX}-${
       augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
     }-${uuid()}`;
-    const id = augmentation.id.startsWith('cse-custom-') && !isPinning ? augmentation.id : customId;
+    const id =
+      augmentation.id.startsWith(`${INSTALLED_PREFIX}-`) && !isPinning ? augmentation.id : customId;
     const updated = {
       ...augmentation,
       id,
