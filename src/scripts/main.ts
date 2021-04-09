@@ -32,6 +32,12 @@ import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler } from 'u
         }
         const blocks = [];
         const results = Array.from(document.querySelectorAll(data.selector.link)) as HTMLElement[];
+        const featuredContainers = [];
+        const featured = data.selector.featured.reduce((a, selector) => {
+          const partial = Array.from(document.querySelectorAll(selector)) as HTMLElement[];
+          featuredContainers.push(document.querySelector(selector.split(' ')[0]));
+          return a.concat(partial);
+        }, []) as HTMLElement[];
         results.forEach((result) => {
           data.hideDomains.forEach((domain) => {
             let domainName = '';
@@ -45,7 +51,19 @@ import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler } from 'u
             }
           });
         });
-
+        featured.forEach((result) => {
+          data.hideDomains.forEach((domain) => {
+            let domainName = '';
+            if (result instanceof HTMLLinkElement) {
+              domainName = result.getAttribute('href');
+            } else {
+              domainName = result.textContent;
+            }
+            if (domainName.match(domain)?.length) {
+              featuredContainers.forEach((container) => blocks.push(container));
+            }
+          });
+        });
         if (document.readyState === 'complete' || document.readyState === 'interactive')
           hideSerpResults(
             blocks,
