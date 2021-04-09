@@ -30,8 +30,8 @@ export const ToggleAnonymousQueries = () => {
       <Title level={3}>{checked ? 'Anonymized Server Calls' : 'Local Processing'}</Title>
       {checked ? (
         <>
-          <p>More and better suggestions from our servers</p>
-          <p>We don't log any identifiable data, not even your IP address.</p>
+          <p>More and better suggestions.</p>
+          <p>We don't log any identifiable data.</p>
         </>
       ) : (
         <>
