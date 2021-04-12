@@ -9,7 +9,6 @@ import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_Z_IND
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
-import tabs from 'antd/lib/tabs';
 
 const BranchesOutlined = React.lazy(
   async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),

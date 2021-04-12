@@ -12,8 +12,7 @@ import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentatio
 import {
   ActionBar,
   SidebarTabContainer,
-  SidebarTabDescription,
-  SidebarTabDomains,
+  SidebarTabMeta,
   SidebarTabReadable,
   SidebarTabTitle,
 } from 'modules/sidebar';
@@ -180,10 +179,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               {activeKey === (i + 1).toString() && (
                 <ActionBar tab={tab} setActiveKey={setActiveKey} />
               )}
-              {tab.description && <SidebarTabDescription tab={tab} />}
-              {tab.url && tab.isCse && (
-                <SidebarTabDomains tab={tab} domains={SidebarLoader.tabDomains[tab.id][tab.url]} />
-              )}
+              <SidebarTabMeta tab={tab} domains={SidebarLoader.tabDomains[tab.id][tab.url]} />
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
             </TabPane>

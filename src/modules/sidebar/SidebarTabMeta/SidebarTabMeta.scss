@@ -1,0 +1,45 @@
+#sidebar-tab-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  background: #f6ffed;
+  padding: 10px 0px 10px 20px;
+  border-bottom: 1px solid #ccc;
+
+  .meta-text {
+    display: inline;
+    color: #333;
+    margin: 0;
+    padding: 0;
+
+    &.collapsed {
+      display: inline-block;
+      max-width: 350px;
+    }
+
+    &.expanded {
+      display: contents;
+    }
+
+    .space-right {
+      margin-right: 5px;
+    }
+  }
+
+  .meta-link {
+    display: inline;
+    text-decoration: underline;
+    text-decoration-color: #ccc;
+    cursor: pointer;
+    color: #333;
+
+    &:hover {
+      color: #40a9ff;
+      text-decoration-color: #40a9ff;
+    }
+  }
+
+  #meta-toggle-button {
+    display: inline;
+  }
+}
