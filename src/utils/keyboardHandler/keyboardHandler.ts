@@ -11,7 +11,7 @@ import {
 let buffer = [];
 
 export const keyUpHandler = (event: KeyboardEvent) => {
-  if (event.code.search('Control') > -1) {
+  if (!!event.metaKey || !!event.ctrlKey) {
     buffer = [];
   }
 };
@@ -26,7 +26,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
-  if (buffer[0]?.search('Control') > -1) {
+  if (buffer.indexOf(true) > -1) {
     buffer = [];
     return;
   }
@@ -68,7 +68,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
       buffer = [];
       break;
     default:
-      buffer.push(event.code);
+      (!!event.metaKey || !!event.ctrlKey) && buffer.push(true);
       break;
   }
 };
