@@ -1,11 +1,11 @@
 .insight-active-augmentations-page {
   display: block;
+  margin-top: 20px;
   position: absolute;
   height: calc(100% -55px);
   width: 100%;
   top: 55px;
   bottom: 0;
-  background: #f9f9f9;
   overflow-y: auto !important;
 
   h2 {

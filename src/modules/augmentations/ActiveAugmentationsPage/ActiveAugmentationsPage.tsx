@@ -69,7 +69,6 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
   return (
     <Router>
       <div className="insight-active-augmentations-page">
-        <Divider />
         <Row>
           <Col>
             <h2>Your Local Lenses Matching This Page</h2>
