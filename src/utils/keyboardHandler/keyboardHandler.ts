@@ -19,7 +19,6 @@ export const keyUpHandler = (event: KeyboardEvent) => {
 export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) => {
   if (shouldPreventEventBubble(event)) return;
 
-  console.log(buffer);
   const currentTabIndex = Number(loader.currentTab);
   const handleToggle = () => {
     loader.isExpanded = !loader.isExpanded;
