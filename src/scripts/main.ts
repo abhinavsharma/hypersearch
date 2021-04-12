@@ -1,5 +1,12 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler, keyUpHandler } from 'utils';
+import {
+  debug,
+  HIDE_DOMAINS_MESSAGE,
+  hideSerpResults,
+  keyboardHandler,
+  keyUpHandler,
+  URL_UPDATED_MESSAGE,
+} from 'utils';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -82,4 +89,9 @@ import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler, keyUpHan
   });
   const url = new URL(location.href);
   await SidebarLoader.loadOrUpdateSidebar(document, url);
+  chrome.runtime.onMessage.addListener(async (msg) => {
+    if (msg.type === URL_UPDATED_MESSAGE) {
+      await SidebarLoader.loadOrUpdateSidebar(document, new URL(msg.url));
+    }
+  });
 })(document, location);
