@@ -36,12 +36,12 @@ import Tooltip from 'antd/lib/tooltip';
 
 const { TabPane } = Tabs;
 
-const DoubleLeftOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DoubleLeftOutlined').then((mod) => mod),
+const LeftOutlined = React.lazy(
+  async () => await import('@ant-design/icons/LeftOutlined').then((mod) => mod),
 );
 
-const DoubleRightOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DoubleRightOutlined').then((mod) => mod),
+const RightOutlined = React.lazy(
+  async () => await import('@ant-design/icons/RightOutlined').then((mod) => mod),
 );
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
@@ -61,6 +61,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const extraContent = {
     left: (
       <Suspense fallback={null}>
+        {!isExpanded && (
+          <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
+            <LeftOutlined onClick={handleExpand} className="expand-icon" />
+          </Tooltip>
+        )}
         <Tooltip
           title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar ("H" key)'}
           destroyTooltipOnHide={{ keepParent: false }}
@@ -70,14 +75,9 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             className="expand-icon"
             onClick={isExpanded ? handleExpand : handleClose}
           >
-            <DoubleRightOutlined />
+            <RightOutlined />
           </Button>
         </Tooltip>
-        {!isExpanded && (
-          <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <DoubleLeftOutlined onClick={handleExpand} className="expand-icon" />
-          </Tooltip>
-        )}
       </Suspense>
     ),
     right: (

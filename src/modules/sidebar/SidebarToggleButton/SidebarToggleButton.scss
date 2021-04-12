@@ -11,24 +11,20 @@
   border-right: none;
   cursor: pointer;
   width: 200px !important;
-  padding: 15px !important;
-  border-radius: 25px 0 0 25px !important;
+  border-radius: 10px 0 0 10px !important;
   font-size: 13px;
 
   .insight-sidebar-toggle-appname {
-    font-weight: bold;
+    font-weight: normal;
     font-size: 16px;
-    border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
     position: relative;
+    text-align: center;
 
-    
-
-    .insight-sidebar-toggle-appname-text {
-      position: absolute;
-      bottom: 9px;
-      left: 20px;
-    }
+    writing-mode: vertical-lr;
+    padding: 10px;
+    border-left: 1px solid #ccc;
+    transform: rotateZ(180deg);
   }
 
   .insight-sidebar-toggle-appname.insight-center {
@@ -42,9 +38,13 @@
 
   }
 
+  h4 {
+    font-weight: normal;
+  }
+
   .ant-list-items {
     list-style-type: none;
-    margin: 0;
+    margin-left: 10px;
     padding: 0;
   }
 
@@ -54,7 +54,7 @@
     cursor: default;
 
     .ant-btn {
-      font-weight: bold;
+      color: #1a0dab !important;
       font-size: 16px;
       color: #444;
 

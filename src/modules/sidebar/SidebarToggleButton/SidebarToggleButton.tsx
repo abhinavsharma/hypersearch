@@ -24,8 +24,8 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
 
-const DoubleLeftOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DoubleLeftOutlined').then((mod) => mod),
+const LeftOutlined = React.lazy(
+  async () => await import('@ant-design/icons/LeftOutlined').then((mod) => mod),
 );
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
@@ -39,18 +39,15 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const ListItem = (item: SidebarTab) => (
     <List.Item>
       <List.Item.Meta
-        title={item.title.length > 18 ? item.title.slice(0, 17) + '...' : item.title}
+        title={item.title.length > 36 ? item.title.slice(0, 35) + '...' : item.title}
       />
     </List.Item>
   );
 
   return getFirstValidTabIndex(tabs) !== '0' ? (
-    <Tooltip title={'Preview sidebar ("P" key)'} destroyTooltipOnHide={{ keepParent: false }}>
+    <Tooltip title={'Preview lenses ("P" key)'} destroyTooltipOnHide={{ keepParent: false }}>
       <div onClick={handleClick} className="insight-sidebar-toggle-button">
         <div className="insight-sidebar-toggle-appname">
-          <Suspense fallback={null}>
-            <DoubleLeftOutlined />
-          </Suspense>
           <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
         </div>
         <List
@@ -61,11 +58,11 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       </div>
     </Tooltip>
   ) : (
-    <Tooltip title={'Preview sidebar ("P" key)'} destroyTooltipOnHide={{ keepParent: false }}>
-      <div className="add-augmentation-button insight-sidebar-toggle-button empty">
-        <div className="insight-sidebar-toggle-appname insight-center">
-          <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
-        </div>
+    <div className="add-augmentation-button insight-sidebar-toggle-button empty">
+      <div className="insight-sidebar-toggle-appname">
+        <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
+      </div>
+      <div style={{textAlign: 'center', marginTop: 25}}>
         <Button type="text" target="blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
           Send Feedback
         </Button>
@@ -73,6 +70,6 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
           Create a lens
         </Button>
       </div>
-    </Tooltip>
+    </div>
   );
 };

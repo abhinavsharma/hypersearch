@@ -195,7 +195,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         )}
         {!tab.augmentation.installed && (
           <Tooltip
-            title="Hide Lens"
+            title="Hide lens"
             destroyTooltipOnHide={{ keepParent: false }}
             getPopupContainer={() => tooltipContainer.current}
             placement="bottom"
