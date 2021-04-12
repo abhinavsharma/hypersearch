@@ -1,19 +1,12 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import Router, { goTo } from 'route-lite';
-import Row from 'antd/lib/row';
-import Col from 'antd/lib/col';
+import React, { Suspense } from 'react';
+import Router from 'route-lite';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import Divider from 'antd/lib/divider';
-import { EditAugmentationPage, AugmentationRow } from 'modules/augmentations';
-import {
-  APP_NAME,
-  EMPTY_AUGMENTATION,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-} from 'utils/constants';
+import { AugmentationRow } from 'modules/augmentations';
+import { makeEllipsis, APP_NAME } from 'utils';
+import { useActiveAugmentationPage } from './useActiveAugmentationPage';
 import 'antd/lib/button/style/index.css';
-import 'antd/lib/grid/style/index.css';
 import 'antd/lib/divider/style/index.css';
 import './ActiveAugmentationsPage.scss';
 
@@ -22,144 +15,82 @@ const ZoomInOutlined = React.lazy(
 );
 
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey }) => {
-  const [installedAugmentations, setInstalledAugmentations] = useState<AugmentationObject[]>(
-    SidebarLoader.installedAugmentations,
-  );
-  const [suggestedAugmentations, setSuggestedAugmentations] = useState<AugmentationObject[]>(
-    SidebarLoader.suggestedAugmentations,
-  );
-  const [ignoredAugmentations, setIgnoredAugmentations] = useState<AugmentationObject[]>(
-    SidebarLoader.ignoredAugmentations,
-  );
-  const [otherAugmentations, setOtherAugmentations] = useState<AugmentationObject[]>(
-    SidebarLoader.otherAugmentations,
-  );
-  const [pinnedAugmentations, setPinnedAugmentations] = useState<AugmentationObject[]>(
-    SidebarLoader.pinnedAugmentations,
-  );
+  const {
+    installedAugmentations,
+    suggestedAugmentations,
+    ignoredAugmentations,
+    otherAugmentations,
+    pinnedAugmentations,
+    augmentationSorter,
+    handleEdit,
+  } = useActiveAugmentationPage(setActiveKey);
 
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === UPDATE_SIDEBAR_TABS_MESSAGE) {
-        setInstalledAugmentations(SidebarLoader.installedAugmentations);
-        setSuggestedAugmentations(SidebarLoader.suggestedAugmentations);
-        setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
-        setOtherAugmentations(SidebarLoader.otherAugmentations);
-        setPinnedAugmentations(SidebarLoader.pinnedAugmentations);
-      }
-      if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
-        (msg.augmentation || msg.create) &&
-          goTo(EditAugmentationPage, {
-            augmentation: msg.create ? EMPTY_AUGMENTATION : msg.augmentation,
-            isAdding: msg.create,
-            setActiveKey,
-          });
-      }
-    });
-  }, []);
-
-  const augmentationSorter = (a: AugmentationObject, b: AugmentationObject) => {
-    if (!a.installed && b.installed) return 1;
-    return (
-      a.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0) -
-      b.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0)
-    );
-  };
+  const sections = [
+    {
+      augmentations: installedAugmentations,
+      title: 'Your Local Lenses Matching This Page',
+      subtitle: makeEllipsis(SidebarLoader.url.href, 60),
+      button: (
+        <Button type="text" block onClick={handleEdit}>
+          <Suspense fallback={null}>
+            <ZoomInOutlined />
+          </Suspense>
+          &nbsp;Create New Lens
+        </Button>
+      ),
+    },
+    {
+      augmentations: pinnedAugmentations,
+      title: 'Currently Pinned Lenses',
+      pinned: true,
+    },
+    {
+      augmentations: suggestedAugmentations,
+      title: 'Suggested for This Page',
+      subtitle: `Lenses suggested by ${APP_NAME} for this page.`,
+    },
+    {
+      augmentations: ignoredAugmentations.sort(augmentationSorter),
+      title: 'Hidden',
+      subtitle: 'Lenses you have hidden.',
+      ignored: true,
+    },
+    {
+      augmentations: otherAugmentations.sort(augmentationSorter),
+      title: 'Other',
+      subtitle: 'Lenses not matching this page.',
+      other: true,
+    },
+  ];
 
   return (
     <Router>
-      <div className="insight-active-augmentations-page">
-        <Row>
-          <Col>
-            <h2>Your Local Lenses Matching This Page</h2>
-            <h3>{`${SidebarLoader.url.href.slice(0, 60)}...`}</h3>
-            {installedAugmentations.map((augmentation) => (
-              <AugmentationRow
-                key={augmentation.id}
-                augmentation={augmentation}
-                setActiveKey={setActiveKey}
-              />
-            ))}
-          </Col>
-        </Row>
-        <Row>
-          <Button
-            className="add-augmentation-button"
-            type="text"
-            block
-            onClick={() =>
-              goTo(EditAugmentationPage, {
-                augmentation: EMPTY_AUGMENTATION,
-                isAdding: true,
-                initiatedFromActives: true,
-                setActiveKey,
-              })
-            }
-          >
-            <Suspense fallback={null}>
-              <ZoomInOutlined />
-            </Suspense>{' '}
-            Create New Lens
-          </Button>
-        </Row>
-        <Divider />
-        <Row>
-          <Col>
-            <h2>Currently Pinned Lenses</h2>
-            {pinnedAugmentations.map((augmentation) => (
-              <AugmentationRow
-                pinned
-                key={augmentation.id}
-                augmentation={augmentation}
-                setActiveKey={setActiveKey}
-              />
-            ))}
-          </Col>
-        </Row>
-        <Divider />
-        <Row>
-          <Col>
-            <h2>Suggested for This Page</h2>
-            <h3>Lenses suggested by {APP_NAME} for this page.</h3>
-            {suggestedAugmentations.map((augmentation) => (
-              <AugmentationRow
-                key={augmentation.id}
-                augmentation={augmentation}
-                setActiveKey={setActiveKey}
-              />
-            ))}
-          </Col>
-        </Row>
-        <Divider />
-        <Row>
-          <Col>
-            <h2>Hidden</h2>
-            <h3>Lenses you have hidden.</h3>
-            {ignoredAugmentations.sort(augmentationSorter).map((augmentation) => (
-              <AugmentationRow
-                ignored
-                key={augmentation.id}
-                augmentation={augmentation}
-                setActiveKey={setActiveKey}
-              />
-            ))}
-          </Col>
-        </Row>
-        <Divider />
-        <Row>
-          <Col>
-            <h2>Other</h2>
-            <h3>Lenses not matching this page.</h3>
-            {otherAugmentations.sort(augmentationSorter).map((augmentation) => (
-              <AugmentationRow
-                other
-                key={augmentation.id}
-                augmentation={augmentation}
-                setActiveKey={setActiveKey}
-              />
-            ))}
-          </Col>
-        </Row>
+      <div id="active-augmentations-page">
+        {sections.map(
+          ({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
+            const hasNextSection = !!a[i + 1];
+            return (
+              <React.Fragment key={title}>
+                <section>
+                  {title && <h2 className="title">{title}</h2>}
+                  {subtitle && <h3 className="sub-title">{subtitle}</h3>}
+                  {augmentations.map((augmentation) => (
+                    <AugmentationRow
+                      pinned={pinned}
+                      other={other}
+                      ignored={ignored}
+                      key={augmentation.id}
+                      augmentation={augmentation}
+                      setActiveKey={setActiveKey}
+                    />
+                  ))}
+                  {button && button}
+                </section>
+                {hasNextSection && <Divider />}
+              </React.Fragment>
+            );
+          },
+        )}
       </div>
     </Router>
   );

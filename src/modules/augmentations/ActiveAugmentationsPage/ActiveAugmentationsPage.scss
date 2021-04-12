@@ -1,66 +1,32 @@
-.insight-active-augmentations-page {
+#active-augmentations-page {
   display: block;
   margin-top: 20px;
   position: absolute;
-  height: calc(100% -55px);
+  height: calc(100% -60px);
   width: 100%;
-  top: 55px;
+  top: 60px;
   bottom: 0;
   overflow-y: auto !important;
 
-  h2 {
-    font-size: 16px;
-    font-weight: bold;
-    margin: 0 auto 10px 10px;
-  }
+  section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
 
-  h3 {
-    font-size: 11px;
-    font-weight: 400;
-    margin-left: 10px;
-    margin-top: -10px;
-    color: #999;
-  }
-
-  a > button.ant-btn-primary {
-    color: black;
-    background-color: white;
-    border-color: white;
-    margin-top: 15px;
-    height: 40px;
-    text-align: left;
-
-    &:hover {
-      border-color: #f9f9f9;
-      background: #f9f9f9;
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0 auto 10px 10px;
     }
-  }
 
-  button.add-augmentation-button {
-    margin-top: 10px;
-  }
-
-  .ant-row {
-    .ant-col {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-
-      .installed-augmentation-row {
-        flex-direction: row;
-
-        button.half-width {
-          width: 45%;
-
-          &.installed {
-            margin-right: 5%;
-          }
-
-          &.suggested {
-            width: 140px;
-          }
-        }
-      }
+    .sub-title {
+      font-size: 11px;
+      font-weight: 400;
+      margin-left: 10px;
+      margin-top: -10px;
+      color: #999;
     }
   }
 }

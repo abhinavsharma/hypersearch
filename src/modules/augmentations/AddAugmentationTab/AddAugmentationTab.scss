@@ -1,19 +1,16 @@
 #add-augmentation-tab {
-  & *:not(div) {
+  *:not(div) {
     transition: none !important;
   }
 
-  .open-builder-button {
+  .tab-button {
     display: flex;
     height: 100%;
     width: 100%;
-
-    .ant-btn-icon-only {
-      font-size: 24px;
-    }
+    font-size: 24px;
   }
 
-  .builder-header {
+  header {
     display: flex;
     height: 60px;
     left: 9999px;
@@ -23,15 +20,27 @@
     transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 
     &.active {
-      position: fixed !important;
-      top: 0 !important;
-      left: 40px !important;
       display: flex;
-      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 40px;
+      width: calc(100% - 40px);
       background: #f9f9f9;
     }
 
-    & > button {
+    .title {
+      position: absolute;
+      display: inline-flex;
+      align-self: center;
+      left: 50%;
+      transform: translate(-50%, 0px);
+      color: black;
+      cursor: text;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .close-button {
       display: inline-flex;
       align-self: center;
 
@@ -39,18 +48,6 @@
         opacity: 0;
         cursor: default !important;
       }
-    }
-
-    & > span {
-      align-self: center;
-      color: black;
-      cursor: text;
-      display: inline-flex;
-      font-size: 16px;
-      font-weight: bold;
-      left: 50%;
-      position: absolute;
-      transform: translate(-50%, 0px);
     }
   }
 }
