@@ -22,7 +22,6 @@ import {
   EXTENSION_SERP_LOADED,
   NUM_DOMAINS_TO_CONSIDER,
   SEND_LOG_MESSAGE,
-  URL_UPDATED_MESSAGE,
   IN_DEBUG_MODE,
   DUMMY_SUBTABS_URL,
   SUBTABS_CACHE_EXPIRE_MIN,
@@ -36,6 +35,7 @@ import {
   CSE_PREFIX,
   PINNED_PREFIX,
   keyUpHandler,
+  IMAGE_URL_PARAM,
 } from 'utils';
 
 /**
@@ -459,7 +459,8 @@ class SidebarLoader {
             /** DEV END **/
           });
         } else {
-          this.otherAugmentations.push(augmentation);
+          !this.otherAugmentations.find(({ id }) => id === augmentation.id) &&
+            this.otherAugmentations.push(augmentation);
         }
       }
     });
@@ -510,6 +511,8 @@ class SidebarLoader {
     debug('loadOrUpdateSidebar - call\n');
     this.document = document;
     this.url = url;
+    const existing = this.document.getElementById('sidebar-root');
+    existing && this.document.body.removeChild(existing);
     // The first `<style>` element is injected by webpack. We have to remove this if its not
     // getting cleaned up by the host site itself. Otherwise style collisions can happen.
     const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
@@ -532,7 +535,10 @@ class SidebarLoader {
           this.sidebarTabs.length ||
           this.matchingDisabledInstalledAugmentations.length
         ) {
-          if (process.env.PROJECT === 'is' || this.isSerp) {
+          if (
+            window.location.href.search(IMAGE_URL_PARAM) === -1 &&
+            (process.env.PROJECT === 'is' || this.isSerp)
+          ) {
             this.createSidebar();
           } else {
             return null;
@@ -737,7 +743,6 @@ class SidebarLoader {
    */
   private createSidebar() {
     debug('createSidebar - call\n');
-    const existing = this.document.getElementById('sidebar-root');
     const link = this.document.createElement('link');
     link.rel = 'stylesheet';
     link.href = chrome.extension.getURL('./index.css');
@@ -746,21 +751,12 @@ class SidebarLoader {
     const wrapper = this.document.createElement('div');
     wrapper.id = 'sidebar-root';
     wrapper.style.display = 'none';
-    if (existing) {
-      this.document.body.replaceChild(wrapper, existing);
-    } else {
-      this.document.body.appendChild(wrapper);
-    }
+    this.document.body.appendChild(wrapper);
     const nonCseTabs = this.sidebarTabs.filter((tab) => !tab.isCse);
     this.sidebarTabs.concat(nonCseTabs);
     debug('createSidebar - processed\n---\n\tNon CSE Tabs', nonCseTabs, '\n---');
     const sidebarInit = React.createElement(Sidebar);
     this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', link);
-    chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === URL_UPDATED_MESSAGE) {
-        this.loadOrUpdateSidebar(document, new URL(msg.url));
-      }
-    });
   }
 
   /**
