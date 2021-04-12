@@ -35,6 +35,7 @@ import {
   IGNORED_PREFIX,
   CSE_PREFIX,
   PINNED_PREFIX,
+  keyUpHandler,
 } from 'utils';
 
 /**
@@ -562,8 +563,11 @@ class SidebarLoader {
     iframe.id = frameId;
     el.appendChild(iframe);
     const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, this);
+    const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
     el.addEventListener('keydown', handleKeyDown, true);
+    el.addEventListener('keyup', handleKeyUp);
     iframe.contentWindow.document.addEventListener('keydown', handleKeyDown, true);
+    iframe.contentWindow.document.addEventListener('keyup', handleKeyUp, true);
     const injector = () => {
       const doc = iframe.contentWindow.document.documentElement;
       // Webpack merges all SCSS files into a single <style> element. We initialize

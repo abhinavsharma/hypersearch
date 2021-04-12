@@ -1,5 +1,5 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler } from 'utils';
+import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler, keyUpHandler } from 'utils';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -10,7 +10,9 @@ import { debug, HIDE_DOMAINS_MESSAGE, hideSerpResults, keyboardHandler } from 'u
     '\n---',
   );
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
+  const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
   document.addEventListener('keydown', handleKeyDown, true);
+  document.addEventListener('keyup', handleKeyUp, true);
   let blockingAugmentations: AugmentationObject[] = [];
   window.top.addEventListener('message', ({ data }) => {
     if (data.name === HIDE_DOMAINS_MESSAGE) {

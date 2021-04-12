@@ -8,25 +8,43 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'utils';
 
+let buffer = [];
+
+export const keyUpHandler = (event: KeyboardEvent) => {
+  if (event.code.search('Control') > -1) {
+    buffer = [];
+  }
+};
+
 export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) => {
   if (shouldPreventEventBubble(event)) return;
+
   const currentTabIndex = Number(loader.currentTab);
   const handleToggle = () => {
     loader.isExpanded = !loader.isExpanded;
     expandSidebar();
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
+
+  if (buffer[0]?.search('Control') > -1) {
+    buffer = [];
+    return;
+  }
+
   switch (event.code) {
     case 'KeyF':
       handleToggle();
+      buffer = [];
       break;
     case 'KeyP':
       loader.isExpanded && handleToggle();
       flipSidebar(document, 'show', loader.sidebarTabs.length);
+      buffer = [];
       break;
     case 'KeyH':
       loader.isExpanded && handleToggle();
       flipSidebar(document, 'hide', loader.sidebarTabs.length);
+      buffer = [];
       break;
     case 'ArrowRight':
       chrome.runtime.sendMessage({
@@ -39,6 +57,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
                 Number(getFirstValidTabIndex(loader.sidebarTabs.slice(currentTabIndex)))
               ).toString(),
       });
+      buffer = [];
       break;
     case 'ArrowLeft':
       const lastIndex = getLastValidTabIndex(loader.sidebarTabs.slice(0, currentTabIndex - 1));
@@ -46,6 +65,10 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
         type: SWITCH_TO_TAB,
         index: lastIndex === '0' ? getLastValidTabIndex(loader.sidebarTabs) : lastIndex,
       });
+      buffer = [];
+      break;
+    default:
+      buffer.push(event.code);
       break;
   }
 };

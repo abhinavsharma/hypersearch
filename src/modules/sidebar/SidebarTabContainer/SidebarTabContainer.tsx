@@ -5,6 +5,7 @@ import {
   HIDE_DOMAINS_MESSAGE,
   HIDE_TAB_FAKE_URL,
   keyboardHandler,
+  keyUpHandler,
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 
@@ -16,6 +17,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       : SidebarLoader.installedAugmentations
     ).find(({ id }) => id === tab.id) ?? Object.create(null);
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
+  const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
 
   const hideDomains = tab.augmentation.actions.action_list.reduce((a, { key, value }) => {
     if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
@@ -24,6 +26,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
 
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
+    frameRef.current?.contentWindow.addEventListener('keyup', handleKeyUp);
     if (hideDomains) {
       window.top.postMessage(
         {
