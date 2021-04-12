@@ -36,6 +36,7 @@ import {
   PINNED_PREFIX,
   keyUpHandler,
   IMAGE_URL_PARAM,
+  SYNC_LICENSE_KEY,
 } from 'utils';
 
 /**
@@ -692,9 +693,16 @@ class SidebarLoader {
    */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
+    const license_key = await new Promise((resolve) =>
+      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
+    ).then((mod) => mod?.[SYNC_LICENSE_KEY]);
     const getSubtabs = async (url = this.url.href) => {
-      debug('\n---\n\tRequest API', url, '\n---');
-      return (await postAPI('subtabs', { url }, { client: 'desktop' })) as SubtabsResponse;
+      debug('\n---\n\tRequest API', url, '\n\tLicense', license_key, '\n---');
+      return (await postAPI(
+        'subtabs',
+        { url },
+        { client: 'desktop', license_key },
+      )) as SubtabsResponse;
     };
     let response: SubtabsResponse = Object.create(null);
     debug('\n---\n\tIs strong privacy enabled --- ', this.strongPrivacy ? 'Yes' : 'No', '\n---');
