@@ -3,12 +3,8 @@ declare type SidebarTab = {
   title: string;
   description?: string;
   url: URL;
-  default: boolean;
-  actionTypes?: string[];
-  conditionTypes?: string[];
+  augmentation?: AugmentationObject;
   isCse?: boolean;
-  hideDomains?: string[];
-  isSuggested?: boolean;
   matchingDomainsAction?: string[];
   matchingDomainsCondition?: string[];
   readable?: string;

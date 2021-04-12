@@ -34,6 +34,9 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
   const [otherAugmentations, setOtherAugmentations] = useState<AugmentationObject[]>(
     SidebarLoader.otherAugmentations,
   );
+  const [pinnedAugmentations, setPinnedAugmentations] = useState<AugmentationObject[]>(
+    SidebarLoader.pinnedAugmentations,
+  );
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -42,6 +45,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         setSuggestedAugmentations(SidebarLoader.suggestedAugmentations);
         setIgnoredAugmentations(SidebarLoader.ignoredAugmentations);
         setOtherAugmentations(SidebarLoader.otherAugmentations);
+        setPinnedAugmentations(SidebarLoader.pinnedAugmentations);
       }
       if (msg.type === OPEN_AUGMENTATION_BUILDER_MESSAGE) {
         (msg.augmentation || msg.create) &&
@@ -102,17 +106,29 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         <Divider />
         <Row>
           <Col>
+            <h2>Currently Pinned Lenses</h2>
+            {pinnedAugmentations.map((augmentation) => (
+              <AugmentationRow
+                pinned
+                key={augmentation.id}
+                augmentation={augmentation}
+                setActiveKey={setActiveKey}
+              />
+            ))}
+          </Col>
+        </Row>
+        <Divider />
+        <Row>
+          <Col>
             <h2>Suggested for This Page</h2>
             <h3>Lenses suggested by {APP_NAME} for this page.</h3>
-            {suggestedAugmentations
-              .filter((i) => i.actions.action_list.some((i) => i.key !== 'inject_js'))
-              .map((augmentation) => (
-                <AugmentationRow
-                  key={augmentation.id}
-                  augmentation={augmentation}
-                  setActiveKey={setActiveKey}
-                />
-              ))}
+            {suggestedAugmentations.map((augmentation) => (
+              <AugmentationRow
+                key={augmentation.id}
+                augmentation={augmentation}
+                setActiveKey={setActiveKey}
+              />
+            ))}
           </Col>
         </Row>
         <Divider />

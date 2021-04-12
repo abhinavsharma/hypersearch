@@ -1,42 +1,56 @@
-.add-augmentation-tab {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  font-size: 24px !important;
-}
-
-.add-augmentation-tab-header {
-  display: flex;
-  height: 60px;
-  cursor: default;
-
-  &.active {
-    position: fixed !important;
-    top: 0 !important;
-    left: 31px !important;
-    display: flex;
-    height: 55px;
-    width: 100%;
-    background: #f9f9f9;
+#add-augmentation-tab {
+  & *:not(div) {
+    transition: none !important;
   }
 
-  & > button {
-    display: inline-flex;
-    align-self: center;
+  .open-builder-button {
+    display: flex;
+    height: 100%;
+    width: 100%;
 
-    &.hidden {
-      opacity: 0;
-      cursor: default !important;
+    .ant-btn-icon-only {
+      font-size: 24px;
     }
   }
 
-  & > span {
-    display: inline-flex;
-    cursor: text;
-    color: black;
-    margin-left: 130px;
-    font-weight: bold;
-    font-size: 16px;
-    align-self: center;
+  .builder-header {
+    display: flex;
+    height: 60px;
+    left: 9999px;
+    cursor: default;
+    transition-property: left;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+
+    &.active {
+      position: fixed !important;
+      top: 0 !important;
+      left: 40px !important;
+      display: flex;
+      width: 100%;
+      background: #f9f9f9;
+    }
+
+    & > button {
+      display: inline-flex;
+      align-self: center;
+
+      &.hidden {
+        opacity: 0;
+        cursor: default !important;
+      }
+    }
+
+    & > span {
+      align-self: center;
+      color: black;
+      cursor: text;
+      display: inline-flex;
+      font-size: 16px;
+      font-weight: bold;
+      left: 50%;
+      position: absolute;
+      transform: translate(-50%, 0px);
+    }
   }
 }

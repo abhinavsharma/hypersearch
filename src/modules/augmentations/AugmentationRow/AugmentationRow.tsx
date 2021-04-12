@@ -4,13 +4,6 @@ import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import Tooltip from 'antd/lib/tooltip';
 import { EditAugmentationPage } from 'modules/augmentations';
-import {
-  ANY_URL_CONDITION,
-  ANY_URL_CONDITION_TEMPLATE,
-  IGNORED_PREFIX,
-  UPDATE_SIDEBAR_TABS_MESSAGE,
-} from 'utils';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
@@ -20,39 +13,15 @@ export const AugmentationRow: AugmentationRow = ({
   augmentation,
   setActiveKey,
   ignored,
+  pinned,
   other,
 }) => {
-  const isPinned = !!augmentation.conditions.condition_list.find(
-    (i) => i.key === ANY_URL_CONDITION,
-  );
   const isSuggested = !augmentation.hasOwnProperty('enabled');
-
-  const handlePin = () => {
-    AugmentationManager.addOrEditAugmentation(augmentation, {
-      name: `${augmentation.name} /\u00a0Pinned`,
-      conditions: [ANY_URL_CONDITION_TEMPLATE],
-      isActive: augmentation.hasOwnProperty('enabled') ? augmentation.enabled : true,
-      isPinning: true,
-    });
-  };
-
-  const handleHide = () => {
-    AugmentationManager.disableSuggestedAugmentation(augmentation);
-  };
-
-  const handleUnIgnore = () => {
-    SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    chrome.storage.local.remove(`${IGNORED_PREFIX}-${augmentation.id}`);
-    SidebarLoader.suggestedAugmentations.push(augmentation);
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-  };
-
-  const handleDelete = () => {
-    AugmentationManager.removeInstalledAugmentation(augmentation);
-  };
-
+  const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
+  const handleUnpin = () => AugmentationManager.unpinAugmentation(augmentation);
+  const handleEnable = () => AugmentationManager.enableSuggestedAugmentation(augmentation);
+  const handleDisable = () => AugmentationManager.disableSuggestedAugmentation(augmentation);
+  const handleDelete = () => AugmentationManager.removeInstalledAugmentation(augmentation);
   const handleEdit = () =>
     goTo(EditAugmentationPage, {
       augmentation: {
@@ -88,29 +57,32 @@ export const AugmentationRow: AugmentationRow = ({
         </Tag>
       </Tooltip>
       {ignored ? (
-        <Tag className="augmentation-row-button" color="geekblue" onClick={handleUnIgnore}>
+        <Tag className="augmentation-row-button" color="geekblue" onClick={handleEnable}>
           Unhide
         </Tag>
       ) : (
         <>
           {isSuggested && !other && (
-            <Tag className="augmentation-row-button" color="geekblue" onClick={handleHide}>
+            <Tag className="augmentation-row-button" color="geekblue" onClick={handleDisable}>
               Hide
             </Tag>
           )}
-          {!isPinned && (
+          {pinned ? (
+            <Tag className="augmentation-row-button" color="geekblue" onClick={handleUnpin}>
+              Unpin
+            </Tag>
+          ) : (
             <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
-              Always Show
+              Pin
             </Tag>
           )}
         </>
       )}
-
-      {augmentation.installed ? (
+      {augmentation.installed && (
         <Tag className="augmentation-row-button" color="volcano" onClick={handleDelete}>
           Delete
         </Tag>
-      ) : null}
+      )}
     </div>
   );
 };

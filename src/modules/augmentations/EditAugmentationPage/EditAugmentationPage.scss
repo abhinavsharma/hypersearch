@@ -15,7 +15,7 @@
     display: flex;
     position: fixed;
     top: 0 !important;
-    height: 55px;
+    height: 60px;
     width: calc(100% - 5px);
     padding: 0;
     background: #f9f9f9 !important;
@@ -32,12 +32,15 @@
     }
 
     & > span {
-      display: inline-flex;
-      cursor: text;
-      margin-left: 110px;
+      align-self: center;
       color: black;
-      font-weight: bold;
+      cursor: text;
+      display: inline-flex;
       font-size: 16px;
+      font-weight: bold;
+      left: 50%;
+      position: absolute;
+      transform: translate(-50%, 0px);
     }
   }
 
@@ -256,7 +259,7 @@
 
         .ant-col {
           display: flex;
-          align-items: left;
+          align-items: flex-start;
           font-weight: normal !important;
 
           &:first-child {
@@ -283,7 +286,7 @@
           padding: 10px 10px;
 
           &.edit-input-new-item-row {
-            width: 820px;
+            width: calc(100% - 20px);
           }
 
           .condition-label {

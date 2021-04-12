@@ -17,11 +17,16 @@ export const SidebarTabDomains: SidebarTabDomains = ({ domains, tab }) => {
 
   const handleToggle = () => setExpanded((prev) => !prev);
 
-  return tab.actionTypes.indexOf(SEARCH_DOMAINS_ACTION) > -1 ? (
+  const showDomains =
+    Array.from(new Set(tab.augmentation.actions.action_list.map(({ key }) => key))).indexOf(
+      SEARCH_DOMAINS_ACTION,
+    ) > -1;
+
+  return showDomains ? (
     <div className="sidebar-tab-domains">
       <Paragraph ellipsis={!expanded && ellipsis} className={expanded ? 'contents-inline' : ''}>
         <span className="domain-list-prefix">Lens&nbsp;sources&nbsp;include&nbsp;</span>
-        {domains.map((domain, index, originalDomainsArray) => (
+        {domains?.map((domain, index, originalDomainsArray) => (
           <a
             href={`https://${domain}`}
             className="sidebar-tab-domain-text"

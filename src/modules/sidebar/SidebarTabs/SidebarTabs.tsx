@@ -25,7 +25,6 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
-  HIDE_TAB_FAKE_URL,
   expandSidebar,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
@@ -48,11 +47,7 @@ const DoubleRightOutlined = React.lazy(
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
-  const [activeKey, setActiveKey] = useState<string>(
-    !!tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length
-      ? getFirstValidTabIndex(tabs)
-      : '0',
-  );
+  const [activeKey, setActiveKey] = useState<string>(getFirstValidTabIndex(tabs));
 
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
@@ -137,6 +132,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
           break;
         case SWITCH_TO_TAB:
           setActiveKey(msg.index);
+          break;
         default:
           break;
       }

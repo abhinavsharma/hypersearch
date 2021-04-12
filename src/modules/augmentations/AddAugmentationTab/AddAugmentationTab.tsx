@@ -1,64 +1,42 @@
-import React, { Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
-import { Dropdown } from 'modules/shared';
 import { goBack } from 'route-lite';
-import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils';
-import './AddAugmentationTab.scss';
+import { flipSidebar, getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils';
 import 'antd/lib/button/style/index.css';
-
-const ZoomInOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
-);
-
-const UnorderedListOutlined = React.lazy(
-  async () => await import('@ant-design/icons/UnorderedListOutlined').then((mod) => mod),
-);
+import './AddAugmentationTab.scss';
 
 export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActiveKey }) => {
   const handleClose = () => {
-    setActiveKey(getFirstValidTabIndex(tabs));
-    goBack();
+    if (getFirstValidTabIndex(tabs) === '0') {
+      flipSidebar(window.top.document, 'hide', 0);
+    } else {
+      setActiveKey(getFirstValidTabIndex(tabs));
+      goBack();
+    }
   };
 
-  const items = [
-    <Button
-      className="dropdown-button"
-      type="link"
-      onClick={() => chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE })}
-    >
-      <Suspense fallback={null}>
-        <UnorderedListOutlined />
-      </Suspense>
-      List All Lenses
-    </Button>,
-    <Button
-      className="dropdown-button"
-      type="link"
-      onClick={() =>
-        chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, create: true })
-      }
-    >
-      <Suspense fallback={null}>
-        <ZoomInOutlined />
-      </Suspense>
-      Create New Lens
-    </Button>,
-  ];
+  const handleOpenBuilder = () =>
+    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
 
-  return !active ? (
-    <div className="add-augmentation-tab">
-      <Dropdown button="☰" items={items} />
-    </div>
-  ) : (
-    <div className={`add-augmentation-tab-header ${active ? 'active' : ''}`}>
-      <Button
-        type="link"
-        onClick={handleClose}
-        className={getFirstValidTabIndex(tabs) !== '0' ? '' : 'hidden'}
-      >
-        Close
-      </Button>
-      <span>Lenses</span>
+  return (
+    <div id="add-augmentation-tab">
+      {!active ? (
+        <div className="open-builder-button">
+          <Button
+            icon="☰"
+            type="text"
+            onClick={handleOpenBuilder}
+            className={getFirstValidTabIndex(tabs) !== '0' ? '' : 'hidden'}
+          />
+        </div>
+      ) : (
+        <div className={`builder-header ${active ? 'active' : ''}`}>
+          <Button type="link" onClick={handleClose}>
+            Close
+          </Button>
+          <span>Lenses</span>
+        </div>
+      )}
     </div>
   );
 };
