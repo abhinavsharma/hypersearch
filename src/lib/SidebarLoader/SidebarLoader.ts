@@ -37,6 +37,7 @@ import {
   keyUpHandler,
   IMAGE_URL_PARAM,
   SYNC_LICENSE_KEY,
+  SEARCH_APPEND_ACTION,
 } from 'utils';
 
 /**
@@ -301,6 +302,7 @@ class SidebarLoader {
           : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
       );
     augmentation.actions.action_list.forEach((action) => {
+      const customSearchUrl = emptyUrl();
       switch (action.key) {
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
@@ -321,25 +323,34 @@ class SidebarLoader {
         // the current search query with *(site: <domain_'> OR <domain_2> ... )* to filter results. The
         // hostname and query parameters are coming from the local/remote search engine data.
         case SEARCH_DOMAINS_ACTION:
-          const customSearchUrl = emptyUrl();
           const tabAppendages = action.value;
           if (!tabAppendages.length) {
             customSearchUrl.href = HIDE_TAB_FAKE_URL;
           }
-
           const append =
             tabAppendages.length === 1
               ? `site:${tabAppendages[0]}`
               : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
           customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
-          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          urls.push(customSearchUrl);
-          this.tabDomains[augmentation.id][customSearchUrl.href] = action.value.map((value) =>
-            removeProtocol(value),
-          );
+          break;
+        case SEARCH_APPEND_ACTION:
+          customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
+      }
+
+      switch (action.key) {
+        case SEARCH_DOMAINS_ACTION:
+        case SEARCH_APPEND_ACTION:
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          this.tabDomains[augmentation.id][customSearchUrl.href] = action.value.map((value) =>
+            removeProtocol(value),
+          );
+          urls.push(customSearchUrl);
+          break;
+        default:
+          break;
       }
     });
     return urls;
