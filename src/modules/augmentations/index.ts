@@ -8,4 +8,3 @@ export * from './EditAugmentationConditions/EditAugmentationConditions';
 export * from './EditAugmentationMeta/EditAugmentationMeta';
 export * from './EditAugmentationPage/EditAugmentationPage';
 export * from './EditConditionInput/EditConditionInput';
-export * from './ShareAugmentationButton/ShareAugmentationButton';

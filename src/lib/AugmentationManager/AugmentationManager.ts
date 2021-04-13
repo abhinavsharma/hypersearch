@@ -9,7 +9,6 @@ import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import {
-  b64EncodeUnicode,
   debug,
   removeProtocol,
   ANY_URL_CONDITION,
@@ -280,14 +279,9 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public async shareAugmentation(augmentation: AugmentationObject) {
-    const encoded = b64EncodeUnicode(JSON.stringify(augmentation));
+  public async shareAugmentation(encoded: string) {
     await fetch(`${EXTENSION_SHARE_URL}${encodeURIComponent(encoded)}`, {
       mode: 'no-cors',
-    });
-    chrome.runtime.sendMessage({
-      type: OPEN_NEW_TAB_MESSAGE,
-      url: `${EXTENSION_SHORT_SHARE_URL}${md5(encoded).substr(0, 10)}`,
     });
   }
 

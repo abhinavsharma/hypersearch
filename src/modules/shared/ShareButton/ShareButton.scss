@@ -1,0 +1,62 @@
+.share-button-container {
+  .tooltip-container {
+    & > div {
+      width: auto !important;
+
+      .ant-popover {
+        display: block;
+        pointer-events: auto !important;
+
+        .popover-title {
+          width: 100%;
+          display: flex;
+          align-items: center;
+
+          .popover-close-button {
+            display: flex;
+            margin-left: auto;
+            margin-right: 10px;
+
+            span {
+              color: #40a9ff !important;
+
+              &:hover {
+                color: #1890ff !important;
+              }
+            }
+          }
+        }
+
+        .ant-popover-title {
+          display: flex;
+          align-items: center;
+          background-color: #f9f9f9;
+        }
+
+        .ant-popover-inner-content {
+          padding: 12px 5px;
+
+          .popover-primary-button {
+            display: flex;
+            align-items: center;
+            padding: 5px 7px !important;
+
+            span {
+              color: white !important;
+            }
+
+            &[disabled] {
+              span {
+                color: gray !important;
+              }
+            }
+          }
+
+          .popover-button-container {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}
