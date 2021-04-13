@@ -2,8 +2,7 @@
   display: none;
   right: 0;
   bottom: 10px;
-  border: 1px solid #ccc;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(0,0,0,0.77);
   line-height: 1.3 !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
@@ -13,6 +12,7 @@
   width: 200px !important;
   border-radius: 10px 0 0 10px !important;
   font-size: 13px;
+  color: #efefef !important;
 
   .insight-sidebar-toggle-appname {
     font-weight: normal;
@@ -23,7 +23,7 @@
 
     writing-mode: vertical-lr;
     padding: 10px;
-    border-left: 1px solid #ccc;
+    border-left: 1px solid #444;
     transform: rotateZ(180deg);
   }
 
