@@ -14,8 +14,14 @@ import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import './ShareButton.scss';
+import { Input, Tooltip } from 'antd';
 
 const { Paragraph } = Typography;
+
+const CopyOutlined = React.lazy(
+  async () => await import('@ant-design/icons/CopyOutlined').then((mod) => mod),
+);
+
 
 const UploadOutlined = React.lazy(
   async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
@@ -64,11 +70,22 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
 
     return (
       <>
-        <Paragraph>Use this URL to share this lens with your friends</Paragraph>
-        <Paragraph copyable={copiable} code>{`${EXTENSION_SHORT_SHARE_URL}${short}`}</Paragraph>
+        <Paragraph
+          className="copyable-text"
+          copyable={{
+            icon: [<Suspense fallback={null}>
+              <CopyOutlined />
+            </Suspense>, <Suspense fallback={null}>
+                <CopyOutlined />
+              </Suspense>],
+            tooltips: ['Click to Copy', 'Copied'],
+          }}
+        >
+          {EXTENSION_SHORT_SHARE_URL + short}
+        </Paragraph>
         <div className="popover-button-container">
           <Button
-            type="primary"
+            type="default"
             className="popover-primary-button"
             onClick={() =>
               window.open(
@@ -78,7 +95,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
               )
             }
           >
-            Submit to Public Lenses
+            Submit to Bazaar
           </Button>
         </div>
       </>
@@ -88,6 +105,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
   return (
     <div className="share-button-container">
       <Popover
+        style={{width: 400}}
         content={popoverContent}
         title={
           <div className="popover-title">
@@ -97,7 +115,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
             </Button>
           </div>
         }
-        trigger="click"
+        trigger="hover"
         visible={!disabled && visible}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
