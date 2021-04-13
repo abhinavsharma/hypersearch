@@ -63,7 +63,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       <Suspense fallback={null}>
         {!isExpanded && (
           <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <LeftOutlined onClick={handleExpand} className="expand-icon" />
+            <LeftOutlined style={{color: '#999'}} onClick={handleExpand} className="expand-icon" />
           </Tooltip>
         )}
         <Tooltip
@@ -75,7 +75,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             className="expand-icon"
             onClick={isExpanded ? handleExpand : handleClose}
           >
-            <RightOutlined />
+            <RightOutlined  style={{color: '#999'}} />
           </Button>
         </Tooltip>
       </Suspense>

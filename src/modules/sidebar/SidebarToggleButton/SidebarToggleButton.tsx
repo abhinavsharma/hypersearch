@@ -28,6 +28,10 @@ const LeftOutlined = React.lazy(
   async () => await import('@ant-design/icons/LeftOutlined').then((mod) => mod),
 );
 
+const removeEmoji = (s) => {
+  return s.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])/g, '')
+}
+
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
     if (!tabs.length) {
@@ -39,7 +43,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const ListItem = (item: SidebarTab) => (
     <List.Item>
       <List.Item.Meta
-        title={item.title.length > 36 ? item.title.slice(0, 35) + '...' : item.title}
+        title={removeEmoji(item.title.length > 36 ? item.title.slice(0, 35) + '...' : item.title)}
       />
     </List.Item>
   );
@@ -51,6 +55,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
           <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
         </div>
         <List
+        style={{paddingRight: 5}}
           itemLayout="horizontal"
           dataSource={tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)}
           renderItem={ListItem}

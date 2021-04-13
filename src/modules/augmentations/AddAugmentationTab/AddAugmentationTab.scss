@@ -1,4 +1,8 @@
 #add-augmentation-tab {
+  button {
+    color: #999;
+  }
+  
   *:not(div) {
     transition: none !important;
   }
