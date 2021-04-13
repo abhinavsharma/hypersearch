@@ -122,7 +122,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         // Set up listener for expanding sidebar with the augmentation builder page,
         // when the extension toolbar icon is clicked by the user.
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
-          flipSidebar(document, 'show', tabs?.length);
+          flipSidebar(document, 'show', tabs?.length, true);
           setActiveKey('0');
           break;
         // LOGGING
