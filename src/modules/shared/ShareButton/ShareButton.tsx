@@ -97,6 +97,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
           >
             Submit to Bazaar
           </Button>
+          <Button type="link" target="_blank" href="https://bazaar.insight.so">Browse Bazaar</Button>
         </div>
       </>
     );
