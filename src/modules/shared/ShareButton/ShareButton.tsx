@@ -72,10 +72,9 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
             className="popover-primary-button"
             onClick={() =>
               window.open(
-                AIRTABLE_PUBLIC_LENSES_CREATE.replace('<base64>', encoded).replace(
-                  '<name>',
-                  augmentation.name,
-                ),
+                AIRTABLE_PUBLIC_LENSES_CREATE.replace('<base64>', encoded)
+                  .replace('<name>', augmentation.name)
+                  .replace('<description>', augmentation.description),
               )
             }
           >
