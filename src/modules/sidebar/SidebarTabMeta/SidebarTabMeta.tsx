@@ -32,7 +32,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ domains, tab }) => {
         {tab.url && tab.isCse && (
           <>
             <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
-            {domains?.map((domain, index, originalDomainsArray) => (
+            {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (
               <a href={`https://${domain}`} className="meta-link" key={domain} target="_blank">
                 {`${!originalDomainsArray[index + 1] ? domain : `${domain},\u00a0`}`}
               </a>
