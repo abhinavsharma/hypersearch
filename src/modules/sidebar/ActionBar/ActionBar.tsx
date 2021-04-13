@@ -1,8 +1,9 @@
-import React, { Suspense, useRef, useState } from 'react';
+import React, { Suspense, useRef } from 'react';
 import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EditAugmentationPage } from 'modules/augmentations/';
+import { ShareButton } from 'modules/shared';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_Z_INDEX } from 'utils';
@@ -26,10 +27,6 @@ const CloseCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/CloseCircleOutlined').then((mod) => mod),
 );
 
-const ShareAltOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ShareAltOutlined').then((mod) => mod),
-);
-
 const EditOutlined = React.lazy(
   async () => await import('@ant-design/icons/EditOutlined').then((mod) => mod),
 );
@@ -38,19 +35,8 @@ const DeleteOutlined = React.lazy(
   async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
 );
 
-const SmallDashOutlined = React.lazy(
-  async () => await import('@ant-design/icons/SmallDashOutlined').then((mod) => mod),
-);
-
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
-  const [isSharing, setIsSharing] = useState<boolean>(false);
   const tooltipContainer = useRef(null);
-
-  const handleShare = async () => {
-    setIsSharing(true);
-    await AugmentationManager.shareAugmentation(tab.augmentation);
-    setIsSharing(false);
-  };
 
   const handleOpenAugmentationBuilder = () => {
     chrome.runtime.sendMessage({
@@ -211,23 +197,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        <Tooltip
-          title={isSharing ? 'Please wait...' : 'Share lens'}
-          destroyTooltipOnHide={{ keepParent: false }}
-          getPopupContainer={() => tooltipContainer.current}
-          placement="bottom"
-        >
-          <Button
-            type="link"
-            onClick={handleShare}
-            disabled={isSharing}
-            icon={
-              <Suspense fallback={null}>
-                {isSharing ? <SmallDashOutlined /> : <ShareAltOutlined />}
-              </Suspense>
-            }
-          />
-        </Tooltip>
+        <ShareButton icon augmentation={tab.augmentation} />
       </div>
       <div
         className="tooltip-container"

@@ -3,7 +3,8 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
 import Switch from 'antd/lib/switch';
-import { ShareAugmentationButton, DeleteAugmentationButton } from 'modules/augmentations';
+import { DeleteAugmentationButton } from 'modules/augmentations';
+import { ShareButton } from 'modules/shared';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
@@ -39,7 +40,7 @@ export const EditAugmentationMeta: EditAugmentationMeta = ({
       </Row>
       <Row className="button-row">
         <Col xs={12}>
-          <ShareAugmentationButton augmentation={augmentation} disabled={!augmentation.installed} />
+          <ShareButton disabled={!augmentation.installed} augmentation={augmentation} />
         </Col>
         <Col xs={12}>
           <DeleteAugmentationButton
