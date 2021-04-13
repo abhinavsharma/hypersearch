@@ -4,7 +4,12 @@ import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import Select from 'antd/lib/select';
 import Input from 'antd/lib/input';
-import { OPEN_URL_ACTION, SEARCH_DOMAINS_ACTION, SEARCH_HIDE_DOMAIN_ACTION } from 'utils';
+import {
+  OPEN_URL_ACTION,
+  SEARCH_APPEND_ACTION,
+  SEARCH_DOMAINS_ACTION,
+  SEARCH_HIDE_DOMAIN_ACTION,
+} from 'utils';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
@@ -21,6 +26,7 @@ const ACTION_LABELS = {
   'Search only these domains': SEARCH_DOMAINS_ACTION,
   'Open page': OPEN_URL_ACTION,
   'Minimize results from domain': SEARCH_HIDE_DOMAIN_ACTION,
+  'Seach with string appended': SEARCH_APPEND_ACTION,
 };
 
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
