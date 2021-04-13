@@ -27,6 +27,7 @@ import {
   expandSidebar,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
+  USE_COUNT_PREFIX,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -63,7 +64,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       <Suspense fallback={null}>
         {!isExpanded && (
           <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <LeftOutlined style={{color: '#999'}} onClick={handleExpand} className="expand-icon" />
+            <LeftOutlined
+              style={{ color: '#999' }}
+              onClick={handleExpand}
+              className="expand-icon"
+            />
           </Tooltip>
         )}
         <Tooltip
@@ -75,7 +80,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             className="expand-icon"
             onClick={isExpanded ? handleExpand : handleClose}
           >
-            <RightOutlined  style={{color: '#999'}} />
+            <RightOutlined style={{ color: '#999' }} />
           </Button>
         </Tooltip>
       </Suspense>
@@ -103,6 +108,14 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         (i) => unescape(i.url.href) === msg.frame.url.replace('www.', ''),
       );
       if (!sourceTab) return null;
+      const statId = `${USE_COUNT_PREFIX}-${sourceTab.id}`;
+      const existingStat =
+        (await new Promise((resolve) => chrome.storage.sync.get(statId, resolve)).then(
+          (value) => value?.[statId],
+        )) ?? 0;
+      const newStat = Number(existingStat) + 1;
+      chrome.storage.sync.set({ [statId]: newStat });
+      SidebarLoader.augmentationStats[sourceTab.id] = newStat;
       setTimeout(
         () =>
           SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
@@ -113,6 +126,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
           }),
         250,
       );
+      chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
     }
   }, []);
 
@@ -179,7 +193,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               {activeKey === (i + 1).toString() && (
                 <ActionBar tab={tab} setActiveKey={setActiveKey} />
               )}
-              <SidebarTabMeta tab={tab} domains={SidebarLoader.tabDomains[tab.id][tab.url]} />
+              <SidebarTabMeta tab={tab} />
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
             </TabPane>

@@ -35,7 +35,7 @@ export const AugmentationRow: AugmentationRow = ({
 
   return (
     <div className="augmentation-row">
-      <span className="augmentation-name">
+      <div className="augmentation-name">
         {augmentation.hasOwnProperty('installed') ? (
           <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
             {augmentation.name}
@@ -43,7 +43,10 @@ export const AugmentationRow: AugmentationRow = ({
         ) : (
           augmentation.name
         )}
-      </span>
+        {augmentation.stats && (
+          <span className="augmentation-stat-text">{augmentation.stats} uses</span>
+        )}
+      </div>
       <Tooltip
         title={augmentation.hasOwnProperty('installed') ? null : 'Duplicate and edit locally'}
         destroyTooltipOnHide={{ keepParent: false }}

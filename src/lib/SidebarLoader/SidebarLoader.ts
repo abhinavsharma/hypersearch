@@ -38,6 +38,8 @@ import {
   IMAGE_URL_PARAM,
   SYNC_LICENSE_KEY,
   SEARCH_APPEND_ACTION,
+  USE_COUNT_PREFIX,
+  SYNC_PRIVACY_KEY,
 } from 'utils';
 
 /**
@@ -234,8 +236,18 @@ class SidebarLoader {
    */
   public preventAutoExpand: boolean;
 
+  /**
+   * Maps the corresponing usage statistics for an augmentation.
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public augmentationStats: Record<string, number>;
+
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
+    this.augmentationStats = Object.create(null);
     this.preventAutoExpand = false;
     this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
     this.tabDomains = Object.create(null);
@@ -385,6 +397,8 @@ class SidebarLoader {
     const logSuggested: any[] = [];
     const logTabs: any[] = [];
     augmentations.forEach((augmentation: AugmentationObject) => {
+      augmentation.stats = this.augmentationStats[augmentation.id];
+
       if (
         this.customSearchEngine &&
         augmentation.id.startsWith(CSE_PREFIX) &&
@@ -531,8 +545,8 @@ class SidebarLoader {
     if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
     this.strongPrivacy = await new Promise((resolve) =>
-      chrome.storage.local.get('anonymousQueries', resolve),
-    ).then(({ anonymousQueries }) => anonymousQueries);
+      chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
+    ).then((value) => !value[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
     response &&
       runFunctionWhenDocumentReady(this.document, async () => {
@@ -616,30 +630,36 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   private async getLocalAugmentations() {
-    const locals: Record<string, AugmentationObject> = await new Promise((resolve) =>
+    const locals: Record<string, AugmentationObject & number> = await new Promise((resolve) =>
       chrome.storage.local.get(resolve),
     );
-    Object.entries(locals).forEach(([key, augmentation]) => {
+    const syncs: Record<string, AugmentationObject & number> = await new Promise((resolve) =>
+      chrome.storage.sync.get(resolve),
+    );
+    [...Object.entries(locals), ...Object.entries(syncs)].forEach(([key, value]) => {
       const flag = key.split('-')[0];
       switch (flag) {
         case IGNORED_PREFIX:
-          this.ignoredAugmentations.push(augmentation);
+          this.ignoredAugmentations.push(value);
           break;
         case PINNED_PREFIX:
-          this.pinnedAugmentations.push(augmentation);
+          this.pinnedAugmentations.push(value);
           this.installedAugmentations = this.installedAugmentations.filter(
-            ({ id }) => id !== augmentation.id,
+            ({ id }) => id !== value.id,
           );
           break;
         case CSE_PREFIX:
-          const { isRelevant } = AugmentationManager.getAugmentationRelevancy(augmentation);
-          if (!this.pinnedAugmentations.find(({ id }) => id === augmentation.id)) {
-            if (isRelevant && isAugmentationEnabled(augmentation)) {
-              this.installedAugmentations.push(augmentation);
+          const { isRelevant } = AugmentationManager.getAugmentationRelevancy(value);
+          if (!this.pinnedAugmentations.find(({ id }) => id === value.id)) {
+            if (isRelevant && isAugmentationEnabled(value)) {
+              this.installedAugmentations.push(value);
             } else {
-              this.otherAugmentations.push(augmentation);
+              this.otherAugmentations.push(value);
             }
           }
+          break;
+        case USE_COUNT_PREFIX:
+          this.augmentationStats[key.replace(`${USE_COUNT_PREFIX}-`, '')] = Number(value);
           break;
         default:
           break;
