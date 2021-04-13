@@ -8,7 +8,7 @@ import './AddAugmentationTab.scss';
 export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActiveKey }) => {
   const handleClose = () => {
     if (getFirstValidTabIndex(tabs) === '0') {
-      flipSidebar(window.top.document, 'hide', 0);
+      flipSidebar(window.top.document, 'hide', 0, true);
     } else {
       setActiveKey(getFirstValidTabIndex(tabs));
       goBack();

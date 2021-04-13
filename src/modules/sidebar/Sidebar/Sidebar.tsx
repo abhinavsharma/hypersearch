@@ -55,7 +55,7 @@ const Sidebar: Sidebar = () => {
       isKnowledgePage(document) ||
       SidebarLoader.preventAutoExpand
     ) {
-      flipSidebar(document, 'hide', sidebarTabs?.length);
+      flipSidebar(document, 'hide', sidebarTabs?.length, true);
     } else {
       flipSidebar(document, 'show', sidebarTabs?.length);
     }

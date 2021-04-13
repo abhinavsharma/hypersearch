@@ -1,10 +1,32 @@
 import { SIDEBAR_Z_INDEX } from 'utils/constants';
 
-export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
+export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preventOverlay) => {
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
   const document = innerDocument.contentWindow.document;
 
   const sidebarContainer = document.getElementById('insight-sidebar-container');
+
+  const existingOverlay = document.getElementById('sidebar-overlay');
+  const sidebarOverlay = existingOverlay || document.createElement('div');
+  if (!preventOverlay) {
+    sidebarOverlay.id = 'sidebar-overlay';
+    sidebarOverlay.setAttribute(
+      'style',
+      `
+    z-index: ${SIDEBAR_Z_INDEX + 3};
+    background: #F9F9F9;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 1px;
+    opacity: 1;
+    transition: opacity 250ms ease-out;
+  `,
+    );
+  }
+
+  sidebarContainer.appendChild(sidebarOverlay);
 
   const nameNub = document.getElementById('insight-sidebar-title') as HTMLDivElement;
 
@@ -62,6 +84,12 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       showButton.style.visibility = 'visible';
       showButton.style.display = 'flex';
       showButton.style.flexDirection = 'row';
+      if (!preventOverlay) {
+        sidebarOverlay.style.opacity = '0';
+        setTimeout(() => {
+          sidebarContainer.removeChild(sidebarOverlay);
+        }, 150);
+      }
     }, 500);
   } else {
     sidebarContainer.style.visibility = 'visible';
@@ -104,6 +132,12 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength) => {
       if (activeAugmentationHeader) {
         activeAugmentationHeader.style.left = '20px';
         activeAugmentationHeader.style.display = 'flex';
+      }
+      if (!preventOverlay) {
+        sidebarOverlay.style.opacity = '0';
+        setTimeout(() => {
+          sidebarContainer.removeChild(sidebarOverlay);
+        }, 250);
       }
     }, 300);
   }

@@ -11,9 +11,7 @@ export const expandSidebar = () => {
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
   if (!sidebarRoot.classList.contains('insight-expanded')) {
-    if (sidebarContainer.style.width === '0px') {
-      flipSidebar(document, 'show', 1);
-    }
+    flipSidebar(document, 'show', 1);
     document.documentElement.style.overflow = 'hidden';
     sidebarRoot.classList.add('insight-expanded');
     sidebarRoot.setAttribute(
