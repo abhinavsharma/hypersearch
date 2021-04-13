@@ -32,4 +32,5 @@ declare type AugmentationObject = {
   enabled?: boolean;
   installed?: boolean;
   pinned?: boolean;
+  stats?: number;
 };

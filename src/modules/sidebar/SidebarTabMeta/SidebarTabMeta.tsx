@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import { SEARCH_DOMAINS_ACTION } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabMeta.scss';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 const { Paragraph } = Typography;
 
-export const SidebarTabMeta: SidebarTabMeta = ({ domains, tab }) => {
+export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
+  const [currentStat, setCurrentStat] = useState<number>(SidebarLoader.augmentationStats[tab.id]);
+  const [domains, setDomains] = useState<string[]>(SidebarLoader.tabDomains[tab.id][tab.url]);
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleToggle = () => setExpanded((prev) => !prev);
@@ -22,12 +25,18 @@ export const SidebarTabMeta: SidebarTabMeta = ({ domains, tab }) => {
     rows: 1,
   };
 
+  useEffect(() => {
+    setCurrentStat(SidebarLoader.augmentationStats[tab.id]);
+    setDomains(SidebarLoader.tabDomains[tab.id][tab.url]);
+  }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url]]);
+
   return showDomains ? (
     <div id="sidebar-tab-meta">
       <Paragraph
         ellipsis={!expanded && ellipsis}
         className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
       >
+        {currentStat && <span className="space-right">{currentStat} Uses.</span>}
         {tab.description && <span className="space-right">{tab.description}</span>}
         {tab.url && tab.isCse && (
           <>

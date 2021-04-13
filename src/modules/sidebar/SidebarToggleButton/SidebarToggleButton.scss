@@ -2,11 +2,10 @@
   display: none;
   right: 0;
   bottom: 10px;
-  background:#f4f4f4;
+  background: #f4f4f4;
   line-height: 1.3 !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
-  color: #444 !important;
   border-right: none;
   cursor: pointer;
   width: 200px !important;
@@ -35,7 +34,6 @@
       bottom: auto;
       left: auto;
     }
-
   }
 
   h4 {
@@ -56,7 +54,6 @@
     .ant-btn {
       color: #1a0dab !important;
       font-size: 16px;
-      color: #444;
 
       span {
         padding-top: 2px;

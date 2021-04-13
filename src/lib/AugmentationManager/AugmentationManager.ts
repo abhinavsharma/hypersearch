@@ -106,13 +106,15 @@ class AugmentationManager {
     chrome.storage.local.set({
       [`${PINNED_PREFIX}-${augmentation.id}`]: augmentation,
     });
-    augmentation.installed
-      ? (SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
-          (i) => i.id !== augmentation.id,
-        ))
-      : (SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
-          (i) => i.id !== augmentation.id,
-        ));
+    SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
+    SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
+      (i) => i.id !== augmentation.id,
+    );
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 

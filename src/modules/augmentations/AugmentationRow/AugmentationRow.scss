@@ -7,7 +7,14 @@
   text-align: left;
 
   .augmentation-name {
+    display: flex;
+    flex-direction: column;
     margin-left: 10px;
+  }
+
+  .augmentation-stat-text {
+    color: #999999;
+    font-size: 11px;
   }
 
   .force-left-margin {
