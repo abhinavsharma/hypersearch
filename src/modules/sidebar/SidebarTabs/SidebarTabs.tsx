@@ -27,7 +27,7 @@ import {
   expandSidebar,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
-  STAT_PREFIX,
+  USE_COUNT_PREFIX,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -108,7 +108,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         (i) => unescape(i.url.href) === msg.frame.url.replace('www.', ''),
       );
       if (!sourceTab) return null;
-      const statId = `${STAT_PREFIX}-${sourceTab.id}`;
+      const statId = `${USE_COUNT_PREFIX}-${sourceTab.id}`;
       const existingStat =
         (await new Promise((resolve) => chrome.storage.sync.get(statId, resolve)).then(
           (value) => value?.[statId],

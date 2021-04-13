@@ -13,7 +13,7 @@ import {
   SYNC_FINISHED_KEY,
   SYNC_PRIVACY_KEY,
   SYNC_DISTINCT_KEY,
-  STAT_PREFIX,
+  USE_COUNT_PREFIX,
 } from 'utils';
 
 class SearchEngineManager {
@@ -135,7 +135,7 @@ class SearchEngineManager {
       chrome.storage.sync.get(async (items) => {
         debug('SearchEngineManager - sync\n---\n\tItems', items, '\n---');
         Object.entries(items).forEach(async ([key, storedItem]: [string, CustomSearchEngine]) => {
-          if (this.safeElements.includes(key) || key.startsWith(STAT_PREFIX)) return null;
+          if (this.safeElements.includes(key) || key.startsWith(USE_COUNT_PREFIX)) return null;
           if (!(storedItem.querySelector && storedItem.search_engine_json)) {
             // Check if stored value has the required structure
             await this.deleteItem(key);

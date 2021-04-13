@@ -38,7 +38,7 @@ import {
   IMAGE_URL_PARAM,
   SYNC_LICENSE_KEY,
   SEARCH_APPEND_ACTION,
-  STAT_PREFIX,
+  USE_COUNT_PREFIX,
   SYNC_PRIVACY_KEY,
 } from 'utils';
 
@@ -658,8 +658,8 @@ class SidebarLoader {
             }
           }
           break;
-        case STAT_PREFIX:
-          this.augmentationStats[key.replace(`${STAT_PREFIX}-`, '')] = Number(value);
+        case USE_COUNT_PREFIX:
+          this.augmentationStats[key.replace(`${USE_COUNT_PREFIX}-`, '')] = Number(value);
           break;
         default:
           break;
