@@ -1,59 +1,91 @@
 {
-  "manifest_version": 2,
-  "name": "Insight",
-  "description": "Insight supercharges search with results from expert and community trusted sources for any field.",
-  "version": "0.0.63",
-  "web_accessible_resources": ["*.png", "*.svg", "*.html", "*.css"],
-  "icons": {
-    "128": "logo128.png"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["js/content_script.js"],
-      "run_at": "document_start"
+    "manifest_version": 2,
+    "name": "Insight",
+    "description": "Insight supercharges search with results from expert and community trusted sources for any field.",
+    "version": "0.0.64",
+    "web_accessible_resources": [
+        "*.png",
+        "*.svg",
+        "*.html",
+        "*.css"
+    ],
+    "icons": {
+        "128": "logo128.png"
     },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "js": ["js/content_frames.js"],
-      "run_at": "document_start"
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "js/content_script.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/content_frames.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/content_blocker.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/reorder.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "all_frames": true,
+            "css": [
+                "overwrite.css"
+            ]
+        },
+        {
+            "matches": [
+                "https://cse.google.com/*"
+            ],
+            "all_frames": true,
+            "css": [
+                "google_cse.css"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "js/hot.js",
+            "js/background.js"
+        ]
     },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "js": ["js/content_blocker.js"],
-      "run_at": "document_end"
+    "browser_action": {
+        "default_title": "Insight"
     },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "js": ["js/reorder.js"],
-      "run_at": "document_end"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "css": ["overwrite.css"]
-    },
-    {
-      "matches": ["https://cse.google.com/*"],
-      "all_frames": true,
-      "css": ["google_cse.css"]
-    }
-  ],
-  "background": {
-    "scripts": ["js/hot.js", "js/background.js"]
-  },
-  "browser_action": {
-    "default_title": "Insight"
-  },
-  "permissions": [
-    "cookies",
-    "storage",
-    "<all_urls>",
-    "webRequest",
-    "webRequestBlocking",
-    "webNavigation"
-  ]
+    "permissions": [
+        "cookies",
+        "storage",
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking",
+        "webNavigation"
+    ]
 }
