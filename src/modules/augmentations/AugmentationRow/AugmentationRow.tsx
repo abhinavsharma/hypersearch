@@ -30,7 +30,6 @@ export const AugmentationRow: AugmentationRow = ({
       },
       setActiveKey,
       initiatedFromActives: true,
-      isAdding: !augmentation.hasOwnProperty('enabled'),
     });
 
   return (

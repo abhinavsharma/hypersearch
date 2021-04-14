@@ -103,7 +103,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
                 description: !tab.augmentation.installed ? '' : tab.augmentation.description,
                 installed: tab.augmentation.installed,
               },
-              isAdding: !tab.augmentation.installed,
               setActiveKey,
             }}
             key={tab.id}
