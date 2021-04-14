@@ -38,7 +38,7 @@ export const ToggleAnonymousQueries = () => {
       <Title level={3}>{checked ? 
       <>
         <Suspense fallback={null}>
-          <CheckCircleFilled style={{'color': "#52c41a"}} />
+          <CheckCircleFilled />
         </Suspense>
         &nbsp;Use server suggestions
       </> : <>
