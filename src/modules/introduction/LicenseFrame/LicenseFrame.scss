@@ -12,4 +12,16 @@
 
     outline: none;
   }
+
+  button.step-button:nth-of-type(1) {
+    &:disabled {
+      border: none;
+    }
+  }
+
+  button.step-button:nth-of-type(2) {
+    border: none;
+    display: none; // temporary
+  }
 }
+
