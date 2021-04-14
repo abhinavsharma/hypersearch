@@ -732,7 +732,7 @@ class SidebarLoader {
       return (await postAPI(
         'subtabs',
         { url },
-        { client: 'desktop', license_keys: [license_key] },
+        { client: 'desktop', license_keys: license_key ? [license_key] : null},
       )) as SubtabsResponse;
     };
     let response: SubtabsResponse = Object.create(null);
