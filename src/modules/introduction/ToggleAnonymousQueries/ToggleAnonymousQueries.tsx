@@ -20,7 +20,12 @@ export const ToggleAnonymousQueries = () => {
     const isAnonymous = await new Promise((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
     ).then((result) => result[SYNC_PRIVACY_KEY]);
-    setChecked(isAnonymous);
+    if (isAnonymous === undefined) {
+      chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: true });
+      setChecked(true);
+    } else {
+      setChecked(isAnonymous);
+    }
   }, []);
 
   useEffect(() => {
@@ -35,32 +40,43 @@ export const ToggleAnonymousQueries = () => {
   return (
     <div id="privacy-toggle-container">
       <Switch className="privacy-toggle-button" checked={checked} onChange={handleToggle} />
-      <Title level={3}>{checked ? 
-      <>
-        <Suspense fallback={null}>
-          <CheckCircleFilled />
-        </Suspense>
-        &nbsp;Use server suggestions
-      </> : <>
-        <Suspense fallback={null}>
-          <WarningOutlined />
-        </Suspense>
-        &nbsp;Do not use sever suggestions
-      </>}</Title>
+      <Title level={3}>
+        {checked ? (
+          <>
+            <Suspense fallback={null}>
+              <CheckCircleFilled />
+            </Suspense>
+            &nbsp;Use server suggestions
+          </>
+        ) : (
+          <>
+            <Suspense fallback={null}>
+              <WarningOutlined />
+            </Suspense>
+            &nbsp;Do not use sever suggestions
+          </>
+        )}
+      </Title>
       {checked ? (
         <div className="privacy-explainer">
           <p>Recommended for most people, even very privacy sensitive users.</p>
-          <p>Search is computationally complex. 
-            While we allow for 100% client side processing, in order to get the best results, we (like any major search engine, even DuckDuckGo) need to process queries on a server and see which results were clicked on.
+          <p>
+            Search is computationally complex. While we allow for 100% client side processing, in
+            order to get the best results, we (like any major search engine, even DuckDuckGo) need
+            to process queries on a server and see which results were clicked on.
           </p>
           <p>
-          Our logging standards are stricter than any search engine. We only log dictionary word queries, have no trackers, don't log IP addresses, and delete all logs after 1 month.
+            Our logging standards are stricter than any search engine. We only log dictionary word
+            queries, have no trackers, don't log IP addresses, and delete all logs after 1 month.
           </p>
         </div>
       ) : (
         <div className="privacy-explainer">
           <p>Only recommended for local use.</p>
-          <p>The URLs you visit are never shared with our servers. This limits the suggestions we can make.</p>
+          <p>
+            The URLs you visit are never shared with our servers. This limits the suggestions we can
+            make.
+          </p>
         </div>
       )}
     </div>
