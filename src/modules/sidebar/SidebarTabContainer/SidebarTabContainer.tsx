@@ -11,11 +11,6 @@ import {
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const frameRef = useRef<HTMLIFrameElement>(null);
-  const augmentation =
-    (!tab.augmentation.hasOwnProperty('enabled')
-      ? SidebarLoader.suggestedAugmentations
-      : SidebarLoader.installedAugmentations
-    ).find(({ id }) => id === tab.id) ?? Object.create(null);
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
 
@@ -27,10 +22,10 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
     frameRef.current?.contentWindow.addEventListener('keyup', handleKeyUp);
-    if (hideDomains) {
+    if (hideDomains.length) {
       window.top.postMessage(
         {
-          augmentation,
+          augmentation: tab.augmentation,
           hideDomains,
           name: HIDE_DOMAINS_MESSAGE,
           tab: tab.id,
