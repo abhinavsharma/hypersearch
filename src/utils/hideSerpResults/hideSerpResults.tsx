@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { SIDEBAR_Z_INDEX } from 'utils/constants';
-import { HideResultOverlays } from 'modules/overlays';
-import 'antd/lib/button/style/index.css';
+import { MY_BLOCKLIST_ID, SIDEBAR_Z_INDEX } from 'utils/constants';
+import { extractUrlProperties } from 'utils/helpers';
+import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIcon';
 
 /**
  * Create an overlay above the list of HTMLElements
@@ -24,14 +24,23 @@ export const hideSerpResults: HideSerpResults = (
   { text, header },
   selectorString,
   augmentations,
+  preventHideOnClick,
 ) => {
   for (const node of nodes) {
     const serpResult = node.closest(selector) as HTMLElement;
     if (!serpResult) continue;
+    serpResult.setAttribute('insight-allowed-result', 'false');
+
+    const domain =
+      extractUrlProperties(node.querySelector('a')?.getAttribute('href'))?.hostname ||
+      extractUrlProperties(node.getAttribute('href'))?.hostname;
 
     if (serpResult.getAttribute('insight-hidden-result') === 'true') {
       const existingOverlay = serpResult.querySelector('.insight-hidden-domain-overlay');
       existingOverlay && serpResult.removeChild(existingOverlay);
+    }
+    if (!augmentations?.[domain]?.length) {
+      serpResult.setAttribute('insight-ad-block', 'true');
     }
 
     serpResult.setAttribute('insight-hidden-result', 'true');
@@ -49,28 +58,46 @@ export const hideSerpResults: HideSerpResults = (
     innerText.classList.add(`insight-${selectorString}-inner-text`);
     innerText.innerText = text;
 
-    if (augmentations?.length) {
+    if (augmentations?.[domain]?.length) {
+      if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
+        serpResult.parentElement.style.pointerEvents = 'none';
+      }
       overlay.setAttribute(
         'insight-blocked-by',
-        augmentations.reduce((a, { id }) => a.concat(` ${id}`), ''),
+        Array.from(
+          new Set(
+            augmentations[domain].reduce((a, { id }) => {
+              a.push(id);
+              return a;
+            }, []),
+          ),
+        ).join(' '),
       );
+      overlay.setAttribute('insight-blocked-domain', domain);
       const buttonRoot = document.createElement('div');
       buttonRoot.classList.add(`insight-${selectorString}-button-root`);
-      render(<HideResultOverlays augmentations={augmentations} />, buttonRoot);
+      render(
+        <InlineGutterIcon
+          augmentations={augmentations[domain].filter(({ id }) => id !== MY_BLOCKLIST_ID)}
+          domain={domain}
+        />,
+        buttonRoot,
+      );
       textWrapper.appendChild(buttonRoot);
     }
     overlay.appendChild(textWrapper);
     textWrapper.appendChild(innerText);
-    overlay.addEventListener('click', (e) => {
-      if (serpResult.getAttribute('insight-hidden-result-protected') !== 'true') {
-        e.preventDefault();
-        const ol = (e.target as Element).closest('.insight-hidden');
-        ol.parentElement.style.maxHeight = 'none';
-        ol.parentElement.style.overflow = 'auto';
-        ol.parentNode.removeChild(ol);
-        serpResult.setAttribute('insight-hidden-result-protected', 'true');
-      }
-    });
+    !preventHideOnClick &&
+      overlay.addEventListener('click', (e) => {
+        if (serpResult.getAttribute('insight-hidden-result-protected') !== 'true') {
+          e.preventDefault();
+          const ol = (e.target as Element).closest('.insight-hidden');
+          ol.parentElement.style.maxHeight = 'none';
+          ol.parentElement.style.overflow = 'auto';
+          ol.parentNode.removeChild(ol);
+          serpResult.setAttribute('insight-hidden-result-protected', 'true');
+        }
+      });
     if (
       serpResult.querySelectorAll('.insight-hidden').length === 0 &&
       serpResult.getAttribute('insight-hidden-result-protected') !== 'true'

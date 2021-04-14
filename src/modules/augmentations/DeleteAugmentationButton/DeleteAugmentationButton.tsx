@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { goBack } from 'route-lite';
 import Button from 'antd/lib/button';
-import { SEARCH_HIDE_DOMAIN_ACTION } from 'utils/constants';
+import { MY_BLOCKLIST_ID } from 'utils/constants';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import 'antd/lib/button/style/index.css';
 
@@ -11,7 +11,7 @@ const DeleteOutlined = React.lazy(
 
 export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentation, disabled }) => {
   const handleDelete = () => {
-    if (disabled) return null;
+    if (disabled || augmentation.id === MY_BLOCKLIST_ID) return null;
     AugmentationManager.removeInstalledAugmentation(augmentation);
     setTimeout(() => goBack(), 100);
   };
@@ -25,7 +25,11 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
         size="large"
         className="insight-augmentation-delete-button"
       >
-        <div className={`insight-augmentation-delete-button-content ${disabled ? 'disabled' : ''}`}>
+        <div
+          className={`insight-augmentation-delete-button-content ${
+            disabled || augmentation.id === MY_BLOCKLIST_ID ? 'disabled' : ''
+          }`}
+        >
           <Suspense fallback={null}>
             <DeleteOutlined />
           </Suspense>

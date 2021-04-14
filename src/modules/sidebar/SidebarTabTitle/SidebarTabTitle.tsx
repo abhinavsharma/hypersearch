@@ -4,8 +4,8 @@ import './SidebarTabTitle.scss';
 import 'antd/lib/tooltip/style/index.css';
 
 const insertNewlineAfterEmoji = (s) => {
-  return s.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])(.*)/g, '$1\n$2')
-}
+  return s?.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])(.*)/g, '$1\n$2');
+};
 
 export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setActiveKey }) => {
   const handleClick = () => setActiveKey((index + 1).toString());

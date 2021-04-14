@@ -12,8 +12,9 @@ import {
   removeProtocol,
   ANY_URL_CONDITION,
   EXTENSION_SHARE_URL,
-  HIDE_DOMAINS_MESSAGE,
   NUM_DOMAINS_TO_EXCLUDE,
+  PROCESS_SERP_OVERLAY_MESSAGE,
+  REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   SEARCH_CONTAINS_CONDITION,
   SEARCH_DOMAINS_ACTION,
   SEARCH_HIDE_DOMAIN_ACTION,
@@ -24,9 +25,63 @@ import {
   INSTALLED_PREFIX,
   PINNED_PREFIX,
   ANY_URL_CONDITION_MOBILE,
+  MY_BLOCKLIST_TEMPLATE,
+  MY_BLOCKLIST_ID,
 } from 'utils';
 
 class AugmentationManager {
+  public blockList: AugmentationObject;
+
+  constructor() {
+    debug('AugmentationManager - initialize\n---\n\tSingleton Instance', this, '\n---');
+    this.blockList = MY_BLOCKLIST_TEMPLATE;
+  }
+
+  public async initBlockList(cb?: any) {
+    const storageId = MY_BLOCKLIST_ID;
+    const existing = await new Promise((resolve) =>
+      chrome.storage.local.get(storageId, resolve),
+    ).then((value) => value[storageId]);
+    this.blockList = existing ?? MY_BLOCKLIST_TEMPLATE;
+    cb?.();
+  }
+
+  public async updateBlockList(domain: string) {
+    const newActionList = [
+      ...this.blockList.actions.action_list.filter((action) => action.value.length),
+      {
+        key: SEARCH_HIDE_DOMAIN_ACTION,
+        label: 'Minimize results from domain',
+        type: 'list',
+        value: [domain],
+      },
+    ] as AugmentationObject['actions']['action_list'];
+    this.blockList.actions.action_list = newActionList;
+    await this.initBlockList(
+      this.addOrEditAugmentation(this.blockList, {
+        actions: newActionList,
+      }),
+    );
+  }
+
+  public async deleteFromBlockList(domain: string) {
+    const newActionList = [
+      ...this.blockList.actions.action_list.filter(({ key, value }) =>
+        key === SEARCH_HIDE_DOMAIN_ACTION ? value[0] !== domain : true,
+      ),
+    ] as AugmentationObject['actions']['action_list'];
+    this.blockList.actions.action_list = newActionList;
+    await this.initBlockList(
+      this.addOrEditAugmentation(this.blockList, {
+        actions: newActionList,
+      }),
+    );
+    window.top.postMessage(
+      { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: this.blockList.id, domain },
+      '*',
+    );
+  }
+
   /**
    * Process the value of an `OPEN_URL_ACTION` by interpolating the matchers.
    *
@@ -150,11 +205,16 @@ class AugmentationManager {
       (i) => i.id !== augmentation.id,
     );
     chrome.storage.local.remove(augmentation.id);
-    const hasHideDomains = !!augmentation.actions.action_list.find(
+    const hasHideDomains = augmentation.actions.action_list.filter(
       ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
     );
-    if (hasHideDomains) {
-      window.top.postMessage({ name: HIDE_DOMAINS_MESSAGE, remove: augmentation.id }, '*');
+    if (!!hasHideDomains) {
+      hasHideDomains.forEach((domain) => {
+        window.top.postMessage(
+          { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
+          '*',
+        );
+      });
     }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
@@ -318,8 +378,8 @@ class AugmentationManager {
     const updated = {
       ...augmentation,
       id,
-      name,
-      description,
+      name: name ?? augmentation.name,
+      description: description ?? augmentation.description,
       conditions: {
         condition_list: conditions ?? augmentation.conditions.condition_list,
         evaluate_with: conditionEvaluation ?? augmentation.conditions.evaluate_with,
@@ -340,24 +400,22 @@ class AugmentationManager {
     const hasHideActions = updated.actions.action_list.filter(
       ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
     );
-    if (!!hasHideActions.length) {
-      window.parent.postMessage(
-        {
-          augmentation: updated,
-          name: HIDE_DOMAINS_MESSAGE,
-          hideDomains: hasHideActions.map(({ value }) => value[0]),
-          selector: {
-            link:
-              SidebarLoader.customSearchEngine.querySelector[
-                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-              ],
-            featured: SidebarLoader.customSearchEngine.querySelector.featured,
-            container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
-          },
+    window.parent.postMessage(
+      {
+        augmentation: updated,
+        name: PROCESS_SERP_OVERLAY_MESSAGE,
+        hideDomains: hasHideActions.map(({ value }) => value[0]),
+        selector: {
+          link:
+            SidebarLoader.customSearchEngine.querySelector[
+              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+            ],
+          featured: SidebarLoader.customSearchEngine.querySelector.featured,
+          container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
         },
-        '*',
-      );
-    }
+      },
+      '*',
+    );
     SidebarLoader.installedAugmentations = [
       updated,
       ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),

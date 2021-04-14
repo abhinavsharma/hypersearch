@@ -1,5 +1,6 @@
 import React, { Suspense, useRef, useState } from 'react';
 import md5 from 'md5';
+import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
 import Typography from 'antd/lib/typography';
@@ -8,13 +9,13 @@ import {
   AIRTABLE_PUBLIC_LENSES_CREATE,
   b64EncodeUnicode,
   EXTENSION_SHORT_SHARE_URL,
+  MY_BLOCKLIST_ID,
   SIDEBAR_Z_INDEX,
 } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import './ShareButton.scss';
-import { Input, Tooltip } from 'antd';
 
 const { Paragraph } = Typography;
 
@@ -35,7 +36,15 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
   const [visible, setVisible] = useState<boolean>(undefined);
   const tooltipContainer = useRef(null);
 
-  const encoded = b64EncodeUnicode(JSON.stringify(augmentation));
+  const encoded = b64EncodeUnicode(
+    JSON.stringify({
+      ...augmentation,
+      id:
+        augmentation.id === MY_BLOCKLIST_ID
+          ? augmentation.id.concat(`-${uuid()}`)
+          : augmentation.id,
+    }),
+  );
 
   const handleClick = async () => {
     setVisible(undefined);
@@ -46,26 +55,6 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
 
   const popoverContent = () => {
     const short = md5(encoded).substr(0, 10);
-
-    const CopyButton = ({ disabled }) => (
-      <Button
-        type="primary"
-        className="popover-primary-button"
-        style={{
-          position: 'absolute',
-          bottom: '12px',
-          right: '10px',
-        }}
-        disabled={disabled}
-      >
-        {!disabled ? 'Copy to clipboard' : 'Copied to clipboard'}
-      </Button>
-    );
-
-    const copiable = {
-      tooltips: false,
-      icon: [<CopyButton disabled={false} />, <CopyButton disabled={true} />],
-    };
 
     return (
       <>

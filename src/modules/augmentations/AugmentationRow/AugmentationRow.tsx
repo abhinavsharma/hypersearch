@@ -8,6 +8,7 @@ import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './AugmentationRow.scss';
+import { MY_BLOCKLIST_ID } from 'utils';
 
 export const AugmentationRow: AugmentationRow = ({
   augmentation,
@@ -58,32 +59,36 @@ export const AugmentationRow: AugmentationRow = ({
           {augmentation.hasOwnProperty('installed') ? 'Edit' : 'Fork'}
         </Tag>
       </Tooltip>
-      {ignored ? (
-        <Tag className="augmentation-row-button" color="geekblue" onClick={handleEnable}>
-          Unhide
-        </Tag>
-      ) : (
+      {augmentation.id !== MY_BLOCKLIST_ID && (
         <>
-          {isSuggested && !other && (
-            <Tag className="augmentation-row-button" color="geekblue" onClick={handleDisable}>
-              Hide
-            </Tag>
-          )}
-          {pinned ? (
-            <Tag className="augmentation-row-button" color="geekblue" onClick={handleUnpin}>
-              Unpin
+          {ignored ? (
+            <Tag className="augmentation-row-button" color="geekblue" onClick={handleEnable}>
+              Unhide
             </Tag>
           ) : (
-            <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
-              Pin
+            <>
+              {isSuggested && !other && (
+                <Tag className="augmentation-row-button" color="geekblue" onClick={handleDisable}>
+                  Hide
+                </Tag>
+              )}
+              {pinned ? (
+                <Tag className="augmentation-row-button" color="geekblue" onClick={handleUnpin}>
+                  Unpin
+                </Tag>
+              ) : (
+                <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
+                  Pin
+                </Tag>
+              )}
+            </>
+          )}
+          {augmentation.installed && (
+            <Tag className="augmentation-row-button" color="volcano" onClick={handleDelete}>
+              Delete
             </Tag>
           )}
         </>
-      )}
-      {augmentation.installed && (
-        <Tag className="augmentation-row-button" color="volcano" onClick={handleDelete}>
-          Delete
-        </Tag>
       )}
     </div>
   );
