@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
+import Switch from 'antd/lib/switch';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
@@ -9,6 +10,7 @@ import {
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
+import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './InlineGutterOptionsPage.scss';
@@ -32,15 +34,16 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     },
   ];
 
-  const handleAddToMyBlockList = useCallback(async () => {
-    await AugmentationManager.updateBlockList(domain);
-    setIsBlocked(true);
-  }, [domain]);
-
-  const handleRemoveFromMyBlockList = useCallback(async () => {
-    await AugmentationManager.deleteFromBlockList(domain);
-    setIsBlocked(false);
-  }, [domain]);
+  const handleToggle = useCallback(
+    async (e: boolean) => {
+      console.log(e);
+      e
+        ? await AugmentationManager.updateBlockList(domain)
+        : await AugmentationManager.deleteFromBlockList(domain);
+      setIsBlocked(e);
+    },
+    [domain],
+  );
 
   const handleClose = () => {
     chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, page: 'builder' });
@@ -65,11 +68,17 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
         <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
           Close
         </Button>
-        <span className="insight-domain-tab-title">Domain</span>
+        <span className="insight-domain-tab-title">Domain Settings</span>
       </div>
       <section>
-        <h2 className="title">Domain under consideration</h2>
         <h3 className="domain-text sub-title">{domain}</h3>
+        <Switch
+          checkedChildren="Domain hidden"
+          unCheckedChildren="Domain not hidden"
+          className="blocklist-toggle"
+          checked={isBlocked}
+          onChange={handleToggle}
+        />
       </section>
       <Divider />
       {sections.map(({ title, subtitle, augmentations }) => (
@@ -115,15 +124,6 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
         </section>
       ))}
       <Divider />
-      {!isBlocked ? (
-        <Button block type="primary" onClick={handleAddToMyBlockList}>
-          Add to My Blocklist
-        </Button>
-      ) : (
-        <Button danger block type="primary" onClick={handleRemoveFromMyBlockList}>
-          Remove from My Blocklist
-        </Button>
-      )}
     </div>
   );
 };

@@ -1,8 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import Button from 'antd/lib/button';
 import { OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import './InlineGutterIcon.scss';
+
+const MenuOutlined = React.lazy(
+  async () => await import('@ant-design/icons/MenuOutlined').then((mod) => mod),
+);
 
 export const InlineGutterIcon: InlineGutterIcon = ({ augmentations, domain }) => {
   const [isHidden, setIsHidden] = useState<boolean>();
@@ -28,9 +32,15 @@ export const InlineGutterIcon: InlineGutterIcon = ({ augmentations, domain }) =>
     }
   }, []);
 
+  const icon = (
+    <Suspense fallback={null}>
+      <MenuOutlined />
+    </Suspense>
+  );
+
   return (
     <div className="inline-gutter-icon" ref={iconRef}>
-      <Button className="gutter-icon" icon={'🔎'} size="large" onClick={handleOpenBuilder} />
+      <Button className="gutter-icon" icon={icon} size="large" onClick={handleOpenBuilder} />
       {isHidden && <span className="gutter-icon-hidden">🙈</span>}
     </div>
   );

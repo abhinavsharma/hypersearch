@@ -68,7 +68,16 @@
     color: #999;
 
     &.domain-text {
-      font-size: 14px;
+      display: inline;
+      margin-right: auto;
+      font-size: 16px;
+      font-weight: bold;
     }
+  }
+
+  .blocklist-toggle {
+    position: absolute;
+    right: 10px;
+    width: 150px;
   }
 }
