@@ -30,15 +30,15 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
     setDomains(SidebarLoader.tabDomains[tab.id][tab.url]);
   }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url]]);
 
-  return showDomains ? (
+  return (
     <div id="sidebar-tab-meta">
       <Paragraph
         ellipsis={!expanded && ellipsis}
         className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
       >
-        {currentStat && <span className="space-right">{currentStat} Uses.</span>}
+        {<span className="space-right">{currentStat ?? 0} Uses.</span>}
         {tab.description && <span className="space-right">{tab.description}</span>}
-        {tab.url && tab.isCse && (
+        {tab.url && tab.isCse && showDomains && (
           <>
             <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
             {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (
@@ -53,5 +53,5 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
         {expanded ? 'Hide' : 'Show'}
       </Button>
     </div>
-  ) : null;
+  );
 };
