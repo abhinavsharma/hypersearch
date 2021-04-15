@@ -85,7 +85,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
         </Paragraph>
         <div className="popover-button-container">
           <Button
-            type="primary"
+            type="default"
             className="popover-primary-button"
             onClick={() =>
               window.open(
