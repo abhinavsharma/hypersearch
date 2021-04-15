@@ -45,38 +45,44 @@ export const ToggleAnonymousQueries = () => {
           <>
             <Suspense fallback={null}>
               <CheckCircleFilled />
-            </Suspense>
-            &nbsp;Use server suggestions
+            </Suspense> Use server suggestions
           </>
         ) : (
           <>
             <Suspense fallback={null}>
               <WarningOutlined />
-            </Suspense>
-            &nbsp;Do not use sever suggestions
+            </Suspense> Do not use sever suggestions
           </>
         )}
       </Title>
       {checked ? (
         <div className="privacy-explainer">
           <p>Recommended for most people, even very privacy sensitive users.</p>
+          <p><b>What data do we log?</b></p>
+
+          <ul>
+            <li>Only dictionary words. For example, if the query was "felicia mountain view" we don't log it at all.</li>
+            <li>We <b>do not log anything that can link users to queries</b>. Your IP, license key, cookie information, device information does not get logged. </li>
+            <li>We also delete all query logs after 1 month.</li>
+          </ul>
+          
           <p>
-            Search is computationally complex. While we allow for 100% client side processing, in
+            <b>Why send data to servers at all?</b> Search is computationally complex. While we have a local mode, in
             order to get the best results, we (like any major search engine, even DuckDuckGo) need
-            to process queries on a server and see which results were clicked on.
-          </p>
-          <p>
-            Our logging standards are stricter than any search engine. We only log dictionary word
-            queries, have no trackers, don't log IP addresses, and delete all logs after 1 month.
+            to process queries on a server.
           </p>
         </div>
       ) : (
         <div className="privacy-explainer">
           <p>Only recommended for local use.</p>
-          <p>
-            The URLs you visit are never shared with our servers. This limits the suggestions we can
-            make.
-          </p>
+          <p><b>What data do we log?</b></p>
+
+          <ul>
+            <li>The number of times lenses were used so we can track license key usage.</li>
+            <li>We <b>do not send URLs visited to our servers</b>. There's no way we can know what pages were visited.</li>
+          </ul>
+
+          <p><b>What are the drawbacks?</b> With this mode we can only suggest simpler lenses that don't use data-intensive algorithms.</p>
         </div>
       )}
     </div>

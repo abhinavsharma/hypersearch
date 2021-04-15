@@ -2,6 +2,11 @@
   display: flex;
   flex-direction: column;
 
+  a {
+    text-decoration: underline;
+    color: #fff;
+  }
+
   h3 {
     margin-top: 20px;
     font-size: 36px;

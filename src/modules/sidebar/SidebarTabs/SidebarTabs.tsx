@@ -72,7 +72,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
           </Tooltip>
         )}
         <Tooltip
-          title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar ("H" key)'}
+          title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar (Escape key)'}
           destroyTooltipOnHide={{ keepParent: false }}
         >
           <Button
