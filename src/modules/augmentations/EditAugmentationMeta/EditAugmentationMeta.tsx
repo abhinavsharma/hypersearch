@@ -8,6 +8,7 @@ import { ShareButton } from 'modules/shared';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
+import './EditAugmentationMeta.scss';
 
 export const EditAugmentationMeta: EditAugmentationMeta = ({
   augmentation,
@@ -38,17 +39,10 @@ export const EditAugmentationMeta: EditAugmentationMeta = ({
           <Switch defaultChecked={enabled} onChange={setEnabled} />
         </Col>
       </Row>
-      <Row className="button-row">
-        <Col xs={12}>
-          <ShareButton disabled={!augmentation.installed} augmentation={augmentation} />
-        </Col>
-        <Col xs={12}>
-          <DeleteAugmentationButton
-            augmentation={augmentation}
-            disabled={!augmentation.installed}
-          />
-        </Col>
-      </Row>
+      <div id="meta-button-row">
+        <ShareButton disabled={!augmentation.installed} augmentation={augmentation} />
+        <DeleteAugmentationButton augmentation={augmentation} disabled={!augmentation.installed} />
+      </div>
     </>
   );
 };

@@ -22,7 +22,6 @@ const CopyOutlined = React.lazy(
   async () => await import('@ant-design/icons/CopyOutlined').then((mod) => mod),
 );
 
-
 const UploadOutlined = React.lazy(
   async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
 );
@@ -73,11 +72,14 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
         <Paragraph
           className="copyable-text"
           copyable={{
-            icon: [<Suspense fallback={null}>
-              <CopyOutlined />
-            </Suspense>, <Suspense fallback={null}>
+            icon: [
+              <Suspense fallback={null}>
                 <CopyOutlined />
-              </Suspense>],
+              </Suspense>,
+              <Suspense fallback={null}>
+                <CopyOutlined />
+              </Suspense>,
+            ],
             tooltips: ['Click to Copy', 'Copied'],
           }}
         >
@@ -97,16 +99,18 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
           >
             Submit to Bazaar
           </Button>
-          <Button type="link" target="_blank" href="https://bazaar.insight.so">Browse Bazaar</Button>
+          <Button type="link" target="_blank" href="https://bazaar.insight.so">
+            Browse Bazaar
+          </Button>
         </div>
       </>
     );
   };
 
   return (
-    <div className="share-button-container">
+    <div className="share-button-container  button-container">
       <Popover
-        style={{width: 400}}
+        style={{ width: 400 }}
         content={popoverContent}
         title={
           <div className="popover-title">

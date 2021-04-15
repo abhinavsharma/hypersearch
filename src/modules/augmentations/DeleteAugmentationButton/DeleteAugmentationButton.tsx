@@ -17,19 +17,21 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
   };
 
   return (
-    <Button
-      onClick={handleDelete}
-      type="link"
-      danger
-      size="large"
-      className="insight-augmentation-delete-button"
-    >
-      <div className={`insight-augmentation-delete-button-content ${disabled ? 'disabled' : ''}`}>
-        <Suspense fallback={null}>
-          <DeleteOutlined />
-        </Suspense>
-        <span>Delete Lens</span>
-      </div>
-    </Button>
+    <div className="button-container">
+      <Button
+        onClick={handleDelete}
+        type="link"
+        danger
+        size="large"
+        className="insight-augmentation-delete-button"
+      >
+        <div className={`insight-augmentation-delete-button-content ${disabled ? 'disabled' : ''}`}>
+          <Suspense fallback={null}>
+            <DeleteOutlined />
+          </Suspense>
+          <span>Delete Lens</span>
+        </div>
+      </Button>
+    </div>
   );
 };
