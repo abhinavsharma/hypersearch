@@ -71,20 +71,22 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
         <span className="insight-domain-tab-title">Domain Settings</span>
       </div>
       <section>
-        <h3 className="domain-text sub-title">{domain}</h3>
-        <Switch
-          checkedChildren="Domain hidden"
-          unCheckedChildren="Domain not hidden"
-          className="blocklist-toggle"
-          checked={isBlocked}
-          onChange={handleToggle}
-        />
+        <h3 className="domain-text sub-title"><code>{domain}</code></h3>
+        <div>
+          <Switch
+            checkedChildren="Domain in my blocklist"
+            unCheckedChildren="Domain not in my blocklist"
+            className="blocklist-toggle"
+            checked={isBlocked}
+            onChange={handleToggle}
+          />
+        </div>
       </section>
       <Divider />
       {sections.map(({ title, subtitle, augmentations }) => (
         <section key={title}>
-          {title && <h2 className="title">{title}</h2>}
-          {subtitle && <h3 className="sub-title">{subtitle}</h3>}
+          {title && augmentations?.length > 0 && <h2 className="title">{title}</h2>}
+          {subtitle && augmentations?.length > 0 && <h3 className="sub-title">{subtitle}</h3>}
           {augmentations.map((augmentation) => {
             const handleDelete = () => {
               AugmentationManager.addOrEditAugmentation(augmentation, {
@@ -123,7 +125,6 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           })}
         </section>
       ))}
-      <Divider />
     </div>
   );
 };
