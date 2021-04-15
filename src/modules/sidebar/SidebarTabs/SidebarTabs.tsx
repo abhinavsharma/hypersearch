@@ -34,6 +34,7 @@ import 'antd/lib/tabs/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabs.scss';
 import Tooltip from 'antd/lib/tooltip';
+import { InlineGutterOptionsPage } from 'modules/gutter';
 
 const { TabPane } = Tabs;
 
@@ -48,6 +49,10 @@ const RightOutlined = React.lazy(
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
   const [activeKey, setActiveKey] = useState<string>(getFirstValidTabIndex(tabs));
+  const [showPage, setShowPage] = useState<'builder' | 'gutter'>('builder');
+  const [gutterPageData, setGutterPageData] = useState<
+    Record<string, string & AugmentationObject[]>
+  >();
 
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
@@ -138,6 +143,10 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
           flipSidebar(document, 'show', tabs?.length, true);
           setActiveKey('0');
+          if (msg.page === 'gutter' && msg.augmentations) {
+            setGutterPageData({ augmentations: msg.augmentations, domain: msg.domain });
+          }
+          msg.page && setShowPage(msg.page);
           break;
         // LOGGING
         case SEND_FRAME_INFO_MESSAGE:
@@ -173,7 +182,21 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         tabBarExtraContent={extraContent}
       >
         <TabPane key="0" tab={null} forceRender>
-          <ActiveAugmentationsPage setActiveKey={setActiveKey} />
+          {(() => {
+            switch (showPage) {
+              case 'builder':
+                return <ActiveAugmentationsPage setActiveKey={setActiveKey} />;
+              case 'gutter':
+                return (
+                  <InlineGutterOptionsPage
+                    hidingAugmentations={gutterPageData.augmentations}
+                    domain={gutterPageData.domain}
+                  />
+                );
+              default:
+                return null;
+            }
+          })()}
         </TabPane>
         {tabs?.map((tab, i) => {
           return (

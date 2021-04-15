@@ -112,6 +112,7 @@ export const removeWww = (s: string) => {
 };
 
 export const extractUrlProperties = (s: string) => {
+  if (!s) return null;
   try {
     let url: string;
     if (s.startsWith('http://') || s.startsWith('https://')) url = s;

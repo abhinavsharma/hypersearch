@@ -1,12 +1,15 @@
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import {
-  debug,
-  HIDE_DOMAINS_MESSAGE,
-  hideSerpResults,
   keyboardHandler,
   keyUpHandler,
+  hideSerpResults,
+  debug,
   URL_UPDATED_MESSAGE,
+  REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
+  PROCESS_SERP_OVERLAY_MESSAGE,
+  SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
+import { showGutterIcons } from 'utils/showGutterIcons/showGutterIcons';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -20,26 +23,28 @@ import {
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('keyup', handleKeyUp, true);
-  let blockingAugmentations: AugmentationObject[] = [];
+  const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
   window.top.addEventListener('message', ({ data }) => {
-    if (data.name === HIDE_DOMAINS_MESSAGE) {
-      if (data.remove) {
-        blockingAugmentations = blockingAugmentations.filter(({ id }) => id !== data.remove);
+    switch (data.name) {
+      case REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE:
+        blockingAugmentations[data.domain].filter(({ id }) => id !== data.remove);
         const blockedElements = Array.from(document.querySelectorAll(`[insight-blocked-by]`));
         blockedElements.forEach((element) => {
           const blockers = element.getAttribute('insight-blocked-by').replace(data.remove, '');
+          if (data.domain && element.getAttribute('insight-blocked-domain') !== data.domain) {
+            return null;
+          }
+          element.parentElement.setAttribute('insight-hidden-result', 'false');
+          element.parentElement.setAttribute('insight-allowed-result', 'true');
           element.setAttribute('insight-blocked-by', blockers);
           if (!blockers.split(' ').filter((i) => !!i).length) {
             element.parentElement.removeChild(element);
           }
-          const button = element.querySelector(`#${data.remove}`);
-          button.parentElement.removeChild(button);
         });
-      } else {
-        if (!blockingAugmentations.find(({ id }) => id === data.augmentation?.id)) {
-          blockingAugmentations.push(data.augmentation);
-        }
+        break;
+      case PROCESS_SERP_OVERLAY_MESSAGE:
         const blocks = [];
+        const alloweds = [];
         const results = Array.from(document.querySelectorAll(data.selector.link)) as HTMLElement[];
         const featuredContainers = [];
         const featured = data.selector.featured.reduce((a, selector) => {
@@ -48,43 +53,72 @@ import {
           return a.concat(partial);
         }, []) as HTMLElement[];
         results.forEach((result) => {
-          data.hideDomains.forEach((domain) => {
-            let domainName = '';
-            if (result instanceof HTMLLinkElement) {
-              domainName = result.getAttribute('href');
-            } else {
-              domainName = result.textContent;
-            }
-            if (domainName.match(domain)?.length) {
-              blocks.push(result);
-            }
-          });
+          if (data.hideDomains.length) {
+            data.hideDomains.forEach((domain) => {
+              let domainName = '';
+              if (result instanceof HTMLLinkElement) {
+                domainName = result.getAttribute('href');
+              } else {
+                domainName = result.textContent;
+              }
+              if (domainName.match(domain)?.length) {
+                data.augmentation?.actions.action_list.forEach((action) => {
+                  if (action.key === SEARCH_HIDE_DOMAIN_ACTION && action.value[0] === domain) {
+                    if (!blockingAugmentations[domain]) {
+                      blockingAugmentations[domain] = [];
+                    }
+                    !blockingAugmentations[domain].find(({ id }) => id === data.augmentation.id) &&
+                      blockingAugmentations[domain].push(data.augmentation);
+                  }
+                });
+                blocks.push(result);
+              }
+            });
+          } else {
+            alloweds.push(result);
+          }
         });
         featured.forEach((result) => {
-          data.hideDomains.forEach((domain) => {
-            let domainName = '';
-            if (result instanceof HTMLLinkElement) {
-              domainName = result.getAttribute('href');
-            } else {
-              domainName = result.textContent;
-            }
-            if (domainName.match(domain)?.length) {
-              featuredContainers.forEach((container) => blocks.push(container));
-            }
-          });
+          if (data.hideDomains.length) {
+            data.hideDomains.forEach((domain) => {
+              let domainName = '';
+              if (result instanceof HTMLLinkElement) {
+                domainName = result.getAttribute('href');
+              } else {
+                domainName = result.textContent;
+              }
+              if (domainName.match(domain)?.length) {
+                data.augmentation?.actions.action_list.forEach((action) => {
+                  if (action.key === SEARCH_HIDE_DOMAIN_ACTION && action.value[0] === domain) {
+                    if (!blockingAugmentations[domain]) {
+                      blockingAugmentations[domain] = [];
+                    }
+                    !blockingAugmentations[domain].find(({ id }) => id === data.augmentation.id) &&
+                      blockingAugmentations[domain].push(data.augmentation);
+                  }
+                });
+                featuredContainers.forEach((container) => blocks.push(container));
+              }
+            });
+          } else {
+            alloweds.push(result);
+          }
         });
-        if (document.readyState === 'complete' || document.readyState === 'interactive')
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+          showGutterIcons(alloweds, data.selector.container);
           hideSerpResults(
             blocks,
             data.selector.container,
             {
-              header: `🙈 Result muted by lens`,
-              text: 'Click to show',
+              header: null,
+              text: null,
             },
             'hidden-domain',
             blockingAugmentations,
+            true,
           );
-      }
+        }
+        break;
     }
   });
   const url = new URL(location.href);

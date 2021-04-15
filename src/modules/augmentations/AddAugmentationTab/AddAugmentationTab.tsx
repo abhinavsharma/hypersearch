@@ -16,7 +16,7 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
   };
 
   const handleOpenBuilder = () =>
-    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE });
+    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, page: 'builder' });
 
   return (
     <div id="add-augmentation-tab">

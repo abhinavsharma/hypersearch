@@ -4,7 +4,8 @@ declare module './hideSerpResults' {
     selector: string,
     details: Record<'text' | 'header', string>,
     selectorString: string,
-    augmentations?: AugmentationObject[],
+    augmentations?: Record<string, AugmentationObject[]>,
+    preventHideOnClick?: boolean,
   ) => void;
 }
 

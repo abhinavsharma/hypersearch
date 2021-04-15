@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import {
   EXTENSION_SERP_FILTER_LOADED,
-  HIDE_DOMAINS_MESSAGE,
+  PROCESS_SERP_OVERLAY_MESSAGE,
   HIDE_TAB_FAKE_URL,
   keyboardHandler,
   keyUpHandler,
@@ -22,25 +22,23 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
     frameRef.current?.contentWindow.addEventListener('keyup', handleKeyUp);
-    if (hideDomains.length) {
-      window.top.postMessage(
-        {
-          augmentation: tab.augmentation,
-          hideDomains,
-          name: HIDE_DOMAINS_MESSAGE,
-          tab: tab.id,
-          selector: {
-            link:
-              SidebarLoader.customSearchEngine.querySelector[
-                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-              ],
-            featured: SidebarLoader.customSearchEngine.querySelector.featured,
-            container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
-          },
+    window.top.postMessage(
+      {
+        augmentation: tab.augmentation,
+        hideDomains,
+        name: PROCESS_SERP_OVERLAY_MESSAGE,
+        tab: tab.id,
+        selector: {
+          link:
+            SidebarLoader.customSearchEngine.querySelector[
+              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+            ],
+          featured: SidebarLoader.customSearchEngine.querySelector.featured,
+          container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
         },
-        '*',
-      );
-    }
+      },
+      '*',
+    );
     return () => frameRef.current?.contentWindow.removeEventListener('keydown', handleKeyDown);
   }, []);
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (

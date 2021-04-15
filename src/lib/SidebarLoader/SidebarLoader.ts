@@ -316,15 +316,19 @@ class SidebarLoader {
           ? 'https://www.ecosia.org/search'
           : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
       );
+    let fakeTab = null;
     augmentation.actions.action_list.forEach((action) => {
+      if (!fakeTab && action.key === SEARCH_HIDE_DOMAIN_ACTION) {
+        const fakeUrl = emptyUrl();
+        fakeUrl.href = HIDE_TAB_FAKE_URL;
+        urls.push(fakeUrl);
+        fakeTab = true;
+      }
       const customSearchUrl = emptyUrl();
       switch (action.key) {
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case SEARCH_HIDE_DOMAIN_ACTION:
-          const fakeUrl = emptyUrl();
-          fakeUrl.href = HIDE_TAB_FAKE_URL;
-          urls.push(fakeUrl);
           break;
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
         case OPEN_URL_ACTION:

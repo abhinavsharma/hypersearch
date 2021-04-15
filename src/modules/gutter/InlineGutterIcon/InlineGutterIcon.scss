@@ -1,0 +1,22 @@
+.inline-gutter-icon {
+  display: block;
+  z-index: 9999;
+
+  .gutter-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 36px;
+    border: 0px;
+    border-bottom: 0;
+    box-shadow: none;
+    pointer-events: all !important;
+  }
+
+  .gutter-icon-hidden {
+    position: absolute;
+    left: 60px;
+    bottom: 20px;
+    font-size: 16px;
+    pointer-events: none;
+  }
+}
