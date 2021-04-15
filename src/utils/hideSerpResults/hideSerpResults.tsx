@@ -87,17 +87,16 @@ export const hideSerpResults: HideSerpResults = (
     }
     overlay.appendChild(textWrapper);
     textWrapper.appendChild(innerText);
-    !preventHideOnClick &&
-      overlay.addEventListener('click', (e) => {
-        if (serpResult.getAttribute('insight-hidden-result-protected') !== 'true') {
-          e.preventDefault();
-          const ol = (e.target as Element).closest('.insight-hidden');
-          ol.parentElement.style.maxHeight = 'none';
-          ol.parentElement.style.overflow = 'auto';
-          ol.parentNode.removeChild(ol);
-          serpResult.setAttribute('insight-hidden-result-protected', 'true');
-        }
-      });
+    overlay.addEventListener('click', (e) => {
+      if (serpResult.getAttribute('insight-hidden-result-protected') !== 'true') {
+        e.preventDefault();
+        const ol = (e.target as Element).closest('.insight-hidden');
+        ol.parentElement.style.maxHeight = 'none';
+        ol.parentElement.style.overflow = 'auto';
+        ol.parentNode.removeChild(ol);
+        serpResult.setAttribute('insight-hidden-result-protected', 'true');
+      }
+    });
     if (
       serpResult.querySelectorAll('.insight-hidden').length === 0 &&
       serpResult.getAttribute('insight-hidden-result-protected') !== 'true'
