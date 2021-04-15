@@ -62,7 +62,7 @@
 
     .ant-collapse-header {
       font-weight: bold;
-      font-size: 16px;
+      font-size: 18px;
     }
 
     .ant-collapse-content-box {
@@ -234,12 +234,9 @@
 
       span.operation-description {
         font-size: 14px;
-        font-weight: bold;
       }
 
       .ant-row {
-        background: #f9f9f9 !important;
-
         &.no-border {
           border-bottom: none !important;
         }
