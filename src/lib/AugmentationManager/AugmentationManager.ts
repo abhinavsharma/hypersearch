@@ -23,6 +23,7 @@ import {
   IGNORED_PREFIX,
   INSTALLED_PREFIX,
   PINNED_PREFIX,
+  ANY_URL_CONDITION_MOBILE,
 } from 'utils';
 
 class AugmentationManager {
@@ -185,7 +186,9 @@ class AugmentationManager {
 
     const domainsToLookCondition = augmentation.conditions.condition_list.reduce(
       (conditions, { key, value }) =>
-        key === SEARCH_CONTAINS_CONDITION || key === ANY_URL_CONDITION
+        key === SEARCH_CONTAINS_CONDITION ||
+        key === ANY_URL_CONDITION ||
+        key === ANY_URL_CONDITION_MOBILE
           ? conditions.concat(value)
           : conditions,
       [],

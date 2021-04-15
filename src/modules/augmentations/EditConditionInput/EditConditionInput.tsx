@@ -163,8 +163,6 @@ export const EditConditionInput: EditConditionInput = ({
                     value={newValue}
                   />
                 );
-              case ANY_URL_CONDITION:
-                return null;
               default:
                 return null;
             }
