@@ -5,6 +5,7 @@ import {
   ENABLED_AUGMENTATION_TYPES,
   ANY_URL_CONDITION,
   HIDE_TAB_FAKE_URL,
+  ANY_URL_CONDITION_MOBILE,
 } from 'utils';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
@@ -166,8 +167,12 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => 
   const aSuggested = !a.augmentation.hasOwnProperty('enabled');
   const bSuggested = !b.augmentation.hasOwnProperty('enabled');
   const bothSuggested = aSuggested && bSuggested;
-  const aIsAny = aConditions.indexOf(ANY_URL_CONDITION) > -1;
-  const bIsAny = bConditions.indexOf(ANY_URL_CONDITION) > -1;
+  const aIsAny =
+    aConditions.indexOf(ANY_URL_CONDITION) > -1 ||
+    aConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
+  const bIsAny =
+    bConditions.indexOf(ANY_URL_CONDITION) > -1 ||
+    bConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
   if (aSuggested && !bSuggested && !aIsAny && bIsAny) return -1;
   if (aSuggested && !bSuggested && aIsAny && !bIsAny) return 1;
   if (!aSuggested && bSuggested && !aIsAny && bIsAny) return -1;
