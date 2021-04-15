@@ -27,7 +27,9 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
 
   const sections = [
     {
-      augmentations: installedAugmentations,
+      augmentations: installedAugmentations.filter(
+        (augmentation) => !pinnedAugmentations.find(({ id }) => id === augmentation.id),
+      ),
       title: 'Your Local Lenses Matching This Page',
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),
       button: (
@@ -45,18 +47,24 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
       pinned: true,
     },
     {
-      augmentations: suggestedAugmentations,
+      augmentations: suggestedAugmentations.filter(
+        (augmentation) => !pinnedAugmentations.find(({ id }) => id === augmentation.id),
+      ),
       title: 'Suggested for This Page',
       subtitle: `Lenses suggested by ${APP_NAME} for this page.`,
     },
     {
-      augmentations: ignoredAugmentations.sort(augmentationSorter),
+      augmentations: ignoredAugmentations
+        .filter((augmentation) => !pinnedAugmentations.find(({ id }) => id === augmentation.id))
+        .sort(augmentationSorter),
       title: 'Hidden',
       subtitle: 'Lenses you have hidden.',
       ignored: true,
     },
     {
-      augmentations: otherAugmentations.sort(augmentationSorter),
+      augmentations: otherAugmentations
+        .filter((augmentation) => !pinnedAugmentations.find(({ id }) => id === augmentation.id))
+        .sort(augmentationSorter),
       title: 'Other',
       subtitle: 'Lenses not matching this page.',
       other: true,

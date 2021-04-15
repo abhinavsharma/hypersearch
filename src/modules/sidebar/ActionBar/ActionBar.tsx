@@ -45,10 +45,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
     });
   };
 
-  const handlePin = () => AugmentationManager.pinAugmentation(tab.augmentation);
+  const handlePin = () => {
+    AugmentationManager.pinAugmentation(tab.augmentation);
+  };
+
   const handleUnpin = () => {
     AugmentationManager.unpinAugmentation(tab.augmentation);
-    setActiveKey(getFirstValidTabIndex(SidebarLoader.sidebarTabs));
   };
 
   const handleRemoveInstalled = () => {

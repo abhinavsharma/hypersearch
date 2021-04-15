@@ -245,6 +245,8 @@ class SidebarLoader {
    */
   public augmentationStats: Record<string, number>;
 
+  public enabledOtherAugmentations: AugmentationObject[];
+
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.augmentationStats = Object.create(null);
@@ -258,6 +260,7 @@ class SidebarLoader {
     this.suggestedAugmentations = [];
     this.pinnedAugmentations = [];
     this.otherAugmentations = [];
+    this.enabledOtherAugmentations = [];
     this.ignoredAugmentations = [];
     this.matchingDisabledInstalledAugmentations = [];
   }
@@ -380,8 +383,8 @@ class SidebarLoader {
    */
   public getTabsAndAugmentations(
     augmentations: AugmentationObject[] = [
-      ...this.pinnedAugmentations,
       ...this.installedAugmentations,
+      ...this.enabledOtherAugmentations,
       ...this.suggestedAugmentations,
     ],
   ) {
@@ -458,12 +461,9 @@ class SidebarLoader {
             );
           /** DEV END **/
 
-          if (augmentation.hasOwnProperty('enabled')) {
+          if (augmentation.installed) {
             !augmentation.enabled && this.matchingDisabledInstalledAugmentations.push(augmentation);
-          } else if (
-            !this.suggestedAugmentations.find(({ id }) => id === augmentation.id) &&
-            !this.pinnedAugmentations.find(({ id }) => id === augmentation.id)
-          ) {
+          } else if (!this.suggestedAugmentations.find(({ id }) => id === augmentation.id)) {
             this.suggestedAugmentations.push(augmentation);
           }
 
@@ -637,6 +637,7 @@ class SidebarLoader {
       chrome.storage.sync.get(resolve),
     );
     [...Object.entries(locals), ...Object.entries(syncs)].forEach(([key, value]) => {
+      const { isRelevant } = AugmentationManager.getAugmentationRelevancy(value);
       const flag = key.split('-')[0];
       switch (flag) {
         case IGNORED_PREFIX:
@@ -647,9 +648,14 @@ class SidebarLoader {
           this.installedAugmentations = this.installedAugmentations.filter(
             ({ id }) => id !== value.id,
           );
+          if (
+            !this.installedAugmentations.find(({ id }) => id === value.id) &&
+            !this.suggestedAugmentations.find(({ id }) => id === value.id)
+          ) {
+            this.enabledOtherAugmentations.push(value);
+          }
           break;
         case CSE_PREFIX:
-          const { isRelevant } = AugmentationManager.getAugmentationRelevancy(value);
           if (!this.pinnedAugmentations.find(({ id }) => id === value.id)) {
             if (isRelevant && isAugmentationEnabled(value)) {
               this.installedAugmentations.push(value);
@@ -694,8 +700,8 @@ class SidebarLoader {
     await this.getLocalAugmentations();
     this.tabDomains['original'] = this.getDomains(document);
     this.getTabsAndAugmentations([
-      ...this.pinnedAugmentations,
       ...this.installedAugmentations,
+      ...this.enabledOtherAugmentations,
       ...response.suggested_augmentations.filter(
         (augmentation) => !this.pinnedAugmentations.find(({ id }) => id === augmentation.id),
       ),

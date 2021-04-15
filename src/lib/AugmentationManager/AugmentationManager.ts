@@ -4,7 +4,6 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import md5 from 'md5';
 import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
@@ -13,10 +12,8 @@ import {
   removeProtocol,
   ANY_URL_CONDITION,
   EXTENSION_SHARE_URL,
-  EXTENSION_SHORT_SHARE_URL,
   HIDE_DOMAINS_MESSAGE,
   NUM_DOMAINS_TO_EXCLUDE,
-  OPEN_NEW_TAB_MESSAGE,
   SEARCH_CONTAINS_CONDITION,
   SEARCH_DOMAINS_ACTION,
   SEARCH_HIDE_DOMAIN_ACTION,
@@ -106,15 +103,12 @@ class AugmentationManager {
     chrome.storage.local.set({
       [`${PINNED_PREFIX}-${augmentation.id}`]: augmentation,
     });
-    SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
-    SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
-      (i) => i.id !== augmentation.id,
-    );
+    if (
+      !SidebarLoader.installedAugmentations.find(({ id }) => id === augmentation.id) &&
+      !SidebarLoader.suggestedAugmentations.find(({ id }) => id === augmentation.id)
+    ) {
+      SidebarLoader.enabledOtherAugmentations.push(augmentation);
+    }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
@@ -123,12 +117,13 @@ class AugmentationManager {
     SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
+    SidebarLoader.enabledOtherAugmentations = SidebarLoader.enabledOtherAugmentations.filter(
+      ({ id }) => id !== augmentation.id,
+    );
     chrome.storage.local.remove(`${PINNED_PREFIX}-${augmentation.id}`);
-    !this.getAugmentationRelevancy(augmentation).isRelevant
-      ? SidebarLoader.otherAugmentations.push(augmentation)
-      : augmentation.installed
-      ? SidebarLoader.installedAugmentations.push(augmentation)
-      : SidebarLoader.suggestedAugmentations.push(augmentation);
+    if (!this.getAugmentationRelevancy(augmentation).isRelevant) {
+      SidebarLoader.otherAugmentations.push(augmentation);
+    }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
