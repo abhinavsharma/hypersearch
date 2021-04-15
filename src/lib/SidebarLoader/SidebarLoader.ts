@@ -5,6 +5,7 @@
  * @version 1.0.0
  */
 import React, { ReactElement } from 'react';
+import md5 from 'md5';
 import { render } from 'react-dom';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
@@ -276,7 +277,7 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  public getDomains(document: Document) {
+  public getDomains(document: Document, getAllFromPage?: boolean) {
     let els = [];
     // On Google, we have to use the `pad` selector, since the desktop referencing to the
     // `<cite>` tag, however the process needs the actual link's `href` attribute.
@@ -293,10 +294,10 @@ class SidebarLoader {
         ),
       ),
     );
-    return els
+    const result = els
       .map((i) => extractUrlProperties(isBing ? i.textContent : i.getAttribute('href')).full)
-      .filter((domain) => !BANNED_DOMAINS.includes(domain))
-      .slice(0, NUM_DOMAINS_TO_CONSIDER);
+      .filter((domain) => !BANNED_DOMAINS.includes(domain));
+    return getAllFromPage ? result : result.slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
 
   /**
@@ -702,7 +703,7 @@ class SidebarLoader {
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     this.domains = this.getDomains(document);
     await this.getLocalAugmentations();
-    this.tabDomains['original'] = this.getDomains(document);
+    this.tabDomains['original'] = this.getDomains(document, true);
     this.getTabsAndAugmentations([
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
@@ -818,6 +819,14 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public sendLogMessage(event: string, properties: Record<string, any>) {
+    if (this.strongPrivacy) {
+      const { url, query } = properties;
+      if (url) properties.url = md5(url);
+      if (query) properties.query = md5(query);
+    }
+
+    properties.userIsAnon = this.strongPrivacy;
+
     debug(
       'sendLogMessage - call\n---\n\tEvent',
       event,
@@ -827,8 +836,8 @@ class SidebarLoader {
       this.strongPrivacy ? 'Yes' : 'No',
       '\n---',
     );
-    !this.strongPrivacy &&
-      !IN_DEBUG_MODE &&
+
+    !IN_DEBUG_MODE &&
       chrome.runtime.sendMessage({
         event,
         properties,

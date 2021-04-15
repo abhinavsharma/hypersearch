@@ -101,12 +101,12 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   };
 
   const handleLog = useCallback(async (msg) => {
-    if (SidebarLoader.strongPrivacy) return null;
     if (msg.frame.parentFrameId === -1) {
       SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
         query: SidebarLoader.query,
         url: msg.url,
-        position_in_serp: SidebarLoader.domains.indexOf(extractUrlProperties(msg.url).hostname) + 1,
+        position_in_serp:
+          SidebarLoader.tabDomains['original'].indexOf(extractUrlProperties(msg.url).full) + 1,
       });
     } else {
       const sourceTab = tabs.find(
@@ -127,7 +127,10 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             query: SidebarLoader.query,
             url: msg.url,
             filter_name: sourceTab.title,
-            position_in_serp: SidebarLoader.tabDomains[sourceTab.id].indexOf(msg.url) + 1,
+            position_in_serp:
+              SidebarLoader.tabDomains[sourceTab.id][sourceTab.url].indexOf(
+                extractUrlProperties(msg.url).hostname,
+              ) + 1,
           }),
         250,
       );
