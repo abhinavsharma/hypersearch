@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  border-left: 1px solid #ccc;
+  box-shadow: -1px -1px 6px 1px rgb(0 0 0 / 20%);
 
   .ant-tabs-tab + .ant-tabs-tab {
     margin: 0;

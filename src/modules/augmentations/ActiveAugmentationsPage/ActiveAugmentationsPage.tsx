@@ -33,7 +33,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
       title: 'Your Local Lenses Matching This Page',
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),
       button: (
-        <Button type="text" block onClick={handleEdit}>
+        <Button type="text" onClick={handleEdit}>
           <Suspense fallback={null}>
             <ZoomInOutlined />
           </Suspense>
