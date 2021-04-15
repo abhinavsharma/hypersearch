@@ -30,13 +30,12 @@
   }
 
   .ant-tabs-tab-active {
-    color: #333;
+    color: black;
     background-color: white;
-    font-weight: bold;
   }
 
   .insight-tab-title {
-    color: #333;
+    color: #666;
     padding: 10px 15px;
 
     &.hidden {
@@ -44,8 +43,7 @@
     }
 
     &.active {
-      font-weight: bold;
-      color: #333;
+      color: black;
     }
   }
 }
