@@ -28,11 +28,13 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   };
 
   useEffect(() => {
-    setCurrentStat(SidebarLoader.augmentationStats[tab.id]);
+    setCurrentStat(SidebarLoader.augmentationStats[tab.id] ?? 0);
     setDomains(SidebarLoader.tabDomains[tab.id][tab.url]);
   }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url]]);
 
-  const showMeta = currentStat > 0 || !!tab.description || !!domains?.length;
+  const showMeta = currentStat > 0 || !!tab.description.length || !!domains?.length;
+
+  console.log(currentStat, tab.description, domains);
 
   return showMeta ? (
     <div id="sidebar-tab-meta">
