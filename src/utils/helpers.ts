@@ -270,3 +270,15 @@ export const shouldPreventEventBubble = (event: KeyboardEvent) => {
     !!event.target.constructor.toString().match('HTMLTextAreaElement')
   );
 };
+
+export const replaceLocation = (location: Location) => {
+  let url: URL;
+  if (location.href.search(/amazon\.com.*field-keywords/gi) > -1) {
+    url = new URL(
+      location.href.split('/s')[0] + '/s?k' + location.search.split('field-keywords')[1],
+    );
+  } else {
+    url = new URL(location.href);
+  }
+  return url;
+};

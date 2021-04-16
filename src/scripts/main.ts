@@ -4,12 +4,13 @@ import {
   keyUpHandler,
   hideSerpResults,
   debug,
+  showGutterIcons,
+  replaceLocation,
   URL_UPDATED_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   PROCESS_SERP_OVERLAY_MESSAGE,
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
-import { showGutterIcons } from 'utils/showGutterIcons/showGutterIcons';
 
 (async (document: Document, location: Location) => {
   debug(
@@ -121,11 +122,11 @@ import { showGutterIcons } from 'utils/showGutterIcons/showGutterIcons';
         break;
     }
   });
-  const url = new URL(location.href);
+  const url = replaceLocation(location);
   await SidebarLoader.loadOrUpdateSidebar(document, url);
   chrome.runtime.onMessage.addListener(async (msg) => {
     if (msg.type === URL_UPDATED_MESSAGE) {
-      await SidebarLoader.loadOrUpdateSidebar(document, new URL(msg.url));
+      await SidebarLoader.loadOrUpdateSidebar(document, url);
     }
   });
 })(document, location);
