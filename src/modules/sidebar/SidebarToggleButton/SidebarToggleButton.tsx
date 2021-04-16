@@ -67,7 +67,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       <div className="insight-sidebar-toggle-appname">
         <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
       </div>
-      <div style={{ textAlign: 'center', marginTop: 25 }}>
+      <div style={{ textAlign: 'center', margin: '20px 0' }}>
         <Button type="text" target="blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
           Send Feedback
         </Button>
