@@ -10,8 +10,10 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 const { Paragraph } = Typography;
 
 export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
-  const [currentStat, setCurrentStat] = useState<number>(SidebarLoader.augmentationStats[tab.id]);
-  const [domains, setDomains] = useState<string[]>(SidebarLoader.tabDomains[tab.id][tab.url]);
+  const [currentStat, setCurrentStat] = useState<number>(
+    SidebarLoader.augmentationStats[tab.id] ?? 0,
+  );
+  const [domains, setDomains] = useState<string[]>(SidebarLoader.tabDomains[tab.id][tab.url] ?? []);
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleToggle = () => setExpanded((prev) => !prev);
@@ -30,13 +32,15 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
     setDomains(SidebarLoader.tabDomains[tab.id][tab.url]);
   }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url]]);
 
-  return (
+  const showMeta = currentStat > 0 || !!tab.description || !!domains?.length;
+
+  return showMeta ? (
     <div id="sidebar-tab-meta">
       <Paragraph
         ellipsis={!expanded && ellipsis}
         className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
       >
-        {<span className="space-right">{currentStat ?? 0} Uses.</span>}
+        {currentStat > 0 && <span className="space-right">{currentStat} Uses.</span>}
         {tab.description && <span className="space-right">{tab.description}</span>}
         {tab.url && tab.isCse && showDomains && (
           <>
@@ -53,5 +57,5 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
         {expanded ? 'Hide' : 'Show'}
       </Button>
     </div>
-  );
+  ) : null;
 };
