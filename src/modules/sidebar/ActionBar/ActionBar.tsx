@@ -70,7 +70,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
-        {tab.augmentation.installed ? (
+        {tab.augmentation?.installed ? (
           <Link
             component={EditAugmentationPage}
             componentProps={{
@@ -102,8 +102,8 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             componentProps={{
               augmentation: {
                 ...tab.augmentation,
-                description: !tab.augmentation.installed ? '' : tab.augmentation.description,
-                installed: tab.augmentation.installed,
+                description: !tab.augmentation?.installed ? '' : tab.augmentation?.description,
+                installed: tab.augmentation?.installed,
               },
               setActiveKey,
             }}
@@ -127,7 +127,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             </Tooltip>
           </Link>
         )}
-        {tab.augmentation.pinned ? (
+        {tab.augmentation?.pinned ? (
           <Tooltip
             title="Unpin this lens"
             destroyTooltipOnHide={{ keepParent: false }}
@@ -162,7 +162,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        {tab.augmentation.installed && (
+        {tab.augmentation?.installed && (
           <Tooltip
             title="Delete local lens"
             destroyTooltipOnHide={{ keepParent: false }}
@@ -180,7 +180,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        {!tab.augmentation.installed && (
+        {!tab.augmentation?.installed && (
           <Tooltip
             title="Hide lens"
             destroyTooltipOnHide={{ keepParent: false }}
