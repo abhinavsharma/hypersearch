@@ -49,7 +49,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   );
 
   return getFirstValidTabIndex(tabs) !== '0' ? (
-    <Tooltip title={'Preview lenses ("P" key)'} destroyTooltipOnHide={{ keepParent: false }}>
+    <Tooltip title={'Preview lenses ("I" key)'} destroyTooltipOnHide={{ keepParent: false }}>
       <div onClick={handleClick} className="insight-sidebar-toggle-button">
         <div className="insight-sidebar-toggle-appname">
           <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>

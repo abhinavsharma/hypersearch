@@ -36,7 +36,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
       handleToggle();
       buffer = [];
       break;
-    case 'KeyP':
+    case 'KeyI':
       loader.isExpanded && handleToggle();
       flipSidebar(document, 'show', loader.sidebarTabs.length);
       buffer = [];
