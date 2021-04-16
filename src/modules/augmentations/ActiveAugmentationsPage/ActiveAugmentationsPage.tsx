@@ -77,7 +77,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
         {sections.map(
           ({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
             const hasNextSection = !!a[i + 1];
-            return augmentations.length ? (
+            return augmentations.length || i === 0 ? (
               <React.Fragment key={title}>
                 <section>
                   {title && <h2 className="title">{title}</h2>}
