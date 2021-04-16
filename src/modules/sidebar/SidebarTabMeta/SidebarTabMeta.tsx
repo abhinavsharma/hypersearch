@@ -19,7 +19,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   const handleToggle = () => setExpanded((prev) => !prev);
 
   const showDomains =
-    Array.from(new Set(tab.augmentation.actions.action_list.map(({ key }) => key))).indexOf(
+    Array.from(new Set(tab.augmentation?.actions.action_list.map(({ key }) => key))).indexOf(
       SEARCH_DOMAINS_ACTION,
     ) > -1;
 
@@ -33,8 +33,6 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url]]);
 
   const showMeta = currentStat > 0 || !!tab.description.length || !!domains?.length;
-
-  console.log(currentStat, tab.description, domains);
 
   return showMeta ? (
     <div id="sidebar-tab-meta">

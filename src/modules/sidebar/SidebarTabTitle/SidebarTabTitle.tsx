@@ -19,7 +19,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
           activeKey === '0' ? 'hidden' : ''
         }`}
       >
-        {!tab.augmentation.installed ? (
+        {!tab.augmentation?.installed ? (
           <Tooltip title={'Suggested'} destroyTooltipOnHide={{ keepParent: false }}>
             {insertNewlineAfterEmoji(tab.title)}
           </Tooltip>

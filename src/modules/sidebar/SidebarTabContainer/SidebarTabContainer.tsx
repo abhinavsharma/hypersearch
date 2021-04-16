@@ -14,7 +14,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
 
-  const hideDomains = tab.augmentation.actions.action_list.reduce((a, { key, value }) => {
+  const hideDomains = tab.augmentation?.actions.action_list.reduce((a, { key, value }) => {
     if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
     return a;
   }, []);
