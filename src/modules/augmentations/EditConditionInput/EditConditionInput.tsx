@@ -146,6 +146,9 @@ export const EditConditionInput: EditConditionInput = ({
                 return (
                   <Select
                     showSearch
+                    defaultValue={
+                      typeof newValue === 'object' ? JSON.stringify(newValue) : newValue
+                    }
                     placeholder={(() => {
                       switch (newKey) {
                         case SEARCH_INTENT_IS_CONDITION:
