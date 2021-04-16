@@ -1,12 +1,13 @@
 #active-augmentations-page {
   display: block;
-  margin-top: 20px;
   position: absolute;
-  height: calc(100% -60px);
+  height: calc(100% - 80px);
   width: 100%;
+  padding-top: 20px;
   top: 60px;
   bottom: 0;
   overflow-y: auto !important;
+  background: white;
 
   section {
     display: flex;
