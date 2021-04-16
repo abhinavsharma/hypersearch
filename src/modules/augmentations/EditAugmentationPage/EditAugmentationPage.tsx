@@ -145,7 +145,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
         </Button>
       </div>
       <div className="edit-augmentation-page-wrapper">
-        <Collapse defaultActiveKey={['1', '2', '3']}>
+        <Collapse defaultActiveKey={['2', '3']}>
           <Panel header="When" key="1">
             <div className="edit-augmentation-logic-wrapper">
               <EditAugmentationConditions

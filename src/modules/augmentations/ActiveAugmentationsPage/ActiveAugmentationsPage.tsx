@@ -65,7 +65,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
       augmentations: otherAugmentations
         .filter((augmentation) => !pinnedAugmentations.find(({ id }) => id === augmentation.id))
         .sort(augmentationSorter),
-      title: 'Other',
+      title: 'Unmatched Lenses',
       subtitle: 'Lenses not matching this page.',
       other: true,
     },
