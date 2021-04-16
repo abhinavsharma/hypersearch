@@ -41,6 +41,9 @@ import {
   SEARCH_APPEND_ACTION,
   USE_COUNT_PREFIX,
   SYNC_PRIVACY_KEY,
+  GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
+  INJECT_JS_ACTION,
+  BANNED_EXTENSION_IDS,
 } from 'utils';
 
 /**
@@ -284,6 +287,9 @@ class SidebarLoader {
     const isGoogle = location.href.search(/google\.com/gi) > -1;
     // !dev const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
     const isBing = location.href.search(/bing\.com/gi) > -1;
+    if (!this.customSearchEngine?.querySelector?.desktop) {
+      this.customSearchEngine.querySelector.desktop = GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL;
+    }
     this.customSearchEngine?.querySelector?.featured?.forEach(
       (c) => (els = els.concat(Array.from(document.querySelectorAll(c)))),
     );
@@ -311,12 +317,14 @@ class SidebarLoader {
    */
   private getTabUrls(augmentation: AugmentationObject) {
     const urls: URL[] = [];
+    const defaultUrl = !this.customSearchEngine.search_engine_json.required_prefix.match(
+      /amazon\.com/gi,
+    )
+      ? this.customSearchEngine.search_engine_json.required_prefix
+      : 'google.com/search?q=';
+
     const emptyUrl = () =>
-      new URL(
-        isSafari()
-          ? 'https://www.ecosia.org/search'
-          : `https://${this.customSearchEngine.search_engine_json.required_prefix}`,
-      );
+      new URL(isSafari() ? 'https://www.ecosia.org/search' : `https://${defaultUrl}`);
     let fakeTab = null;
     augmentation.actions.action_list.forEach((action) => {
       if (!fakeTab && action.key === SEARCH_HIDE_DOMAIN_ACTION) {
@@ -404,13 +412,23 @@ class SidebarLoader {
     const logProcessed: any[] = [];
     const logSuggested: any[] = [];
     const logTabs: any[] = [];
+
+    this.query = new URLSearchParams(this.document.location.search).get(
+      this.customSearchEngine.search_engine_json.required_params[0],
+    );
+
     augmentations.forEach((augmentation: AugmentationObject) => {
       augmentation.stats = this.augmentationStats[augmentation.id];
 
+      const hasInjectJs = !!augmentation.actions.action_list.find(
+        ({ key }) => key === INJECT_JS_ACTION,
+      );
+
       if (
-        this.customSearchEngine &&
-        augmentation.id.startsWith(CSE_PREFIX) &&
-        !this.ignoredAugmentations.find((i) => i.id === augmentation.id)
+        this.query &&
+        !this.ignoredAugmentations.find((i) => i.id === augmentation.id) &&
+        !hasInjectJs &&
+        !BANNED_EXTENSION_IDS.includes(augmentation.id)
       ) {
         const {
           isRelevant,
@@ -439,7 +457,6 @@ class SidebarLoader {
         /** DEV END  **/
 
         if (isRelevant && isAugmentationEnabled(augmentation)) {
-          this.query = new URLSearchParams(this.document.location.search).get('q');
           this.tabDomains[augmentation.id] = [];
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list.reduce(
             (a, { key, value }) => {

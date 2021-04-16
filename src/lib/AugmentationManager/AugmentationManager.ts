@@ -27,6 +27,7 @@ import {
   ANY_URL_CONDITION_MOBILE,
   MY_BLOCKLIST_TEMPLATE,
   MY_BLOCKLIST_ID,
+  SEARCH_ENGINE_IS_CONDITION,
 } from 'utils';
 
 class AugmentationManager {
@@ -319,8 +320,27 @@ class AugmentationManager {
       }, [])
       .filter((isMatch) => !!isMatch).length;
 
+    const matchingEngine = !!augmentation.conditions.condition_list.find(({ key, value }) => {
+      if (key === SEARCH_ENGINE_IS_CONDITION) {
+        return (
+          Object.entries(SidebarLoader.customSearchEngine.search_engine_json)
+            .map(([entryKey, entryValue]) => {
+              return !!Array.isArray(entryValue)
+                ? !!entryValue.find((subValue) => {
+                    return (
+                      Array.isArray(value[0][entryKey]) && value[0][entryKey].includes(subValue)
+                    );
+                  })
+                : entryValue === value[0][entryKey];
+            })
+            .indexOf(false) === -1
+        );
+      }
+    });
+
     return {
-      isRelevant: matchingQuery || matchingDomains || matchingIntent || augmentation.pinned,
+      isRelevant:
+        matchingQuery || matchingDomains || matchingIntent || matchingEngine || augmentation.pinned,
       hasPreventAutoexpand,
       domainsToLookAction,
       domainsToLookCondition,

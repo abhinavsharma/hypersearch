@@ -12,6 +12,11 @@
  *  are rendered, also any other modification have been completed.
  */
 
+import {
+  GOOGLE_SERP_RESULT_A_SELECTOR,
+  GOOGLE_SERP_RESULT_DIV_SELECTOR,
+  GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
+} from 'utils/constants';
 import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
 
 // First X results to replace with unique results.
@@ -19,10 +24,6 @@ const MAXIMUM_MOVES = 3;
 
 // Consider results if its domain is ranked at least X.
 const MINIMUM_RANK = 3;
-
-const GOOGLE_SERP_RESULT_DIV_SELECTOR = '.mnr-c.xpd > .KJDcUb';
-const GOOGLE_SERP_RESULT_A_SELECTOR = '.KJDcUb a.BmP5tf';
-const GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL = '.mnr-c.xpd > .KJDcUb a.BmP5tf';
 
 ((document, window) => {
   // Currently we support only Google SERP reordering.

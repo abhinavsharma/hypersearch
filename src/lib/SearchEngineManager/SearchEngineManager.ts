@@ -27,6 +27,15 @@ class SearchEngineManager {
   public intents: SearchIntent[];
 
   /**
+   * The list of available search engines;
+   *
+   * @public
+   * @property
+   * @memberof SearchEngineManager
+   */
+  public engines: Record<string, CustomSearchEngine>;
+
+  /**
    * This value is used to decide whether to sync locally stored CSE data.
    *
    * @private
@@ -58,6 +67,7 @@ class SearchEngineManager {
     this.safeElements = [SYNC_DISTINCT_KEY, SYNC_LICENSE_KEY, SYNC_PRIVACY_KEY, SYNC_FINISHED_KEY];
     this.throttled = false;
     this.getIntents();
+    this.getEngines();
   }
 
   /**
@@ -71,6 +81,19 @@ class SearchEngineManager {
   private async getIntents() {
     const raw = await fetch(INTENTS_BLOB_URL, { mode: 'cors' });
     this.intents = await raw.json();
+  }
+
+  /**
+   * Get remotely stored search intents blob and store them in the public `intents` property.
+   * This method will be called at instaciation time and available when the sidebar loads.
+   *
+   * @public
+   * @method
+   * @memberof SidebarLoader
+   */
+  private async getEngines() {
+    const raw = await fetch(CUSTOM_SEARCH_ENGINES, { mode: 'cors' });
+    this.engines = await raw.json();
   }
 
   /**

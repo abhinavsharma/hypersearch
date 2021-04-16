@@ -15,6 +15,7 @@ import {
   ANY_URL_CONDITION,
   SEARCH_INTENT_IS_CONDITION,
   SIDEBAR_Z_INDEX,
+  SEARCH_ENGINE_IS_CONDITION,
 } from 'utils';
 
 const { OptGroup, Option } = Select;
@@ -27,6 +28,7 @@ const SEARCH_CONDITION_LABELS = {
   'Search results contain domain': SEARCH_CONTAINS_CONDITION,
   'Search query contains': SEARCH_QUERY_CONTAINS_CONDITION,
   'Search intent is': SEARCH_INTENT_IS_CONDITION,
+  'Search engine is': SEARCH_ENGINE_IS_CONDITION,
 };
 
 const OTHER_CONDITION_LABELS = {
@@ -45,11 +47,16 @@ export const EditConditionInput: EditConditionInput = ({
   const [newLabel, setNewLabel] = useState<string>(condition?.label);
   const [newValue, setNewValue] = useState(originalValue?.[0] ?? defaultValue);
   const [intents, setIntents] = useState<any[]>();
+  const [engines, setEngines] = useState<Record<string, CustomSearchEngine>>(Object.create(null));
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIntents(SearchEngineManager.intents);
   }, [SearchEngineManager.intents]);
+
+  useEffect(() => {
+    setEngines(SearchEngineManager.engines);
+  }, [SearchEngineManager.engines]);
 
   const handleSave = (value?: string) => {
     const newCondition = { ...condition, key: newKey, label: newLabel, value: [value ?? newValue] };
@@ -66,11 +73,11 @@ export const EditConditionInput: EditConditionInput = ({
     deleteCondition(condition);
   };
 
-  const handleIntentFilter = (inputValue: string, { value }: OptionProps) =>
+  const handleFilter = (inputValue: string, { value }: OptionProps) =>
     (value as string).search(inputValue.toLowerCase()) > -1;
 
-  const handleSelectIntent = (selectedIntent: string) => {
-    handleSave(selectedIntent);
+  const handleSelect = (selectedIntent: string) => {
+    handleSave(JSON.parse(selectedIntent));
   };
 
   const handleLabelChange = (label: string) => {
@@ -135,22 +142,52 @@ export const EditConditionInput: EditConditionInput = ({
           {(() => {
             switch (newKey) {
               case SEARCH_INTENT_IS_CONDITION:
+              case SEARCH_ENGINE_IS_CONDITION:
                 return (
                   <Select
                     showSearch
-                    defaultValue={newValue}
-                    placeholder="Search for intents..."
-                    dropdownClassName="search-intent-dropdown"
-                    className="search-intent-block"
-                    filterOption={handleIntentFilter}
-                    onChange={handleSelectIntent}
+                    placeholder={(() => {
+                      switch (newKey) {
+                        case SEARCH_INTENT_IS_CONDITION:
+                          return 'Search for intents...';
+                        case SEARCH_ENGINE_IS_CONDITION:
+                          return 'Select search engine...';
+                      }
+                    })()}
+                    dropdownClassName="search-dropdown"
+                    className="search-dropdown-block"
+                    filterOption={handleFilter}
+                    onChange={handleSelect}
                     getPopupContainer={() => dropdownRef.current}
                   >
-                    {intents?.map(({ name, intent_id }) => (
-                      <Option key={name} value={intent_id} style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}>
-                        {name}
-                      </Option>
-                    ))}
+                    {(() => {
+                      switch (newKey) {
+                        case SEARCH_INTENT_IS_CONDITION:
+                          return (
+                            intents?.map(({ name, intent_id }) => (
+                              <Option
+                                key={name}
+                                value={intent_id}
+                                style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+                              >
+                                {name}
+                              </Option>
+                            )) ?? null
+                          );
+                        case SEARCH_ENGINE_IS_CONDITION:
+                          return (
+                            Object.entries(engines).map(([key, cse]) => (
+                              <Option
+                                key={key}
+                                value={JSON.stringify(cse.search_engine_json)}
+                                style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+                              >
+                                {key}
+                              </Option>
+                            )) ?? null
+                          );
+                      }
+                    })()}
                   </Select>
                 );
               case SEARCH_CONTAINS_CONDITION:
