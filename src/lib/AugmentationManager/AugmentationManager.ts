@@ -183,9 +183,12 @@ class AugmentationManager {
       (i) => i.id !== augmentation.id,
     );
     chrome.storage.local.remove(`${IGNORED_PREFIX}-${augmentation.id}`);
+    const { isRelevant } = this.getAugmentationRelevancy(augmentation);
     augmentation.pinned
       ? SidebarLoader.pinnedAugmentations.push(augmentation)
-      : SidebarLoader.suggestedAugmentations.push(augmentation);
+      : isRelevant
+      ? SidebarLoader.suggestedAugmentations.push(augmentation)
+      : SidebarLoader.otherAugmentations.push(augmentation);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
@@ -213,9 +216,6 @@ class AugmentationManager {
       ({ id }) => id !== augmentation.id,
     );
     chrome.storage.local.remove(`${PINNED_PREFIX}-${augmentation.id}`);
-    if (!this.getAugmentationRelevancy(augmentation).isRelevant) {
-      SidebarLoader.otherAugmentations.push(augmentation);
-    }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 

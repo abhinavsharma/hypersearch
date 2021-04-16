@@ -485,7 +485,10 @@ class SidebarLoader {
 
           if (augmentation.installed) {
             !augmentation.enabled && this.matchingDisabledInstalledAugmentations.push(augmentation);
-          } else if (!this.suggestedAugmentations.find(({ id }) => id === augmentation.id)) {
+          } else if (
+            !this.suggestedAugmentations.find(({ id }) => id === augmentation.id) &&
+            !this.pinnedAugmentations.find(({ id }) => id === augmentation.id)
+          ) {
             this.suggestedAugmentations.push(augmentation);
           }
 
