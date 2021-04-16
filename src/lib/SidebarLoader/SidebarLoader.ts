@@ -370,11 +370,14 @@ class SidebarLoader {
 
       switch (action.key) {
         case SEARCH_DOMAINS_ACTION:
-        case SEARCH_APPEND_ACTION:
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           this.tabDomains[augmentation.id][customSearchUrl.href] = action.value.map((value) =>
             removeProtocol(value),
           );
+          urls.push(customSearchUrl);
+          break;
+        case SEARCH_APPEND_ACTION:
+          customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           urls.push(customSearchUrl);
           break;
         default:
@@ -485,7 +488,10 @@ class SidebarLoader {
 
           if (augmentation.installed) {
             !augmentation.enabled && this.matchingDisabledInstalledAugmentations.push(augmentation);
-          } else if (!this.suggestedAugmentations.find(({ id }) => id === augmentation.id)) {
+          } else if (
+            !this.suggestedAugmentations.find(({ id }) => id === augmentation.id) &&
+            !this.pinnedAugmentations.find(({ id }) => id === augmentation.id)
+          ) {
             this.suggestedAugmentations.push(augmentation);
           }
 

@@ -174,6 +174,8 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => 
   const bIsAny =
     bConditions.indexOf(ANY_URL_CONDITION) > -1 ||
     bConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
+  if (a.augmentation.pinned && !b.augmentation.pinned) return -1;
+  if (!a.augmentation.pinned && b.augmentation.pinned) return 1;
   if (aSuggested && !bSuggested && !aIsAny && bIsAny) return -1;
   if (aSuggested && !bSuggested && aIsAny && !bIsAny) return 1;
   if (!aSuggested && bSuggested && !aIsAny && bIsAny) return -1;
