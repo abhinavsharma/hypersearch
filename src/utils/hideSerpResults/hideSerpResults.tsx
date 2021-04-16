@@ -24,7 +24,6 @@ export const hideSerpResults: HideSerpResults = (
   { text, header },
   selectorString,
   augmentations,
-  preventHideOnClick,
 ) => {
   for (const node of nodes) {
     const serpResult = node.closest(selector) as HTMLElement;
@@ -102,7 +101,7 @@ export const hideSerpResults: HideSerpResults = (
       serpResult.getAttribute('insight-hidden-result-protected') !== 'true'
     ) {
       serpResult.style.position = 'relative';
-      serpResult.style.maxHeight = '120px';
+
       serpResult.style.overflow = 'hidden';
       serpResult.insertBefore(overlay, serpResult.firstChild);
     }
