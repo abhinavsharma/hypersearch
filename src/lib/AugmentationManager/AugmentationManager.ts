@@ -31,6 +31,15 @@ import {
 } from 'utils';
 
 class AugmentationManager {
+  /**
+   * The user's personal blocklist. It's a special augmentation that cannot be
+   * deleted and will be created automatically if not exists and the user wants
+   * to block a domain from SERP results.
+   *
+   * @public
+   * @property
+   * @memberof AugmentationManager
+   */
   public blockList: AugmentationObject;
 
   constructor() {
@@ -38,6 +47,14 @@ class AugmentationManager {
     this.blockList = MY_BLOCKLIST_TEMPLATE;
   }
 
+  /**
+   * Load or create the user's personal blocklist.
+   *
+   * @param callback - Optional function to invoke after blocklist initialized
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public async initBlockList(cb?: any) {
     const storageId = MY_BLOCKLIST_ID;
     const existing = await new Promise((resolve) =>
@@ -47,9 +64,19 @@ class AugmentationManager {
     cb?.();
   }
 
+  /**
+   * Add a domian to the user's personal blocklist.
+   *
+   * @param domain - The domain to add to the blocklist
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public async updateBlockList(domain: string) {
     const newActionList = [
-      ...this.blockList.actions.action_list.filter((action) => action.value.length),
+      ...this.blockList.actions.action_list.filter(
+        (action) => action.value.length && !action.value.includes(domain),
+      ),
       {
         key: SEARCH_HIDE_DOMAIN_ACTION,
         label: 'Minimize results from domain',
@@ -65,6 +92,14 @@ class AugmentationManager {
     );
   }
 
+  /**
+   * Remove the passed domain from the user's personal blocklist.
+   *
+   * @param domain - The domain to remove from the blocklist
+   * @public
+   * @method
+   * @memberof AugmentationManager
+   */
   public async deleteFromBlockList(domain: string) {
     const newActionList = [
       ...this.blockList.actions.action_list.filter(({ key, value }) =>
@@ -436,10 +471,25 @@ class AugmentationManager {
       },
       '*',
     );
-    SidebarLoader.installedAugmentations = [
-      updated,
-      ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
-    ];
+    const { isRelevant } = this.getAugmentationRelevancy(updated);
+
+    if (isRelevant) {
+      SidebarLoader.installedAugmentations = [
+        updated,
+        ...SidebarLoader.installedAugmentations.filter((i) => i.id !== updated.id),
+      ];
+      SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
+        (i) => i.id !== updated.id,
+      );
+    } else {
+      SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
+        (i) => i.id !== updated.id,
+      );
+      SidebarLoader.otherAugmentations = [
+        updated,
+        ...SidebarLoader.otherAugmentations.filter((i) => i.id !== updated.id),
+      ];
+    }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
     debug(
       'EditAugmentationPage - save\n---\n\tOriginal',
