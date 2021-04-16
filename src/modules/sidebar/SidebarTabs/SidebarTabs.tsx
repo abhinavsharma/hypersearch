@@ -42,8 +42,8 @@ const LeftOutlined = React.lazy(
   async () => await import('@ant-design/icons/LeftOutlined').then((mod) => mod),
 );
 
-const RightOutlined = React.lazy(
-  async () => await import('@ant-design/icons/RightOutlined').then((mod) => mod),
+const CloseOutlined = React.lazy(
+  async () => await import('@ant-design/icons/CloseOutlined').then((mod) => mod),
 );
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
@@ -67,15 +67,6 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
   const extraContent = {
     left: (
       <Suspense fallback={null}>
-        {!isExpanded && (
-          <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <LeftOutlined
-              style={{ color: '#999' }}
-              onClick={handleExpand}
-              className="expand-icon"
-            />
-          </Tooltip>
-        )}
         <Tooltip
           title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar (Escape key)'}
           destroyTooltipOnHide={{ keepParent: false }}
@@ -85,9 +76,18 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             className="expand-icon"
             onClick={isExpanded ? handleExpand : handleClose}
           >
-            <RightOutlined style={{ color: '#999' }} />
+            <CloseOutlined style={{ color: '#999' }} />
           </Button>
         </Tooltip>
+        {!isExpanded && (
+          <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
+            <LeftOutlined
+              style={{ color: '#999' }}
+              onClick={handleExpand}
+              className="expand-icon"
+            />
+          </Tooltip>
+        )}
       </Suspense>
     ),
     right: (
