@@ -4,32 +4,28 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import React, { Suspense } from 'react';
+import React from 'react';
 import List from 'antd/lib/list';
 import Button from 'antd/lib/button';
-import Divider from 'antd/lib/divider';
 import Tooltip from 'antd/lib/tooltip';
 import { goTo } from 'route-lite';
-import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { EditAugmentationPage } from 'modules/augmentations';
 import {
+  flipSidebar,
   AIRTABLE_IMPROVE_SEARCH_LINK,
   EMPTY_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
   getFirstValidTabIndex,
   APP_NAME,
+  EMOJI_REGEX,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
 
-const ExpandAltOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ExpandAltOutlined').then((mod) => mod),
-);
-
 const removeEmoji = (s) => {
-  return s.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])/g, '');
+  return s.replace(EMOJI_REGEX, '');
 };
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
