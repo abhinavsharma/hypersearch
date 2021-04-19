@@ -24,8 +24,8 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
 
-const LeftOutlined = React.lazy(
-  async () => await import('@ant-design/icons/LeftOutlined').then((mod) => mod),
+const ExpandAltOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ExpandAltOutlined').then((mod) => mod),
 );
 
 const removeEmoji = (s) => {

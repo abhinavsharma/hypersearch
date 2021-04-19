@@ -38,12 +38,16 @@ import { InlineGutterOptionsPage } from 'modules/gutter';
 
 const { TabPane } = Tabs;
 
-const LeftOutlined = React.lazy(
-  async () => await import('@ant-design/icons/LeftOutlined').then((mod) => mod),
+const ExpandAltOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ExpandAltOutlined').then((mod) => mod),
 );
 
 const CloseOutlined = React.lazy(
   async () => await import('@ant-design/icons/CloseOutlined').then((mod) => mod),
+);
+
+const ShrinkOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ShrinkOutlined').then((mod) => mod),
 );
 
 export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
@@ -76,12 +80,12 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
             className="expand-icon"
             onClick={isExpanded ? handleExpand : handleClose}
           >
-            <CloseOutlined style={{ color: '#999' }} />
+            {isExpanded ? <ShrinkOutlined /> : <CloseOutlined style={{ color: '#999' }} />}
           </Button>
         </Tooltip>
         {!isExpanded && (
           <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <LeftOutlined
+            <ExpandAltOutlined
               style={{ color: '#999' }}
               onClick={handleExpand}
               className="expand-icon"
