@@ -14,7 +14,7 @@
   .gutter-icon-hidden {
     position: absolute;
     left: 60px;
-    bottom: 40px;
+    top: calc(50px + 7px);
     font-size: 16px;
     pointer-events: none;
   }
