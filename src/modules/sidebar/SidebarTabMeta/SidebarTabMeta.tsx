@@ -24,7 +24,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
     ) > -1;
 
   const ellipsis = {
-    rows: 1,
+    rows: 2,
   };
 
   useEffect(() => {
