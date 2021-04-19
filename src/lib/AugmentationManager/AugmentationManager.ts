@@ -148,7 +148,7 @@ class AugmentationManager {
       const domainIndices = url.match(/%sr[\d]/gi) ?? [];
       domainIndices.forEach((value) => {
         const index = value.split('%sr')[1];
-        url = url.replace(`%sr${index}`, SidebarLoader.domains[index]);
+        url = url.replace(`%sr${index}`, SidebarLoader.domains?.[index]);
       });
     }
     return new URL(url);
@@ -280,29 +280,33 @@ class AugmentationManager {
       return Object.create(null);
     }
 
-    const domainsToLookCondition = augmentation.conditions.condition_list.reduce(
-      (conditions, { key, value }) =>
-        key === SEARCH_CONTAINS_CONDITION ||
-        key === ANY_URL_CONDITION ||
-        key === ANY_URL_CONDITION_MOBILE
-          ? conditions.concat(value)
-          : conditions,
-      [],
-    );
+    const domainsToLookCondition =
+      augmentation.conditions.condition_list.reduce(
+        (conditions, { key, value }) =>
+          key === SEARCH_CONTAINS_CONDITION ||
+          key === ANY_URL_CONDITION ||
+          key === ANY_URL_CONDITION_MOBILE
+            ? conditions.concat(value)
+            : conditions,
+        [],
+      ) ?? [];
 
-    const domainsToLookAction = augmentation.actions?.action_list.reduce(
-      (actions, { key, value }) =>
-        key === SEARCH_DOMAINS_ACTION ? actions.concat(value) : actions,
-      [],
-    );
+    const domainsToLookAction =
+      augmentation.actions?.action_list.reduce(
+        (actions, { key, value }) =>
+          key === SEARCH_DOMAINS_ACTION ? actions.concat(value) : actions,
+        [],
+      ) ?? [];
 
-    const matchingDomainsCondition = SidebarLoader.domains.filter((value) =>
-      domainsToLookCondition?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
-    );
+    const matchingDomainsCondition =
+      SidebarLoader.domains?.filter((value) =>
+        domainsToLookCondition?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
+      ) ?? [];
 
-    const matchingDomainsAction = SidebarLoader.domains.filter((value) =>
-      domainsToLookAction?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
-    );
+    const matchingDomainsAction =
+      SidebarLoader.domains?.filter((value) =>
+        domainsToLookAction?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
+      ) ?? [];
 
     const checkForQuery =
       augmentation.conditions?.condition_list.find(
@@ -315,13 +319,13 @@ class AugmentationManager {
       matchingDomainsCondition
         .map(
           (domain) =>
-            !!SidebarLoader.domains.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
+            !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length > 0 &&
       matchingDomainsAction
         .map(
           (domain) =>
-            !!SidebarLoader.domains.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
+            !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
 
@@ -340,7 +344,7 @@ class AugmentationManager {
             const intentDomains = matchingIntent.sites.split(',') ?? [];
             intentDomains.forEach(
               (domain) =>
-                !!SidebarLoader.domains.find(
+                !!SidebarLoader.domains?.find(
                   (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
                 ) && intents.push(domain),
             );

@@ -282,6 +282,7 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public getDomains(document: Document, getAllFromPage?: boolean) {
+    if (!this.customSearchEngine?.querySelector) return null;
     let els = [];
     // On Google, we have to use the `pad` selector, since the desktop referencing to the
     // `<cite>` tag, however the process needs the actual link's `href` attribute.
@@ -405,6 +406,7 @@ class SidebarLoader {
       ...this.suggestedAugmentations,
     ],
   ) {
+    if (!this.customSearchEngine?.querySelector) return null;
     debug(
       'getTabsAndAugmentations - call\n---\n\tDomains on the current page (in preserved order)\n',
       ...this.domains.map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),

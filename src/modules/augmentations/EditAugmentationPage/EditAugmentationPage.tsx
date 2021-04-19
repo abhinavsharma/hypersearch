@@ -46,7 +46,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             label: 'Search results contain domain',
             type: 'list',
             value: [
-              Array.from(new Set(SidebarLoader.domains.map((domain) => domain.split('/')[0])))[i],
+              Array.from(new Set(SidebarLoader.domains?.map((domain) => domain.split('/')[0])))[i],
             ],
           }))
           .filter(({ value }) => !!value[0])

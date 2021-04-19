@@ -26,7 +26,7 @@ import {
   document.addEventListener('keyup', handleKeyUp, true);
   const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
   window.top.addEventListener('message', ({ data }) => {
-    switch (data.name) {
+    switch (data?.name) {
       case REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE:
         blockingAugmentations[data.domain].filter(({ id }) => id !== data.remove);
         const blockedElements = Array.from(document.querySelectorAll(`[insight-blocked-by]`));
