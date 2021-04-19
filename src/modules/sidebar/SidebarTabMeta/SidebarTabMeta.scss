@@ -7,14 +7,12 @@
   border-bottom: 1px solid #ccc;
 
   .meta-text {
-    display: inline;
     color: #333;
     margin: 0;
     padding: 0;
 
     &.collapsed {
-      display: inline-block;
-      max-width: 350px;
+      max-width: 370px;
     }
 
     &.expanded {
