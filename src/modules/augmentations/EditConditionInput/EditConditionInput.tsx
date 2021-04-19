@@ -41,11 +41,9 @@ export const EditConditionInput: EditConditionInput = ({
   deleteCondition,
   handleAnyUrl,
 }) => {
-  const defaultValue = '';
-  const { value: originalValue } = condition;
   const [newKey, setNewKey] = useState<string>(condition?.key);
   const [newLabel, setNewLabel] = useState<string>(condition?.label);
-  const [newValue, setNewValue] = useState(originalValue?.[0] ?? defaultValue);
+  const [newValue, setNewValue] = useState<any>(condition?.value[0]);
   const [intents, setIntents] = useState<any[]>();
   const [engines, setEngines] = useState<Record<string, CustomSearchEngine>>(Object.create(null));
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -73,11 +71,18 @@ export const EditConditionInput: EditConditionInput = ({
     deleteCondition(condition);
   };
 
-  const handleFilter = (inputValue: string, { value }: OptionProps) =>
-    (value as string).search(inputValue.toLowerCase()) > -1;
+  const handleFilter = (inputValue: string, { label }: OptionProps) => {
+    return label.toLowerCase().search(inputValue.toLowerCase()) > -1;
+  };
 
-  const handleSelect = (selectedIntent: string) => {
-    handleSave(JSON.parse(selectedIntent));
+  const handleSelect = (e) => {
+    const updated = newKey === SEARCH_ENGINE_IS_CONDITION ? JSON.parse(e.value) : e;
+    setNewValue(
+      newKey === SEARCH_ENGINE_IS_CONDITION
+        ? { value: JSON.stringify(updated), key: e.label, label: e.label }
+        : e,
+    );
+    handleSave(updated);
   };
 
   const handleLabelChange = (label: string) => {
@@ -146,9 +151,31 @@ export const EditConditionInput: EditConditionInput = ({
                 return (
                   <Select
                     showSearch
-                    defaultValue={
-                      typeof newValue === 'object' ? JSON.stringify(newValue) : newValue
-                    }
+                    labelInValue={newKey === SEARCH_ENGINE_IS_CONDITION}
+                    value={(() => {
+                      if (newKey === SEARCH_ENGINE_IS_CONDITION) {
+                        const [label, value] =
+                          Object.entries(engines)?.find(([, entry]) => {
+                            const updatedValue =
+                              typeof newValue.value === 'string'
+                                ? JSON.parse(newValue.value)
+                                : newValue;
+                            const hasAllParams = updatedValue?.required_params?.every((param) =>
+                              entry.search_engine_json?.required_params?.includes(param),
+                            );
+                            const hasPrefix =
+                              entry.search_engine_json?.required_prefix ===
+                              updatedValue?.required_prefix;
+                            return hasAllParams && hasPrefix;
+                          }) ?? [];
+                        return {
+                          key: label,
+                          value: JSON.stringify(value?.search_engine_json),
+                          label,
+                        };
+                      }
+                      return newValue;
+                    })()}
                     placeholder={(() => {
                       switch (newKey) {
                         case SEARCH_INTENT_IS_CONDITION:
@@ -200,7 +227,7 @@ export const EditConditionInput: EditConditionInput = ({
                     key={condition.id}
                     className="add-condition-value-input"
                     onChange={handleChange}
-                    value={newValue}
+                    value={newValue as string}
                   />
                 );
               default:
