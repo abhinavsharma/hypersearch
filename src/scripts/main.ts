@@ -48,7 +48,7 @@ import {
         const alloweds = [];
         const results = Array.from(document.querySelectorAll(data.selector.link)) as HTMLElement[];
         const featuredContainers = [];
-        const featured = data.selector.featured.reduce((a, selector) => {
+        const featured = data.selector.featured?.reduce((a, selector) => {
           const partial = Array.from(document.querySelectorAll(selector)) as HTMLElement[];
           featuredContainers.push(document.querySelector(selector.split(' ')[0]));
           return a.concat(partial);

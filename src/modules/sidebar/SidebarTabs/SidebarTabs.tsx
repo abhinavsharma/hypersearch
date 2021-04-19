@@ -220,10 +220,14 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
               forceRender
               className={`insight-full-tab`}
             >
-              {activeKey === (i + 1).toString() && (
-                <ActionBar tab={tab} setActiveKey={setActiveKey} />
+              {tab.augmentation && (
+                <>
+                  {activeKey === (i + 1).toString() && (
+                    <ActionBar tab={tab} setActiveKey={setActiveKey} />
+                  )}
+                  <SidebarTabMeta tab={tab} />
+                </>
               )}
-              <SidebarTabMeta tab={tab} />
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
             </TabPane>
