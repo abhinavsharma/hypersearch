@@ -566,6 +566,9 @@ class SidebarLoader {
     debug('loadOrUpdateSidebar - call\n');
     this.document = document;
     this.url = url;
+    if (this.url.href.search(/amazon\.com/gi) > -1) {
+      this.preventAutoExpand = true;
+    }
     const existing = this.document.getElementById('sidebar-root');
     existing && this.document.body.removeChild(existing);
     // The first `<style>` element is injected by webpack. We have to remove this if its not
