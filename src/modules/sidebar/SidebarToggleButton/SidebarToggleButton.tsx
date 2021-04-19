@@ -17,7 +17,6 @@ import {
   HIDE_TAB_FAKE_URL,
   getFirstValidTabIndex,
   APP_NAME,
-  EMOJI_REGEX,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -25,7 +24,7 @@ import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
 
 const removeEmoji = (s) => {
-  return s.replace(EMOJI_REGEX, '');
+  return s.replace(/^[^\w\s]*/gi, '');
 };
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
