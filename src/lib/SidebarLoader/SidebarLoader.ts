@@ -749,6 +749,9 @@ class SidebarLoader {
         return a;
       }, []),
     ]);
+    /*
+    !DEV DISABLED BY DEV-45[https://bit.ly/3x8tMaD]
+    TODO: handle custom url subtabs and readable content
     const subtabs: SidebarTab[] = response.subtabs
       .slice(1, response.subtabs.length)
       .map((subtab, i, a) => ({
@@ -761,6 +764,7 @@ class SidebarLoader {
       }));
     this.sidebarTabs = [...this.sidebarTabs, ...subtabs];
     debug('handleSubtabApiResponse - processed', '\n---\n\tMatched Subtabs', subtabs, '\n---');
+    ! END DISABLED */
   }
 
   /**
