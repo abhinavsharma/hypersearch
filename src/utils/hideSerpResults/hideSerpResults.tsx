@@ -83,6 +83,11 @@ export const hideSerpResults: HideSerpResults = (
         buttonRoot,
       );
       textWrapper.appendChild(buttonRoot);
+      if (window.location !== window.parent.location) {
+        Array.from(document.querySelectorAll('.inline-gutter-icon')).forEach(
+          (element: HTMLElement) => (element.style.display = 'none'),
+        );
+      }
     }
     overlay.appendChild(textWrapper);
     textWrapper.appendChild(innerText);

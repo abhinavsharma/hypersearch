@@ -23,7 +23,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
     frameRef.current?.contentWindow.addEventListener('keyup', handleKeyUp);
-    window.top.postMessage(
+    window.postMessage(
       {
         augmentation: tab.augmentation,
         hideDomains,
@@ -41,7 +41,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       '*',
     );
     return () => frameRef.current?.contentWindow.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [SidebarLoader.hideDomains]);
 
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe
@@ -49,6 +49,25 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       src={decodeSpace(tab.url.href)}
       className="insight-tab-iframe"
       onLoad={() => {
+        frameRef.current?.contentWindow.postMessage(
+          {
+            augmentation: SidebarLoader.sidebarTabs.reduce((a, { augmentation }) => {
+              augmentation.actions.action_list.find(
+                ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
+              ) && a.push(augmentation);
+              return a;
+            }, []),
+            hideDomains: SidebarLoader.hideDomains,
+            name: PROCESS_SERP_OVERLAY_MESSAGE,
+            tab: tab.id,
+            selector: {
+              link: SidebarLoader.customSearchEngine.querySelector['phone'],
+              featured: SidebarLoader.customSearchEngine.querySelector.featured,
+              container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
+            },
+          },
+          '*',
+        );
         SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
           query: SidebarLoader.query,
           filter_name: tab.title,

@@ -113,7 +113,8 @@ class AugmentationManager {
         actions: newActionList,
       }),
     );
-    window.top.postMessage(
+    SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
+    window.postMessage(
       { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: this.blockList.id, domain },
       '*',
     );
@@ -247,7 +248,10 @@ class AugmentationManager {
     );
     if (!!hasHideDomains) {
       hasHideDomains.forEach((domain) => {
-        window.top.postMessage(
+        SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
+          (hidden) => hidden !== domain.value[0],
+        );
+        window.postMessage(
           { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
           '*',
         );
@@ -460,7 +464,7 @@ class AugmentationManager {
     const hasHideActions = updated.actions.action_list.filter(
       ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
     );
-    window.parent.postMessage(
+    window.postMessage(
       {
         augmentation: updated,
         name: PROCESS_SERP_OVERLAY_MESSAGE,

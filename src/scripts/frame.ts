@@ -1,4 +1,5 @@
 import { extractUrlProperties } from 'utils/helpers';
+import './hide';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
