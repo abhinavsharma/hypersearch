@@ -157,7 +157,7 @@ export const EditConditionInput: EditConditionInput = ({
                         const [label, value] =
                           Object.entries(engines)?.find(([, entry]) => {
                             const updatedValue =
-                              typeof newValue.value === 'string'
+                              typeof newValue?.value === 'string'
                                 ? JSON.parse(newValue.value)
                                 : newValue;
                             const hasAllParams = updatedValue?.required_params?.every((param) =>

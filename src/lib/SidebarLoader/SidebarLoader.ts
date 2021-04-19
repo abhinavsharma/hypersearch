@@ -44,6 +44,7 @@ import {
   GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
   INJECT_JS_ACTION,
   BANNED_EXTENSION_IDS,
+  INSTALLED_PREFIX,
 } from 'utils';
 
 /**
@@ -730,9 +731,18 @@ class SidebarLoader {
     this.getTabsAndAugmentations([
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
-      ...response.suggested_augmentations.filter(
-        (augmentation) => !this.pinnedAugmentations.find(({ id }) => id === augmentation.id),
-      ),
+      ...response.suggested_augmentations.reduce((a, augmentation) => {
+        if (!this.pinnedAugmentations.find(({ id }) => id === augmentation.id)) {
+          a.push({
+            ...augmentation,
+            id: augmentation.id.startsWith(INSTALLED_PREFIX)
+              ? augmentation.id.replace(INSTALLED_PREFIX, CSE_PREFIX)
+              : augmentation.id,
+            installed: false,
+          });
+        }
+        return a;
+      }, []),
     ]);
     const subtabs: SidebarTab[] = response.subtabs
       .slice(1, response.subtabs.length)

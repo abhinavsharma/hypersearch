@@ -33,7 +33,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
             SidebarLoader.customSearchEngine.querySelector[
               window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
             ],
-          featured: SidebarLoader.customSearchEngine.querySelector.featured,
+          featured: SidebarLoader.customSearchEngine.querySelector.featured ?? Array(0),
           container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
         },
       },
