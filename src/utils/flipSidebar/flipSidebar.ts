@@ -2,7 +2,7 @@ import { SIDEBAR_Z_INDEX } from 'utils/constants';
 
 export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preventOverlay) => {
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
-  const document = innerDocument.contentWindow.document;
+  const document = innerDocument?.contentWindow.document;
 
   const sidebarContainer = document.getElementById('insight-sidebar-container');
 
@@ -134,10 +134,12 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         activeAugmentationHeader.style.display = 'flex';
       }
       if (!preventOverlay) {
-        sidebarOverlay.style.opacity = '0';
         setTimeout(() => {
-          sidebarContainer.removeChild(sidebarOverlay);
-        }, 250);
+          sidebarOverlay.style.opacity = '0';
+          setTimeout(() => {
+            sidebarContainer.removeChild(sidebarOverlay);
+          }, 250);
+        }, 350);
       }
     }, 300);
   }
