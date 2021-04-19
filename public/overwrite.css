@@ -4,6 +4,11 @@ body {
   max-width: 100% !important;
 }
 
+/* Google Searchbar */
+#searchform {
+  z-index: 9998; /* ! MUST SET MANUALLY */
+}
+
 .insight-open-augmentation-builder-button {
   margin-top: 10px;
 }

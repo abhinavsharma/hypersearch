@@ -46,7 +46,7 @@ export const hideSerpResults: HideSerpResults = (
 
     const overlay = document.createElement('div');
     overlay.classList.add(`insight-${selectorString}-overlay`);
-    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 1};`);
+    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 2};`);
     overlay.classList.add('insight-hidden');
 
     const textWrapper = document.createElement('div');
