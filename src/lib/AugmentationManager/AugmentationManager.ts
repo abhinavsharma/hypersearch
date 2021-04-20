@@ -278,6 +278,7 @@ class AugmentationManager {
     hasPreventAutoexpand: boolean;
     domainsToLookAction: string[];
     domainsToLookCondition: string[];
+    matchingIntent: string[];
     matchingDomainsAction: string[];
     matchingDomainsCondition: string[];
   } & NullPrototype<any> {
@@ -336,7 +337,7 @@ class AugmentationManager {
 
     let hasPreventAutoexpand = false;
 
-    const matchingIntent = !!augmentation.conditions.condition_list
+    const matchingIntent = augmentation.conditions.condition_list
       .reduce((intents, { key, value }) => {
         if (key === SEARCH_INTENT_IS_CONDITION) {
           const matchingIntent = SearchEngineManager.intents.find(
@@ -362,7 +363,7 @@ class AugmentationManager {
         }
         return intents;
       }, [])
-      .filter((isMatch) => !!isMatch).length;
+      .filter((isMatch) => !!isMatch);
 
     const matchingEngine = !!augmentation.conditions.condition_list.find(({ key, value }) => {
       if (key === SEARCH_ENGINE_IS_CONDITION) {
@@ -387,9 +388,10 @@ class AugmentationManager {
         (augmentation.enabled || !augmentation.installed) &&
         (matchingQuery ||
           matchingDomains ||
-          matchingIntent ||
+          !!matchingIntent.length ||
           matchingEngine ||
           augmentation.pinned),
+      matchingIntent,
       hasPreventAutoexpand,
       domainsToLookAction,
       domainsToLookCondition,

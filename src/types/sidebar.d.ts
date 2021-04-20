@@ -5,6 +5,7 @@ declare type SidebarTab = {
   url: URL;
   augmentation?: AugmentationObject;
   isCse?: boolean;
+  matchingIntent?: string[];
   matchingDomainsAction?: string[];
   matchingDomainsCondition?: string[];
   readable?: string;

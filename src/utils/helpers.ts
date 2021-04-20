@@ -158,22 +158,27 @@ export const getRankedDomains = (domains: string[]) =>
     .sort((a, b) => b[1] - a[1])
     .map(([key]) => key);
 
-export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => {
+export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
   const aConditions = Array.from(
     new Set(a.augmentation.conditions.condition_list.map(({ key }) => key)),
   );
   const bConditions = Array.from(
     new Set(b.augmentation.conditions.condition_list.map(({ key }) => key)),
   );
+
   const aSuggested = !a.augmentation.hasOwnProperty('enabled');
   const bSuggested = !b.augmentation.hasOwnProperty('enabled');
   const bothSuggested = aSuggested && bSuggested;
+
   const aIsAny =
     aConditions.indexOf(ANY_URL_CONDITION) > -1 ||
     aConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
   const bIsAny =
     bConditions.indexOf(ANY_URL_CONDITION) > -1 ||
     bConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
+
+  // Trivial cases that can be handled by checking tab types:
+  // Pinned > Installed > Suggested > Any URL
   if (a.augmentation.pinned && !b.augmentation.pinned) return -1;
   if (!a.augmentation.pinned && b.augmentation.pinned) return 1;
   if (aSuggested && !bSuggested && !aIsAny && bIsAny) return -1;
@@ -186,32 +191,60 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, domains: string[]) => 
   if (bothSuggested && !aIsAny && bIsAny) return -1;
   if (!aIsAny && bIsAny) return -1;
   if (aIsAny && !bIsAny) return 1;
-  const tabRatings = Object.create(null);
-  const aLowest = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
-  const bLowest = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
-  Array.from(new Set(domains)).forEach((i, index) => (tabRatings[i] = index));
-  const compareDomainList = (domainsA: string[], domainsB: string[]) => {
-    domainsA.forEach((i) => {
-      if (tabRatings[i] < aLowest.rate) {
-        aLowest.name = i;
-        aLowest.rate = tabRatings[i];
+
+  // Store SERP domains ratings as Record<domain, position>
+  const tabRatings: Record<string, number> = Object.create(null);
+  Array.from(new Set(serpDomains)).forEach((domain, index) => (tabRatings[domain] = index));
+
+  // Compare matching domains rate according to the corresponding condition types
+  // Search Domains > Search Intent Domains
+  const aLowestSearchDomains = { name: '', rate: Infinity, domains: a.matchingDomainsCondition };
+  const bLowestSearchDomains = { name: '', rate: Infinity, domains: b.matchingDomainsCondition };
+  const aLowestIntentDomains = { name: '', rate: Infinity, domains: a.matchingIntent };
+  const bLowestIntentDomains = { name: '', rate: Infinity, domains: b.matchingIntent };
+
+  // Check if tabs under consideration are having any matching domains from SERP. If so, set their
+  // reating accordingly. We care the lowest rating as the most relevant (highter SERP position).
+  const getTabDomainRatings = (domainsA: string[], domainsB: string[]) => {
+    domainsA.forEach((domain) => {
+      if (tabRatings[domain] < aLowestSearchDomains.rate) {
+        aLowestSearchDomains.name = domain;
+        aLowestSearchDomains.rate = tabRatings[domain];
       }
     });
-    domainsB.forEach((i) => {
-      if (tabRatings[i] < bLowest.rate) {
-        bLowest.name = i;
-        bLowest.rate = tabRatings[i];
+    domainsB.forEach((domain) => {
+      if (tabRatings[domain] < bLowestSearchDomains.rate) {
+        bLowestSearchDomains.name = domain;
+        bLowestSearchDomains.rate = tabRatings[domain];
       }
     });
   };
-  compareDomainList(aLowest.domains, bLowest.domains);
-  if (aLowest.rate === bLowest.rate) {
-    compareDomainList(
-      aLowest.domains.filter((i) => i !== aLowest.name),
-      bLowest.domains.filter((i) => i !== bLowest.name),
-    );
+
+  if (a.matchingDomainsCondition && !b.matchingDomainsCondition) return 1;
+  if (!a.matchingDomainsCondition && b.matchingDomainsCondition) return -1;
+  if (a.matchingDomainsCondition && b.matchingDomainsCondition) {
+    getTabDomainRatings(aLowestSearchDomains.domains, bLowestSearchDomains.domains);
+    if (aLowestSearchDomains.rate === bLowestSearchDomains.rate) {
+      getTabDomainRatings(
+        aLowestSearchDomains.domains.filter((i) => i !== bLowestSearchDomains.name),
+        aLowestSearchDomains.domains.filter((i) => i !== bLowestSearchDomains.name),
+      );
+    }
+    return aLowestSearchDomains.rate > bLowestSearchDomains.rate ? 1 : -1;
   }
-  return aLowest.rate > bLowest.rate ? 1 : -1;
+
+  if (a.matchingIntent && !b.matchingIntent) return 1;
+  if (b.matchingIntent && b.matchingIntent) return -1;
+  if (a.matchingIntent && b.matchingIntent) {
+    getTabDomainRatings(aLowestIntentDomains.domains, aLowestIntentDomains.domains);
+    if (aLowestIntentDomains.rate === aLowestIntentDomains.rate) {
+      getTabDomainRatings(
+        aLowestIntentDomains.domains.filter((i) => i !== aLowestIntentDomains.name),
+        aLowestIntentDomains.domains.filter((i) => i !== aLowestIntentDomains.name),
+      );
+    }
+    return aLowestIntentDomains.rate > bLowestIntentDomains.rate ? 1 : -1;
+  }
 };
 
 export const isAugmentationEnabled = (augmentation: AugmentationObject) =>
