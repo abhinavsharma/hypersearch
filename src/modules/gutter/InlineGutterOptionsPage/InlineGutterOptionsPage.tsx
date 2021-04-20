@@ -14,6 +14,7 @@ import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './InlineGutterOptionsPage.scss';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   hidingAugmentations,
@@ -96,7 +97,10 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                 ),
               });
               setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
-              window.top.postMessage(
+              SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
+                (hidden) => hidden !== domain,
+              );
+              window.postMessage(
                 { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
                 '*',
               );
@@ -104,7 +108,10 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
             const handleDisable = () => {
               AugmentationManager.disableSuggestedAugmentation(augmentation);
               setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
-              window.top.postMessage(
+              SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
+                (hidden) => hidden !== domain,
+              );
+              window.postMessage(
                 { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
                 '*',
               );
