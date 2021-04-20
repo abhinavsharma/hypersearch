@@ -6,6 +6,7 @@ import {
   ANY_URL_CONDITION,
   HIDE_TAB_FAKE_URL,
   ANY_URL_CONDITION_MOBILE,
+  SEARCH_ENGINE_IS_CONDITION,
 } from 'utils';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
@@ -171,9 +172,11 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
   const bothSuggested = aSuggested && bSuggested;
 
   const aIsAny =
+    aConditions.indexOf(SEARCH_ENGINE_IS_CONDITION) > -1 ||
     aConditions.indexOf(ANY_URL_CONDITION) > -1 ||
     aConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
   const bIsAny =
+    bConditions.indexOf(SEARCH_ENGINE_IS_CONDITION) > -1 ||
     bConditions.indexOf(ANY_URL_CONDITION) > -1 ||
     bConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
 
