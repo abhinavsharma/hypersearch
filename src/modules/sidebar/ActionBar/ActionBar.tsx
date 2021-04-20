@@ -70,7 +70,62 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
-        {tab.augmentation?.installed ? (
+        {!tab.augmentation?.installed && (
+          <Tooltip
+            title="Hide lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              onClick={() => handleHideSuggested(tab)}
+              icon={
+                <Suspense fallback={null}>
+                  <CloseCircleOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        )}
+        
+        {tab.augmentation?.pinned ? (
+          <Tooltip
+            title="Unpin this lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              onClick={handleUnpin}
+              icon={
+                <Suspense fallback={null}>
+                  <PushpinFilled />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip
+            title="Temporarily pin this lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              onClick={handlePin}
+              icon={
+                <Suspense fallback={null}>
+                  <PushpinOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        )}
+
+      {tab.augmentation?.installed ? (
           <Link
             component={EditAugmentationPage}
             componentProps={{
@@ -127,41 +182,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             </Tooltip>
           </Link>
         )}
-        {tab.augmentation?.pinned ? (
-          <Tooltip
-            title="Unpin this lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
-            placement="bottom"
-          >
-            <Button
-              type="link"
-              onClick={handleUnpin}
-              icon={
-                <Suspense fallback={null}>
-                  <PushpinFilled />
-                </Suspense>
-              }
-            />
-          </Tooltip>
-        ) : (
-          <Tooltip
-            title="Temporarily pin this lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
-            placement="bottom"
-          >
-            <Button
-              type="link"
-              onClick={handlePin}
-              icon={
-                <Suspense fallback={null}>
-                  <PushpinOutlined />
-                </Suspense>
-              }
-            />
-          </Tooltip>
-        )}
         {tab.augmentation?.installed && (
           <Tooltip
             title="Delete local lens"
@@ -180,24 +200,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             />
           </Tooltip>
         )}
-        {!tab.augmentation?.installed && (
-          <Tooltip
-            title="Hide lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
-            placement="bottom"
-          >
-            <Button
-              type="link"
-              onClick={() => handleHideSuggested(tab)}
-              icon={
-                <Suspense fallback={null}>
-                  <CloseCircleOutlined />
-                </Suspense>
-              }
-            />
-          </Tooltip>
-        )}
+        
         <ShareButton icon augmentation={tab.augmentation} />
       </div>
       <div
