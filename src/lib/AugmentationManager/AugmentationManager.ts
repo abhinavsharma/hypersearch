@@ -79,7 +79,7 @@ class AugmentationManager {
       ),
       {
         key: SEARCH_HIDE_DOMAIN_ACTION,
-        label: 'Minimize results from domain',
+        label: 'Hide results from domain',
         type: 'list',
         value: [domain],
       },

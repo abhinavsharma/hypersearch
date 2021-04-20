@@ -25,7 +25,7 @@ const MinusCircleOutlined = React.lazy(
 const ACTION_LABELS = {
   'Search only these domains': SEARCH_DOMAINS_ACTION,
   'Open page': OPEN_URL_ACTION,
-  'Minimize results from domain': SEARCH_HIDE_DOMAIN_ACTION,
+  'Hide results from domain': SEARCH_HIDE_DOMAIN_ACTION,
   'Seach with string appended': SEARCH_APPEND_ACTION,
 };
 
