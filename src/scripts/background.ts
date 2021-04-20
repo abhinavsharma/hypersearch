@@ -63,6 +63,9 @@ chrome.webRequest.onHeadersReceived.addListener(
           if (header.name.toLowerCase() === 'set-cookie') {
             header.value = processCookieString(header.value);
           }
+          if (header.name.toLowerCase() === 'location') {
+            header.value = new URL(header.value.replace(/^https?:\/\//, 'https://')).href;
+          }
           return header;
         }),
         {
