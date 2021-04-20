@@ -28,6 +28,7 @@ import {
   MY_BLOCKLIST_TEMPLATE,
   MY_BLOCKLIST_ID,
   SEARCH_ENGINE_IS_CONDITION,
+  encodeSpace,
 } from 'utils';
 
 class AugmentationManager {
@@ -141,7 +142,7 @@ class AugmentationManager {
   public processOpenPageActionString(value: string) {
     let url = `https://${removeProtocol(value)}`;
     if (value.search(/%s[^r]+|%s$/gi) > -1) {
-      url = url.replace('%s', SidebarLoader.query);
+      url = url.replace('%s', encodeSpace(SidebarLoader.query));
     }
     if (value.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
     if (value.search(/%sr[\d]{1,}/gi) > -1) {

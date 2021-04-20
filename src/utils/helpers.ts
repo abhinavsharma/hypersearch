@@ -284,3 +284,11 @@ export const replaceLocation = (location: Location) => {
   }
   return url;
 };
+
+export const encodeSpace = (s: string) => {
+  return s.replace(/[\s]/gi, '[<INSIGHT_SPACE>]');
+};
+
+export const decodeSpace = (s: string) => {
+  return s.replace(new RegExp(encodeURIComponent('[<INSIGHT_SPACE>]'), 'gi'), '%20');
+};

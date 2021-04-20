@@ -7,6 +7,7 @@ import {
   keyboardHandler,
   keyUpHandler,
   SEARCH_HIDE_DOMAIN_ACTION,
+  decodeSpace,
 } from 'utils';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
@@ -41,10 +42,11 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     );
     return () => frameRef.current?.contentWindow.removeEventListener('keydown', handleKeyDown);
   }, []);
+
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe
       ref={frameRef}
-      src={unescape(tab.url.href)}
+      src={decodeSpace(tab.url.href)}
       className="insight-tab-iframe"
       onLoad={() => {
         SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
