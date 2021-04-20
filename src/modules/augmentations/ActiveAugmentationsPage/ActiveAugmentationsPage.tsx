@@ -30,7 +30,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = ({ setActiveKey 
       augmentations: installedAugmentations.filter(
         (augmentation) => !pinnedAugmentations.find(({ id }) => id === augmentation.id),
       ),
-      title: 'Your Local Lenses Matching This Page',
+      title: 'Your Local Lenses for This Page',
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),
       button: (
         <Button type="text" onClick={handleEdit}>
