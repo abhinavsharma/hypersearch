@@ -45,7 +45,6 @@ import {
   INJECT_JS_ACTION,
   BANNED_EXTENSION_IDS,
   INSTALLED_PREFIX,
-  PROCESS_SERP_OVERLAY_MESSAGE,
 } from 'utils';
 
 /**
@@ -443,6 +442,7 @@ class SidebarLoader {
       ) {
         const {
           isRelevant,
+          matchingIntent,
           matchingDomainsAction,
           matchingDomainsCondition,
           domainsToLookAction,
@@ -507,6 +507,7 @@ class SidebarLoader {
             const tab: SidebarTab = {
               url,
               augmentation,
+              matchingIntent,
               matchingDomainsAction,
               matchingDomainsCondition,
               id: augmentation.id,
