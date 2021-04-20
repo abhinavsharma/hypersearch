@@ -13,7 +13,10 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
   const handleDelete = () => {
     if (disabled || augmentation.id === MY_BLOCKLIST_ID) return null;
     AugmentationManager.removeInstalledAugmentation(augmentation);
-    setTimeout(() => goBack(), 100);
+    setTimeout(() => {
+      goBack();
+      goBack();
+    }, 100);
   };
 
   return (

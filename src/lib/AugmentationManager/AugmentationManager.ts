@@ -384,7 +384,12 @@ class AugmentationManager {
 
     return {
       isRelevant:
-        matchingQuery || matchingDomains || matchingIntent || matchingEngine || augmentation.pinned,
+        (augmentation.enabled || !augmentation.installed) &&
+        (matchingQuery ||
+          matchingDomains ||
+          matchingIntent ||
+          matchingEngine ||
+          augmentation.pinned),
       hasPreventAutoexpand,
       domainsToLookAction,
       domainsToLookCondition,

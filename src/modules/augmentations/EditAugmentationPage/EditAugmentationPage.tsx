@@ -25,12 +25,16 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 }) => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>(
-    isAdding && !!augmentation.name.length
+    !augmentation.installed && !!augmentation.name.length
       ? `${augmentation.name} / Forked`
       : augmentation.name || '🎉 My Lens',
   );
-  const [description, setDescription] = useState<string>(isAdding ? '' : augmentation.description);
-  const [isActive, setIsActive] = useState<boolean>(augmentation.enabled || isAdding);
+  const [description, setDescription] = useState<string>(
+    !augmentation.installed ? '' : augmentation.description,
+  );
+  const [isActive, setIsActive] = useState<boolean>(
+    augmentation.enabled || !augmentation.installed,
+  );
   const [conditionEvaluation, setConditionEvaluation] = useState<Condition['evaluate_with']>(
     augmentation.conditions.evaluate_with,
   );

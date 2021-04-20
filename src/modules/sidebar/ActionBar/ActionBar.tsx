@@ -1,4 +1,5 @@
 import React, { Suspense, useRef } from 'react';
+import { v4 as uuid } from 'uuid';
 import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
@@ -6,7 +7,12 @@ import { EditAugmentationPage } from 'modules/augmentations/';
 import { ShareButton } from 'modules/shared';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_Z_INDEX } from 'utils';
+import {
+  CSE_PREFIX,
+  getFirstValidTabIndex,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  SIDEBAR_Z_INDEX,
+} from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
@@ -31,17 +37,18 @@ const EditOutlined = React.lazy(
   async () => await import('@ant-design/icons/EditOutlined').then((mod) => mod),
 );
 
-const DeleteOutlined = React.lazy(
-  async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
-);
-
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const tooltipContainer = useRef(null);
 
-  const handleOpenAugmentationBuilder = () => {
+  const handleOpenAugmentationBuilder = (_e, isEdit?: boolean) => {
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      augmentation: tab.augmentation,
+      augmentation: {
+        ...tab.augmentation,
+        id: isEdit ? tab.augmentation.id : `${CSE_PREFIX}-${uuid()}`,
+        enabled: isEdit,
+        installed: isEdit,
+      },
     });
   };
 
@@ -70,25 +77,25 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
-        {!tab.augmentation?.installed && (
-          <Tooltip
-            title="Hide lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
-            placement="bottom"
-          >
-            <Button
-              type="link"
-              onClick={() => handleHideSuggested(tab)}
-              icon={
-                <Suspense fallback={null}>
-                  <CloseCircleOutlined />
-                </Suspense>
-              }
-            />
-          </Tooltip>
-        )}
-        
+        <Tooltip
+          title={tab.augmentation?.installed ? 'Delete local lens' : 'Hide lens'}
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
+          <Button
+            type="link"
+            onClick={() =>
+              tab.augmentation?.installed ? handleRemoveInstalled() : handleHideSuggested(tab)
+            }
+            icon={
+              <Suspense fallback={null}>
+                <CloseCircleOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
+
         {tab.augmentation?.pinned ? (
           <Tooltip
             title="Unpin this lens"
@@ -125,14 +132,14 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           </Tooltip>
         )}
 
-      {tab.augmentation?.installed ? (
+        {tab.augmentation?.installed && (
           <Link
             component={EditAugmentationPage}
             componentProps={{
               augmentation: tab.augmentation,
               setActiveKey,
             }}
-            key={tab.id}
+            key={uuid()}
           >
             <Tooltip
               title="Edit local lens"
@@ -142,7 +149,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             >
               <Button
                 type="link"
-                onClick={handleOpenAugmentationBuilder}
+                onClick={(e) => handleOpenAugmentationBuilder(e, true)}
                 icon={
                   <Suspense fallback={null}>
                     <EditOutlined />
@@ -151,56 +158,25 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               />
             </Tooltip>
           </Link>
-        ) : (
-          <Link
-            component={EditAugmentationPage}
-            componentProps={{
-              augmentation: {
-                ...tab.augmentation,
-                description: !tab.augmentation?.installed ? '' : tab.augmentation?.description,
-                installed: tab.augmentation?.installed,
-              },
-              setActiveKey,
-            }}
-            key={tab.id}
-          >
-            <Tooltip
-              title="Fork: Duplicate lens and edit locally"
-              destroyTooltipOnHide={{ keepParent: false }}
-              getPopupContainer={() => tooltipContainer.current}
-              placement="bottom"
-            >
-              <Button
-                type="link"
-                onClick={handleOpenAugmentationBuilder}
-                icon={
-                  <Suspense fallback={null}>
-                    <BranchesOutlined />
-                  </Suspense>
-                }
-              />
-            </Tooltip>
-          </Link>
         )}
-        {tab.augmentation?.installed && (
-          <Tooltip
-            title="Delete local lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
-            placement="bottom"
-          >
-            <Button
-              type="link"
-              onClick={handleRemoveInstalled}
-              icon={
-                <Suspense fallback={null}>
-                  <DeleteOutlined style={{ color: 'red' }} />
-                </Suspense>
-              }
-            />
-          </Tooltip>
-        )}
-        
+
+        <Tooltip
+          title="Fork: Duplicate lens and edit locally"
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+        >
+          <Button
+            type="link"
+            onClick={handleOpenAugmentationBuilder}
+            icon={
+              <Suspense fallback={null}>
+                <BranchesOutlined />
+              </Suspense>
+            }
+          />
+        </Tooltip>
+
         <ShareButton icon augmentation={tab.augmentation} />
       </div>
       <div
