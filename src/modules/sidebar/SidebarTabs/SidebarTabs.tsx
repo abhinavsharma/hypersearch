@@ -60,7 +60,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
 
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
-    expandSidebar();
+    expandSidebar(SidebarLoader.sidebarTabs.length);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
