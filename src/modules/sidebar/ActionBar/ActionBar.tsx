@@ -52,6 +52,10 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
     });
   };
 
+  const handleDisableInstalled = () => {
+    AugmentationManager.addOrEditAugmentation(tab.augmentation, { isActive: false });
+  };
+
   const handlePin = () => {
     AugmentationManager.pinAugmentation(tab.augmentation);
   };
@@ -86,7 +90,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           <Button
             type="link"
             onClick={() =>
-              tab.augmentation?.installed ? handleRemoveInstalled() : handleHideSuggested(tab)
+              tab.augmentation?.installed ? handleDisableInstalled() : handleHideSuggested(tab)
             }
             icon={
               <Suspense fallback={null}>
