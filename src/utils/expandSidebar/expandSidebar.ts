@@ -1,6 +1,6 @@
 import { flipSidebar } from 'utils';
 
-export const expandSidebar = () => {
+export const expandSidebar = (tabsNum: number) => {
   const sidebarRoot = document.getElementById('sidebar-root') as HTMLDivElement;
   const sidebarRootIframe = document.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
   const frameDocument = sidebarRootIframe?.contentWindow.document;
@@ -11,7 +11,7 @@ export const expandSidebar = () => {
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
   if (!sidebarRoot.classList.contains('insight-expanded')) {
-    flipSidebar(document, 'show', 1);
+    flipSidebar(document, 'show', tabsNum);
     document.documentElement.style.overflow = 'hidden';
     sidebarRoot.classList.add('insight-expanded');
     sidebarRoot.setAttribute(
@@ -85,6 +85,6 @@ export const expandSidebar = () => {
     `,
     );
     tabFrames.forEach((frame) => frame.classList.remove('insight-expanded'));
-    flipSidebar(document, 'show', 1);
+    flipSidebar(document, 'show', tabsNum);
   }
 };

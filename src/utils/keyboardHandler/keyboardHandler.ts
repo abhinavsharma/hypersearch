@@ -22,7 +22,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
   const currentTabIndex = Number(loader.currentTab);
   const handleToggle = () => {
     loader.isExpanded = !loader.isExpanded;
-    expandSidebar();
+    expandSidebar(loader.sidebarTabs.length);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
