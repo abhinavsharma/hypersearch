@@ -36,7 +36,6 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
 
   const handleToggle = useCallback(
     async (e: boolean) => {
-      console.log(e);
       e
         ? await AugmentationManager.updateBlockList(domain)
         : await AugmentationManager.deleteFromBlockList(domain);
@@ -71,7 +70,9 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
         <span className="insight-domain-tab-title">Domain Settings</span>
       </div>
       <section>
-        <h3 className="domain-text sub-title"><code>{domain}</code></h3>
+        <h3 className="domain-text sub-title">
+          <code>{domain}</code>
+        </h3>
         <div>
           <Switch
             checkedChildren="Domain in my blocklist"
