@@ -368,7 +368,7 @@ class AugmentationManager {
     const matchingEngine = !!augmentation.conditions.condition_list.find(({ key, value }) => {
       if (key === SEARCH_ENGINE_IS_CONDITION) {
         return (
-          Object.entries(SidebarLoader.customSearchEngine.search_engine_json)
+          Object.entries(SidebarLoader.customSearchEngine.search_engine_json ?? Object.create(null))
             .map(([entryKey, entryValue]) => {
               return !!Array.isArray(entryValue)
                 ? !!entryValue.find((subValue) => {
@@ -478,11 +478,11 @@ class AugmentationManager {
         hideDomains: hasHideActions.map(({ value }) => value[0]),
         selector: {
           link:
-            SidebarLoader.customSearchEngine.querySelector[
+            SidebarLoader.customSearchEngine.querySelector?.[
               window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
             ],
-          featured: SidebarLoader.customSearchEngine.querySelector.featured ?? Array(0),
-          container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
+          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
         },
       },
       '*',
