@@ -41,6 +41,12 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const tooltipContainer = useRef(null);
 
   const handleOpenAugmentationBuilder = (_e, isEdit?: boolean) => {
+    AugmentationManager.preparedLogMessage =
+      isEdit || SidebarLoader.strongPrivacy
+        ? null
+        : {
+            augmentation: tab.augmentation,
+          };
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       augmentation: {
@@ -62,13 +68,6 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
 
   const handleUnpin = () => {
     AugmentationManager.unpinAugmentation(tab.augmentation);
-  };
-
-  const handleRemoveInstalled = () => {
-    setActiveKey(
-      getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
-    );
-    AugmentationManager.removeInstalledAugmentation(tab.augmentation);
   };
 
   const handleHideSuggested = (tab: SidebarTab) => {
