@@ -10,7 +10,7 @@ import { render } from 'react-dom';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { Sidebar } from 'modules/sidebar';
+import { Sidebar, SidebarTabs } from 'modules/sidebar';
 import {
   extractUrlProperties,
   postAPI,
@@ -46,6 +46,7 @@ import {
   BANNED_EXTENSION_IDS,
   INSTALLED_PREFIX,
   EXTENSION_HOST,
+  EXTENSION_AUTO_EXPAND,
 } from 'utils';
 
 /**
@@ -591,12 +592,12 @@ class SidebarLoader {
     const response = await this.fetchSubtabs();
     response &&
       runFunctionWhenDocumentReady(this.document, async () => {
-        await this.handleSubtabApiResponse(response);
         this.isSerp &&
           this.sendLogMessage(EXTENSION_SERP_LOADED, {
             query: this.query,
             url: this.url,
           });
+        await this.handleSubtabApiResponse(response);
         if (
           this.isSerp ||
           this.sidebarTabs.length ||
@@ -608,6 +609,13 @@ class SidebarLoader {
             (process.env.PROJECT === 'is' || this.isSerp)
           ) {
             this.createSidebar();
+            this.sidebarTabs.length &&
+              this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
+                url: this.url.href,
+                subtabs: this.strongPrivacy
+                  ? this.sidebarTabs.map(({ url }) => md5(url.href))
+                  : this.sidebarTabs,
+              });
           } else {
             return null;
           }

@@ -23,7 +23,12 @@ export const AugmentationRow: AugmentationRow = ({
   const handleEnable = () => AugmentationManager.enableSuggestedAugmentation(augmentation);
   const handleDisable = () => AugmentationManager.disableSuggestedAugmentation(augmentation);
   const handleDelete = () => AugmentationManager.removeInstalledAugmentation(augmentation);
-  const handleEdit = () =>
+  const handleEdit = () => {
+    if (!augmentation.installed) {
+      AugmentationManager.preparedLogMessage = {
+        augmentation,
+      };
+    }
     goTo(EditAugmentationPage, {
       augmentation: {
         ...augmentation,
@@ -32,6 +37,7 @@ export const AugmentationRow: AugmentationRow = ({
       setActiveKey,
       initiatedFromActives: true,
     });
+  };
 
   return (
     <div className="augmentation-row">

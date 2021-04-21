@@ -29,6 +29,9 @@ import {
   MY_BLOCKLIST_ID,
   SEARCH_ENGINE_IS_CONDITION,
   encodeSpace,
+  EXTENSION_BLOCKLIST_ADD_DOMAIN,
+  EXTENSION_BLOCKLIST_REMOVE_DOMAIN,
+  EXTENSION_AUGMENTATION_SAVE,
 } from 'utils';
 
 class AugmentationManager {
@@ -42,6 +45,8 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public blockList: AugmentationObject;
+
+  public preparedLogMessage: Record<'augmentation', AugmentationObject> | null;
 
   constructor() {
     debug('AugmentationManager - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -74,6 +79,7 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public async updateBlockList(domain: string) {
+    const isNewBlock = !this.blockList.actions.action_list.find(({ value }) => value[0] === domain);
     const newActionList = [
       ...this.blockList.actions.action_list.filter(
         (action) => action.value.length && !action.value.includes(domain),
@@ -86,6 +92,11 @@ class AugmentationManager {
       },
     ] as AugmentationObject['actions']['action_list'];
     this.blockList.actions.action_list = newActionList;
+    isNewBlock &&
+      !SidebarLoader.strongPrivacy &&
+      SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_ADD_DOMAIN, {
+        domain,
+      });
     await this.initBlockList(
       this.addOrEditAugmentation(this.blockList, {
         actions: newActionList,
@@ -114,6 +125,10 @@ class AugmentationManager {
       }),
     );
     SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
+    !SidebarLoader.strongPrivacy &&
+      SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
+        domain,
+      });
     window.postMessage(
       { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: this.blockList.id, domain },
       '*',
@@ -506,6 +521,11 @@ class AugmentationManager {
         ...SidebarLoader.otherAugmentations.filter((i) => i.id !== updated.id),
       ];
     }
+    this.preparedLogMessage &&
+      !SidebarLoader.strongPrivacy &&
+      SidebarLoader.sendLogMessage(EXTENSION_AUGMENTATION_SAVE, {
+        augmentation: this.preparedLogMessage.augmentation,
+      });
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
     debug(
       'EditAugmentationPage - save\n---\n\tOriginal',
