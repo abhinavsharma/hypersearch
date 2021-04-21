@@ -45,6 +45,7 @@ import {
   INJECT_JS_ACTION,
   BANNED_EXTENSION_IDS,
   INSTALLED_PREFIX,
+  EXTENSION_HOST,
 } from 'utils';
 
 /**
@@ -599,7 +600,8 @@ class SidebarLoader {
         if (
           this.isSerp ||
           this.sidebarTabs.length ||
-          this.matchingDisabledInstalledAugmentations.length
+          this.matchingDisabledInstalledAugmentations.length ||
+          !!window.location.href.match(EXTENSION_HOST)
         ) {
           if (
             window.location.href.search(IMAGE_URL_PARAM) === -1 &&
