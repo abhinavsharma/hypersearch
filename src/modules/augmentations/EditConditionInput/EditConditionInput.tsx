@@ -12,7 +12,7 @@ import 'antd/lib/grid/style/index.css';
 import {
   SEARCH_CONTAINS_CONDITION,
   SEARCH_QUERY_CONTAINS_CONDITION,
-  ANY_URL_CONDITION,
+  ANY_WEB_SEARCH_CONDITION,
   SEARCH_INTENT_IS_CONDITION,
   SIDEBAR_Z_INDEX,
   SEARCH_ENGINE_IS_CONDITION,
@@ -32,7 +32,7 @@ const SEARCH_CONDITION_LABELS = {
 };
 
 const OTHER_CONDITION_LABELS = {
-  'Match any page (removes other conditions)': ANY_URL_CONDITION,
+  'Match any search engine (removes other conditions)': ANY_WEB_SEARCH_CONDITION,
 };
 
 export const EditConditionInput: EditConditionInput = ({
@@ -96,7 +96,7 @@ export const EditConditionInput: EditConditionInput = ({
         value: [],
       });
     }
-    OTHER_CONDITION_LABELS[label] === ANY_URL_CONDITION && handleAnyUrl();
+    OTHER_CONDITION_LABELS[label] === ANY_WEB_SEARCH_CONDITION && handleAnyUrl();
   };
 
   return (

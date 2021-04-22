@@ -3,7 +3,7 @@ import {
   KP_SELECTORS,
   IN_DEBUG_MODE,
   ENABLED_AUGMENTATION_TYPES,
-  ANY_URL_CONDITION,
+  ANY_WEB_SEARCH_CONDITION,
   HIDE_TAB_FAKE_URL,
   ANY_URL_CONDITION_MOBILE,
   SEARCH_ENGINE_IS_CONDITION,
@@ -173,11 +173,11 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
 
   const aIsAny =
     aConditions.indexOf(SEARCH_ENGINE_IS_CONDITION) > -1 ||
-    aConditions.indexOf(ANY_URL_CONDITION) > -1 ||
+    aConditions.indexOf(ANY_WEB_SEARCH_CONDITION) > -1 ||
     aConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
   const bIsAny =
     bConditions.indexOf(SEARCH_ENGINE_IS_CONDITION) > -1 ||
-    bConditions.indexOf(ANY_URL_CONDITION) > -1 ||
+    bConditions.indexOf(ANY_WEB_SEARCH_CONDITION) > -1 ||
     bConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
 
   // Trivial cases that can be handled by checking tab types:
