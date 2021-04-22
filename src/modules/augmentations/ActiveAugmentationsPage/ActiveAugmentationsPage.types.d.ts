@@ -1,9 +1,7 @@
-import { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import { FunctionComponent } from 'react';
 
 declare module './ActiveAugmentationsPage' {
-  type ActiveAugmentationsPageProps = {
-    setActiveKey: Dispatch<SetStateAction<string>>;
-  };
+  type ActiveAugmentationsPageProps = any;
 
   type ActiveAugmentationsPage = FunctionComponent<ActiveAugmentationsPageProps>;
 }

@@ -10,7 +10,7 @@ import { render } from 'react-dom';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { Sidebar, SidebarTabs } from 'modules/sidebar';
+import { Sidebar } from 'modules/sidebar';
 import {
   extractUrlProperties,
   postAPI,
@@ -47,6 +47,7 @@ import {
   INSTALLED_PREFIX,
   EXTENSION_HOST,
   EXTENSION_AUTO_EXPAND,
+  PROCESS_SERP_OVERLAY_MESSAGE,
 } from 'utils';
 
 /**
@@ -609,13 +610,34 @@ class SidebarLoader {
             (process.env.PROJECT === 'is' || this.isSerp)
           ) {
             this.createSidebar();
-            this.sidebarTabs.length &&
-              this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
-                url: this.url.href,
-                subtabs: this.strongPrivacy
-                  ? this.sidebarTabs.map(({ url }) => md5(url.href))
-                  : this.sidebarTabs,
-              });
+            this.sidebarTabs.forEach((tab) =>
+              window.postMessage(
+                {
+                  augmentation: tab.augmentation,
+                  hideDomains: tab.augmentation?.actions.action_list.reduce((a, { key, value }) => {
+                    if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
+                    return a;
+                  }, []),
+                  name: PROCESS_SERP_OVERLAY_MESSAGE,
+                  tab: tab.id,
+                  selector: {
+                    link: this.customSearchEngine.querySelector[
+                      window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+                    ],
+                    featured: this.customSearchEngine.querySelector.featured ?? Array(0),
+                    container: this.customSearchEngine.querySelector.result_container_selector,
+                  },
+                },
+                '*',
+              ),
+            ),
+              this.sidebarTabs.length &&
+                this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
+                  url: this.url.href,
+                  subtabs: this.strongPrivacy
+                    ? this.sidebarTabs.map(({ url }) => md5(url.href))
+                    : this.sidebarTabs,
+                });
           } else {
             return null;
           }

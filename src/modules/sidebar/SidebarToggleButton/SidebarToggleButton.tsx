@@ -8,8 +8,6 @@ import React from 'react';
 import List from 'antd/lib/list';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import { goTo } from 'route-lite';
-import { EditAugmentationPage } from 'modules/augmentations';
 import {
   flipSidebar,
   AIRTABLE_IMPROVE_SEARCH_LINK,
@@ -17,6 +15,8 @@ import {
   HIDE_TAB_FAKE_URL,
   getFirstValidTabIndex,
   APP_NAME,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -30,7 +30,11 @@ const removeEmoji = (s) => {
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
     if (!tabs.length) {
-      goTo(EditAugmentationPage, { augmentation: EMPTY_AUGMENTATION, isAdding: true });
+      chrome.runtime.sendMessage({
+        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+        page: OPEN_BUILDER_PAGE.BUILDER,
+        augmentation: EMPTY_AUGMENTATION,
+      } as OpenBuilderMessage);
     }
     flipSidebar(document, 'show', tabs?.length);
   };

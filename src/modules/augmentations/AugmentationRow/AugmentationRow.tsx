@@ -1,22 +1,14 @@
 import React from 'react';
-import { goTo } from 'route-lite';
 import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import Tooltip from 'antd/lib/tooltip';
-import { EditAugmentationPage } from 'modules/augmentations';
+import { MY_BLOCKLIST_ID, OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'utils';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './AugmentationRow.scss';
-import { MY_BLOCKLIST_ID } from 'utils';
 
-export const AugmentationRow: AugmentationRow = ({
-  augmentation,
-  setActiveKey,
-  ignored,
-  pinned,
-  other,
-}) => {
+export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned, other }) => {
   const isSuggested = !augmentation.hasOwnProperty('enabled');
   const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
   const handleUnpin = () => AugmentationManager.unpinAugmentation(augmentation);
@@ -29,14 +21,11 @@ export const AugmentationRow: AugmentationRow = ({
         augmentation,
       };
     }
-    goTo(EditAugmentationPage, {
-      augmentation: {
-        ...augmentation,
-        description: isSuggested ? '' : augmentation.description,
-      },
-      setActiveKey,
-      initiatedFromActives: true,
-    });
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.BUILDER,
+      augmentation,
+    } as OpenBuilderMessage);
   };
 
   return (

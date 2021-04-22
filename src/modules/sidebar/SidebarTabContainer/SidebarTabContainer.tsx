@@ -23,23 +23,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
     frameRef.current?.contentWindow.addEventListener('keyup', handleKeyUp);
-    window.postMessage(
-      {
-        augmentation: tab.augmentation,
-        hideDomains,
-        name: PROCESS_SERP_OVERLAY_MESSAGE,
-        tab: tab.id,
-        selector: {
-          link:
-            SidebarLoader.customSearchEngine.querySelector[
-              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-            ],
-          featured: SidebarLoader.customSearchEngine.querySelector.featured ?? Array(0),
-          container: SidebarLoader.customSearchEngine.querySelector.result_container_selector,
-        },
-      },
-      '*',
-    );
+
     return () => frameRef.current?.contentWindow.removeEventListener('keydown', handleKeyDown);
   }, [SidebarLoader.hideDomains]);
 

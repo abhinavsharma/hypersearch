@@ -14,16 +14,17 @@ import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME,
   DISABLE_SUGGESTED_AUGMENTATION,
+  HIDE_TAB_FAKE_URL,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
 import './Sidebar.scss';
 
 const Sidebar: Sidebar = () => {
-  // We use this state variable to forcibly open a given tab on the sidebar.
-  const [forceTab, setForceTab] = useState<string | null>(null);
-  // The matching tabs for the current page. We load these tabs into the sidebar.
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
+  const [activeKey, setActiveKey] = useState<string>(
+    getFirstValidTabIndex(SidebarLoader.sidebarTabs),
+  );
   // SIDE-EFFECTS
   useEffect(() => {
     // Set up a listener for a message when an augmentation has been either installed
@@ -55,9 +56,18 @@ const Sidebar: Sidebar = () => {
       isKnowledgePage(document) ||
       SidebarLoader.preventAutoExpand
     ) {
-      flipSidebar(document, 'hide', sidebarTabs?.length, true);
+      flipSidebar(
+        document,
+        'hide',
+        sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL).length,
+        true,
+      );
     } else {
-      flipSidebar(document, 'show', sidebarTabs?.length);
+      flipSidebar(
+        document,
+        'show',
+        sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL).length,
+      );
     }
   }, []);
 
@@ -70,9 +80,9 @@ const Sidebar: Sidebar = () => {
             Send Feedback
           </a>
         </div>
-        <SidebarTabs tabs={sidebarTabs} forceTab={forceTab} />
+        <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
-      <SidebarToggleButton tabs={sidebarTabs} setTab={setForceTab} />
+      <SidebarToggleButton tabs={sidebarTabs} />
     </>
   );
 };

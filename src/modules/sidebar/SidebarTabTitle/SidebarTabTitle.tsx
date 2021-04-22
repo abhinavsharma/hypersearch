@@ -5,10 +5,16 @@ import 'antd/lib/tooltip/style/index.css';
 import { APP_NAME } from 'utils/constants';
 
 const insertNewlineAfterEmoji = (s, showVerified: boolean) => {
-  return <div>
-  {showVerified && <Suspense fallback={null}><CloudDownloadOutlined /></Suspense>}
-  {s?.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])(.*)/g, '$1\n$2')}
-</div>
+  return (
+    <div>
+      {showVerified && (
+        <Suspense fallback={null}>
+          <CloudDownloadOutlined />
+        </Suspense>
+      )}
+      {s?.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])(.*)/g, '$1\n$2')}
+    </div>
+  );
 };
 
 const CloudDownloadOutlined = React.lazy(
@@ -28,7 +34,10 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
         }`}
       >
         {!tab.augmentation?.installed ? (
-          <Tooltip title={`Lens suggested by ${APP_NAME}`} destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip
+            title={`Lens suggested by ${APP_NAME}`}
+            destroyTooltipOnHide={{ keepParent: false }}
+          >
             {insertNewlineAfterEmoji(tab.title, true)}
           </Tooltip>
         ) : (

@@ -1,9 +1,7 @@
 import React, { Suspense, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
-import { Link } from 'route-lite';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import { EditAugmentationPage } from 'modules/augmentations/';
 import { ShareButton } from 'modules/shared';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
@@ -11,6 +9,7 @@ import {
   CSE_PREFIX,
   getFirstValidTabIndex,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
   SIDEBAR_Z_INDEX,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
@@ -49,13 +48,14 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           };
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.BUILDER,
       augmentation: {
         ...tab.augmentation,
         id: isEdit ? tab.augmentation.id : `${CSE_PREFIX}-${uuid()}`,
         enabled: isEdit,
         installed: isEdit,
       },
-    });
+    } as OpenBuilderMessage);
   };
 
   const handleDisableInstalled = () => {
@@ -136,31 +136,22 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         )}
 
         {tab.augmentation?.installed && (
-          <Link
-            component={EditAugmentationPage}
-            componentProps={{
-              augmentation: tab.augmentation,
-              setActiveKey,
-            }}
-            key={uuid()}
+          <Tooltip
+            title="Edit local lens"
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
           >
-            <Tooltip
-              title="Edit local lens"
-              destroyTooltipOnHide={{ keepParent: false }}
-              getPopupContainer={() => tooltipContainer.current}
-              placement="bottom"
-            >
-              <Button
-                type="link"
-                onClick={(e) => handleOpenAugmentationBuilder(e, true)}
-                icon={
-                  <Suspense fallback={null}>
-                    <EditOutlined />
-                  </Suspense>
-                }
-              />
-            </Tooltip>
-          </Link>
+            <Button
+              type="link"
+              onClick={(e) => handleOpenAugmentationBuilder(e, true)}
+              icon={
+                <Suspense fallback={null}>
+                  <EditOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
         )}
 
         <Tooltip

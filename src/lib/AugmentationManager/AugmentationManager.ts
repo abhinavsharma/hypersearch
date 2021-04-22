@@ -32,6 +32,7 @@ import {
   EXTENSION_BLOCKLIST_ADD_DOMAIN,
   EXTENSION_BLOCKLIST_REMOVE_DOMAIN,
   EXTENSION_AUGMENTATION_SAVE,
+  REMOVE_SEARCHED_DOMAIN_MESSAGE,
 } from 'utils';
 
 class AugmentationManager {
@@ -130,7 +131,11 @@ class AugmentationManager {
         domain,
       });
     window.postMessage(
-      { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: this.blockList.id, domain },
+      {
+        name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
+        remove: this.blockList.id,
+        domain,
+      },
       '*',
     );
   }
@@ -191,6 +196,21 @@ class AugmentationManager {
     );
     SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
       (i) => i.id !== augmentation.id,
+    );
+    window.postMessage(
+      {
+        augmentation: augmentation.id,
+        name: PROCESS_SERP_OVERLAY_MESSAGE,
+        selector: {
+          link:
+            SidebarLoader.customSearchEngine.querySelector?.[
+              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+            ],
+          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+        },
+      },
+      '*',
     );
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
@@ -261,6 +281,29 @@ class AugmentationManager {
     const hasHideDomains = augmentation.actions.action_list.filter(
       ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
     );
+    const hasSearchDomains = augmentation.actions.action_list.filter(
+      ({ key }) => key === SEARCH_DOMAINS_ACTION,
+    );
+    if (hasSearchDomains) {
+      hasSearchDomains.forEach((domain) =>
+        window.postMessage(
+          {
+            name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
+            remove: augmentation.id,
+            domain,
+            selector: {
+              link:
+                SidebarLoader.customSearchEngine.querySelector?.[
+                  window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+                ],
+              featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+              container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+            },
+          },
+          '*',
+        ),
+      );
+    }
     if (!!hasHideDomains) {
       hasHideDomains.forEach((domain) => {
         SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
@@ -528,7 +571,7 @@ class AugmentationManager {
       });
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
     debug(
-      'EditAugmentationPage - save\n---\n\tOriginal',
+      'AugmentationManager - addOrEditAugmentation\n---\n\tOriginal',
       augmentation,
       '\n\tUpdated',
       updated,

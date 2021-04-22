@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import { goBack } from 'route-lite';
 import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { getFirstValidTabIndex } from 'utils';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
   EditAugmentationConditions,
 } from 'modules/augmentations';
+import { EMPTY_AUGMENTATION, OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
@@ -18,14 +17,12 @@ import './EditAugmentationPage.scss';
 const { Panel } = Collapse;
 
 export const EditAugmentationPage: EditAugmentationPage = ({
-  augmentation = Object.create(null) as AugmentationObject,
+  augmentation = EMPTY_AUGMENTATION,
   isAdding,
-  initiatedFromActives,
-  setActiveKey,
 }) => {
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>(
-    !augmentation.installed && !!augmentation.name.length
+    !augmentation.installed && !!augmentation.name?.length
       ? `${augmentation.name} / Forked`
       : augmentation.name || '🎉 My Lens',
   );
@@ -77,19 +74,15 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   }, [name, actions, conditions.length]);
 
   const handleClose = () => {
-    goBack();
-    goBack();
-    if (setActiveKey) {
-      setActiveKey(
-        isAdding && !initiatedFromActives ? getFirstValidTabIndex(SidebarLoader.sidebarTabs) : '0',
-      );
-    }
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.ACTIVE,
+    } as OpenActivePageMessage);
   };
 
   const handleSave = () => {
     if (isDisabled) return null;
-    goBack();
-    goBack();
+    handleClose();
     AugmentationManager.addOrEditAugmentation(augmentation, {
       actions,
       conditions,

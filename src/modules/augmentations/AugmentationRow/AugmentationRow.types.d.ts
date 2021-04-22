@@ -1,9 +1,8 @@
-import { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import { FunctionComponent } from 'react';
 
 declare module './AugmentationRow' {
   type AugmentationRowProps = {
     augmentation: AugmentationObject;
-    setActiveKey: Dispatch<SetStateAction<string>>;
     ignored?: boolean;
     other?: boolean;
     pinned?: boolean;

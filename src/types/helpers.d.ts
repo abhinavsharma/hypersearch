@@ -17,3 +17,39 @@ declare type NullPrototype<
   OPK extends keyof Object = keyof Object & U
 > = { [P in K]?: T } & ({ [Q in keyof Object]?: never } | { [R in OPK]?: T });
 /* eslint-enable @typescript-eslint/ban-types */
+
+declare type ProcessSerpOverlayMessage = MessageEvent<{
+  augmentation: AugmentationObject;
+  name: string;
+  hideDomains: string[];
+  selector: {
+    link: string;
+    featured: string[];
+    container: string;
+  };
+}>;
+
+declare type RemoveHideDomainOverlayMessage = MessageEvent<{
+  domain: string;
+  name: string;
+  remove: string;
+}>;
+
+declare type OpenActivePageMessage = {
+  type: string;
+  page: import('utils/constants').OPEN_BUILDER_PAGE.ACTIVE;
+};
+
+declare type OpenGutterPageMessage = {
+  type: string;
+  page: import('utils/constants').OPEN_BUILDER_PAGE.GUTTER;
+  augmentations: AugmentationObject[];
+  domain: string;
+};
+
+declare type OpenBuilderMessage = {
+  type: string;
+  page: import('utils/constants').OPEN_BUILDER_PAGE.BUILDER;
+  augmentation: AugmentationObject;
+  create?: boolean;
+};
