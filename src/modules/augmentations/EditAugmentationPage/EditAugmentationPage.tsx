@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   EditAugmentationMeta,
   EditAugmentationActions,
   EditAugmentationConditions,
 } from 'modules/augmentations';
-import { EMPTY_AUGMENTATION, OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'utils';
+import {
+  ANY_URL_CONDITION_TEMPLATE,
+  EMPTY_AUGMENTATION,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
+} from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
@@ -38,19 +42,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 
   const [conditions, setConditions] = useState<CustomCondition[]>(
     isAdding
-      ? Array(5)
-          .fill(null)
-          .map((_, i) => ({
-            id: uuid(),
-            evaluation: 'contains',
-            key: 'search_contains',
-            label: 'Search results contain domain',
-            type: 'list',
-            value: [
-              Array.from(new Set(SidebarLoader.domains?.map((domain) => domain.split('/')[0])))[i],
-            ],
-          }))
-          .filter(({ value }) => !!value[0])
+      ? [{ ...ANY_URL_CONDITION_TEMPLATE, id: uuid() }]
       : augmentation.conditions.condition_list.map((condition) => ({
           ...condition,
           id: uuid(),
