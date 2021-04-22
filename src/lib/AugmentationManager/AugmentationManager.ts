@@ -10,7 +10,7 @@ import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import {
   debug,
   removeProtocol,
-  ANY_URL_CONDITION,
+  ANY_WEB_SEARCH_CONDITION,
   EXTENSION_SHARE_URL,
   NUM_DOMAINS_TO_EXCLUDE,
   PROCESS_SERP_OVERLAY_MESSAGE,
@@ -348,7 +348,7 @@ class AugmentationManager {
       augmentation.conditions.condition_list.reduce(
         (conditions, { key, value }) =>
           key === SEARCH_CONTAINS_CONDITION ||
-          key === ANY_URL_CONDITION ||
+          (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
           key === ANY_URL_CONDITION_MOBILE
             ? conditions.concat(value)
             : conditions,

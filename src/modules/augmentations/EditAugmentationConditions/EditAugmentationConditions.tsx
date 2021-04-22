@@ -4,7 +4,7 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import { EditConditionInput } from 'modules/augmentations';
-import { ANY_URL_CONDITION } from 'utils';
+import { ANY_WEB_SEARCH_CONDITION } from 'utils';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
 
@@ -29,8 +29,8 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
     setConditions([
       {
         id: '0',
-        key: ANY_URL_CONDITION,
-        label: 'Match any page',
+        key: ANY_WEB_SEARCH_CONDITION,
+        label: 'Match any search engine',
         type: 'list',
         value: ['.*'],
       },
