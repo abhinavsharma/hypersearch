@@ -22,6 +22,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
   const augmentationSorter = (a: AugmentationObject, b: AugmentationObject) => {
     if (!a.installed && b.installed) return 1;
     return (
+      // sorts by name ignoring emojis
       a.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0) -
       b.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0)
     );
