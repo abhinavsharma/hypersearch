@@ -1,7 +1,11 @@
 import React from 'react';
 import Button from 'antd/lib/button';
-import { goBack } from 'route-lite';
-import { flipSidebar, getFirstValidTabIndex, OPEN_AUGMENTATION_BUILDER_MESSAGE } from 'utils';
+import {
+  flipSidebar,
+  getFirstValidTabIndex,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
+} from 'utils';
 import 'antd/lib/button/style/index.css';
 import './AddAugmentationTab.scss';
 
@@ -11,12 +15,14 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
       flipSidebar(window.top.document, 'hide', 0, true);
     } else {
       setActiveKey(getFirstValidTabIndex(tabs));
-      goBack();
     }
   };
 
   const handleOpenBuilder = () =>
-    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, page: 'builder' });
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.ACTIVE,
+    } as OpenActivePageMessage);
 
   return (
     <div id="add-augmentation-tab">

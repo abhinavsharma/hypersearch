@@ -1,8 +1,11 @@
 import React, { Suspense } from 'react';
-import { goBack } from 'route-lite';
 import Button from 'antd/lib/button';
-import { MY_BLOCKLIST_ID } from 'utils/constants';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import {
+  MY_BLOCKLIST_ID,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
+} from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 
 const DeleteOutlined = React.lazy(
@@ -13,10 +16,10 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
   const handleDelete = () => {
     if (disabled || augmentation.id === MY_BLOCKLIST_ID) return null;
     AugmentationManager.removeInstalledAugmentation(augmentation);
-    setTimeout(() => {
-      goBack();
-      goBack();
-    }, 100);
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.ACTIVE,
+    } as OpenActivePageMessage);
   };
 
   return (

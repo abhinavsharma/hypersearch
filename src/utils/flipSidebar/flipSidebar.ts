@@ -38,21 +38,22 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     'insight-sidebar-toggle-button',
   )[0] as HTMLDivElement;
 
-  const activeAugmentationHeader = document.getElementsByClassName(
-    'builder-header',
-  )[0] as HTMLDivElement;
+  const activeAugmentationHeader = document.getElementById(
+    'add-augmentation-tab',
+  ) as HTMLDivElement;
 
   if (!showButton || innerDocument.classList.contains('insight-expanded')) return;
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
-    nameNub.setAttribute('style', 'right: 0;');
+    nameNub.setAttribute('style', 'right: 0px;');
     if (activeAugmentationHeader) {
       activeAugmentationHeader.style.display = 'none';
     }
     // We need the timeout to ensure the proper animation
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
+      nameNub.setAttribute('style', 'right: -30px;');
       outerDocument.getElementById('sidebar-root').setAttribute(
         'style',
         `
@@ -80,7 +81,6 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         z-index: ${SIDEBAR_Z_INDEX};
     `,
       );
-      nameNub.setAttribute('style', 'display: none;');
       showButton.style.visibility = 'visible';
       showButton.style.display = 'flex';
       showButton.style.flexDirection = 'row';
@@ -93,9 +93,14 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     }, 500);
   } else {
     sidebarContainer.style.visibility = 'visible';
+    showButton.style.display = 'none';
     showButton.style.visibility = 'hidden';
-    nameNub.style.display = 'visible';
-    nameNub.setAttribute('style', 'right: 450px;');
+    nameNub.setAttribute(
+      'style',
+      `
+      right: 450px;
+    `,
+    );
     sidebarContainer.style.width = '450px';
     tabsContainer.style.visibility = 'visible';
     outerDocument.getElementById('sidebar-root').setAttribute(

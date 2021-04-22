@@ -1,9 +1,10 @@
-import { FunctionComponent, ReactElement, MouseEvent } from 'react';
+import { FunctionComponent, ReactElement, MouseEvent, Dispatch, SetStateAction } from 'react';
 
 declare module './SidebarTabs' {
   type SidebarTabsProps = {
     tabs: SidebarTab[];
-    forceTab: string | null;
+    activeKey: string | null;
+    setActiveKey: Dispatch<SetStateAction<string>>;
   };
 
   type TabTitleProps = {

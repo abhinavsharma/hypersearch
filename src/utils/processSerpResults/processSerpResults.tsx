@@ -18,14 +18,45 @@ import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIc
  * insight-${selectorString}-inner-text
  * ```
  */
-export const hideSerpResults: HideSerpResults = (
-  nodes,
+export const processSerpResults: ProcessSerpResults = (
+  { block, search },
   selector,
   { text, header },
   selectorString,
-  augmentations,
+  { block: blockAugmentations, search: searchAugmentations } = Object.create(null),
 ) => {
-  for (const node of nodes) {
+  if (window.location === window.parent.location) {
+    for (const node of search) {
+      const serpResult = node.closest(selector) as HTMLElement;
+      if (!serpResult) continue;
+      serpResult.setAttribute('insight-searched-result', 'true');
+
+      const domain =
+        extractUrlProperties(node.querySelector('a')?.getAttribute('href'))?.hostname ||
+        extractUrlProperties(node.getAttribute('href'))?.hostname;
+
+      serpResult.setAttribute('insight-searched-domain', domain);
+
+      if (!!searchAugmentations?.[domain]?.length) {
+        serpResult.setAttribute(
+          'insight-searched-by',
+          searchAugmentations?.[domain].map(({ id }) => id).join(' '),
+        );
+        const buttonRoot = document.createElement('div');
+        buttonRoot.classList.add(`insight-${selectorString}-button-root`);
+        render(
+          <InlineGutterIcon
+            augmentations={blockAugmentations[domain].filter(({ id }) => id !== MY_BLOCKLIST_ID)}
+            isSearched
+            domain={domain}
+          />,
+          buttonRoot,
+        );
+      }
+    }
+  }
+
+  for (const node of block) {
     const serpResult = node.closest(selector) as HTMLElement;
     if (!serpResult) continue;
     serpResult.setAttribute('insight-allowed-result', 'false');
@@ -38,7 +69,7 @@ export const hideSerpResults: HideSerpResults = (
       const existingOverlay = serpResult.querySelector('.insight-hidden-domain-overlay');
       existingOverlay && serpResult.removeChild(existingOverlay);
     }
-    if (!augmentations?.[domain]?.length) {
+    if (!blockAugmentations?.[domain]?.length) {
       serpResult.setAttribute('insight-ad-block', 'true');
     }
 
@@ -57,7 +88,7 @@ export const hideSerpResults: HideSerpResults = (
     innerText.classList.add(`insight-${selectorString}-inner-text`);
     innerText.innerText = text;
 
-    if (augmentations?.[domain]?.length) {
+    if (blockAugmentations?.[domain]?.length) {
       if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
         serpResult.parentElement.style.pointerEvents = 'none';
       }
@@ -65,7 +96,7 @@ export const hideSerpResults: HideSerpResults = (
         'insight-blocked-by',
         Array.from(
           new Set(
-            augmentations[domain].reduce((a, { id }) => {
+            blockAugmentations[domain].reduce((a, { id }) => {
               a.push(id);
               return a;
             }, []),
@@ -73,16 +104,18 @@ export const hideSerpResults: HideSerpResults = (
         ).join(' '),
       );
       overlay.setAttribute('insight-blocked-domain', domain);
-      const buttonRoot = document.createElement('div');
-      buttonRoot.classList.add(`insight-${selectorString}-button-root`);
-      render(
-        <InlineGutterIcon
-          augmentations={augmentations[domain].filter(({ id }) => id !== MY_BLOCKLIST_ID)}
-          domain={domain}
-        />,
-        buttonRoot,
-      );
-      textWrapper.appendChild(buttonRoot);
+      if (serpResult.getAttribute('insight-searched-result') !== 'true') {
+        const buttonRoot = document.createElement('div');
+        buttonRoot.classList.add(`insight-${selectorString}-button-root`);
+        render(
+          <InlineGutterIcon
+            augmentations={blockAugmentations[domain].filter(({ id }) => id !== MY_BLOCKLIST_ID)}
+            domain={domain}
+          />,
+          buttonRoot,
+        );
+        textWrapper.appendChild(buttonRoot);
+      }
       if (window.location !== window.parent.location) {
         Array.from(document.querySelectorAll('.inline-gutter-icon')).forEach(
           (element: HTMLElement) => (element.style.display = 'none'),

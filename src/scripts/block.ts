@@ -1,5 +1,5 @@
 import { BLOCKED_ADS } from 'utils/constants';
-import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
+import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
 (() => {
   const host = document.location.host.replace('www.', '');
@@ -16,12 +16,12 @@ import { hideSerpResults } from 'utils/hideSerpResults/hideSerpResults';
       const search = adText.map((adText) => "normalize-space()='" + adText + "'").join(' or ');
       const xpath = '//' + adTextContainer + '[' + search + ']';
       const matchingElements = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
-      const nodes: HTMLElement[] = [];
+      const block: HTMLElement[] = [];
       while ((node = matchingElements.iterateNext() as HTMLElement)) {
-        node && nodes.push(node);
+        node && block.push(node);
       }
-      hideSerpResults(
-        nodes,
+      processSerpResults(
+        { block, search: [] },
         adElementSelector,
         { header: 'Ad', text: 'Click to show likely ad.' },
         'blocked-ad',

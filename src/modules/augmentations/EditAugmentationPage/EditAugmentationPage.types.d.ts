@@ -1,4 +1,4 @@
-import { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import { FunctionComponent } from 'react';
 
 declare module './EditAugmentationPage' {
   type CustomAugmentationObject<T = AugmentationObject> = T & {
@@ -8,8 +8,6 @@ declare module './EditAugmentationPage' {
   type EditAugmentationPageProps = {
     augmentation: AugmentationObject;
     isAdding?: boolean;
-    initiatedFromActives: boolean;
-    setActiveKey: Dispatch<SetStateAction<string>>;
   };
 
   type CustomAction = ActionObject & {

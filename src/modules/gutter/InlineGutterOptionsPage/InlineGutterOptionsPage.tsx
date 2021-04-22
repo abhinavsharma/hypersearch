@@ -1,12 +1,18 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Switch from 'antd/lib/switch';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
+  EMPTY_AUGMENTATION,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
+  REMOVE_SEARCHED_DOMAIN_MESSAGE,
+  SEARCH_CONTAINS_CONDITION,
+  SEARCH_DOMAINS_ACTION,
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
@@ -14,7 +20,10 @@ import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './InlineGutterOptionsPage.scss';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+
+const PlusOutlined = React.lazy(
+  async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
+);
 
 export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   hidingAugmentations,
@@ -27,10 +36,56 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     ).length,
   );
 
-  const sections = [
+  const searchingAugmentations = SidebarLoader.installedAugmentations
+    .concat(SidebarLoader.suggestedAugmentations)
+    .filter(
+      (augmentation) =>
+        !!augmentation.actions.action_list.filter(({ key, value }) => {
+          if (key === SEARCH_DOMAINS_ACTION) {
+            return !!value.find((searchedDomain) => searchedDomain === domain);
+          }
+          return false;
+        }).length,
+    );
+
+  const availableLocalAugmentations: Record<
+    string,
+    Array<AugmentationObject & { actionIndex: number }>
+  > = SidebarLoader.installedAugmentations.reduce((a, augmentation) => {
+    const searchDomainActions = augmentation.actions.action_list.reduce(
+      (actions, action, index) => {
+        const { key, value } = action;
+        if (key === SEARCH_DOMAINS_ACTION && !value.includes(domain)) {
+          actions.push({ ...action, index });
+        }
+        return actions;
+      },
+      [],
+    );
+    searchDomainActions.forEach((action) => {
+      if (!Array.isArray(a[domain])) a[domain] = [];
+      a[domain].push({ ...augmentation, actionIndex: action.index });
+    });
+    return a;
+  }, Object.create(null));
+
+  const sections: Section[] = [
     {
+      type: 'block',
       augmentations: currentHiders,
       title: 'Lenses that block this domain',
+      subtitle: null,
+    },
+    {
+      type: 'search',
+      augmentations: searchingAugmentations,
+      title: 'Lenses that search this domain',
+      subtitle: null,
+    },
+    {
+      type: 'local',
+      augmentations: availableLocalAugmentations[domain],
+      title: 'Add to existing lens that searches domains',
       subtitle: null,
     },
   ];
@@ -46,7 +101,10 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   );
 
   const handleClose = () => {
-    chrome.runtime.sendMessage({ type: OPEN_AUGMENTATION_BUILDER_MESSAGE, page: 'builder' });
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.ACTIVE,
+    } as OpenActivePageMessage);
   };
 
   const init = useCallback(async () => {
@@ -61,6 +119,118 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   useEffect(() => {
     init();
   }, [init]);
+
+  const handleAddSearchDomainToLocal = (augmentation: AugmentationObject, index: number) => {
+    AugmentationManager.addOrEditAugmentation(augmentation, {
+      actions: augmentation.actions.action_list.map((action, actionIndex) =>
+        actionIndex === index ? { ...action, value: [...action.value, domain] } : action,
+      ),
+    });
+  };
+
+  const handleEditInstalled = (augmentation: AugmentationObject) => {
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.BUILDER,
+      augmentation,
+    } as OpenBuilderMessage);
+  };
+
+  const handleDeleteInstalled = (augmentation: AugmentationObject, type: Section['type']) => {
+    const checkKey = type === 'block' ? SEARCH_HIDE_DOMAIN_ACTION : SEARCH_DOMAINS_ACTION;
+    const newData: Record<string, any> = {
+      actions: augmentation.actions.action_list.map((action) => {
+        const { key, value } = action;
+        return key === checkKey
+          ? { ...action, value: value.filter((valueDomain) => valueDomain !== domain) }
+          : action;
+      }),
+    };
+
+    if (type === 'search') {
+      window.postMessage(
+        {
+          name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
+          remove: augmentation.id,
+          domain,
+          selector: {
+            link:
+              SidebarLoader.customSearchEngine.querySelector?.[
+                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+              ],
+            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+          },
+        },
+        '*',
+      );
+    }
+
+    AugmentationManager.addOrEditAugmentation(augmentation, newData);
+
+    if (type === 'block') {
+      setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
+      SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
+      window.postMessage(
+        { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
+        '*',
+      );
+    }
+  };
+
+  const handleDisableSuggested = (augmentation: AugmentationObject, type: Section['type']) => {
+    AugmentationManager.disableSuggestedAugmentation(augmentation);
+
+    if (type === 'search') {
+      window.postMessage(
+        {
+          name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
+          remove: augmentation.id,
+          domain,
+          selector: {
+            link:
+              SidebarLoader.customSearchEngine.querySelector?.[
+                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+              ],
+            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+          },
+        },
+        '*',
+      );
+    }
+
+    if (type === 'block') {
+      setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
+      SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
+      window.postMessage(
+        { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
+        '*',
+      );
+    }
+  };
+
+  const handleCreateAugmentation = () => {
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.BUILDER,
+      create: true,
+      augmentation: {
+        ...EMPTY_AUGMENTATION,
+        actions: {
+          ...EMPTY_AUGMENTATION.actions,
+          action_list: [
+            {
+              key: SEARCH_DOMAINS_ACTION,
+              label: 'Search only these domains',
+              type: 'list',
+              value: [domain],
+            },
+          ],
+        },
+      },
+    } as OpenBuilderMessage);
+  };
 
   return (
     <div id="inline-gutter-options-page">
@@ -84,55 +254,115 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           />
         </div>
       </section>
+      {sections.map(({ title, subtitle, augmentations, type }) =>
+        !!augmentations?.length ? (
+          <React.Fragment key={title}>
+            <Divider />
+            <section>
+              {title && augmentations?.length > 0 && <h2 className="title">{title}</h2>}
+              {subtitle && augmentations?.length > 0 && <h3 className="sub-title">{subtitle}</h3>}
+              {augmentations.map((augmentation) => {
+                const handleAddToLocal = () =>
+                  handleAddSearchDomainToLocal(augmentation, augmentation.actionIndex);
+                const handleEdit = () => handleEditInstalled(augmentation);
+                const handleDelete = () => handleDeleteInstalled(augmentation, type);
+                const handleDisable = () => handleDisableSuggested(augmentation, type);
+                switch (type) {
+                  case 'block':
+                    return (
+                      <div className="gutter-page-button-row" key={augmentation.id}>
+                        {augmentation.name}
+                        {!augmentation.installed ? (
+                          <Tag
+                            className="gutter-page-row-button"
+                            color="volcano"
+                            onClick={handleDisable}
+                          >
+                            Disable Lens
+                          </Tag>
+                        ) : (
+                          <Tag
+                            className="gutter-page-row-button"
+                            color="volcano"
+                            onClick={handleDelete}
+                          >
+                            Remove from Lens
+                          </Tag>
+                        )}
+                      </div>
+                    );
+                  case 'search':
+                    return (
+                      <div className="gutter-page-button-row" key={augmentation.id}>
+                        {augmentation.name}
+                        <Tag
+                          className="gutter-page-row-button"
+                          color="geekblue"
+                          onClick={handleEdit}
+                        >
+                          {!augmentation.installed ? 'Fork Lens' : 'Edit Lens'}
+                        </Tag>
+                        {!augmentation.installed ? (
+                          <Tag
+                            className="gutter-page-row-button"
+                            color="volcano"
+                            onClick={handleDisable}
+                          >
+                            Disable Lens
+                          </Tag>
+                        ) : (
+                          <Tag
+                            className="gutter-page-row-button"
+                            color="volcano"
+                            onClick={handleDelete}
+                          >
+                            Remove from Lens
+                          </Tag>
+                        )}
+                      </div>
+                    );
+                  case 'local':
+                    return (
+                      <div
+                        className="gutter-page-button-row"
+                        key={augmentation.id + augmentation.actionIndex}
+                      >
+                        <div className="augmentation-name-box">
+                          {augmentation.name}
+                          <span className="augmentation-name-bo-domain-list">
+                            Currently searches&nbsp;
+                            {augmentation.actions.action_list[augmentation.actionIndex].value.join(
+                              ', ',
+                            )}
+                          </span>
+                        </div>
+                        <Tag
+                          className="gutter-page-row-button"
+                          color="geekblue"
+                          onClick={handleAddToLocal}
+                        >
+                          Add to Lens
+                        </Tag>
+                      </div>
+                    );
+                }
+              })}
+            </section>
+          </React.Fragment>
+        ) : null,
+      )}
       <Divider />
-      {sections.map(({ title, subtitle, augmentations }) => (
-        <section key={title}>
-          {title && augmentations?.length > 0 && <h2 className="title">{title}</h2>}
-          {subtitle && augmentations?.length > 0 && <h3 className="sub-title">{subtitle}</h3>}
-          {augmentations.map((augmentation) => {
-            const handleDelete = () => {
-              AugmentationManager.addOrEditAugmentation(augmentation, {
-                actions: augmentation.actions.action_list.filter(({ key, value }) =>
-                  key === SEARCH_HIDE_DOMAIN_ACTION ? value[0] !== domain : true,
-                ),
-              });
-              setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
-              SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
-                (hidden) => hidden !== domain,
-              );
-              window.postMessage(
-                { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
-                '*',
-              );
-            };
-            const handleDisable = () => {
-              AugmentationManager.disableSuggestedAugmentation(augmentation);
-              setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
-              SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
-                (hidden) => hidden !== domain,
-              );
-              window.postMessage(
-                { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
-                '*',
-              );
-            };
-            return (
-              <div className="gutter-page-button-row" key={augmentation.id}>
-                {augmentation.name}
-                {!augmentation.installed ? (
-                  <Tag className="gutter-page-row-button" color="volcano" onClick={handleDisable}>
-                    Disable Lens
-                  </Tag>
-                ) : (
-                  <Tag className="gutter-page-row-button" color="volcano" onClick={handleDelete}>
-                    Remove from Lens
-                  </Tag>
-                )}
-              </div>
-            );
-          })}
-        </section>
-      ))}
+      <Button
+        type="text"
+        block
+        onClick={handleCreateAugmentation}
+        className="create-local-search-domain-augmentation-button"
+      >
+        <Suspense fallback={null}>
+          <PlusOutlined />
+        </Suspense>
+        &nbsp;Create new Lens that searches this domain
+      </Button>
     </div>
   );
 };

@@ -7,8 +7,13 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Tabs from 'antd/lib/tabs';
 import Button from 'antd/lib/button';
+import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { AddAugmentationTab, ActiveAugmentationsPage } from 'modules/augmentations/';
+import {
+  AddAugmentationTab,
+  ActiveAugmentationsPage,
+  EditAugmentationPage,
+} from 'modules/augmentations/';
 import {
   ActionBar,
   SidebarTabContainer,
@@ -19,7 +24,6 @@ import {
 import {
   flipSidebar,
   extractUrlProperties,
-  getFirstValidTabIndex,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
@@ -28,6 +32,7 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
+  OPEN_BUILDER_PAGE,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -50,13 +55,10 @@ const ShrinkOutlined = React.lazy(
   async () => await import('@ant-design/icons/ShrinkOutlined').then((mod) => mod),
 );
 
-export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
+export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
-  const [activeKey, setActiveKey] = useState<string>(getFirstValidTabIndex(tabs));
-  const [showPage, setShowPage] = useState<'builder' | 'gutter'>('builder');
-  const [gutterPageData, setGutterPageData] = useState<
-    Record<string, string & AugmentationObject[]>
-  >();
+  const [showPage, setShowPage] = useState<OPEN_BUILDER_PAGE>(OPEN_BUILDER_PAGE.ACTIVE);
+  const [pageData, setPageData] = useState<Record<string, any>>();
 
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
@@ -98,7 +100,7 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       <AddAugmentationTab
         tabs={tabs}
         numInstalledAugmentations={tabs.length}
-        active={(forceTab ?? activeKey) === '0'}
+        active={activeKey === '0'}
         setActiveKey={setActiveKey}
       />
     ),
@@ -150,8 +152,11 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
           flipSidebar(document, 'show', tabs?.length, true);
           setActiveKey('0');
-          if (msg.page === 'gutter' && msg.augmentations) {
-            setGutterPageData({ augmentations: msg.augmentations, domain: msg.domain });
+          if (msg.page === OPEN_BUILDER_PAGE.GUTTER && msg.augmentations) {
+            setPageData({ augmentations: msg.augmentations, domain: msg.domain });
+          }
+          if (msg.page === OPEN_BUILDER_PAGE.BUILDER && msg.augmentation) {
+            setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
           }
           msg.page && setShowPage(msg.page);
           break;
@@ -185,25 +190,34 @@ export const SidebarTabs: SidebarTabs = ({ forceTab, tabs }) => {
       <Tabs
         className="insight-tab-container"
         renderTabBar={TabBar}
-        activeKey={forceTab ?? activeKey}
+        activeKey={activeKey}
         tabBarExtraContent={extraContent}
       >
         <TabPane key="0" tab={null} forceRender>
-          {(() => {
-            switch (showPage) {
-              case 'builder':
-                return <ActiveAugmentationsPage setActiveKey={setActiveKey} />;
-              case 'gutter':
-                return (
-                  <InlineGutterOptionsPage
-                    hidingAugmentations={gutterPageData.augmentations}
-                    domain={gutterPageData.domain}
-                  />
-                );
-              default:
-                return null;
-            }
-          })()}
+          <Router>
+            {(() => {
+              switch (showPage) {
+                case OPEN_BUILDER_PAGE.ACTIVE:
+                  return <ActiveAugmentationsPage />;
+                case OPEN_BUILDER_PAGE.BUILDER:
+                  return (
+                    <EditAugmentationPage
+                      augmentation={pageData.augmentation}
+                      isAdding={pageData.isAdding}
+                    />
+                  );
+                case OPEN_BUILDER_PAGE.GUTTER:
+                  return (
+                    <InlineGutterOptionsPage
+                      hidingAugmentations={pageData.augmentations}
+                      domain={pageData.domain}
+                    />
+                  );
+                default:
+                  return null;
+              }
+            })()}
+          </Router>
         </TabPane>
         {tabs?.map((tab, i) => {
           return (
