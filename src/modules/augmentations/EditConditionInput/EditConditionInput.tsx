@@ -71,8 +71,8 @@ export const EditConditionInput: EditConditionInput = ({
     deleteCondition(condition);
   };
 
-  const handleFilter = (inputValue: string, { label }: OptionProps) => {
-    return label.toLowerCase().search(inputValue.toLowerCase()) > -1;
+  const handleFilter = (inputValue: string, { key }: OptionProps) => {
+    return String(key).toLowerCase().search(inputValue.toLowerCase()) > -1;
   };
 
   const handleSelect = (e) => {
