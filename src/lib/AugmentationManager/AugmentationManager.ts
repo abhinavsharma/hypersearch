@@ -344,6 +344,12 @@ class AugmentationManager {
       return Object.create(null);
     }
 
+    const hasAnyPageCondition = augmentation.conditions.condition_list.filter(
+      ({ key }) =>
+        (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
+        key === ANY_URL_CONDITION_MOBILE,
+    );
+
     const domainsToLookCondition =
       augmentation.conditions.condition_list.reduce(
         (conditions, { key, value }) =>
@@ -391,7 +397,8 @@ class AugmentationManager {
           (domain) =>
             !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
-        .filter((isMatch) => !!isMatch).length < NUM_DOMAINS_TO_EXCLUDE;
+        .filter((isMatch) => !!isMatch).length <
+        (!!hasAnyPageCondition ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
 
     let hasPreventAutoexpand = false;
 
