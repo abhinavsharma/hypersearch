@@ -33,6 +33,11 @@ import {
   EXTENSION_BLOCKLIST_REMOVE_DOMAIN,
   EXTENSION_AUGMENTATION_SAVE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
+  URL_EQUALS_CONDITION,
+  URL_MATCHES_CONDITION,
+  DOMAIN_MATCHES_CONDITION,
+  extractUrlProperties,
+  DOMAIN_EQUALS_CONDTION,
 } from 'utils';
 
 class AugmentationManager {
@@ -321,7 +326,8 @@ class AugmentationManager {
   /**
    * Takes an augmentation as parameter and returns its corresponding relevancy data. The relevancy
    * is depending on the augmentation's matching condition and actions. We assume an augmentation is
-   * relevant when either has a matching query, domain or intent condition.
+   * relevant when it has at least one matching condition and does not overlap the SERP results more
+   * times than its allowed. This number is determined by NUM_DOMAINS_TO_EXCLUDE.
    *
    * @param augmentation - The augmentation object
    * @returns The augmentation's relevancy object
@@ -344,10 +350,13 @@ class AugmentationManager {
       return Object.create(null);
     }
 
+    // ! SEARCH DOMAINS
     const hasAnyPageCondition = augmentation.conditions.condition_list.filter(
-      ({ key }) =>
+      ({ key, unique_key }) =>
         (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
-        key === ANY_URL_CONDITION_MOBILE,
+        (unique_key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
+        key === ANY_URL_CONDITION_MOBILE ||
+        unique_key === ANY_URL_CONDITION_MOBILE,
     );
 
     const domainsToLookCondition =
@@ -384,15 +393,6 @@ class AugmentationManager {
         domainsToLookAction?.find((i) => value?.search(new RegExp(`^${i}`, 'gi')) > -1),
       ) ?? [];
 
-    const checkForQuery =
-      augmentation.conditions?.condition_list.find(
-        ({ key, unique_key }) =>
-          // search query contains
-          unique_key === SEARCH_QUERY_CONTAINS_CONDITION || key === SEARCH_QUERY_CONTAINS_CONDITION,
-      )?.value[0] ?? null;
-
-    const matchingQuery = checkForQuery && SidebarLoader.query?.search(checkForQuery) > -1;
-
     const matchingDomains =
       // must have at least one matching domain
       matchingDomainsCondition
@@ -410,11 +410,20 @@ class AugmentationManager {
         .filter((isMatch) => !!isMatch).length <
         (!!hasAnyPageCondition ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
 
-    let hasPreventAutoexpand = false;
+    // ! SEARCH QUERY
+    const checkForQuery =
+      augmentation.conditions?.condition_list.find(
+        ({ key, unique_key }) =>
+          unique_key === SEARCH_QUERY_CONTAINS_CONDITION || key === SEARCH_QUERY_CONTAINS_CONDITION,
+      )?.value[0] ?? null;
 
+    const matchingQuery = checkForQuery && SidebarLoader.query?.search(checkForQuery) > -1;
+
+    // ! SEARCH INTENT
+    let hasPreventAutoexpand = false;
     const matchingIntent = augmentation.conditions.condition_list
-      .reduce((intents, { key, value }) => {
-        if (key === SEARCH_INTENT_IS_CONDITION) {
+      .reduce((intents, { key, unique_key, value }) => {
+        if (key === SEARCH_INTENT_IS_CONDITION || unique_key === SEARCH_INTENT_IS_CONDITION) {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
           );
@@ -442,23 +451,55 @@ class AugmentationManager {
       }, [])
       .filter((isMatch) => !!isMatch);
 
-    const matchingEngine = !!augmentation.conditions.condition_list.find(({ key, value }) => {
-      if (key === SEARCH_ENGINE_IS_CONDITION) {
-        return (
-          Object.entries(SidebarLoader.customSearchEngine.search_engine_json ?? Object.create(null))
-            .map(([entryKey, entryValue]) => {
-              return !!Array.isArray(entryValue)
-                ? !!entryValue.find((subValue) => {
-                    return (
-                      Array.isArray(value[0][entryKey]) && value[0][entryKey].includes(subValue)
-                    );
-                  })
-                : entryValue === value[0][entryKey];
-            })
-            .indexOf(false) === -1
-        );
-      }
-    });
+    // ! SEARCH ENGINE
+    const matchingEngine = !!augmentation.conditions.condition_list.find(
+      ({ key, unique_key, value }) => {
+        if (key === SEARCH_ENGINE_IS_CONDITION || unique_key === SEARCH_ENGINE_IS_CONDITION) {
+          return (
+            Object.entries(
+              SidebarLoader.customSearchEngine.search_engine_json ?? Object.create(null),
+            )
+              .map(([entryKey, entryValue]) => {
+                return !!Array.isArray(entryValue)
+                  ? !!entryValue.find((subValue) => {
+                      return (
+                        Array.isArray(value[0][entryKey]) && value[0][entryKey].includes(subValue)
+                      );
+                    })
+                  : entryValue === value[0][entryKey];
+              })
+              .indexOf(false) === -1
+          );
+        }
+      },
+    );
+
+    // ! URL/DOMAIN MATCH
+    const matchingUrl =
+      augmentation.conditions.condition_list
+        .reduce((matches, condition) => {
+          const { unique_key: key, value } = condition;
+          if (key === URL_EQUALS_CONDITION && SidebarLoader.url.href === value[0]) {
+            matches.push(true);
+          }
+          if (key === URL_MATCHES_CONDITION && SidebarLoader.url.href.match(value[0])?.length) {
+            matches.push(true);
+          }
+          if (
+            key === DOMAIN_EQUALS_CONDTION &&
+            extractUrlProperties(SidebarLoader.url.href).hostname === value[0]
+          ) {
+            matches.push(true);
+          }
+          if (
+            key === DOMAIN_MATCHES_CONDITION &&
+            extractUrlProperties(SidebarLoader.url.href).hostname.match(value[0])?.length
+          ) {
+            matches.push(true);
+          }
+          return matches;
+        }, [])
+        .indexOf(true) > -1;
 
     return {
       isRelevant:
@@ -467,6 +508,7 @@ class AugmentationManager {
           matchingDomains ||
           !!matchingIntent.length ||
           matchingEngine ||
+          matchingUrl ||
           augmentation.pinned),
       matchingIntent,
       hasPreventAutoexpand,

@@ -4,7 +4,7 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import { EditConditionInput } from 'modules/augmentations';
-import { ANY_WEB_SEARCH_CONDITION } from 'utils';
+import { ANY_URL_CONDITION_MOBILE, ANY_WEB_SEARCH_CONDITION } from 'utils';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
 
@@ -27,6 +27,18 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
   };
 
   const handleMatchAnyPage = () =>
+    setConditions([
+      {
+        id: '0',
+        key: ANY_URL_CONDITION_MOBILE,
+        unique_key: ANY_URL_CONDITION_MOBILE,
+        label: 'Match any page',
+        type: 'list',
+        value: ['.*'],
+      },
+    ]);
+
+  const handleMatchAnySearchEngine = () =>
     setConditions([
       {
         id: '0',
@@ -57,6 +69,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       {conditions.map((condition) => (
         <EditConditionInput
           key={condition.id}
+          handleAnySearchEngine={handleMatchAnySearchEngine}
           handleAnyUrl={handleMatchAnyPage}
           condition={condition}
           saveCondition={onSave}
@@ -65,6 +78,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       ))}
       <EditConditionInput
         key={newCondition.id}
+        handleAnySearchEngine={handleMatchAnySearchEngine}
         handleAnyUrl={handleMatchAnyPage}
         condition={newCondition}
         saveCondition={onAdd}
