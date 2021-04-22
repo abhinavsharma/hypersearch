@@ -352,9 +352,15 @@ class AugmentationManager {
 
     const domainsToLookCondition =
       augmentation.conditions.condition_list.reduce(
-        (conditions, { key, value }) =>
+        (conditions, { key, unique_key, value }) =>
+          // search contains domain
+          unique_key === SEARCH_CONTAINS_CONDITION ||
           key === SEARCH_CONTAINS_CONDITION ||
+          // any search engine
+          (unique_key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
           (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
+          // any url
+          unique_key === ANY_URL_CONDITION_MOBILE ||
           key === ANY_URL_CONDITION_MOBILE
             ? conditions.concat(value)
             : conditions,
@@ -380,18 +386,22 @@ class AugmentationManager {
 
     const checkForQuery =
       augmentation.conditions?.condition_list.find(
-        ({ key }) => key === SEARCH_QUERY_CONTAINS_CONDITION,
+        ({ key, unique_key }) =>
+          // search query contains
+          unique_key === SEARCH_QUERY_CONTAINS_CONDITION || key === SEARCH_QUERY_CONTAINS_CONDITION,
       )?.value[0] ?? null;
 
     const matchingQuery = checkForQuery && SidebarLoader.query?.search(checkForQuery) > -1;
 
     const matchingDomains =
+      // must have at least one matching domain
       matchingDomainsCondition
         .map(
           (domain) =>
             !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length > 0 &&
+      // exclude if too much overlap
       matchingDomainsAction
         .map(
           (domain) =>
@@ -412,6 +422,7 @@ class AugmentationManager {
             hasPreventAutoexpand = true;
           }
           if (matchingIntent) {
+            // matching intent domains
             const intentDomains = matchingIntent.sites.split(',') ?? [];
             intentDomains.forEach(
               (domain) =>
@@ -419,6 +430,7 @@ class AugmentationManager {
                   (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
                 ) && intents.push(domain),
             );
+            // matching intent elements on document
             if (matchingIntent.google_css) {
               return intents.concat(
                 Array.from(document.querySelectorAll(matchingIntent.google_css)),

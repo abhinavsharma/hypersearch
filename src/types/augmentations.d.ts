@@ -18,6 +18,7 @@ declare type ActionObject = {
 declare type ConditionObject = {
   label: string;
   key: string;
+  unique_key?: string;
   type: string;
   value: string[];
   evaluation?: string;

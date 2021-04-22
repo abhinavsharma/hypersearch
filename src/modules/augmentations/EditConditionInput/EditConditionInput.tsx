@@ -16,6 +16,10 @@ import {
   SEARCH_INTENT_IS_CONDITION,
   SIDEBAR_Z_INDEX,
   SEARCH_ENGINE_IS_CONDITION,
+  URL_EQUALS_CONDITION,
+  URL_MATCHES_CONDITION,
+  DOMAIN_MATCHES_CONDITION,
+  DOMAIN_EQUALS_CONDTION,
 } from 'utils';
 
 const { OptGroup, Option } = Select;
@@ -31,6 +35,16 @@ const SEARCH_CONDITION_LABELS = {
   'Search engine is': SEARCH_ENGINE_IS_CONDITION,
 };
 
+const DOMAIN_CONDITION_LABELS = {
+  'Domain matches regex': DOMAIN_MATCHES_CONDITION,
+  'Domain equals': DOMAIN_EQUALS_CONDTION,
+};
+
+const URL_CONDITION_LABELS = {
+  'URL equals': URL_EQUALS_CONDITION,
+  'URL matches regex': URL_MATCHES_CONDITION,
+};
+
 const OTHER_CONDITION_LABELS = {
   'Match any search engine (removes other conditions)': ANY_WEB_SEARCH_CONDITION,
 };
@@ -41,7 +55,7 @@ export const EditConditionInput: EditConditionInput = ({
   deleteCondition,
   handleAnyUrl,
 }) => {
-  const [newKey, setNewKey] = useState<string>(condition?.key);
+  const [newKey, setNewKey] = useState<string>(condition?.unique_key ?? condition?.key);
   const [newLabel, setNewLabel] = useState<string>(condition?.label);
   const [newValue, setNewValue] = useState<any>(condition?.value[0]);
   const [intents, setIntents] = useState<any[]>();
@@ -57,13 +71,30 @@ export const EditConditionInput: EditConditionInput = ({
   }, [SearchEngineManager.engines]);
 
   const handleSave = (value?: string) => {
-    const newCondition = { ...condition, key: newKey, label: newLabel, value: [value ?? newValue] };
+    const key =
+      ((newKey === URL_EQUALS_CONDITION || newKey === URL_MATCHES_CONDITION) && 'url') ||
+      ((newKey === DOMAIN_EQUALS_CONDTION || newKey === DOMAIN_MATCHES_CONDITION) && 'domain') ||
+      newKey;
+
+    const evaluation =
+      ((newKey === URL_EQUALS_CONDITION || newKey === DOMAIN_EQUALS_CONDTION) && 'equals') ||
+      ((newKey === URL_MATCHES_CONDITION || newKey === DOMAIN_MATCHES_CONDITION) && 'matches') ||
+      undefined;
+
+    const newCondition = {
+      ...condition,
+      key,
+      evaluation,
+      unique_key: newKey,
+      label: newLabel,
+      value: [value ?? newValue],
+    };
     saveCondition(newCondition);
   };
 
   const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setNewValue(value);
-    const newCondition = { ...condition, key: newKey, label: newLabel, value: [value] };
+    const newCondition = { ...condition, unique_key: newKey, label: newLabel, value: [value] };
     saveCondition(newCondition);
   };
 
@@ -86,13 +117,42 @@ export const EditConditionInput: EditConditionInput = ({
   };
 
   const handleLabelChange = (label: string) => {
-    if (SEARCH_CONDITION_LABELS[label]) {
+    if (
+      SEARCH_CONDITION_LABELS[label] ||
+      URL_CONDITION_LABELS[label] ||
+      DOMAIN_CONDITION_LABELS[label]
+    ) {
+      const key =
+        ((URL_CONDITION_LABELS[label] === URL_EQUALS_CONDITION ||
+          URL_CONDITION_LABELS[label] === URL_MATCHES_CONDITION) &&
+          'url') ||
+        ((DOMAIN_CONDITION_LABELS[label] === DOMAIN_EQUALS_CONDTION ||
+          DOMAIN_CONDITION_LABELS[label] === DOMAIN_MATCHES_CONDITION) &&
+          'domain') ||
+        newKey;
+
+      const evaluation =
+        ((URL_CONDITION_LABELS[label] === URL_EQUALS_CONDITION ||
+          DOMAIN_CONDITION_LABELS[label] === DOMAIN_EQUALS_CONDTION) &&
+          'equals') ||
+        ((URL_CONDITION_LABELS[label] === URL_MATCHES_CONDITION ||
+          DOMAIN_CONDITION_LABELS[label] === DOMAIN_MATCHES_CONDITION) &&
+          'matches') ||
+        undefined;
+
+      const unique_key =
+        SEARCH_CONDITION_LABELS[label] ??
+        URL_CONDITION_LABELS[label] ??
+        DOMAIN_CONDITION_LABELS[label];
+
       setNewLabel(label);
-      setNewKey(SEARCH_CONDITION_LABELS[label]);
+      setNewKey(unique_key);
       saveCondition({
         ...condition,
+        key,
+        evaluation,
         label,
-        key: SEARCH_CONDITION_LABELS[label],
+        unique_key,
         value: [],
       });
     }
@@ -113,6 +173,20 @@ export const EditConditionInput: EditConditionInput = ({
             >
               <OptGroup label="Search">
                 {Object.keys(SEARCH_CONDITION_LABELS).map((key) => (
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
+                ))}
+              </OptGroup>
+              <OptGroup label="URL">
+                {Object.keys(URL_CONDITION_LABELS).map((key) => (
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
+                ))}
+              </OptGroup>
+              <OptGroup label="Domain">
+                {Object.keys(DOMAIN_CONDITION_LABELS).map((key) => (
                   <Option key={key} value={key}>
                     {key}
                   </Option>
@@ -222,6 +296,10 @@ export const EditConditionInput: EditConditionInput = ({
                 );
               case SEARCH_CONTAINS_CONDITION:
               case SEARCH_QUERY_CONTAINS_CONDITION:
+              case URL_EQUALS_CONDITION:
+              case URL_MATCHES_CONDITION:
+              case DOMAIN_EQUALS_CONDTION:
+              case DOMAIN_MATCHES_CONDITION:
                 return (
                   <Input
                     key={condition.id}

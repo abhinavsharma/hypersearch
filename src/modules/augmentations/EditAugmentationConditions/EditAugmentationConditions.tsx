@@ -20,6 +20,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
   const newCondition = {
     id: uuid(),
     key: null,
+    unique_key: null,
     type: 'list',
     label: null,
     value: [],
@@ -30,6 +31,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
       {
         id: '0',
         key: ANY_WEB_SEARCH_CONDITION,
+        unique_key: ANY_WEB_SEARCH_CONDITION,
         label: 'Match any search engine',
         type: 'list',
         value: ['.*'],

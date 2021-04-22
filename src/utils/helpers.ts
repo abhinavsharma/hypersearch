@@ -252,7 +252,11 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
 
 export const isAugmentationEnabled = (augmentation: AugmentationObject) =>
   augmentation.conditions.condition_list
-    .map((condition) => ENABLED_AUGMENTATION_TYPES.includes(condition.key))
+    .map(
+      (condition) =>
+        ENABLED_AUGMENTATION_TYPES.includes(condition.unique_key) ||
+        ENABLED_AUGMENTATION_TYPES.includes(condition.key),
+    )
     .indexOf(false) === -1 &&
   augmentation.actions.action_list
     .map((action) => ENABLED_AUGMENTATION_TYPES.includes(action.key))
