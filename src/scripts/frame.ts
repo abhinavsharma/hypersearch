@@ -15,6 +15,7 @@ const REMOVE_ADS = {
 const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': [
     '#appbar.appbar',
+    '.I7zR5',
     'header.Fh5muf',
     '.mnr-c.cUnQKe',
     '.mnr-c.AuVD',
