@@ -286,15 +286,17 @@ export const EditConditionInput: EditConditionInput = ({
                           );
                         case SEARCH_ENGINE_IS_CONDITION:
                           return (
-                            Object.entries(engines).map(([key, cse]) => (
-                              <Option
-                                key={key}
-                                value={JSON.stringify(cse.search_engine_json)}
-                                style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-                              >
-                                {key}
-                              </Option>
-                            )) ?? null
+                            Object.entries(engines).map(([key, cse]) =>
+                              !key.match(/amazon/gi) ? (
+                                <Option
+                                  key={key}
+                                  value={JSON.stringify(cse.search_engine_json)}
+                                  style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+                                >
+                                  {key}
+                                </Option>
+                              ) : null,
+                            ) ?? null
                           );
                       }
                     })()}

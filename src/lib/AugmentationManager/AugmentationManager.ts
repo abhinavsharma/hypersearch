@@ -353,8 +353,12 @@ class AugmentationManager {
     // ! SEARCH DOMAINS
     const hasAnyPageCondition = !!augmentation.conditions.condition_list.filter(
       ({ key, unique_key }) =>
-        (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
-        (unique_key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
+        (key === ANY_WEB_SEARCH_CONDITION &&
+          SidebarLoader.isSerp &&
+          !SidebarLoader.url.href.match(/amazon\.com/gi)) ||
+        (unique_key === ANY_WEB_SEARCH_CONDITION &&
+          SidebarLoader.isSerp &&
+          !SidebarLoader.url.href.match(/amazon\.com/gi)) ||
         key === ANY_URL_CONDITION_MOBILE ||
         unique_key === ANY_URL_CONDITION_MOBILE,
     ).length;
