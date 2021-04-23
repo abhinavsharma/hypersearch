@@ -5,6 +5,7 @@ declare module './EditConditionInput' {
   type EditConditionInputProps = {
     condition: CustomCondition;
     handleAnyUrl: () => void;
+    handleAnySearchEngine: () => void;
     saveCondition: (e: CustomCondition) => void;
     deleteCondition: (e: CustomCondition) => void;
   };
