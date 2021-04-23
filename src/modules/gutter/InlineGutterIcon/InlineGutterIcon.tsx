@@ -1,12 +1,10 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Button from 'antd/lib/button';
+import Image from 'antd/lib/image';
 import { OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'utils/constants';
+import 'antd/lib/image/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './InlineGutterIcon.scss';
-
-const MenuOutlined = React.lazy(
-  async () => await import('@ant-design/icons/MenuOutlined').then((mod) => mod),
-);
 
 export const InlineGutterIcon: InlineGutterIcon = ({ augmentations, domain, isSearched }) => {
   const [isHidden, setIsHidden] = useState<boolean>();
@@ -33,16 +31,21 @@ export const InlineGutterIcon: InlineGutterIcon = ({ augmentations, domain, isSe
   }, []);
 
   const icon = (
-    <Suspense fallback={null}>
-      <MenuOutlined />
-    </Suspense>
+    <Image
+      preview={false}
+      width={30}
+      height={30}
+      src={chrome.runtime.getURL(
+        (isSearched && 'insight-inlens.svg') ||
+          (isHidden && 'insight-hidden.svg') ||
+          'insight-logo.svg',
+      )}
+    />
   );
 
   return (
     <div className="inline-gutter-icon" ref={iconRef}>
       <Button className="gutter-icon" icon={icon} size="large" onClick={handleOpenBuilder} />
-      {isHidden && <span className="gutter-icon-hidden">🙈</span>}
-      {isSearched && <span className="gutter-icon-hidden">⭐️</span>}
     </div>
   );
 };

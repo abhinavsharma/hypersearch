@@ -108,7 +108,7 @@ module.exports = (env) => {
             context: 'public',
           },
           {
-            from: `./*.(css|html)`,
+            from: `./*.(css|html|svg)`,
             to: '../',
             context: 'public',
           },
