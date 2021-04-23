@@ -575,10 +575,12 @@ class AugmentationManager {
       actions: {
         ...augmentation.actions,
         action_list: actions
-          ? actions.map((action) => ({
-              ...action,
-              value: action.value.filter((i) => i !== ''),
-            }))
+          ? actions
+              .map((action) => ({
+                ...action,
+                value: action.value.filter((i) => i !== ''),
+              }))
+              .filter(({ value }) => !!value.length)
           : augmentation.actions.action_list,
       },
       enabled: isActive ?? augmentation.enabled,
