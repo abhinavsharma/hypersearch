@@ -10,6 +10,7 @@ import {
   getFirstValidTabIndex,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
+  PROTECTED_AUGMENTATIONS,
   SIDEBAR_Z_INDEX,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
@@ -80,24 +81,26 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
-        <Tooltip
-          title={tab.augmentation?.installed ? 'Disable local lens' : 'Hide lens'}
-          destroyTooltipOnHide={{ keepParent: false }}
-          getPopupContainer={() => tooltipContainer.current}
-          placement="bottom"
-        >
-          <Button
-            type="link"
-            onClick={() =>
-              tab.augmentation?.installed ? handleDisableInstalled() : handleHideSuggested(tab)
-            }
-            icon={
-              <Suspense fallback={null}>
-                <CloseCircleOutlined />
-              </Suspense>
-            }
-          />
-        </Tooltip>
+        {!PROTECTED_AUGMENTATIONS.includes(tab.augmentation?.id) && (
+          <Tooltip
+            title={tab.augmentation?.installed ? 'Disable local lens' : 'Hide lens'}
+            destroyTooltipOnHide={{ keepParent: false }}
+            getPopupContainer={() => tooltipContainer.current}
+            placement="bottom"
+          >
+            <Button
+              type="link"
+              onClick={() =>
+                tab.augmentation?.installed ? handleDisableInstalled() : handleHideSuggested(tab)
+              }
+              icon={
+                <Suspense fallback={null}>
+                  <CloseCircleOutlined />
+                </Suspense>
+              }
+            />
+          </Tooltip>
+        )}
 
         {tab.augmentation?.pinned ? (
           <Tooltip

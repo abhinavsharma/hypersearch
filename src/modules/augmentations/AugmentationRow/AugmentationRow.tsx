@@ -2,7 +2,11 @@ import React from 'react';
 import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import Tooltip from 'antd/lib/tooltip';
-import { MY_BLOCKLIST_ID, OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'utils';
+import {
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
+  PROTECTED_AUGMENTATIONS,
+} from 'utils';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
@@ -53,7 +57,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
           {augmentation.installed ? 'Edit' : 'Fork'}
         </Tag>
       </Tooltip>
-      {augmentation.id !== MY_BLOCKLIST_ID && (
+      {!PROTECTED_AUGMENTATIONS.includes(augmentation.id) && (
         <>
           {ignored ? (
             <Tag className="augmentation-row-button" color="geekblue" onClick={handleEnable}>

@@ -49,6 +49,8 @@ import {
   EXTENSION_AUTO_EXPAND,
   PROCESS_SERP_OVERLAY_MESSAGE,
   DUMMY_AMAZON_SUBTABS_URL,
+  MY_TRUSTLIST_ID,
+  MY_TRUSTLIST_TEMPLATE,
 } from 'utils';
 
 /**
@@ -754,6 +756,12 @@ class SidebarLoader {
           break;
       }
     });
+    if (
+      !this.installedAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID) &&
+      !this.otherAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID)
+    ) {
+      AugmentationManager.addOrEditAugmentation(MY_TRUSTLIST_TEMPLATE, {});
+    }
     debug(
       'getLocalAugmentations - call\n---\n\tInstalled Augmentations',
       this.installedAugmentations,

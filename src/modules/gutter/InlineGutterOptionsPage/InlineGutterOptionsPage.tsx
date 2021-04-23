@@ -7,9 +7,10 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   EMPTY_AUGMENTATION,
-  MY_BLOCKLIST_ID,
+  MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
+  PROTECTED_AUGMENTATIONS,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
   SEARCH_DOMAINS_ACTION,
@@ -37,9 +38,9 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   );
 
   const searchingAugmentations = [
-    ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
     ...SidebarLoader.installedAugmentations,
     ...SidebarLoader.suggestedAugmentations,
+    ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
   ].filter(
     (augmentation) =>
       !!augmentation.actions.action_list.filter(({ key, value }) => {
@@ -54,8 +55,8 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     string,
     Array<AugmentationObject & { actionIndex: number }>
   > = [
-    ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
     ...SidebarLoader.installedAugmentations,
+    ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
   ].reduce((a, augmentation) => {
     const searchDomainActions = augmentation.actions.action_list.reduce(
       (actions, action, index) => {
@@ -68,11 +69,18 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       [],
     );
     if (!Array.isArray(a[domain])) a[domain] = [];
-    searchDomainActions.forEach((action) => {
-      a[domain].push({ ...augmentation, actionIndex: action.index });
-    });
-    augmentation.id !== MY_BLOCKLIST_ID &&
+    if (!PROTECTED_AUGMENTATIONS.includes(augmentation.id)) {
+      searchDomainActions.forEach((action) => {
+        a[domain].push({ ...augmentation, actionIndex: action.index });
+      });
       a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
+    }
+    if (
+      augmentation.id === MY_TRUSTLIST_ID &&
+      !searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID)
+    ) {
+      a[domain].unshift({ ...augmentation, actionIndex: 0 });
+    }
     return a;
   }, Object.create(null));
 
@@ -350,7 +358,9 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                               const action =
                                 augmentation.actions.action_list[augmentation.actionIndex];
                               return action?.key === SEARCH_DOMAINS_ACTION
-                                ? `Currently searches\u00a0${action.value.join(', ')}`
+                                ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
+                                  ? 'Mark domains as trusted sources'
+                                  : `Currently searches\u00a0${action.value.join(', ')}`
                                 : 'Add as new action';
                             })()}
                           </span>

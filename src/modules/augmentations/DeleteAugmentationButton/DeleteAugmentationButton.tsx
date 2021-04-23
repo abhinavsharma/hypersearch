@@ -5,6 +5,7 @@ import {
   MY_BLOCKLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
+  PROTECTED_AUGMENTATIONS,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 
@@ -33,7 +34,7 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
       >
         <div
           className={`insight-augmentation-delete-button-content ${
-            disabled || augmentation.id === MY_BLOCKLIST_ID ? 'disabled' : ''
+            disabled || PROTECTED_AUGMENTATIONS.includes(augmentation.id) ? 'disabled' : ''
           }`}
         >
           <Suspense fallback={null}>

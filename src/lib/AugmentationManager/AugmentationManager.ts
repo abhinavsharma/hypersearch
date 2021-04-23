@@ -38,6 +38,7 @@ import {
   DOMAIN_MATCHES_CONDITION,
   extractUrlProperties,
   DOMAIN_EQUALS_CONDTION,
+  PROTECTED_AUGMENTATIONS,
 } from 'utils';
 
 class AugmentationManager {
@@ -575,12 +576,10 @@ class AugmentationManager {
       actions: {
         ...augmentation.actions,
         action_list: actions
-          ? actions
-              .map((action) => ({
-                ...action,
-                value: action.value.filter((i) => i !== ''),
-              }))
-              .filter(({ value }) => !!value.length)
+          ? actions.map((action) => ({
+              ...action,
+              value: action.value.filter((i) => i !== ''),
+            }))
           : augmentation.actions.action_list,
       },
       enabled: isActive ?? augmentation.enabled,

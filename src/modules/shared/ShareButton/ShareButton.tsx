@@ -48,7 +48,6 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
   const tooltipContainer = useRef(null);
 
   const handleShare = async () => {
-    console.log('SHARED');
     setVisible(undefined);
     if (shared) return;
     await AugmentationManager.shareAugmentation(encoded);
