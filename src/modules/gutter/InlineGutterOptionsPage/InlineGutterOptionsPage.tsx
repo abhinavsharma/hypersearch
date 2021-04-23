@@ -7,6 +7,7 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   EMPTY_AUGMENTATION,
+  MY_BLOCKLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
@@ -35,22 +36,27 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     ).length,
   );
 
-  const searchingAugmentations = SidebarLoader.installedAugmentations
-    .concat(SidebarLoader.suggestedAugmentations)
-    .filter(
-      (augmentation) =>
-        !!augmentation.actions.action_list.filter(({ key, value }) => {
-          if (key === SEARCH_DOMAINS_ACTION) {
-            return !!value.find((searchedDomain) => searchedDomain === domain);
-          }
-          return false;
-        }).length,
-    );
+  const searchingAugmentations = [
+    ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
+    ...SidebarLoader.installedAugmentations,
+    ...SidebarLoader.suggestedAugmentations,
+  ].filter(
+    (augmentation) =>
+      !!augmentation.actions.action_list.filter(({ key, value }) => {
+        if (key === SEARCH_DOMAINS_ACTION) {
+          return !!value.find((searchedDomain) => searchedDomain === domain);
+        }
+        return false;
+      }).length,
+  );
 
   const availableLocalAugmentations: Record<
     string,
     Array<AugmentationObject & { actionIndex: number }>
-  > = SidebarLoader.installedAugmentations.reduce((a, augmentation) => {
+  > = [
+    ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
+    ...SidebarLoader.installedAugmentations,
+  ].reduce((a, augmentation) => {
     const searchDomainActions = augmentation.actions.action_list.reduce(
       (actions, action, index) => {
         const { key, value } = action;
@@ -61,10 +67,12 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       },
       [],
     );
+    if (!Array.isArray(a[domain])) a[domain] = [];
     searchDomainActions.forEach((action) => {
-      if (!Array.isArray(a[domain])) a[domain] = [];
       a[domain].push({ ...augmentation, actionIndex: action.index });
     });
+    augmentation.id !== MY_BLOCKLIST_ID &&
+      a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
     return a;
   }, Object.create(null));
 
@@ -120,10 +128,19 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   }, []);
 
   const handleAddSearchDomainToLocal = (augmentation: AugmentationObject, index: number) => {
+    const newActions = augmentation.actions.action_list.map((action, actionIndex) =>
+      actionIndex === index ? { ...action, value: [...action.value, domain] } : action,
+    );
+    if (index === augmentation.actions.action_list.length) {
+      newActions.push({
+        key: SEARCH_DOMAINS_ACTION,
+        label: 'Search only these domains',
+        value: [domain],
+        type: 'list',
+      });
+    }
     AugmentationManager.addOrEditAugmentation(augmentation, {
-      actions: augmentation.actions.action_list.map((action, actionIndex) =>
-        actionIndex === index ? { ...action, value: [...action.value, domain] } : action,
-      ),
+      actions: newActions,
     });
   };
 
@@ -329,10 +346,13 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                         <div className="augmentation-name-box">
                           {augmentation.name}
                           <span className="augmentation-name-bo-domain-list">
-                            Currently searches&nbsp;
-                            {augmentation.actions.action_list[augmentation.actionIndex].value.join(
-                              ', ',
-                            )}
+                            {(() => {
+                              const action =
+                                augmentation.actions.action_list[augmentation.actionIndex];
+                              return action?.key === SEARCH_DOMAINS_ACTION
+                                ? `Currently searches\u00a0${action.value.join(', ')}`
+                                : 'Add as new action';
+                            })()}
                           </span>
                         </div>
                         <Tag
