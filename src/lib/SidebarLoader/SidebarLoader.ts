@@ -329,7 +329,7 @@ class SidebarLoader {
       /amazon\.com/gi,
     )
       ? this.customSearchEngine.search_engine_json.required_prefix
-      : 'google.com/search?q=';
+      : 'google.com/search';
 
     const emptyUrl = () =>
       new URL(isSafari() ? 'https://www.ecosia.org/search' : `https://${defaultUrl}`);
