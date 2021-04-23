@@ -48,6 +48,7 @@ import {
   EXTENSION_HOST,
   EXTENSION_AUTO_EXPAND,
   PROCESS_SERP_OVERLAY_MESSAGE,
+  DUMMY_AMAZON_SUBTABS_URL,
 } from 'utils';
 
 /**
@@ -715,26 +716,34 @@ class SidebarLoader {
       const flag = key.split('-')[0];
       switch (flag) {
         case IGNORED_PREFIX:
-          this.ignoredAugmentations.push(value);
+          !this.ignoredAugmentations.find(({ id }) => id === value.id) &&
+            this.ignoredAugmentations.push(value);
           break;
         case PINNED_PREFIX:
-          this.pinnedAugmentations.push(value);
+          !this.pinnedAugmentations.find(({ id }) => id === value.id) &&
+            this.pinnedAugmentations.push(value);
           this.installedAugmentations = this.installedAugmentations.filter(
             ({ id }) => id !== value.id,
           );
           if (
             !this.installedAugmentations.find(({ id }) => id === value.id) &&
-            !this.suggestedAugmentations.find(({ id }) => id === value.id)
+            !this.suggestedAugmentations.find(({ id }) => id === value.id) &&
+            !this.enabledOtherAugmentations.find(({ id }) => id === value.id)
           ) {
             this.enabledOtherAugmentations.push(value);
           }
           break;
         case CSE_PREFIX:
           if (!this.pinnedAugmentations.find(({ id }) => id === value.id)) {
-            if (isRelevant && isAugmentationEnabled(value)) {
+            if (
+              isRelevant &&
+              isAugmentationEnabled(value) &&
+              !this.installedAugmentations.find(({ id }) => id === value.id)
+            ) {
               this.installedAugmentations.push(value);
             } else {
-              this.otherAugmentations.push(value);
+              !this.otherAugmentations.find(({ id }) => id === value.id) &&
+                this.otherAugmentations.push(value);
             }
           }
           break;
@@ -842,7 +851,25 @@ class SidebarLoader {
         response = cache.data;
       } else {
         debug('\n---\n\tCache not found or expired...\n---');
-        response = await getSubtabs(DUMMY_SUBTABS_URL);
+        const { suggested_augmentations: defaultResponse } = await getSubtabs(DUMMY_SUBTABS_URL);
+        const { suggested_augmentations: amazonResponse } = await getSubtabs(
+          DUMMY_AMAZON_SUBTABS_URL,
+        );
+
+        const suggested_augmentations = defaultResponse
+          .concat(amazonResponse)
+          .reduce((result, suggestion) => {
+            if (!result.find(({ id }) => id === suggestion.id)) {
+              result.push(suggestion);
+            }
+            return result;
+          }, []);
+
+        response = {
+          subtabs: [],
+          suggested_augmentations,
+        };
+
         await new Promise((resolve) =>
           chrome.storage.local.set(
             {
@@ -877,6 +904,10 @@ class SidebarLoader {
     link.href = chrome.extension.getURL('./index.css');
     link.type = 'text/css';
     this.document.head.appendChild(link);
+    const existing = this.document.getElementById('sidebar-root');
+    if (existing) {
+      existing.parentElement.removeChild(existing);
+    }
     const wrapper = this.document.createElement('div');
     wrapper.id = 'sidebar-root';
     wrapper.style.display = 'none';
