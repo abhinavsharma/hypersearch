@@ -363,14 +363,7 @@ class AugmentationManager {
       augmentation.conditions.condition_list.reduce(
         (conditions, { key, unique_key, value }) =>
           // search contains domain
-          unique_key === SEARCH_CONTAINS_CONDITION ||
-          key === SEARCH_CONTAINS_CONDITION ||
-          // any search engine
-          (unique_key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
-          (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
-          // any url
-          unique_key === ANY_URL_CONDITION_MOBILE ||
-          key === ANY_URL_CONDITION_MOBILE
+          unique_key === SEARCH_CONTAINS_CONDITION || key === SEARCH_CONTAINS_CONDITION
             ? conditions.concat(value)
             : conditions,
         [],
@@ -504,7 +497,8 @@ class AugmentationManager {
     return {
       isRelevant:
         (augmentation.enabled || !augmentation.installed) &&
-        (matchingQuery ||
+        (hasAnyPageCondition ||
+          matchingQuery ||
           matchingDomains ||
           !!matchingIntent.length ||
           matchingEngine ||

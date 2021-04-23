@@ -59,7 +59,8 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
       outerDocument.getElementById('sidebar-root').setAttribute(
         'style',
         `
-        width: 0;
+        height: ${tabsLength === 0 ? '200px' : tabsLength * 45 + 150 + 'px'};
+        width: ${tabsLength === 0 ? '200px' : '160px'};;
       `,
       );
       showButton.setAttribute(
@@ -73,9 +74,9 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         'style',
         `
         position: fixed;
-        height: ${tabsLength === 0 ? ' 200px' : tabsLength * 30 + 150 + 'px'};
+        height: ${showButton.getAttribute('data-height') + 'px'};
+        width: ${tabsLength === 0 ? '200px' : '160px'};
         border-width: 0 !important;
-        width: 250px;
         top: auto;
         right: 0;
         bottom: 0;

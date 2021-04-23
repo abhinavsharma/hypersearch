@@ -47,9 +47,15 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     </List.Item>
   );
 
+  const tabHeight = tabs.reduce((a, tab) => {
+    const titleLength = tab.title.length * 8;
+    const titleSpace = 70;
+    return a + Math.abs(titleLength / titleSpace) * 25;
+  }, 0);
+
   return getFirstValidTabIndex(tabs) !== '0' ? (
     <Tooltip title={'Preview lenses ("I" key)'} destroyTooltipOnHide={{ keepParent: false }}>
-      <div onClick={handleClick} className="insight-sidebar-toggle-button">
+      <div onClick={handleClick} className="insight-sidebar-toggle-button" data-height={tabHeight}>
         <div className="insight-sidebar-toggle-appname">
           <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
         </div>

@@ -9,7 +9,6 @@ import 'antd/lib/tooltip/style/index.css';
 import './AugmentationRow.scss';
 
 export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned, other }) => {
-  const isSuggested = !augmentation.hasOwnProperty('enabled');
   const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
   const handleUnpin = () => AugmentationManager.unpinAugmentation(augmentation);
   const handleEnable = () => AugmentationManager.enableSuggestedAugmentation(augmentation);
@@ -62,7 +61,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
             </Tag>
           ) : (
             <>
-              {isSuggested && !other && (
+              {!augmentation.installed && !other && (
                 <Tag className="augmentation-row-button" color="geekblue" onClick={handleDisable}>
                   Hide
                 </Tag>
