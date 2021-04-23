@@ -15,17 +15,11 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
 
-  const hideDomains = tab.augmentation?.actions.action_list.reduce((a, { key, value }) => {
-    if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
-    return a;
-  }, []);
-
   useEffect(() => {
     frameRef.current?.contentWindow.addEventListener('keydown', handleKeyDown);
     frameRef.current?.contentWindow.addEventListener('keyup', handleKeyUp);
-
     return () => frameRef.current?.contentWindow.removeEventListener('keydown', handleKeyDown);
-  }, [SidebarLoader.hideDomains]);
+  }, []);
 
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe

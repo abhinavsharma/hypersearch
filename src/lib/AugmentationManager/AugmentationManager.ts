@@ -290,12 +290,12 @@ class AugmentationManager {
       ({ key }) => key === SEARCH_DOMAINS_ACTION,
     );
     if (hasSearchDomains) {
-      hasSearchDomains.forEach((domain) =>
+      hasSearchDomains.forEach(({ value }) =>
         window.postMessage(
           {
             name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
             remove: augmentation.id,
-            domain,
+            domain: value[0],
             selector: {
               link:
                 SidebarLoader.customSearchEngine.querySelector?.[
@@ -594,7 +594,7 @@ class AugmentationManager {
       {
         augmentation: updated,
         name: PROCESS_SERP_OVERLAY_MESSAGE,
-        hideDomains: hasHideActions.map(({ value }) => value[0]),
+        hideDomains: hasHideActions.map(({ value }) => value[0] ?? ''),
         selector: {
           link:
             SidebarLoader.customSearchEngine.querySelector?.[

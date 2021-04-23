@@ -26,6 +26,8 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     );
   }
 
+  if (!sidebarContainer) return null;
+
   sidebarContainer.appendChild(sidebarOverlay);
 
   const nameNub = document.getElementById('insight-sidebar-title') as HTMLDivElement;
