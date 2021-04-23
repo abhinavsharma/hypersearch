@@ -12,6 +12,8 @@ import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altse
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import { debug } from 'utils/helpers';
 import {
+  EXTENSION_HOST,
+  EXTENSION_SHORT_URL_RECEIVED,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
   OPEN_NEW_TAB_MESSAGE,
@@ -91,6 +93,16 @@ chrome.webRequest.onHeadersReceived.addListener(
 // here is to append the URL with a junk string on each request we want mobile page back and check for this junk.
 chrome.webRequest.onBeforeSendHeaders.addListener(
   (details) => {
+    if (details.url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1) {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        for (let i = 0; i < tabs.length; ++i) {
+          chrome.tabs.sendMessage(tabs[i].id, {
+            type: EXTENSION_SHORT_URL_RECEIVED,
+            shortUrl: details.url,
+          });
+        }
+      });
+    }
     // Bookface needs `_sso.key` cookie to sent with `SameSite=none` to be able to display in iframe.
     chrome.cookies.getAll({ name: '_sso.key' }, (cookies) => {
       const ssoCookie = cookies[0];

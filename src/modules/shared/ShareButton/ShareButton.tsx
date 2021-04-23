@@ -1,5 +1,4 @@
-import React, { Suspense, useRef, useState } from 'react';
-import md5 from 'md5';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
@@ -8,7 +7,8 @@ import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   AIRTABLE_PUBLIC_LENSES_CREATE,
   b64EncodeUnicode,
-  EXTENSION_SHORT_SHARE_URL,
+  EXTENSION_SHARE_URL,
+  EXTENSION_SHORT_URL_RECEIVED,
   MY_BLOCKLIST_ID,
   SIDEBAR_Z_INDEX,
 } from 'utils';
@@ -32,10 +32,6 @@ const ShareAltOutlined = React.lazy(
 );
 
 export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
-  const [shared, setShared] = useState<boolean>(false);
-  const [visible, setVisible] = useState<boolean>(undefined);
-  const tooltipContainer = useRef(null);
-
   const encoded = b64EncodeUnicode(
     JSON.stringify({
       ...augmentation,
@@ -46,55 +42,66 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
     }),
   );
 
-  const handleClick = async () => {
+  const [url, setUrl] = useState<string>(EXTENSION_SHARE_URL + encoded);
+  const [shared, setShared] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(undefined);
+  const tooltipContainer = useRef(null);
+
+  const handleShare = async () => {
+    console.log('SHARED');
     setVisible(undefined);
     if (shared) return;
     await AugmentationManager.shareAugmentation(encoded);
     setShared(true);
   };
 
-  const popoverContent = () => {
-    const short = md5(encoded).substr(0, 10);
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg.type === EXTENSION_SHORT_URL_RECEIVED) {
+        setUrl(msg.shortUrl);
+      }
+    });
+  }, []);
 
-    return (
-      <>
-        <Paragraph
-          className="copyable-text"
-          copyable={{
-            icon: [
-              <Suspense fallback={null}>
-                <CopyOutlined />
-              </Suspense>,
-              <Suspense fallback={null}>
-                <CopyOutlined />
-              </Suspense>,
-            ],
-            tooltips: ['Click to Copy', 'Copied'],
-          }}
+  const popoverContent = () => (
+    <>
+      <Paragraph
+        className="copyable-text"
+        copyable={{
+          icon: [
+            <Suspense fallback={null}>
+              <CopyOutlined />
+            </Suspense>,
+            <Suspense fallback={null}>
+              <CopyOutlined />
+            </Suspense>,
+          ],
+          tooltips: ['Click to Copy', 'Copied'],
+        }}
+        ellipsis={{ rows: 3 }}
+      >
+        {url}
+      </Paragraph>
+      <div className="popover-button-container">
+        <Button
+          type="default"
+          className="popover-primary-button"
+          onClick={() =>
+            window.open(
+              AIRTABLE_PUBLIC_LENSES_CREATE.replace('<base64>', encoded)
+                .replace('<name>', augmentation.name)
+                .replace('<description>', augmentation.description),
+            )
+          }
         >
-          {EXTENSION_SHORT_SHARE_URL + short}
-        </Paragraph>
-        <div className="popover-button-container">
-          <Button
-            type="default"
-            className="popover-primary-button"
-            onClick={() =>
-              window.open(
-                AIRTABLE_PUBLIC_LENSES_CREATE.replace('<base64>', encoded)
-                  .replace('<name>', augmentation.name)
-                  .replace('<description>', augmentation.description),
-              )
-            }
-          >
-            Submit to Bazaar
-          </Button>
-          <Button type="link" target="_blank" href="https://bazaar.insight.so">
-            Browse Bazaar
-          </Button>
-        </div>
-      </>
-    );
-  };
+          Submit to Bazaar
+        </Button>
+        <Button type="link" target="_blank" href="https://bazaar.insight.so">
+          Browse Bazaar
+        </Button>
+      </div>
+    </>
+  );
 
   return (
     <div className="share-button-container  button-container">
@@ -110,6 +117,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
           </div>
         }
         trigger="hover"
+        onVisibleChange={(visible) => visible && !shared && handleShare()}
         visible={!disabled && visible}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
@@ -118,7 +126,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
         {icon ? (
           <Button
             type="link"
-            onClick={handleClick}
+            onClick={handleShare}
             icon={
               <Suspense fallback={null}>
                 <ShareAltOutlined />
@@ -129,7 +137,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
           <Button
             type="link"
             size="large"
-            onClick={handleClick}
+            onClick={handleShare}
             className="insight-augmentation-share-button"
           >
             <div
