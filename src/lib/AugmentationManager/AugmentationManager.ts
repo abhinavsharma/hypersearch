@@ -351,13 +351,13 @@ class AugmentationManager {
     }
 
     // ! SEARCH DOMAINS
-    const hasAnyPageCondition = augmentation.conditions.condition_list.filter(
+    const hasAnyPageCondition = !!augmentation.conditions.condition_list.filter(
       ({ key, unique_key }) =>
         (key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
         (unique_key === ANY_WEB_SEARCH_CONDITION && SidebarLoader.isSerp) ||
         key === ANY_URL_CONDITION_MOBILE ||
         unique_key === ANY_URL_CONDITION_MOBILE,
-    );
+    ).length;
 
     const domainsToLookCondition =
       augmentation.conditions.condition_list.reduce(
@@ -408,7 +408,7 @@ class AugmentationManager {
             !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length <
-        (!!hasAnyPageCondition ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
+        (hasAnyPageCondition ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
 
     // ! SEARCH QUERY
     const checkForQuery =

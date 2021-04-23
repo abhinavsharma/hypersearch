@@ -533,17 +533,6 @@ class SidebarLoader {
 
     this.sidebarTabs = newTabs.sort((a, b) => compareTabs(a, b, this.domains));
 
-    const checkRequiredParams = () =>
-      this.customSearchEngine?.search_engine_json?.required_params
-        .map((param) => window.location.search.search(`${param}=`) === -1)
-        .indexOf(true) === -1;
-
-    const checkRequiredPrefix = () =>
-      window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
-      -1;
-
-    this.isSerp = checkRequiredPrefix() && checkRequiredParams();
-
     /** DEV START **/
     IN_DEBUG_MODE &&
       debug(
@@ -591,14 +580,27 @@ class SidebarLoader {
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
     ).then((value) => !value[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
+    this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     response &&
       runFunctionWhenDocumentReady(this.document, async () => {
+        this.domains = this.getDomains(document);
+        this.tabDomains['original'] = this.getDomains(document, true);
+        const checkRequiredParams = () =>
+          this.customSearchEngine?.search_engine_json?.required_params
+            .map((param) => window.location.search.search(`${param}=`) === -1)
+            .indexOf(true) === -1;
+
+        const checkRequiredPrefix = () =>
+          window.location.href.search(
+            this.customSearchEngine?.search_engine_json?.required_prefix,
+          ) > -1;
+        this.isSerp = checkRequiredPrefix() && checkRequiredParams();
+        await this.handleSubtabApiResponse(response);
         this.isSerp &&
           this.sendLogMessage(EXTENSION_SERP_LOADED, {
             query: this.query,
             url: this.url,
           });
-        await this.handleSubtabApiResponse(response);
         if (
           this.isSerp ||
           this.sidebarTabs.length ||
@@ -767,10 +769,7 @@ class SidebarLoader {
   private async handleSubtabApiResponse(response: SubtabsResponse) {
     debug('handleSubtabApiResponse - call');
     if (!(this.url && response)) return null;
-    this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
-    this.domains = this.getDomains(document);
     await this.getLocalAugmentations();
-    this.tabDomains['original'] = this.getDomains(document, true);
     this.getTabsAndAugmentations([
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
