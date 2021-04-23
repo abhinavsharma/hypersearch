@@ -84,8 +84,8 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     {
       type: 'local',
       augmentations: availableLocalAugmentations[domain],
-      title: 'Add to existing lens that searches domains',
-      subtitle: null,
+      title: 'Add this domain to a local lens',
+      subtitle: 'When this lens is triggered then this domain will be searched',
     },
   ];
 
