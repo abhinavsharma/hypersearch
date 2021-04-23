@@ -30,7 +30,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
   return (
     <div className="augmentation-row">
       <div className="augmentation-name">
-        {augmentation.hasOwnProperty('installed') ? (
+        {augmentation.installed ? (
           <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
             {augmentation.name}
           </Tooltip>
@@ -42,7 +42,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
         )}
       </div>
       <Tooltip
-        title={augmentation.hasOwnProperty('installed') ? null : 'Duplicate and edit locally'}
+        title={augmentation.installed ? null : 'Duplicate and edit locally'}
         destroyTooltipOnHide={{ keepParent: false }}
       >
         <Tag
@@ -50,7 +50,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
           className={`augmentation-row-button force-left-margin`}
           onClick={handleEdit}
         >
-          {augmentation.hasOwnProperty('installed') ? 'Edit' : 'Fork'}
+          {augmentation.installed ? 'Edit' : 'Fork'}
         </Tag>
       </Tooltip>
       {augmentation.id !== MY_BLOCKLIST_ID && (
