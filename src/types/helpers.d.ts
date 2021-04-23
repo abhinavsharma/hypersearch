@@ -29,11 +29,30 @@ declare type ProcessSerpOverlayMessage = MessageEvent<{
   };
 }>;
 
+declare type RemoveSearchedDomainMessage = MessageEvent<{
+  name: string;
+  remove: AugmentationObject['id'];
+  domain: ActionObject['value'] | ConditionObject['value'];
+  selector: {
+    link: string;
+    featured: string[];
+    container: string;
+  };
+}>;
+
 declare type RemoveHideDomainOverlayMessage = MessageEvent<{
   domain: string;
   name: string;
   remove: string;
 }>;
+
+declare type RemoveMessage = ProcessSerpOverlayMessage &
+  RemoveHideDomainOverlayMessage &
+  RemoveSearchedDomainMessage;
+
+declare type ResultMessageData = ProcessSerpOverlayMessage['data'] &
+  RemoveHideDomainOverlayMessage['data'] &
+  RemoveSearchedDomainMessage['data'];
 
 declare type OpenActivePageMessage = {
   type: string;

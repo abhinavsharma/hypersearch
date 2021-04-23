@@ -13,6 +13,13 @@
  */
 
 import {
+  INSIGHT_ALLOWED_RESULT_SELECTOR,
+  INSIGHT_BLOCKED_BY_SELECTOR,
+  INSIGHT_BLOCKED_DOMAIN_SELECTOR,
+  INSIGHT_HIDDEN_RESULT_SELECTOR,
+  INSIGHT_SEARCHED_DOMAIN_SELECTOR,
+  INSIGHT_SEARCHED_RESULT_SELECTOR,
+  INSIGHT_SEARCH_BY_SELECTOR,
   PROCESS_SERP_OVERLAY_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
@@ -23,7 +30,7 @@ import { extractUrlProperties } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 import { showGutterIcons } from 'utils/showGutterIcons/showGutterIcons';
 
-let searchedResults = [];
+const searchedResults: HTMLElement[] = [];
 const searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
 const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
 
@@ -33,20 +40,21 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     domain: string,
     result?: HTMLElement,
   ) => {
+    if (!augmentation || !domain) return null;
     if (!searchingAugmentations[domain]) searchingAugmentations[domain] = [];
     if (!blockingAugmentations[domain]) blockingAugmentations[domain] = [];
-    augmentation?.actions?.action_list.forEach((action) => {
-      if (action.value.find((valueDomain) => !!domain.match(valueDomain))) {
-        switch (action.key) {
+    augmentation.actions?.action_list.forEach(({ value, key }) => {
+      if (value.find((valueDomain) => domain === valueDomain)) {
+        switch (key) {
           case SEARCH_HIDE_DOMAIN_ACTION:
             if (!blockingAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               blockingAugmentations[domain].push(augmentation);
             }
             break;
           case SEARCH_DOMAINS_ACTION:
+            result && searchedResults.push(result);
             if (!searchingAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               searchingAugmentations[domain].push(augmentation);
-              result && searchedResults.push(result);
             }
             break;
         }
@@ -54,28 +62,27 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     });
   };
 
-  const processResults = (data) => {
+  const getResultTypes = (data: ResultMessageData) => {
     if (!data.selector.link) return { alloweds: [], blocks: [] };
-    const blocks = [];
-    const alloweds = [];
-    searchedResults = [];
+    const blocks: HTMLElement[] = [];
+    const alloweds: HTMLElement[] = [];
+    searchedResults.length = 0; // empty search results
     const results = Array.from(document.querySelectorAll(data.selector.link)) as HTMLElement[];
     const featuredContainers = [];
     const featured = data.selector.featured?.reduce((a, selector) => {
       const partial = Array.from(document.querySelectorAll(selector)) as HTMLElement[];
-      featuredContainers.push(document.querySelector(selector.split(' ')[0]));
+      featuredContainers.concat(document.querySelectorAll(selector.split(' ')[0]));
       return a.concat(partial);
     }, []) as HTMLElement[];
-    results.forEach((result) => {
-      let domainName = '';
-      if (result instanceof HTMLLinkElement) {
-        domainName = result.getAttribute('href');
-      } else {
-        domainName = result.closest('a').getAttribute('href');
-      }
+    [...results, ...featured].forEach((result) => {
+      const resultDomain = extractUrlProperties(
+        result instanceof HTMLLinkElement
+          ? result.getAttribute('href')
+          : result?.closest('a').getAttribute('href'),
+      )?.hostname;
       if (data.hideDomains?.length) {
         data.hideDomains.forEach((hideDomain) => {
-          if (!!domainName.match(hideDomain)) {
+          if (!!hideDomain && resultDomain === hideDomain) {
             if (Array.isArray(data.augmentation)) {
               data.augmentation.forEach((augmentation) =>
                 processAugmentation(augmentation, hideDomain),
@@ -83,111 +90,87 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
             } else {
               processAugmentation(data.augmentation, hideDomain);
             }
+            featuredContainers.forEach((container) => blocks.push(container));
             blocks.push(result);
           }
         });
       } else {
         alloweds.push(result);
       }
-      processAugmentation(data.augmentation, extractUrlProperties(domainName).hostname, result);
-    });
-    featured.forEach((result) => {
-      let domainName = '';
-      if (result instanceof HTMLLinkElement) {
-        domainName = result.getAttribute('href');
-      } else {
-        domainName = result.textContent;
-      }
-      if (data.hideDomains?.length) {
-        data.hideDomains.forEach((domain) => {
-          if (domainName.match(domain)?.length) {
-            if (Array.isArray(data.augmentation)) {
-              data.augmentation.forEach((augmentation) =>
-                processAugmentation(augmentation, domain),
-              );
-            } else {
-              processAugmentation(data.augmentation, domain);
-            }
-            featuredContainers.forEach((container) => blocks.push(container));
-          }
-        });
-      } else {
-        alloweds.push(result);
-      }
-      processAugmentation(data.augmentation, extractUrlProperties(domainName).hostname, result);
+      processAugmentation(data.augmentation, resultDomain, result);
     });
     return { alloweds, blocks };
   };
 
-  window.addEventListener(
-    'message',
-    ({ data }: ProcessSerpOverlayMessage & RemoveHideDomainOverlayMessage) => {
-      switch (data?.name) {
-        case REMOVE_SEARCHED_DOMAIN_MESSAGE:
-          searchingAugmentations[data.domain] = searchingAugmentations[data.domain].filter(
-            ({ id }) => id !== data.remove,
-          );
-          const searchedElements = Array.from(document.querySelectorAll(`[insight-searched-by]`));
-          searchedElements.forEach((element) => {
-            const searchers = element.getAttribute('insight-searched-by').replace(data.remove, '');
-            if (data.domain && element.getAttribute('insight-searched-domain') !== data.domain) {
-              return null;
-            }
-            element.setAttribute(
-              'insight-searched-result',
-              String(!!searchers.split(' ').filter((i) => !!i).length),
-            );
-            element.setAttribute('insight-allowed-result', 'true');
-            element.setAttribute('insight-searched-by', searchers);
-            const { alloweds, blocks } = processResults(data);
-            showGutterIcons(alloweds.concat(searchedResults), data.selector.container);
-            processSerpResults(
-              { block: blocks, search: searchedResults },
-              data.selector.container,
-              {
-                header: null,
-                text: null,
-              },
-              'hidden-domain',
-              { block: blockingAugmentations, search: searchingAugmentations },
-            );
-          });
-          break;
-        case REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE:
-          blockingAugmentations[data.domain] = blockingAugmentations[data.domain].filter(
-            ({ id }) => id !== data.remove,
-          );
-          const blockedElements = Array.from(document.querySelectorAll(`[insight-blocked-by]`));
-          blockedElements.forEach((element) => {
-            const blockers = element.getAttribute('insight-blocked-by').replace(data.remove, '');
-            if (data.domain && element.getAttribute('insight-blocked-domain') !== data.domain) {
-              return null;
-            }
-            element.parentElement.setAttribute('insight-hidden-result', 'false');
-            element.parentElement.setAttribute('insight-allowed-result', 'true');
-            element.setAttribute('insight-blocked-by', blockers);
-            if (!blockers.split(' ').filter((i) => !!i).length) {
-              element.parentElement.removeChild(element);
-            }
-          });
-          break;
-        case PROCESS_SERP_OVERLAY_MESSAGE:
-          if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            const { alloweds, blocks } = processResults(data);
-            showGutterIcons(alloweds.concat(searchedResults), data.selector.container);
-            processSerpResults(
-              { block: blocks, search: searchedResults },
-              data.selector.container,
-              {
-                header: null,
-                text: null,
-              },
-              'hidden-domain',
-              { block: blockingAugmentations, search: searchingAugmentations },
-            );
+  const processResults = (data: ResultMessageData) => {
+    const { alloweds, blocks } = getResultTypes(data);
+    showGutterIcons(alloweds.concat(searchedResults), data.selector.container);
+    processSerpResults(
+      { block: blocks, search: searchedResults },
+      data.selector.container,
+      {
+        header: null,
+        text: null,
+      },
+      'hidden-domain',
+      { block: blockingAugmentations, search: searchingAugmentations },
+    );
+  };
+
+  window.addEventListener('message', ({ data }: RemoveMessage) => {
+    switch (data?.name) {
+      // Iterate over the SERP results and check if they searched by the augmentation specified
+      // by `data.remove` (augmentation ID). If so, remove the ID from their `searched-by` attribute
+      // and in case there is no other augmentation matched to the result, remove the gutter unit.
+      case REMOVE_SEARCHED_DOMAIN_MESSAGE:
+        if (!data.domain || !data.remove) break;
+        searchingAugmentations[data.domain] = (searchingAugmentations[data.domain] ?? []).filter(
+          ({ id }) => id !== data.remove,
+        );
+        const searchedElements = Array.from(
+          document.querySelectorAll(`[${INSIGHT_SEARCH_BY_SELECTOR}]`),
+        );
+        searchedElements.forEach((element) => {
+          const idList = element.getAttribute(INSIGHT_SEARCH_BY_SELECTOR).replace(data.remove, '');
+          if (element.getAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR) !== data.domain) {
+            return null;
           }
-          break;
-      }
-    },
-  );
+          element.setAttribute(INSIGHT_SEARCH_BY_SELECTOR, idList);
+          element.setAttribute(
+            INSIGHT_SEARCHED_RESULT_SELECTOR,
+            String(!!idList.split(' ').filter((i) => !!i).length), // "true" | "false"
+          );
+        });
+        processResults(data);
+        break;
+      // Iterate over the currently blocked SERP results and check if they blocked by the augmentation specified
+      // in the message data. When a matching blocked result found, remove the augmentation ID from the "blocked-by"
+      // attribute. If there is no more augmentation blocking the results, remove the overlay and set it as allowed.
+      case REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE:
+        if (!data.domain || !data.remove) break;
+        blockingAugmentations[data.domain] = (blockingAugmentations[data.domain] ?? []).filter(
+          ({ id }) => id !== data.remove,
+        );
+        const blockedElements = Array.from(
+          document.querySelectorAll(`[${INSIGHT_BLOCKED_BY_SELECTOR}]`),
+        );
+        blockedElements.forEach((element) => {
+          const ids = element.getAttribute(INSIGHT_BLOCKED_BY_SELECTOR).replace(data.remove, '');
+          if (element.getAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR) !== data.domain) {
+            return null;
+          }
+          element.parentElement.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
+          element.parentElement.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
+          element.setAttribute(INSIGHT_BLOCKED_BY_SELECTOR, ids);
+          !ids.split(' ')?.filter((i) => !!i).length && element.parentElement.removeChild(element);
+        });
+        processResults(data);
+        break;
+      case PROCESS_SERP_OVERLAY_MESSAGE:
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+          processResults(data);
+        }
+        break;
+    }
+  });
 })(document, window);

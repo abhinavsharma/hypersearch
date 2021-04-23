@@ -11,7 +11,6 @@ import {
   OPEN_BUILDER_PAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
-  SEARCH_CONTAINS_CONDITION,
   SEARCH_DOMAINS_ACTION,
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
@@ -107,18 +106,18 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     } as OpenActivePageMessage);
   };
 
-  const init = useCallback(async () => {
+  const init = async () => {
     await AugmentationManager.initBlockList();
     setIsBlocked(
       !!AugmentationManager.blockList.actions?.action_list?.filter(
         (action) => !!action.value.find((value) => value === domain),
       ).length,
     );
-  }, [domain]);
+  };
 
   useEffect(() => {
     init();
-  }, [init]);
+  }, []);
 
   const handleAddSearchDomainToLocal = (augmentation: AugmentationObject, index: number) => {
     AugmentationManager.addOrEditAugmentation(augmentation, {
