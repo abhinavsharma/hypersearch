@@ -7,6 +7,7 @@ import {
   HIDE_TAB_FAKE_URL,
   ANY_URL_CONDITION_MOBILE,
   SEARCH_ENGINE_IS_CONDITION,
+  MY_TRUSTLIST_ID,
 } from 'utils';
 
 export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
@@ -160,6 +161,8 @@ export const getRankedDomains = (domains: string[]) =>
     .map(([key]) => key);
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
+  if (a.augmentation.id === MY_TRUSTLIST_ID) return 1;
+
   const aConditions = Array.from(
     new Set(a.augmentation.conditions.condition_list.map(({ key }) => key)),
   );
