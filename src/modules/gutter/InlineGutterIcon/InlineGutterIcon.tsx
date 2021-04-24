@@ -36,7 +36,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({ augmentations, domain, isSe
       width={30}
       height={30}
       src={chrome.runtime.getURL(
-        (isSearched && 'insight-inlens.svg') ||
+        (isSearched && 'insight-starred.svg') ||
           (isHidden && 'insight-hidden.svg') ||
           'insight-logo.svg',
       )}
