@@ -59,8 +59,8 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
       outerDocument.getElementById('sidebar-root').setAttribute(
         'style',
         `
-        height: ${tabsLength === 0 ? '200px' : tabsLength * 45 + 150 + 'px'};
-        width: ${tabsLength === 0 ? '200px' : '160px'};;
+        height: 0;
+        width: 0;
       `,
       );
       showButton.setAttribute(
