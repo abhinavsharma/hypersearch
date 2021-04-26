@@ -72,3 +72,9 @@ declare type OpenBuilderMessage = {
   augmentation: AugmentationObject;
   create?: boolean;
 };
+
+declare type ExtractedURLProperties = {
+  hostname: string | undefined;
+  params: string[] | undefined;
+  full: string | undefined;
+};

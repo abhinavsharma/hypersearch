@@ -10,117 +10,114 @@ import {
   MY_TRUSTLIST_ID,
 } from 'utils';
 
-export const isMobileDevice = window.navigator.userAgent.toLowerCase().includes('mobi');
+/**
+ * ! PROTOTYPE EXTENSIONS
+ */
 
-const swapUrlsForDebuggingInJsonResponse = <T>(json: T): T => {
-  if (IN_DEBUG_MODE) {
-    return JSON.parse(
-      JSON.stringify(json).replace(LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG),
-    );
-  }
-  return json;
-};
+/**
+ * Returns the index of the last element in the array where predicate is true, and -1
+ * otherwise.
+ *
+ * @param array The source array to search in
+ * @param predicate find calls predicate once for each element of the array, in descending
+ * order, until it finds one where predicate returns true. If such an element is found,
+ * findLastIndex immediately returns that element index. Otherwise, findLastIndex returns -1.
+ *
+ * See: https://stackoverflow.com/a/53187807/2826713
+ */
+if (!Array.prototype.hasOwnProperty('findLastIndex')) {
+  Object.defineProperty(Array.prototype, 'findLastIndex', {
+    value: function <T>(
+      this: Array<any>,
+      predicate: (value: T, index: number, obj: T[]) => boolean,
+    ) {
+      let l = this.length;
+      while (l--) {
+        if (predicate(this[l], l, this)) return l;
+      }
+      return -1;
+    },
+  });
+}
 
-export const getAPI = async <T>(api: string, params = {}): Promise<T> => {
-  const url: URL = new URL(LUMOS_API_URL + api);
-  Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
-  try {
-    const response = await fetch(url.href, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      redirect: 'follow',
-    });
+/**
+ * ! DOM HELPERS
+ */
 
-    const response_json = await response.json();
-
-    if (response_json) {
-      return swapUrlsForDebuggingInJsonResponse<T>(response_json);
-    }
-  } catch (err) {
-    debug('getAPI error', err);
-    return null;
-  }
-};
-
-export const postAPI = async <T>(api: string, params = {}, body = {}): Promise<T> => {
-  try {
-    const url: URL = new URL(LUMOS_API_URL + api);
-    Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
-
-    const response = await fetch(url.href, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      redirect: 'follow',
-      body: JSON.stringify(body), // TODO: may move to this later
-    });
-
-    const response_json = await response.json();
-
-    if (response_json) {
-      return swapUrlsForDebuggingInJsonResponse<T>(response_json);
-    }
-  } catch (err) {
-    debug('postAPI error', err);
-    return null;
-  }
-};
-
+/**
+ * Takes a `document` object and a callback function, that will be invoked when the
+ * passed `document` object is ready. Current state is determined by `readyState` or the
+ * `DOMContentLoaded` event.
+ *
+ * @param document - The document object what to wait for
+ * @param callback - The callback to invoke when the document is ready
+ */
 export const runFunctionWhenDocumentReady = (
   document: Document,
   callback: ({ ...args }?: any) => void,
 ): void => {
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    debug('document is ready right now');
-    callback();
-  } else {
-    debug('document is not ready yet...');
-    document.addEventListener(
-      'DOMContentLoaded',
-      () => {
-        debug('DELAYED - document is ready right now');
-        callback();
-      },
-      false,
-    );
+  try {
+    if (typeof callback !== 'function') {
+      throw new TypeError(`Callback must be callable! Given type is ${typeof callback}`);
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      debug('runFunctionWhenDocumentReady - ready');
+      callback();
+    } else {
+      debug('runFunctionWhenDocumentReady - attach listener');
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          debug('runFunctionWhenDocumentReady - ready by listener');
+          callback();
+        },
+        false,
+      );
+    }
+  } catch (err) {
+    debug('runFunctionWhenDocumentReady - error', err);
+  }
+};
+
+/**
+ * ! URL MANIPULATION
+ */
+
+/**
+ * Takes an URL like string and removes the existing protocol and/or "www" prefix.
+ *
+ * @param urlLike - The URL string to modify
+ * @returns The modified URL string
+ */
+export const removeProtocol = (urlLike: string) => {
+  try {
+    if (typeof urlLike !== 'string') {
+      throw new TypeError(`URL like value must be a string! Given type is ${typeof urlLike}`);
+    }
+    return urlLike.replace(/^https?:\/\//, '').replace('www.', '');
+  } catch (err) {
+    debug('removeProtocol - error', err);
   }
   return;
 };
 
-export const loadPublicFile: (path: string) => Promise<string> = async (path) =>
-  new Promise((resolve) => {
-    const request = new XMLHttpRequest();
-    request.open('GET', chrome.extension.getURL(path));
-    request.onload = function () {
-      if (request.status >= 200 && request.status <= 400) {
-        resolve(request.responseText);
-      }
-    };
-    request.send();
-  });
-
-export const removeWww = (s: string) => {
-  if (s?.startsWith('www.')) {
-    return s.slice(4);
-  }
-  return s;
-};
-
-export const extractUrlProperties = (s: string) => {
-  if (!s) return null;
+/**
+ * Takes an URL string and extracts its hostname, parameter names and full path.
+ *
+ * @param urlLike - The URL string which properties will be extracted
+ * @returns The extracted properties [`hostname`, `params`, `full`]
+ */
+export const extractUrlProperties = (urlLike: string): ExtractedURLProperties => {
   try {
-    let url: string;
-    if (s.startsWith('http://') || s.startsWith('https://')) url = s;
-    else url = `https://${s}`;
+    if (typeof urlLike !== 'string') {
+      throw new TypeError(`URL like value must be string! Given type is ${typeof urlLike}`);
+    }
+    const url =
+      urlLike.startsWith('http://') || urlLike.startsWith('https://')
+        ? urlLike
+        : `https://${urlLike}`;
     const raw = new URL(url);
-    const hostname = removeWww(raw.hostname);
+    const hostname = removeProtocol(raw.hostname);
     return {
       hostname,
       params: raw.searchParams
@@ -129,21 +126,208 @@ export const extractUrlProperties = (s: string) => {
         .map((i) => i.split('=')[0]),
       full: hostname + raw.pathname,
     };
-  } catch (e) {
-    debug('extractUrlProperties - error', e);
+  } catch (err) {
+    debug('extractUrlProperties - error', err, '\nGiven value', urlLike);
+    return Object.create(null);
   }
 };
 
-export const removeProtocol = (url: string) => url.replace(/^https?:\/\//, '').replace('www.', '');
+/**
+ * Takes a location string and manipulates it by the specified conditions. Future required
+ * location modifiers should be placed here.
+ *
+ * @param location - The Location object
+ * @returns
+ */
+export const replaceLocation = (location: Location): URL | null => {
+  try {
+    if (location instanceof Location) {
+      // ! DEV: extend with required location modifiers if needed
+      if (location.href.search(/amazon\.com.*field-keywords/gi) > -1) {
+        const { href, search } = location;
+        return new URL(`${href.split('/s')[0]}/s?k${search.split('field-keywords')[1]}`);
+      }
+      return new URL(location.href);
+    } else {
+      throw new TypeError(`Location must be a valid location object! Given value is ${location}`);
+    }
+  } catch (err) {
+    debug('replaceLocation - error', err);
+    return null;
+  }
+};
 
-export const isKnowledgePage = (document: Document) =>
-  KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
+/**
+ * Takes a string and replaces any whitespace value with a unique identifier. This encoding is
+ * used by the custom sidebar tab URLs, to ensure that spaces are preserved during transformations.
+ * ! Should be used with `decodeSpace`.
+ *
+ * @param stringLike - A string like value
+ * @returns Encoded string or original value if it's not string
+ * @see decodeSpace
+ */
+export const encodeSpace = (stringLike: string) => {
+  return typeof stringLike === 'string'
+    ? stringLike.replace(/[\s]/gi, '[<INSIGHT_SPACE>]')
+    : stringLike;
+};
 
+/**
+ * Takes an encoded string and decodes the unique identifiers to be Unicode escape sequences. The decoding
+ * is a second step of the space preserving in sidebar tab URLs. The output will contain `%20` (`space`)
+ * instead of `+` characters which preferred during the `encodeURIComponent` method transformation.
+ * ! Should be used with `encodeSpace`.
+ *
+ * @param stringLike - A uniquely encoded string
+ * @returns The decoded version of the string or the original value if it's not string'
+ * @see encodeSpace
+ */
+export const decodeSpace = (stringLike: string) => {
+  return typeof stringLike === 'string'
+    ? stringLike.replace(new RegExp(encodeURIComponent('[<INSIGHT_SPACE>]'), 'gi'), '%20')
+    : stringLike;
+};
+
+/**
+ * ! UTILITY
+ */
+
+/**
+ * A wrapper around the default console statement to print messages only in development environment.
+ *
+ * @param args - The argument list for the console statement.
+ */
 export const debug = (...args: any[]) => {
-  if (IN_DEBUG_MODE) {
+  if (args && Symbol.iterator in Object(args) && IN_DEBUG_MODE) {
     console.log('LUMOS SHARED DEBUG: ', ...args);
   }
 };
+
+/**
+ * Takes a string and limit as inputs and create an ellipsis according to the given limit.
+ * ! Ellipsis: limit the length of the given string and append `...` if longer than allowed.
+ *
+ * @param stringLike - The string which length will be limited
+ * @param limit - Threshold for the string slicing
+ * @returns
+ */
+export const makeEllipsis = (stringLike: string, limit: number) =>
+  typeof stringLike === 'string' && stringLike.length > limit
+    ? `${stringLike.slice(0, limit)}...`
+    : stringLike;
+
+/**
+ * Decide if an event's bubbling should be prevented. This used on key events, to prevent Insight
+ * handlers being used while user is typing into an input field.
+ *
+ * @param event - The event under consideration
+ * @returns boolean
+ */
+export const shouldPreventEventBubble = (event: KeyboardEvent) => {
+  if (event instanceof KeyboardEvent) {
+    return (
+      !!event.target.constructor.toString().match('HTMLInputElement') ||
+      !!event.target.constructor.toString().match('HTMLTextAreaElement')
+    );
+  } else {
+    return false;
+  }
+};
+
+// TODO #1: extarct to API manager class
+
+/**
+ * Changes exisitng production URL to development URL (localhost) in a HTTP response
+ *
+ * @param json The HTTP response body
+ * @returns
+ */
+const swapUrlsForDebuggingInJsonResponse = <T>(json: T): T => {
+  try {
+    return IN_DEBUG_MODE
+      ? JSON.parse(JSON.stringify(json).replace(LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG))
+      : json;
+  } catch (err) {
+    debug('swapUrlsForDebuggingInJsonResponse - error', err);
+    return Object.create(null);
+  }
+};
+
+/**
+ * Send a GET request to a specified API endpoint with the given parameters.
+ *
+ * @param api - The API endpoint (eg: `subtabs`)
+ * @param params - Specified query parameters
+ * @returns `HTTP-200` - Successful HTTP request. Note, that even if the request
+ *  was successful, the function does not guarantee the expected response.
+ * @returns `HTTP-500` - Failed HTTP request, throws an exception
+ */
+export const getAPI = async <T>(
+  api: string,
+  params: Record<string, any> = Object.create(null),
+): Promise<T> => {
+  try {
+    const url: URL = new URL(LUMOS_API_URL + api);
+    Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
+    const raw = await fetch(url.href, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+    });
+    const data = await raw.json();
+    return data ? swapUrlsForDebuggingInJsonResponse<T>(data) : Object.create(null);
+  } catch (err) {
+    debug('getAPI error', err);
+    return null;
+  }
+};
+
+/**
+ * Send a POST request to a specified API endpoint with the given parameters and request body.
+ *
+ * @param api - The API endpoint (eg: `subtabs`)
+ * @param params - Specified query parameters
+ * @param body - Specified request body
+ * @returns `HTTP-200` - Successful HTTP request. Note, that even if the request
+ *  was successful, the function does not guarantee the expected response.
+ * @returns `HTTP-500` - Failed HTTP request, throws an exception
+ */
+export const postAPI = async <T>(
+  api: string,
+  params: Record<string, any> = Object.create(null),
+  body: Record<string, any> = Object.create(null),
+): Promise<T> => {
+  try {
+    const url: URL = new URL(LUMOS_API_URL + api);
+    Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
+    const raw = await fetch(url.href, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+      body: JSON.stringify(body),
+    });
+    const data = await raw.json();
+    return data ? swapUrlsForDebuggingInJsonResponse<T>(data) : Object.create(null);
+  } catch (err) {
+    debug('postAPI error', err);
+    return null;
+  }
+};
+
+// TODO #1 END
+
+// TODO #2: decouple to SidebarManager
+
+export const isKnowledgePage = (document: Document) =>
+  KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
 
 export const isSafari = () => {
   const hasVersion = /Version\/(\d{2})/;
@@ -253,6 +437,18 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
   }
 };
 
+export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
+  return (tabs.findIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+};
+
+export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
+  return (tabs.findLastIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+};
+
+// TODO #2 END
+
+// TODO #3 decouple to AugmentationManager
+
 export const isAugmentationEnabled = (augmentation: AugmentationObject) =>
   augmentation.conditions.condition_list
     .map(
@@ -272,66 +468,4 @@ export const b64EncodeUnicode = (str: string) =>
     ),
   );
 
-export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
-  return (tabs.findIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
-};
-
-/**
- * Returns the index of the last element in the array where predicate is true, and -1
- * otherwise.
- *
- * @param array The source array to search in
- * @param predicate find calls predicate once for each element of the array, in descending
- * order, until it finds one where predicate returns true. If such an element is found,
- * findLastIndex immediately returns that element index. Otherwise, findLastIndex returns -1.
- *
- * See: https://stackoverflow.com/a/53187807/2826713
- */
-if (!Array.prototype.hasOwnProperty('findLastIndex')) {
-  Object.defineProperty(Array.prototype, 'findLastIndex', {
-    value: function <T>(
-      this: Array<any>,
-      predicate: (value: T, index: number, obj: T[]) => boolean,
-    ) {
-      let l = this.length;
-      while (l--) {
-        if (predicate(this[l], l, this)) return l;
-      }
-      return -1;
-    },
-  });
-}
-
-export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
-  return (tabs.findLastIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
-};
-
-export const makeEllipsis = (s: string, limit: number) =>
-  s.length > limit ? s.slice(0, limit) + '...' : s;
-
-export const shouldPreventEventBubble = (event: KeyboardEvent) => {
-  return (
-    !!event.target.constructor.toString().match('HTMLInputElement') ||
-    !!event.target.constructor.toString().match('HTMLTextAreaElement')
-  );
-};
-
-export const replaceLocation = (location: Location) => {
-  let url: URL;
-  if (location.href.search(/amazon\.com.*field-keywords/gi) > -1) {
-    url = new URL(
-      location.href.split('/s')[0] + '/s?k' + location.search.split('field-keywords')[1],
-    );
-  } else {
-    url = new URL(location.href);
-  }
-  return url;
-};
-
-export const encodeSpace = (s: string) => {
-  return s.replace(/[\s]/gi, '[<INSIGHT_SPACE>]');
-};
-
-export const decodeSpace = (s: string) => {
-  return s.replace(new RegExp(encodeURIComponent('[<INSIGHT_SPACE>]'), 'gi'), '%20');
-};
+// TODO #3 END

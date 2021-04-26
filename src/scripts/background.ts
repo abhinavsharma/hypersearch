@@ -12,7 +12,6 @@ import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altse
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import { debug } from 'utils/helpers';
 import {
-  EXTENSION_HOST,
   EXTENSION_SHORT_URL_RECEIVED,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
