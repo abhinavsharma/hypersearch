@@ -36,6 +36,10 @@ Initially this will build the source code for the selected project and run the H
 
 See [Tasks Readme](https://github.com/lumosbrowser/lumos-extension/blob/master/tasks/README.md) for more details on the build process.
 
+#### Console Debugging
+
+By default, we are using the JavaScript console to show debug messages, helping the development process to be trackable. It's strongly recommended to print every important message, regardless of it's nature. **Silent failures are forbidden** and would lead to unexpected behavior. A slight tradeoff of this practice, is that the console sometimes could get too verbose. To hide unwanted messages, (like known failures from `extractUrlProperties` for example) simply type `-<unwanted-phrase>` to the searchbar of the DevTools console. See the [demo video](https://share.getcloudapp.com/yAuDQQ6k) of how to achieve this.
+
 ### Integration
 
 After the first time build, the extension must be loaded in the browser. This method differs between the browsers we currently support.
