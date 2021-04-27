@@ -35,7 +35,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.GUTTER,
-      augmentations: [],
+      augmentations: blockingAugmentations,
       domain,
     } as OpenGutterPageMessage);
   };
