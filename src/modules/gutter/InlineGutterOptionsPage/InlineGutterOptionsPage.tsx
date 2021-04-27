@@ -196,7 +196,16 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
       SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
       window.postMessage(
-        { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
+        {
+          name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
+          remove: augmentation.id,
+          domain,
+          selector: {
+            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
+            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+          },
+        },
         '*',
       );
     }
@@ -212,10 +221,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           remove: augmentation.id,
           domain,
           selector: {
-            link:
-              SidebarLoader.customSearchEngine.querySelector?.[
-                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-              ],
+            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
             featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
             container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
           },
@@ -228,7 +234,16 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
       SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
       window.postMessage(
-        { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
+        {
+          name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
+          remove: augmentation.id,
+          domain,
+          selector: {
+            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
+            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+          },
+        },
         '*',
       );
     }

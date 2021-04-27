@@ -11,6 +11,8 @@
  *  processed by AugmentationManager (create, edit, delete ...etc) or loaded to the sidebar,
  *  a message will be sent which triggers an iteration of creating gutter unit elements.
  */
+const GOOGLE_VERTICAL_NEWS_LINK_SELECTOR = '.EPLo7b a';
+const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
 import {
   INSIGHT_ALLOWED_RESULT_SELECTOR,
@@ -28,7 +30,6 @@ import {
 } from 'utils/constants';
 import { extractUrlProperties } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
-import { showGutterIcons } from 'utils/showGutterIcons/showGutterIcons';
 
 const searchedResults: HTMLElement[] = [];
 const searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
@@ -62,24 +63,50 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     });
   };
 
-  const getResultTypes = (data: ResultMessageData) => {
-    if (!data.selector.link) return { alloweds: [], blocks: [] };
-    const blocks: HTMLElement[] = [];
-    const alloweds: HTMLElement[] = [];
+  const getResults = (data: ResultMessageData) => {
+    const processed: HTMLElement[] = [];
+
     searchedResults.length = 0; // empty search results
-    const results = Array.from(document.querySelectorAll(data.selector.link)) as HTMLElement[];
-    const featuredContainers = [];
+
+    const processNewsResults = (selector: string) => {
+      return Array.from(document.querySelectorAll(selector)).map((el) => {
+        // Set default container selector explicitly on the news link's container to ensure
+        // news links are handled separately. Otherwise, the whole section would be selected.
+        el.closest(selector.split(' ')[0]).setAttribute(
+          data.selector.container.replace(/[^\w-]/gi, ''), // eg.: [data-hveid] -> data-hveid
+          'true',
+        );
+        return el;
+      });
+    };
+
+    const results = Array.from(document.querySelectorAll(data.selector.link)).concat(
+      // handle Google's news results
+      !!document.location.href.match(/google\.com/gi)?.length
+        ? processNewsResults(GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR).concat(
+            processNewsResults(GOOGLE_VERTICAL_NEWS_LINK_SELECTOR),
+          )
+        : [],
+    ) as HTMLElement[];
+
     const featured = data.selector.featured?.reduce((a, selector) => {
-      const partial = Array.from(document.querySelectorAll(selector)) as HTMLElement[];
-      featuredContainers.concat(document.querySelectorAll(selector.split(' ')[0]));
-      return a.concat(partial);
-    }, []) as HTMLElement[];
-    [...results, ...featured].forEach((result) => {
+      const link = document.querySelector(selector);
+      const container = document.querySelector(selector.split(' ')[0]);
+      link && container && a.push({ link, container });
+      return a;
+    }, []);
+
+    [...featured, ...results].forEach((element) => {
+      const result = element instanceof HTMLElement ? element : element.link;
+
       const resultDomain = extractUrlProperties(
         result instanceof HTMLLinkElement
           ? result.getAttribute('href')
           : result?.closest('a').getAttribute('href'),
       )?.hostname;
+
+      const container = element instanceof HTMLElement ? result : element.container;
+
       if (data.hideDomains?.length) {
         data.hideDomains.forEach((hideDomain) => {
           if (!!hideDomain && resultDomain === hideDomain) {
@@ -90,29 +117,24 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
             } else {
               processAugmentation(data.augmentation, hideDomain);
             }
-            featuredContainers.forEach((container) => blocks.push(container));
-            blocks.push(result);
           }
         });
-      } else {
-        alloweds.push(result);
       }
-      processAugmentation(data.augmentation, resultDomain, result);
+      processed.push(container);
+      processAugmentation(data.augmentation, resultDomain, container);
     });
-    return { alloweds, blocks };
+    return processed;
   };
 
   const processResults = (data: ResultMessageData) => {
-    const { alloweds, blocks } = getResultTypes(data);
-    showGutterIcons(alloweds.concat(searchedResults), data.selector.container);
     processSerpResults(
-      { block: blocks, search: searchedResults },
+      [...searchedResults, ...getResults(data)],
       data.selector.container,
       {
         header: null,
         text: null,
+        selectorString: 'hidden-domain',
       },
-      'hidden-domain',
       { block: blockingAugmentations, search: searchingAugmentations },
     );
   };
@@ -159,10 +181,11 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
           if (element.getAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR) !== data.domain) {
             return null;
           }
-          element.parentElement.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
-          element.parentElement.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
+          element.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
+          element.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
           element.setAttribute(INSIGHT_BLOCKED_BY_SELECTOR, ids);
-          !ids.split(' ')?.filter((i) => !!i).length && element.parentElement.removeChild(element);
+          const overlay = element.querySelector('.insight-hidden-domain-overlay');
+          !ids.split(' ')?.filter((i) => !!i).length && overlay?.parentElement.removeChild(overlay);
         });
         processResults(data);
         break;

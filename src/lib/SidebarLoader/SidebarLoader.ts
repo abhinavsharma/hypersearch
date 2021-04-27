@@ -626,9 +626,7 @@ class SidebarLoader {
                   name: PROCESS_SERP_OVERLAY_MESSAGE,
                   tab: tab.id,
                   selector: {
-                    link: this.customSearchEngine.querySelector[
-                      window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-                    ],
+                    link: this.customSearchEngine.querySelector['desktop'],
                     featured: this.customSearchEngine.querySelector.featured ?? Array(0),
                     container: this.customSearchEngine.querySelector.result_container_selector,
                   },

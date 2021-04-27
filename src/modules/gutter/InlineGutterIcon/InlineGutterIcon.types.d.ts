@@ -2,9 +2,10 @@ import { FunctionComponent } from 'react';
 
 declare module './InlineGutterIcon' {
   type InlineGutterIconProps = {
-    augmentations: AugmentationObject[];
     domain: string;
-    isSearched?: boolean;
+    container: string;
+    searchingAugmentations: AugmentationObject[];
+    blockingAugmentations: AugmentationObject[];
   };
 
   type InlineGutterIcon = FunctionComponent<InlineGutterIconProps>;

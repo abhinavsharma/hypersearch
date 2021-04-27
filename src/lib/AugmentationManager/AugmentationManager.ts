@@ -39,6 +39,7 @@ import {
   extractUrlProperties,
   DOMAIN_EQUALS_CONDTION,
   PROTECTED_AUGMENTATIONS,
+  MY_TRUSTLIST_ID,
 } from 'utils';
 
 class AugmentationManager {
@@ -141,9 +142,52 @@ class AugmentationManager {
         name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
         remove: this.blockList.id,
         domain,
+        selector: {
+          link:
+            SidebarLoader.customSearchEngine.querySelector?.[
+              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+            ],
+          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+        },
       },
       '*',
     );
+  }
+
+  /**
+   * Toggle marking a domain as a trusted source.
+   *
+   * @param domain - The domain to be added or removed from the trusted sources
+   */
+  public async toggleTrustlist(domain: string) {
+    const trustList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+    const existingDomain = !!trustList.actions.action_list[0].value.includes(domain);
+    const newActionValue = existingDomain
+      ? trustList.actions.action_list[0].value.filter((value) => value !== domain)
+      : trustList.actions.action_list[0].value.concat(domain);
+    this.addOrEditAugmentation(trustList, {
+      actions: [
+        {
+          ...trustList.actions.action_list[0],
+          value: newActionValue,
+        },
+      ],
+    });
+    existingDomain &&
+      window.postMessage(
+        {
+          name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
+          remove: MY_TRUSTLIST_ID,
+          domain,
+          selector: {
+            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
+            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+          },
+        },
+        '*',
+      );
   }
 
   /**
@@ -208,10 +252,7 @@ class AugmentationManager {
         augmentation: augmentation.id,
         name: PROCESS_SERP_OVERLAY_MESSAGE,
         selector: {
-          link:
-            SidebarLoader.customSearchEngine.querySelector?.[
-              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-            ],
+          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
           featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
           container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
         },
@@ -316,7 +357,19 @@ class AugmentationManager {
           (hidden) => hidden !== domain.value[0],
         );
         window.postMessage(
-          { name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE, remove: augmentation.id, domain },
+          {
+            name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
+            remove: augmentation.id,
+            domain,
+            selector: {
+              link:
+                SidebarLoader.customSearchEngine.querySelector?.[
+                  window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
+                ],
+              featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
+              container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
+            },
+          },
           '*',
         );
       });
@@ -595,10 +648,7 @@ class AugmentationManager {
         name: PROCESS_SERP_OVERLAY_MESSAGE,
         hideDomains: hasHideActions.map(({ value }) => value[0] ?? ''),
         selector: {
-          link:
-            SidebarLoader.customSearchEngine.querySelector?.[
-              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-            ],
+          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
           featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
           container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
         },

@@ -1,10 +1,9 @@
 declare module './processSerpResults' {
   type ProcessSerpResults = (
-    nodes: Record<'block' | 'search', HTMLElement[]>,
+    nodes: HTMLElement[],
     selector: string,
-    details: Record<'text' | 'header', string>,
-    selectorString: string,
-    augmentations?: Record<string, Record<'block' | 'search', AugmentationObject[]>>,
+    details: Record<'text' | 'header' | 'selectorString', string>,
+    augmentations: Record<string, Record<'block' | 'search', AugmentationObject[]>> | string,
     preventHideOnClick?: boolean,
   ) => void;
 }

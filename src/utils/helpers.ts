@@ -224,14 +224,10 @@ export const makeEllipsis = (stringLike: string, limit: number) =>
  * @returns boolean
  */
 export const shouldPreventEventBubble = (event: KeyboardEvent) => {
-  if (event instanceof KeyboardEvent) {
-    return (
-      !!event.target.constructor.toString().match('HTMLInputElement') ||
-      !!event.target.constructor.toString().match('HTMLTextAreaElement')
-    );
-  } else {
-    return false;
-  }
+  return (
+    !!event.target.constructor.toString().match('HTMLInputElement') ||
+    !!event.target.constructor.toString().match('HTMLTextAreaElement')
+  );
 };
 
 // TODO #1: extarct to API manager class

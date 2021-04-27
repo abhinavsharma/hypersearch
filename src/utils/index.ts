@@ -4,5 +4,4 @@ export * from './flipSidebar/flipSidebar';
 export * from './helpers';
 export * from './processSerpResults/processSerpResults';
 export * from './keyboardHandler/keyboardHandler';
-export * from './showGutterIcons/showGutterIcons';
 export * from './strings';

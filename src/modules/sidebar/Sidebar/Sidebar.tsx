@@ -15,6 +15,8 @@ import {
   APP_NAME,
   DISABLE_SUGGESTED_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
+  TOGGLE_BLOCKED_DOMAIN_MESSAGE,
+  TOGGLE_TRUSTED_DOMAIN_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
@@ -41,6 +43,17 @@ const Sidebar: Sidebar = () => {
           break;
         case DISABLE_SUGGESTED_AUGMENTATION:
           AugmentationManager.disableSuggestedAugmentation(msg.augmentation);
+          break;
+        case TOGGLE_BLOCKED_DOMAIN_MESSAGE:
+          (async () => {
+            !msg.isBlocked
+              ? await AugmentationManager.updateBlockList(msg.domain)
+              : await AugmentationManager.deleteFromBlockList(msg.domain);
+          })();
+          break;
+        case TOGGLE_TRUSTED_DOMAIN_MESSAGE:
+          (async () => await AugmentationManager.toggleTrustlist(msg.domain))();
+          break;
       }
     });
     // When one of the following conditions are met, we hide the sidebar by default, regardless
