@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import Button from 'antd/lib/button';
+import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, MoreHorizontal } from 'react-feather';
 import {
+  MY_BLOCKLIST_ID,
+  MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   SIDEBAR_Z_INDEX,
@@ -9,6 +12,7 @@ import {
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
+import 'antd/lib/tooltip/style/index.css';
 import './InlineGutterIcon.scss';
 
 const ICON_FILL_COLOR = '#2559C0';
@@ -24,6 +28,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   const iconRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  const tooltipContainer = useRef(null);
 
   const handleOpenBuilder = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
@@ -35,12 +40,14 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     } as OpenGutterPageMessage);
   };
 
-  const handleToggleBlocked = () => {
+  const handleToggleBlocked = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     chrome.runtime.sendMessage({ type: TOGGLE_BLOCKED_DOMAIN_MESSAGE, domain, isBlocked });
+    handleOpenBuilder(e);
   };
 
-  const handleToggleTrusted = () => {
+  const handleToggleTrusted = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     chrome.runtime.sendMessage({ type: TOGGLE_TRUSTED_DOMAIN_MESSAGE, domain });
+    handleOpenBuilder(e);
   };
 
   const handleMouseEnter = () => {
@@ -89,19 +96,60 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     }
   }, [iconRef.current, resultRef.current, rootRef.current]);
 
+  const onlyBlockedByBlocklist =
+    blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
+
+  const onlySearchedByTrustlist =
+    searchingAugmentations.length === 1 && searchingAugmentations[0].id === MY_TRUSTLIST_ID;
+
+  const inBlocklist = !!blockingAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
+
+  const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+
   return (
-    <div className="gutter-icon-container" ref={iconRef}>
-      <Button
-        onClick={handleToggleTrusted}
-        icon={<Star fill={isSearched ? ICON_FILL_COLOR : 'transparent'} />}
-        type="text"
-      />
-      <Button
-        onClick={handleToggleBlocked}
-        icon={<EyeOff fill={isBlocked ? ICON_FILL_COLOR : 'transparent'} />}
-        type="text"
-      />
-      <Button onClick={handleOpenBuilder} icon={<MoreHorizontal />} type="text" />
-    </div>
+    <>
+      <div className="gutter-icon-container" ref={iconRef}>
+        <Tooltip
+          title={`${
+            !!searchingAugmentations.length && !onlySearchedByTrustlist
+              ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
+              : ''
+          } ${inTrustlist ? 'Remove from my trustlist' : 'Add domain to my trusted sites.'}`}
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+          overlayClassName="gutter-tooltip"
+        >
+          <Button
+            onClick={handleToggleTrusted}
+            icon={<Star fill={isSearched ? ICON_FILL_COLOR : 'transparent'} />}
+            type="text"
+          />
+        </Tooltip>
+        <Tooltip
+          title={`${
+            !!blockingAugmentations.length && !onlyBlockedByBlocklist
+              ? `Domain hidden by ${blockingAugmentations.map(({ name }) => name).join(', ')}.`
+              : ''
+          } ${inBlocklist ? 'Remove from my blocklist.' : 'Add domain to my blocklist.'}`}
+          destroyTooltipOnHide={{ keepParent: false }}
+          getPopupContainer={() => tooltipContainer.current}
+          placement="bottom"
+          overlayClassName="gutter-tooltip"
+        >
+          <Button
+            onClick={handleToggleBlocked}
+            icon={<EyeOff fill={isBlocked ? ICON_FILL_COLOR : 'transparent'} />}
+            type="text"
+          />
+        </Tooltip>
+        <Button onClick={handleOpenBuilder} icon={<MoreHorizontal />} type="text" />
+        <div
+          className="tooltip-container"
+          ref={tooltipContainer}
+          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+        />
+      </div>
+    </>
   );
 };
