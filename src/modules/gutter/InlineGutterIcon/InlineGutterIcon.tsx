@@ -15,7 +15,8 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './InlineGutterIcon.scss';
 
-const ICON_FILL_COLOR = '#2559C0';
+const ICON_UNSELECTED_COLOR = '#444'
+const ICON_SELECTED_COLOR = '#2559C0';
 
 export const InlineGutterIcon: InlineGutterIcon = ({
   domain,
@@ -114,7 +115,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             !!searchingAugmentations.length && !onlySearchedByTrustlist
               ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
               : ''
-          } ${inTrustlist ? 'Remove from my trustlist' : 'Add domain to my trusted sites.'}`}
+          } ${inTrustlist ? 'Remove domain from my trusted sites' : 'Add domain to my trusted sites.'}`}
           destroyTooltipOnHide={{ keepParent: false }}
           getPopupContainer={() => tooltipContainer.current}
           placement="bottom"
@@ -122,7 +123,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         >
           <Button
             onClick={handleToggleTrusted}
-            icon={<Star fill={isSearched ? ICON_FILL_COLOR : 'transparent'} />}
+            icon={<Star stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'} />}
             type="text"
           />
         </Tooltip>
@@ -131,7 +132,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             !!blockingAugmentations.length && !onlyBlockedByBlocklist
               ? `Domain hidden by ${blockingAugmentations.map(({ name }) => name).join(', ')}.`
               : ''
-          } ${inBlocklist ? 'Remove from my blocklist.' : 'Add domain to my blocklist.'}`}
+          } ${inBlocklist ? 'Remove from my blocked domains.' : 'Add domain to my block list.'}`}
           destroyTooltipOnHide={{ keepParent: false }}
           getPopupContainer={() => tooltipContainer.current}
           placement="bottom"
@@ -139,7 +140,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         >
           <Button
             onClick={handleToggleBlocked}
-            icon={<EyeOff fill={isBlocked ? ICON_FILL_COLOR : 'transparent'} />}
+            icon={<EyeOff stroke={isBlocked ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} />}
             type="text"
           />
         </Tooltip>
