@@ -40,14 +40,19 @@
       font-weight: bold;
     }
 
+    .setting-button {
+      display: inline-flex;
+      align-self: center;
+      margin-left: auto;
+
+      span {
+        font-size: 24px;
+      }
+    }
+
     .close-button {
       display: inline-flex;
       align-self: center;
-
-      &.hidden {
-        opacity: 0;
-        cursor: default !important;
-      }
     }
   }
 }

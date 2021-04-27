@@ -15,7 +15,10 @@ import {
   EXTENSION_SHORT_URL_RECEIVED,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
+  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  OPEN_BUILDER_PAGE,
   OPEN_NEW_TAB_MESSAGE,
+  OPEN_SETTINGS_PAGE_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
   SYNC_DISTINCT_KEY,
@@ -185,9 +188,13 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
     },
   );
 });
-// Send a message to open the specified page in the sidebar when the toolbar icon is clicked.
-chrome.browserAction.onClicked.addListener(() =>
-  chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') }),
+// When the user is clicking the extension button, the sidebar will open the active augmentations page, regardless
+// of the current url.
+chrome.browserAction.onClicked.addListener(({ id }) =>
+  chrome.tabs.sendMessage(id, {
+    type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+    page: OPEN_BUILDER_PAGE.ACTIVE,
+  }),
 );
 // The content script does not support the `tabs` property yet, so we have to pass the messages through the background
 // page. By default it will forward any message as is to the client.
@@ -195,6 +202,9 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
   switch (msg.type) {
     case OPEN_NEW_TAB_MESSAGE:
       chrome.tabs.create({ url: msg.url });
+      break;
+    case OPEN_SETTINGS_PAGE_MESSAGE:
+      chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') });
       break;
     case SEND_LOG_MESSAGE:
       debug('handleLogSend - call');
