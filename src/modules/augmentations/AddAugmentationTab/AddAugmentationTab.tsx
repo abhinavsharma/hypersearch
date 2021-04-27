@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Button from 'antd/lib/button';
 import {
   flipSidebar,
   getFirstValidTabIndex,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
+  OPEN_SETTINGS_PAGE_MESSAGE,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import './AddAugmentationTab.scss';
+
+const SettingOutlined = React.lazy(
+  async () => await import('@ant-design/icons/SettingOutlined').then((mod) => mod),
+);
 
 export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActiveKey }) => {
   const handleClose = () => {
@@ -16,6 +21,10 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
     } else {
       setActiveKey(getFirstValidTabIndex(tabs));
     }
+  };
+
+  const handleOpenSettings = () => {
+    chrome.runtime.sendMessage({ type: OPEN_SETTINGS_PAGE_MESSAGE });
   };
 
   const handleOpenBuilder = () =>
@@ -39,6 +48,11 @@ export const AddAugmentationTab: AddAugmentationTab = ({ tabs, active, setActive
             Close
           </Button>
           <span className="title">Lenses</span>
+          <Button type="text" className="setting-button" onClick={handleOpenSettings}>
+            <Suspense fallback={null}>
+              <SettingOutlined />
+            </Suspense>
+          </Button>
         </header>
       )}
     </div>

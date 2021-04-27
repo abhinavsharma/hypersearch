@@ -604,47 +604,33 @@ class SidebarLoader {
             query: this.query,
             url: this.url,
           });
-        if (
-          this.isSerp ||
-          this.sidebarTabs.length ||
-          this.matchingDisabledInstalledAugmentations.length ||
-          !!window.location.href.match(EXTENSION_HOST)
-        ) {
-          if (
-            window.location.href.search(IMAGE_URL_PARAM) === -1 &&
-            (process.env.PROJECT === 'is' || this.isSerp)
-          ) {
-            this.createSidebar();
-            this.sidebarTabs.forEach((tab) =>
-              window.postMessage(
-                {
-                  augmentation: tab.augmentation,
-                  hideDomains: tab.augmentation?.actions.action_list.reduce((a, { key, value }) => {
-                    if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
-                    return a;
-                  }, []),
-                  name: PROCESS_SERP_OVERLAY_MESSAGE,
-                  tab: tab.id,
-                  selector: {
-                    link: this.customSearchEngine.querySelector['desktop'],
-                    featured: this.customSearchEngine.querySelector.featured ?? Array(0),
-                    container: this.customSearchEngine.querySelector.result_container_selector,
-                  },
-                },
-                '*',
-              ),
-            ),
-              this.sidebarTabs.length &&
-                this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
-                  url: this.url.href,
-                  subtabs: this.strongPrivacy
-                    ? this.sidebarTabs.map(({ url }) => md5(url.href))
-                    : this.sidebarTabs,
-                });
-          } else {
-            return null;
-          }
-        }
+        this.createSidebar();
+        this.sidebarTabs.forEach((tab) =>
+          window.postMessage(
+            {
+              augmentation: tab.augmentation,
+              hideDomains: tab.augmentation?.actions.action_list.reduce((a, { key, value }) => {
+                if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
+                return a;
+              }, []),
+              name: PROCESS_SERP_OVERLAY_MESSAGE,
+              tab: tab.id,
+              selector: {
+                link: this.customSearchEngine.querySelector['desktop'],
+                featured: this.customSearchEngine.querySelector.featured ?? Array(0),
+                container: this.customSearchEngine.querySelector.result_container_selector,
+              },
+            },
+            '*',
+          ),
+        ),
+          this.sidebarTabs.length &&
+            this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
+              url: this.url.href,
+              subtabs: this.strongPrivacy
+                ? this.sidebarTabs.map(({ url }) => md5(url.href))
+                : this.sidebarTabs,
+            });
       });
   }
 

@@ -30,7 +30,6 @@ export const LicenseFrame = () => {
     ).then((result) => result[SYNC_LICENSE_KEY] as string);
     if (stored) {
       stepContext.setLicense({ isActivated: true, key: stored });
-      handleNext();
     }
   }, []);
 
@@ -52,7 +51,6 @@ export const LicenseFrame = () => {
         value={stepContext.license.key}
         placeholder="If you have a special access key, paste it here"
         onChange={(e) => stepContext.setLicense({ key: e.target.value })}
-        disabled={stepContext.license.isActivated}
       />
       <div className="horizontal-container" style={{ width: '400px' }}>
         <Button
@@ -61,7 +59,7 @@ export const LicenseFrame = () => {
           size="large"
           className="step-button"
           onClick={handleLicenseSubmit}
-          disabled={!validateLicense() || stepContext.license.isActivated}
+          disabled={!validateLicense()}
         >
           Next
         </Button>
