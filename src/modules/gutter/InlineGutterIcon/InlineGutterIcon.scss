@@ -15,6 +15,20 @@
     height: 100%;
     transition: 100ms all ease-in-out;
 
+    .tooltip-container {
+      position: absolute;
+      left: -100px;
+      right: -100px;
+
+      .gutter-tooltip {
+        z-index: 9999 !important;
+
+        .ant-tooltip-inner {
+          min-height: 0;
+        }
+      }
+    }
+
     .gutter-icon {
       width: 100px;
       height: 100px;
