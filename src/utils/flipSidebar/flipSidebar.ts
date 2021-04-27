@@ -36,15 +36,14 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     'insight-tab-container',
   )[0] as HTMLDivElement;
 
-  const showButton = document.getElementsByClassName(
-    'insight-sidebar-toggle-button',
-  )[0] as HTMLDivElement;
+  const showButton = (document.getElementsByClassName('insight-sidebar-toggle-button')[0] ??
+    document.createElement('div')) as HTMLDivElement;
 
   const activeAugmentationHeader = document.getElementById(
     'add-augmentation-tab',
   ) as HTMLDivElement;
 
-  if (!showButton || innerDocument.classList.contains('insight-expanded')) return;
+  if (innerDocument.classList.contains('insight-expanded')) return;
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
@@ -55,7 +54,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     // We need the timeout to ensure the proper animation
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
-      nameNub.setAttribute('style', 'right: -30px;');
+      nameNub.setAttribute('style', 'right: -50px;');
       outerDocument.getElementById('sidebar-root').setAttribute(
         'style',
         `
@@ -74,7 +73,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         'style',
         `
         position: fixed;
-        height: ${showButton.getAttribute('data-height') + 'px'};
+        height: ${showButton.getAttribute('data-height') ?? '0' + 'px'};
         width: ${tabsLength === 0 ? '200px' : '160px'};
         border-width: 0 !important;
         top: auto;
@@ -90,7 +89,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
       if (!preventOverlay) {
         sidebarOverlay.style.opacity = '0';
         setTimeout(() => {
-          sidebarContainer.removeChild(sidebarOverlay);
+          sidebarOverlay.parentElement?.removeChild(sidebarOverlay);
         }, 150);
       }
     }, 500);
@@ -145,7 +144,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         setTimeout(() => {
           sidebarOverlay.style.opacity = '0';
           setTimeout(() => {
-            sidebarContainer.removeChild(sidebarOverlay);
+            sidebarOverlay.parentElement?.removeChild(sidebarOverlay);
           }, 250);
         }, 350);
       }
