@@ -87,12 +87,10 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
       resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
       resultRef.current?.addEventListener('mouseleave', handleMouseLeave);
-      rootRef.current?.addEventListener('mouseleave', handleMouseLeave);
 
       return () => {
         resultRef.current?.removeEventListener('mouseenter', handleMouseEnter);
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
-        rootRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
   }, [iconRef.current, resultRef.current, rootRef.current]);
