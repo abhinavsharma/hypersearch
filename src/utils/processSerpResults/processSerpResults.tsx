@@ -13,6 +13,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
+  DOMAINS_TO_RELEVANT_SLICE,
   INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
@@ -126,13 +127,17 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (!(serpResult instanceof HTMLElement)) continue;
 
-    const serpResultDomain = extractUrlProperties(
+    const urlProps = extractUrlProperties(
       node instanceof HTMLLinkElement
         ? node.getAttribute('href') // default <a>
         : node?.closest('a')?.getAttribute('href') ?? // <a> > <cite>
             node?.querySelector('a')?.getAttribute('href') ?? // featured snippet
             node?.textContent, // guessing
-    )?.hostname;
+    );
+
+    const serpResultDomain = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
+      ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
+      : urlProps.hostname;
 
     if (typeof serpResultDomain !== 'string' && typeof augmentations !== 'string') continue;
 

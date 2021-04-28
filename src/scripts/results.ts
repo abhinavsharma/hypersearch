@@ -15,6 +15,7 @@ const GOOGLE_VERTICAL_NEWS_LINK_SELECTOR = '.EPLo7b a';
 const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
 import {
+  DOMAINS_TO_RELEVANT_SLICE,
   INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
@@ -99,11 +100,16 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     [...featured, ...results].forEach((element) => {
       const result = element instanceof HTMLElement ? element : element.link;
 
-      const resultDomain = extractUrlProperties(
+      const urlProps = extractUrlProperties(
         result instanceof HTMLLinkElement
           ? result.getAttribute('href')
           : result?.closest('a').getAttribute('href'),
-      )?.hostname;
+      );
+
+      const resultDomain = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
+        ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ??
+          urlProps.hostname
+        : urlProps.hostname;
 
       const container = element instanceof HTMLElement ? result : element.container;
 
