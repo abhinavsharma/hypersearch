@@ -30,7 +30,6 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
 
   sidebarContainer.appendChild(sidebarOverlay);
 
-
   const tabsContainer = document.getElementsByClassName(
     'insight-tab-container',
   )[0] as HTMLDivElement;
@@ -38,17 +37,10 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
   const showButton = (document.getElementsByClassName('insight-sidebar-toggle-button')[0] ??
     document.createElement('div')) as HTMLDivElement;
 
-  const activeAugmentationHeader = document.getElementById(
-    'add-augmentation-tab',
-  ) as HTMLDivElement;
-
   if (innerDocument.classList.contains('insight-expanded')) return;
 
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
-    if (activeAugmentationHeader) {
-      activeAugmentationHeader.style.display = 'none';
-    }
     // We need the timeout to ensure the proper animation
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
@@ -127,10 +119,6 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     );
     // We need the timeout to ensure the proper animation
     setTimeout(() => {
-      if (activeAugmentationHeader) {
-        activeAugmentationHeader.style.left = '20px';
-        activeAugmentationHeader.style.display = 'flex';
-      }
       if (!preventOverlay) {
         setTimeout(() => {
           sidebarOverlay.style.opacity = '0';

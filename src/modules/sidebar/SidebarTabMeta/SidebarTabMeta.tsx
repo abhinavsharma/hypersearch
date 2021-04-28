@@ -26,7 +26,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
   const ellipsis = {
     rows: 2,
-    symbol: 'more'
+    symbol: 'more',
   };
 
   useEffect(() => {
