@@ -1,0 +1,18 @@
+#sidebar-header {
+  display: flex;
+  background: #f9f9f9;
+  justify-content: space-between;
+
+  .app-name {
+    display: inline-flex;
+    padding: 10px 15px;
+    margin: 0;
+  }
+
+  #header-actions-container {
+    display: flex;
+    width: 200px;
+    justify-content: flex-end;
+    padding: 10px 15px;
+  }
+}

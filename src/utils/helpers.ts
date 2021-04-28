@@ -79,6 +79,14 @@ export const runFunctionWhenDocumentReady = (
   }
 };
 
+export const isKnowledgePage = (document: Document) =>
+  KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
+
+export const getRankedDomains = (domains: string[]) =>
+  [...domains.reduce((a, e) => a.set(e, (a.get(e) || 0) + 1), new Map()).entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([key]) => key);
+
 /**
  * ! URL MANIPULATION
  */
@@ -231,6 +239,16 @@ export const shouldPreventEventBubble = (event: KeyboardEvent) => {
   );
 };
 
+/**
+ * Takes a string like value as argument and removes the leading non-word characters,
+ * emojis or spaces for example.
+ *
+ * @param stringLike - The string like value
+ * @returns
+ */
+export const removeEmoji = (stringLike: string) =>
+  typeof stringLike !== 'string' ? stringLike : stringLike.replace(/^[^\w\s]*/gi, '');
+
 // TODO #1: extarct to API manager class
 
 /**
@@ -323,9 +341,6 @@ export const postAPI = async <T>(
 
 // TODO #2: decouple to SidebarManager
 
-export const isKnowledgePage = (document: Document) =>
-  KP_SELECTORS.map((selector) => !!document.querySelectorAll(selector).length).indexOf(true) > -1;
-
 export const isSafari = () => {
   const hasVersion = /Version\/(\d{2})/;
   const hasSafari = /Safari\/(\d{3})/;
@@ -335,11 +350,6 @@ export const isSafari = () => {
     ua.match(hasVersion) !== null && ua.match(hasSafari) !== null && ua.match(hasChrome) === null
   );
 };
-
-export const getRankedDomains = (domains: string[]) =>
-  [...domains.reduce((a, e) => a.set(e, (a.get(e) || 0) + 1), new Map()).entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([key]) => key);
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
   if (a.augmentation.id === MY_TRUSTLIST_ID) return 1;

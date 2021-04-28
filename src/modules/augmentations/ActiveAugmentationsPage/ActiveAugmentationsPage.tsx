@@ -3,12 +3,18 @@ import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AugmentationRow } from 'modules/augmentations';
+import { Settings } from 'react-feather';
+
 import {
   makeEllipsis,
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   EMPTY_AUGMENTATION,
   OPEN_BUILDER_PAGE,
+  getFirstValidTabIndex,
+  flipSidebar,
+  SWITCH_TO_TAB,
+  OPEN_SETTINGS_PAGE_MESSAGE,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
@@ -18,7 +24,26 @@ const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
 );
 
+const SettingOutlined = React.lazy(
+  async () => await import('@ant-design/icons/SettingOutlined').then((mod) => mod),
+);
+
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
+  const handleOpenSettings = () => {
+    chrome.runtime.sendMessage({ type: OPEN_SETTINGS_PAGE_MESSAGE });
+  };
+
+  const handleClose = () => {
+    if (getFirstValidTabIndex(SidebarLoader.sidebarTabs) === '0') {
+      flipSidebar(window.top.document, 'hide', 0, true);
+    } else {
+      chrome.runtime.sendMessage({
+        type: SWITCH_TO_TAB,
+        index: getFirstValidTabIndex(SidebarLoader.sidebarTabs),
+      });
+    }
+  };
+
   const augmentationSorter = (a: AugmentationObject, b: AugmentationObject) => {
     if (!a.installed && b.installed) return 1;
     return (
@@ -92,6 +117,17 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
 
   return (
     <div id="active-augmentations-page">
+      <header>
+        <Button type="link" className="close-button" onClick={handleClose}>
+          Close
+        </Button>
+        <span className="title">Lenses</span>
+        <Button type="text" className="setting-button" onClick={handleOpenSettings}>
+          <Suspense fallback={null}>
+            <Settings stroke={'#999'} size={20}/>
+          </Suspense>
+        </Button>
+      </header>
       {sections.map(({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
         const hasNextSection = !!a[i + 1];
         return augmentations.length || i === 0 ? (

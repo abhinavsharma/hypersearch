@@ -4,18 +4,18 @@
  * @license (C) Insight
  * @version 1.0.0
  */
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
 import Button from 'antd/lib/button';
+import Tooltip from 'antd/lib/tooltip';
 import Router from 'route-lite';
+import { Menu, Minimize } from 'react-feather';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import {
-  AddAugmentationTab,
-  ActiveAugmentationsPage,
-  EditAugmentationPage,
-} from 'modules/augmentations/';
+import { InlineGutterOptionsPage } from 'modules/gutter';
+import { ActiveAugmentationsPage, EditAugmentationPage } from 'modules/augmentations/';
 import {
   ActionBar,
+  SidebarHeader,
   SidebarTabContainer,
   SidebarTabMeta,
   SidebarTabReadable,
@@ -38,22 +38,8 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabs.scss';
-import Tooltip from 'antd/lib/tooltip';
-import { InlineGutterOptionsPage } from 'modules/gutter';
 
 const { TabPane } = Tabs;
-
-const ExpandAltOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ExpandAltOutlined').then((mod) => mod),
-);
-
-const CloseOutlined = React.lazy(
-  async () => await import('@ant-design/icons/CloseOutlined').then((mod) => mod),
-);
-
-const ShrinkOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ShrinkOutlined').then((mod) => mod),
-);
 
 export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
@@ -66,45 +52,32 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
-  const handleClose = () => {
-    flipSidebar(document, 'hide', tabs.length);
-  };
+  const handleOpenBuilder = () =>
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.ACTIVE,
+    } as OpenActivePageMessage);
 
-  const extraContent = {
-    left: (
-      <Suspense fallback={null}>
-        <Tooltip
-          title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar (Escape key)'}
-          destroyTooltipOnHide={{ keepParent: false }}
-        >
-          <Button
-            type="text"
-            className="expand-icon"
-            onClick={isExpanded ? handleExpand : handleClose}
+  const extraContent = isExpanded
+    ? {
+        left: (
+          <Tooltip
+            title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar (Escape key)'}
+            destroyTooltipOnHide={{ keepParent: false }}
           >
-            {isExpanded ? <ShrinkOutlined /> : <CloseOutlined style={{ color: '#999' }} />}
-          </Button>
-        </Tooltip>
-        {!isExpanded && (
-          <Tooltip title='Fullscreen ("F" key)' destroyTooltipOnHide={{ keepParent: false }}>
-            <ExpandAltOutlined
-              style={{ color: '#999' }}
-              onClick={handleExpand}
+            <Button
+              type="text"
+              icon={<Minimize />}
               className="expand-icon"
+              onClick={handleExpand}
             />
           </Tooltip>
-        )}
-      </Suspense>
-    ),
-    right: (
-      <AddAugmentationTab
-        tabs={tabs}
-        numInstalledAugmentations={tabs.length}
-        active={activeKey === '0'}
-        setActiveKey={setActiveKey}
-      />
-    ),
-  };
+        ),
+        right: (
+          <Button icon={<Menu />} type="text" onClick={handleOpenBuilder} className="tab-button" />
+        ),
+      }
+    : undefined;
 
   const handleLog = useCallback(async (msg) => {
     if (msg.frame.parentFrameId === -1) {
@@ -182,7 +155,10 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
   }, [activeKey]);
 
   const TabBar: TabBar = (props, DefaultTabBar) => (
-    <DefaultTabBar {...props} className="insight-tab-bar" />
+    <>
+      {!isExpanded && activeKey !== '0' && <SidebarHeader tabs={tabs} />}
+      <DefaultTabBar {...props} className="insight-tab-bar" />
+    </>
   );
 
   return (

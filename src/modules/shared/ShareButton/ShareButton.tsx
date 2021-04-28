@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
 import Typography from 'antd/lib/typography';
+import { Share } from 'react-feather';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   AIRTABLE_PUBLIC_LENSES_CREATE,
@@ -12,7 +13,6 @@ import {
   MY_BLOCKLIST_ID,
   SIDEBAR_Z_INDEX,
 } from 'utils';
-import { Share } from 'react-feather';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
@@ -26,10 +26,6 @@ const CopyOutlined = React.lazy(
 
 const UploadOutlined = React.lazy(
   async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
-);
-
-const ShareAltOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ShareAltOutlined').then((mod) => mod),
 );
 
 export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
@@ -124,13 +120,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
         placement={icon ? 'bottomRight' : 'topLeft'}
       >
         {icon ? (
-          <Button
-            type="link"
-            onClick={handleShare}
-            icon={
-              <Share size={15} stroke={'#999'} />
-            }
-          />
+          <Button type="link" onClick={handleShare} icon={<Share size={15} stroke={'#999'} />} />
         ) : (
           <Button
             type="link"
