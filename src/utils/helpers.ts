@@ -226,7 +226,8 @@ export const makeEllipsis = (stringLike: string, limit: number) =>
 export const shouldPreventEventBubble = (event: KeyboardEvent) => {
   return (
     !!event.target.constructor.toString().match('HTMLInputElement') ||
-    !!event.target.constructor.toString().match('HTMLTextAreaElement')
+    !!event.target.constructor.toString().match('HTMLTextAreaElement') ||
+    (event.target as HTMLElement).getAttribute('contenteditable') === 'true'
   );
 };
 
