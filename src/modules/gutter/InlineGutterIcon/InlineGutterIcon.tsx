@@ -15,7 +15,7 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './InlineGutterIcon.scss';
 
-const ICON_UNSELECTED_COLOR = '#999'
+const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 
 export const InlineGutterIcon: InlineGutterIcon = ({
@@ -47,6 +47,8 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   };
 
   const handleToggleTrusted = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
+    (e.target as HTMLElement).classList.add('bounceIn');
     chrome.runtime.sendMessage({ type: TOGGLE_TRUSTED_DOMAIN_MESSAGE, domain });
     handleOpenBuilder(e);
   };
@@ -113,7 +115,9 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             !!searchingAugmentations.length && !onlySearchedByTrustlist
               ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
               : ''
-          } ${inTrustlist ? 'Remove domain from my trusted sites' : 'Add domain to my trusted sites.'}`}
+          } ${
+            inTrustlist ? 'Remove domain from my trusted sites' : 'Add domain to my trusted sites.'
+          }`}
           destroyTooltipOnHide={{ keepParent: false }}
           getPopupContainer={() => tooltipContainer.current}
           placement="bottom"
@@ -121,7 +125,12 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         >
           <Button
             onClick={handleToggleTrusted}
-            icon={<Star stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'} />}
+            icon={
+              <Star
+                stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
+                fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
+              />
+            }
             type="text"
           />
         </Tooltip>
@@ -142,7 +151,11 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             type="text"
           />
         </Tooltip>
-        <Button onClick={handleOpenBuilder} icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />} type="text" />
+        <Button
+          onClick={handleOpenBuilder}
+          icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
+          type="text"
+        />
         <div
           className="tooltip-container"
           ref={tooltipContainer}
