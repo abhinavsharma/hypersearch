@@ -1,6 +1,8 @@
 #tab-meta-container {
   display: flex;
   justify-content: space-between;
+  border-bottom: 1px solid #ccc;
+  background: #fafafa;
 
   #meta-info-icon-container {
     margin: auto 10px;
@@ -10,9 +12,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    background: #f6ffed;
-    padding: 10px 0px 10px 20px;
-    border-bottom: 1px solid #ccc;
+    padding: 10px 0px;
 
     .meta-text {
       color: #333;

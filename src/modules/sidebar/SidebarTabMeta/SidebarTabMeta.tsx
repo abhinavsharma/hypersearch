@@ -26,6 +26,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
   const ellipsis = {
     rows: 2,
+    symbol: 'more'
   };
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   return showMeta ? (
     <div id="tab-meta-container">
       <div id="meta-info-icon-container">
-        <Info />
+        <Info stroke={'#999'} />
       </div>
       <div id="sidebar-tab-meta">
         <Paragraph

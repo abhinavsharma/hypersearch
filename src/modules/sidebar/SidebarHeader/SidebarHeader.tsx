@@ -14,6 +14,8 @@ import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarHeader.scss';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import Tooltip from 'antd/lib/tooltip';
+import 'antd/lib/tooltip/style/index.css';
 
 const { Title } = Typography;
 
@@ -37,13 +39,19 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
 
   return (
     <div id="sidebar-header">
-      <Title className="app-name" level={2}>
+      <Title className="app-name" level={5}>
         {APP_NAME}
       </Title>
       <div id="header-actions-container">
-        <Button onClick={handleExpand} icon={<Maximize />} type="text" />
-        <Button onClick={handleOpenBuilder} icon={<Menu />} type="text" />
-        <Button onClick={handleClose} icon={<Sidebar />} type="text" />
+        <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Fullscreen (F)">
+          <Button onClick={handleExpand} icon={<Maximize size={20} stroke={'#999'} />} type="text" />
+        </Tooltip>
+        <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Lenses Menu">
+          <Button onClick={handleOpenBuilder} icon={<Menu size={20} stroke={'#999'} />} type="text" />
+        </Tooltip>
+        <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Hide (Esc)">
+          <Button onClick={handleClose} icon={<Sidebar size={20} stroke={'#999'} />} type="text" />
+        </Tooltip>
       </div>
     </div>
   );

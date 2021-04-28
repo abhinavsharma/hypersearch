@@ -3,6 +3,8 @@ import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AugmentationRow } from 'modules/augmentations';
+import { Settings } from 'react-feather';
+
 import {
   makeEllipsis,
   APP_NAME,
@@ -122,7 +124,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
         <span className="title">Lenses</span>
         <Button type="text" className="setting-button" onClick={handleOpenSettings}>
           <Suspense fallback={null}>
-            <SettingOutlined />
+            <Settings stroke={'#999'} size={20}/>
           </Suspense>
         </Button>
       </header>
