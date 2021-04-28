@@ -569,7 +569,12 @@ class SidebarLoader {
     debug('loadOrUpdateSidebar - call\n');
     this.document = document;
     this.url = url;
-    if (this.url.href.search(/amazon\.com/gi) > -1) {
+    if (
+      this.url.href.search(/amazon\.com/gi) > -1 ||
+      this.url.searchParams.get('tbm') === 'isch' ||
+      this.url.searchParams.get('ia') === 'images' ||
+      this.url.searchParams.get('iax') === 'images'
+    ) {
       this.preventAutoExpand = true;
     }
     const existing = this.document.getElementById('sidebar-root');
