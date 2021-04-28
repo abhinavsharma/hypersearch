@@ -1,6 +1,5 @@
 #tab-meta-container {
   display: flex;
-  justify-content: space-between;
   border-bottom: 1px solid #ccc;
   background: #fafafa;
 
@@ -18,7 +17,7 @@
       color: #333;
       margin: 0;
       padding: 0;
-      width: 370px;
+      width: 340px;
 
       &.expanded {
         display: contents;
@@ -46,6 +45,14 @@
       display: inline;
       height: auto;
       padding: 0 10px;
+    }
+  }
+}
+
+#insight-sidebar-container.insight-expanded {
+  #tab-meta-container {
+    .meta-text {
+      width: 90vw;
     }
   }
 }

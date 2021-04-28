@@ -7,7 +7,6 @@ export const expandSidebar = (tabsNum: number) => {
   const sidebarContainer = frameDocument.getElementById(
     'insight-sidebar-container',
   ) as HTMLDivElement;
-  const sidebarTitle = frameDocument.getElementById('insight-sidebar-title');
   const tabFrames = Array.from(frameDocument.getElementsByClassName('insight-tab-iframe'));
 
   if (!sidebarRoot.classList.contains('insight-expanded')) {
@@ -63,16 +62,12 @@ export const expandSidebar = (tabsNum: number) => {
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
     `,
     );
-    sidebarTitle.style.display = 'none';
-    sidebarTitle.style.visibility = 'hidden';
     tabFrames.forEach((frame) => frame.classList.add('insight-expanded'));
   } else {
     sidebarRoot.classList.remove('insight-expanded');
     sidebarRootIframe.classList.remove('insight-expanded');
     sidebarContainer.classList.remove('insight-expanded');
     document.documentElement.style.overflow = 'auto';
-    sidebarTitle.style.display = 'block';
-    sidebarTitle.style.visibility = 'visible';
     sidebarContainer.setAttribute(
       'style',
       `

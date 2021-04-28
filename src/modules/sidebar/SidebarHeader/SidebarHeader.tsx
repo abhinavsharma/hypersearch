@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
-import { Maximize, Menu, Sidebar } from 'react-feather';
+import { Maximize, Minimize, Menu, Sidebar } from 'react-feather';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
-  APP_NAME,
   expandSidebar,
   flipSidebar,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -18,10 +17,13 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import Tooltip from 'antd/lib/tooltip';
 import 'antd/lib/tooltip/style/index.css';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export const SidebarHeader: SidebarHeader = ({ tabs }) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
+
   const handleClose = () => {
+    isExpanded && handleExpand();
     flipSidebar(document, 'hide', tabs.length);
   };
 
@@ -38,6 +40,10 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
+  useEffect(() => {
+    setIsExpanded(SidebarLoader.isExpanded);
+  }, [SidebarLoader.isExpanded]);
+
   return (
     <div id="sidebar-header">
       <div className="app-name-and-feedback">
@@ -51,11 +57,28 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
         </div>
       </div>
       <div id="header-actions-container">
-        <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Fullscreen (F)">
-          <Button onClick={handleExpand} icon={<Maximize size={20} stroke={'#999'} />} type="text" />
+        <Tooltip
+          destroyTooltipOnHide={{ keepParent: false }}
+          title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Fullscreen (F)'}
+        >
+          <Button
+            onClick={handleExpand}
+            icon={
+              isExpanded ? (
+                <Minimize size={20} stroke={'#999'} />
+              ) : (
+                <Maximize size={20} stroke={'#999'} />
+              )
+            }
+            type="text"
+          />
         </Tooltip>
         <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Lenses Menu">
-          <Button onClick={handleOpenBuilder} icon={<Menu size={20} stroke={'#999'} />} type="text" />
+          <Button
+            onClick={handleOpenBuilder}
+            icon={<Menu size={20} stroke={'#999'} />}
+            type="text"
+          />
         </Tooltip>
         <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Hide (Esc)">
           <Button onClick={handleClose} icon={<Sidebar size={20} stroke={'#999'} />} type="text" />

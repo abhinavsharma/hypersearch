@@ -6,10 +6,7 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
-import Button from 'antd/lib/button';
-import Tooltip from 'antd/lib/tooltip';
 import Router from 'route-lite';
-import { Menu, Minimize } from 'react-feather';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { InlineGutterOptionsPage } from 'modules/gutter';
 import { ActiveAugmentationsPage, EditAugmentationPage } from 'modules/augmentations/';
@@ -28,7 +25,6 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
-  expandSidebar,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
@@ -42,42 +38,8 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
   const [showPage, setShowPage] = useState<OPEN_BUILDER_PAGE>(OPEN_BUILDER_PAGE.ACTIVE);
   const [pageData, setPageData] = useState<Record<string, any>>();
-
-  const handleExpand = () => {
-    SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
-    expandSidebar(SidebarLoader.sidebarTabs.length);
-    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-  };
-
-  const handleOpenBuilder = () =>
-    chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.ACTIVE,
-    } as OpenActivePageMessage);
-
-  const extraContent = isExpanded
-    ? {
-        left: (
-          <Tooltip
-            title={isExpanded ? 'Back to Search Engine ("F" key)' : 'Hide sidebar (Escape key)'}
-            destroyTooltipOnHide={{ keepParent: false }}
-          >
-            <Button
-              type="text"
-              icon={<Minimize />}
-              className="expand-icon"
-              onClick={handleExpand}
-            />
-          </Tooltip>
-        ),
-        right: (
-          <Button icon={<Menu />} type="text" onClick={handleOpenBuilder} className="tab-button" />
-        ),
-      }
-    : undefined;
 
   const handleLog = useCallback(async (msg) => {
     if (msg.frame.parentFrameId === -1) {
@@ -147,28 +109,19 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
   }, [tabs]);
 
   useEffect(() => {
-    setIsExpanded(SidebarLoader.isExpanded);
-  }, [SidebarLoader.isExpanded]);
-
-  useEffect(() => {
     SidebarLoader.currentTab = activeKey;
   }, [activeKey]);
 
   const TabBar: TabBar = (props, DefaultTabBar) => (
     <>
-      {!isExpanded && activeKey !== '0' && <SidebarHeader tabs={tabs} />}
+      <SidebarHeader tabs={tabs} />
       <DefaultTabBar {...props} className="insight-tab-bar" />
     </>
   );
 
   return (
     <>
-      <Tabs
-        className="insight-tab-container"
-        renderTabBar={TabBar}
-        activeKey={activeKey}
-        tabBarExtraContent={extraContent}
-      >
+      <Tabs className="insight-tab-container" renderTabBar={TabBar} activeKey={activeKey}>
         <TabPane key="0" tab={null} forceRender>
           <Router>
             {(() => {
