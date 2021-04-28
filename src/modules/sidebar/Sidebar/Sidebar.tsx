@@ -11,8 +11,6 @@ import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
 import { getFirstValidTabIndex, isKnowledgePage } from 'utils/helpers';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
-  AIRTABLE_IMPROVE_SEARCH_LINK,
-  APP_NAME,
   DISABLE_SUGGESTED_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
