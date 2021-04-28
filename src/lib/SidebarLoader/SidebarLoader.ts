@@ -591,6 +591,7 @@ class SidebarLoader {
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     response &&
       runFunctionWhenDocumentReady(this.document, async () => {
+        this.document.documentElement.style.setProperty('color-scheme', 'none');
         this.domains = this.getDomains(document);
         this.tabDomains['original'] = this.getDomains(document, true);
         const checkRequiredParams = () =>
