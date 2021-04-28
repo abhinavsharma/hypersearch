@@ -42,6 +42,8 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   };
 
   const handleToggleBlocked = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
+    (e.target as HTMLElement).classList.add('bounceIn');
     chrome.runtime.sendMessage({ type: TOGGLE_BLOCKED_DOMAIN_MESSAGE, domain, isBlocked });
     handleOpenBuilder(e);
   };
