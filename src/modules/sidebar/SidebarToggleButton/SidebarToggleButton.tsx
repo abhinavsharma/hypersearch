@@ -17,15 +17,12 @@ import {
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
+  removeEmoji,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
-
-const removeEmoji = (s) => {
-  return s.replace(/^[^\w\s]*/gi, '');
-};
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {

@@ -2,6 +2,7 @@ import React, { Suspense, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
+import { GitMerge, EyeOff, Edit, MapPin } from 'react-feather';
 import { ShareButton } from 'modules/shared';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
@@ -13,23 +14,12 @@ import {
   PROTECTED_AUGMENTATIONS,
   SIDEBAR_Z_INDEX,
 } from 'utils';
-import { GitMerge, EyeOff, Edit, MapPin } from 'react-feather';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
 
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
-const ICON_UNSELECTED_COLOR = '#999'
-
-
-const PushpinOutlined = React.lazy(
-  async () => await import('@ant-design/icons/PushpinOutlined').then((mod) => mod),
-);
-
-const PushpinFilled = React.lazy(
-  async () => await import('@ant-design/icons/PushpinFilled').then((mod) => mod),
-);
-
+const ICON_UNSELECTED_COLOR = '#999';
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const tooltipContainer = useRef(null);
@@ -87,11 +77,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               onClick={() =>
                 tab.augmentation?.installed ? handleDisableInstalled() : handleHideSuggested(tab)
               }
-              icon={
-                <Suspense fallback={null}>
-                  <EyeOff size={15} stroke={ICON_UNSELECTED_COLOR} />
-                </Suspense>
-              }
+              icon={<EyeOff size={15} stroke={ICON_UNSELECTED_COLOR} />}
             />
           </Tooltip>
         )}
@@ -108,7 +94,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               onClick={handleUnpin}
               icon={
                 <Suspense fallback={null}>
-                  <MapPin size={15} stroke={ICON_SELECTED_COLOR}  />
+                  <MapPin size={15} stroke={ICON_SELECTED_COLOR} />
                 </Suspense>
               }
             />
@@ -125,7 +111,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               onClick={handlePin}
               icon={
                 <Suspense fallback={null}>
-                  <MapPin size={15} stroke={ICON_UNSELECTED_COLOR}  />
+                  <MapPin size={15} stroke={ICON_UNSELECTED_COLOR} />
                 </Suspense>
               }
             />
@@ -160,11 +146,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           <Button
             type="link"
             onClick={handleOpenAugmentationBuilder}
-            icon={
-              <Suspense fallback={null}>
-                <GitMerge size={15} stroke={ICON_UNSELECTED_COLOR} />
-              </Suspense>
-            }
+            icon={<GitMerge size={15} stroke={ICON_UNSELECTED_COLOR} />}
           />
         </Tooltip>
 

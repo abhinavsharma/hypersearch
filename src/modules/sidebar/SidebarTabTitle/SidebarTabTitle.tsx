@@ -1,10 +1,14 @@
+import React from 'react';
 import Tooltip from 'antd/lib/tooltip';
-import React, { Suspense } from 'react';
-import './SidebarTabTitle.scss';
+import { APP_NAME, removeEmoji } from 'utils';
 import 'antd/lib/tooltip/style/index.css';
-import { APP_NAME } from 'utils/constants';
+import './SidebarTabTitle.scss';
 
-const insertNewlineAfterEmoji = (s, showVerified: boolean) => {
+/**
+ * ! DISABLED
+ * TODO: decide wheter to extract logic or remove
+
+ const insertNewlineAfterEmoji = (s, showVerified: boolean) => {
   return (
     <div>
       {showVerified && (
@@ -17,9 +21,8 @@ const insertNewlineAfterEmoji = (s, showVerified: boolean) => {
   );
 };
 
-const CloudDownloadOutlined = React.lazy(
-  async () => await import('@ant-design/icons/CloudDownloadOutlined').then((mod) => mod),
-);
+ * ! DISABLED END
+ */
 
 export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setActiveKey }) => {
   const handleClick = () => setActiveKey((index + 1).toString());
@@ -38,11 +41,11 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
             title={`Lens suggested by ${APP_NAME}`}
             destroyTooltipOnHide={{ keepParent: false }}
           >
-            {insertNewlineAfterEmoji(tab.title, true)}
+            {removeEmoji(tab.title)}
           </Tooltip>
         ) : (
           <Tooltip title={'Local Lens'} destroyTooltipOnHide={{ keepParent: false }}>
-            {insertNewlineAfterEmoji(tab.title, false)}
+            {removeEmoji(tab.title)}
           </Tooltip>
         )}
       </span>
