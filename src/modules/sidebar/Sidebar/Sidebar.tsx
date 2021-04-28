@@ -87,12 +87,6 @@ const Sidebar: Sidebar = () => {
   return (
     <>
       <div id="insight-sidebar-container">
-        <div id="insight-sidebar-title">
-          <span>{APP_NAME}&nbsp;/&nbsp;</span>
-          <a target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
-            Send Feedback
-          </a>
-        </div>
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
       {!!sidebarTabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length && (

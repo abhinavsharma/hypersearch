@@ -3,6 +3,7 @@ import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import { Maximize, Menu, Sidebar } from 'react-feather';
 import {
+  AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME,
   expandSidebar,
   flipSidebar,
@@ -17,7 +18,7 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import Tooltip from 'antd/lib/tooltip';
 import 'antd/lib/tooltip/style/index.css';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   const handleClose = () => {
@@ -39,9 +40,16 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
 
   return (
     <div id="sidebar-header">
-      <Title className="app-name" level={5}>
-        {APP_NAME}
-      </Title>
+      <div className="app-name-and-feedback">
+        <Title className="app-name" level={5}>
+          {APP_NAME}
+        </Title>
+        <div>
+          <a className="app-feedback" target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
+            Send Feedback
+          </a>
+        </div>
+      </div>
       <div id="header-actions-container">
         <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Fullscreen (F)">
           <Button onClick={handleExpand} icon={<Maximize size={20} stroke={'#999'} />} type="text" />
