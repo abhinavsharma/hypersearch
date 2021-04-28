@@ -42,7 +42,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
     <div id="sidebar-header">
       <div className="app-name-and-feedback">
         <Title className="app-name" level={5}>
-          {APP_NAME}
+          Insight Lenses
         </Title>
         <div>
           <a className="app-feedback" target="_blank" href={AIRTABLE_IMPROVE_SEARCH_LINK}>
