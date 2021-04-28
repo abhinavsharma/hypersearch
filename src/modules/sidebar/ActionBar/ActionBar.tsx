@@ -13,13 +13,14 @@ import {
   PROTECTED_AUGMENTATIONS,
   SIDEBAR_Z_INDEX,
 } from 'utils';
+import { GitMerge, EyeOff, Edit, MapPin } from 'react-feather';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
 
-const BranchesOutlined = React.lazy(
-  async () => await import('@ant-design/icons/BranchesOutlined').then((mod) => mod),
-);
+const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
+const ICON_UNSELECTED_COLOR = '#999'
+
 
 const PushpinOutlined = React.lazy(
   async () => await import('@ant-design/icons/PushpinOutlined').then((mod) => mod),
@@ -29,13 +30,6 @@ const PushpinFilled = React.lazy(
   async () => await import('@ant-design/icons/PushpinFilled').then((mod) => mod),
 );
 
-const CloseCircleOutlined = React.lazy(
-  async () => await import('@ant-design/icons/CloseCircleOutlined').then((mod) => mod),
-);
-
-const EditOutlined = React.lazy(
-  async () => await import('@ant-design/icons/EditOutlined').then((mod) => mod),
-);
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const tooltipContainer = useRef(null);
@@ -95,7 +89,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               }
               icon={
                 <Suspense fallback={null}>
-                  <CloseCircleOutlined />
+                  <EyeOff size={15} stroke={ICON_UNSELECTED_COLOR} />
                 </Suspense>
               }
             />
@@ -114,7 +108,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               onClick={handleUnpin}
               icon={
                 <Suspense fallback={null}>
-                  <PushpinFilled />
+                  <MapPin size={15} stroke={ICON_SELECTED_COLOR}  />
                 </Suspense>
               }
             />
@@ -131,7 +125,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               onClick={handlePin}
               icon={
                 <Suspense fallback={null}>
-                  <PushpinOutlined />
+                  <MapPin size={15} stroke={ICON_UNSELECTED_COLOR}  />
                 </Suspense>
               }
             />
@@ -150,7 +144,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
               onClick={(e) => handleOpenAugmentationBuilder(e, true)}
               icon={
                 <Suspense fallback={null}>
-                  <EditOutlined />
+                  <Edit size={15} stroke={ICON_UNSELECTED_COLOR} />
                 </Suspense>
               }
             />
@@ -168,7 +162,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             onClick={handleOpenAugmentationBuilder}
             icon={
               <Suspense fallback={null}>
-                <BranchesOutlined />
+                <GitMerge size={15} stroke={ICON_UNSELECTED_COLOR} />
               </Suspense>
             }
           />

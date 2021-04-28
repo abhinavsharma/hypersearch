@@ -12,6 +12,7 @@ import {
   MY_BLOCKLIST_ID,
   SIDEBAR_Z_INDEX,
 } from 'utils';
+import { Share } from 'react-feather';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
@@ -127,9 +128,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
             type="link"
             onClick={handleShare}
             icon={
-              <Suspense fallback={null}>
-                <ShareAltOutlined />
-              </Suspense>
+              <Share size={15} stroke={'#999'} />
             }
           />
         ) : (
