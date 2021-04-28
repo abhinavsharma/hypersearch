@@ -38,7 +38,7 @@ export const IntroductionPage = () => {
       >
         <Steps current={currentStep} onChange={setCurrentStep}>
           <Step title="Welcome" />
-          <Step title="License" disabled={license.isActivated} />
+          <Step title="License" />
           <Step title="Privacy" />
           <Step title="Try It" disabled={currentStep !== 3 && !finished} />
         </Steps>
