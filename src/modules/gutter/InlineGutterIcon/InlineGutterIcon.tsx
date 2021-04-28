@@ -16,7 +16,7 @@ import 'antd/lib/tooltip/style/index.css';
 import './InlineGutterIcon.scss';
 
 const ICON_UNSELECTED_COLOR = '#999'
-const ICON_SELECTED_COLOR = '#2559C0';
+const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 
 export const InlineGutterIcon: InlineGutterIcon = ({
   domain,
