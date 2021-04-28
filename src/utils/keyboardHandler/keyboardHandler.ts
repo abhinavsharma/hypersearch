@@ -17,7 +17,7 @@ export const keyUpHandler = (event: KeyboardEvent) => {
 };
 
 export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) => {
-  if (shouldPreventEventBubble(event)) return;
+  if (!loader.isSerp || shouldPreventEventBubble(event)) return;
 
   const currentTabIndex = Number(loader.currentTab);
   const handleToggle = () => {
