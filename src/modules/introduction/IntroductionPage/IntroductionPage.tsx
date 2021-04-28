@@ -40,7 +40,7 @@ export const IntroductionPage = () => {
           <Step title="Welcome" />
           <Step title="License" />
           <Step title="Privacy" />
-          <Step title="Try It" disabled={currentStep !== 3 && !finished} />
+          <Step title="Done" disabled={currentStep !== 3 && !finished} />
         </Steps>
         {(() => {
           switch (currentStep) {
