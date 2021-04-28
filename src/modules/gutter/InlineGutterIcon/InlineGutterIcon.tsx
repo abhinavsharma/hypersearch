@@ -15,7 +15,7 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './InlineGutterIcon.scss';
 
-const ICON_UNSELECTED_COLOR = '#444'
+const ICON_UNSELECTED_COLOR = '#999'
 const ICON_SELECTED_COLOR = '#2559C0';
 
 export const InlineGutterIcon: InlineGutterIcon = ({
@@ -142,7 +142,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             type="text"
           />
         </Tooltip>
-        <Button onClick={handleOpenBuilder} icon={<MoreHorizontal />} type="text" />
+        <Button onClick={handleOpenBuilder} icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />} type="text" />
         <div
           className="tooltip-container"
           ref={tooltipContainer}
