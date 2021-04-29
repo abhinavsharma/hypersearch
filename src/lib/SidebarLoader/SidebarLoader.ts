@@ -426,10 +426,6 @@ class SidebarLoader {
     const logSuggested: any[] = [];
     const logTabs: any[] = [];
 
-    this.query = new URLSearchParams(this.document.location.search).get(
-      this.customSearchEngine.search_engine_json?.required_params[0],
-    );
-
     augmentations.forEach((augmentation: AugmentationObject) => {
       augmentation.stats = this.augmentationStats[augmentation.id];
 
@@ -585,6 +581,9 @@ class SidebarLoader {
     ).then((value) => !value[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
+    this.query = new URLSearchParams(this.document.location.search).get(
+      this.customSearchEngine.search_engine_json?.required_params[0],
+    );
     const prepareDocument = async () => {
       this.document.documentElement.style.setProperty('color-scheme', 'none');
       this.domains = this.getDomains(document) ?? [];

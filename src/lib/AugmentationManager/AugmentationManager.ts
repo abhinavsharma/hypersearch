@@ -37,7 +37,6 @@ import {
   DOMAIN_MATCHES_CONDITION,
   extractUrlProperties,
   DOMAIN_EQUALS_CONDTION,
-  PROTECTED_AUGMENTATIONS,
   MY_TRUSTLIST_ID,
 } from 'utils';
 
@@ -449,13 +448,12 @@ class AugmentationManager {
         (hasAnyPageCondition ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
 
     // ! SEARCH QUERY
-    const checkForQuery =
-      augmentation.conditions?.condition_list.find(
-        ({ key, unique_key }) =>
-          unique_key === SEARCH_QUERY_CONTAINS_CONDITION || key === SEARCH_QUERY_CONTAINS_CONDITION,
-      )?.value[0] ?? null;
-
-    const matchingQuery = checkForQuery && SidebarLoader.query?.search(checkForQuery) > -1;
+    const matchingQuery = augmentation.conditions?.condition_list.some(
+      ({ key, unique_key, value }) =>
+        (unique_key === SEARCH_QUERY_CONTAINS_CONDITION ||
+          key === SEARCH_QUERY_CONTAINS_CONDITION) &&
+        SidebarLoader.query?.search(value[0]) > -1,
+    );
 
     // ! SEARCH INTENT
     let hasPreventAutoexpand = false;
