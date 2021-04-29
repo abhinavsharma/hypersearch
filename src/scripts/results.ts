@@ -92,7 +92,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
 
     const featured = data.selector.featured?.reduce((a, selector) => {
       const link = document.querySelector(selector);
-      const container = link.closest(selector.split(' ')[0]);
+      const container = link?.closest(selector.split(' ')[0]);
       link && container && a.push({ link, container });
       return a;
     }, []);
