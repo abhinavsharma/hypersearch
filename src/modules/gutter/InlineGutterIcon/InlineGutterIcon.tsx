@@ -122,7 +122,9 @@ export const InlineGutterIcon: InlineGutterIcon = ({
               ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
               : ''
           } ${
-            inTrustlist ? 'Remove domain from my trusted sites' : 'Add domain to my trusted sites.'
+            inTrustlist
+              ? `Remove ${domain} from my trusted sites`
+              : `Add ${domain} to my trusted sites.`
           }`}
           destroyTooltipOnHide={{ keepParent: false }}
           getPopupContainer={() => tooltipContainer.current}
@@ -145,7 +147,11 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             !!blockingAugmentations.length && !onlyBlockedByBlocklist
               ? `Domain hidden by ${blockingAugmentations.map(({ name }) => name).join(', ')}.`
               : ''
-          } ${inBlocklist ? 'Remove from my blocked domains.' : 'Add domain to my block list.'}`}
+          } ${
+            inBlocklist
+              ? `Remove ${domain} from my blocked domains.`
+              : `Add ${domain} to my block list.`
+          }`}
           destroyTooltipOnHide={{ keepParent: false }}
           getPopupContainer={() => tooltipContainer.current}
           placement="bottom"
