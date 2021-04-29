@@ -1,9 +1,8 @@
-import { extractUrlProperties } from 'utils/helpers';
+import { extractUrlProperties, runFunctionWhenDocumentReady } from 'utils/helpers';
 import './results';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
-  'duckduckgo.com': ['.result', '.result__body', '.result__snippet'],
 };
 
 const REMOVE_ADS = {
@@ -23,11 +22,11 @@ const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
     '.commercial-unit-mobile-top',
   ],
   'bing.com': ['header#b_header'],
-  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
 };
 
 const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['span[aria-label="AMP logo"]'],
+  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
 };
 
 type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;

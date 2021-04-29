@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
-import { getFirstValidTabIndex, isKnowledgePage } from 'utils/helpers';
+import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'utils/helpers';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
@@ -34,10 +34,8 @@ const Sidebar: Sidebar = () => {
       switch (msg.type) {
         case UPDATE_SIDEBAR_TABS_MESSAGE:
           SidebarLoader.getTabsAndAugmentations();
-          setSidebarTabs((prev = []) => [
-            ...SidebarLoader.sidebarTabs,
-            ...prev.filter((i) => !i.isCse),
-          ]);
+          setSidebarTabs(SidebarLoader.sidebarTabs);
+          triggerSerpProcessing(SidebarLoader);
           break;
         case DISABLE_SUGGESTED_AUGMENTATION:
           AugmentationManager.disableSuggestedAugmentation(msg.augmentation);

@@ -74,7 +74,11 @@ export const InlineGutterIcon: InlineGutterIcon = ({
       }
 
       rootRef.current = iconRef.current.closest('.insight-gutter-button-root');
-      resultRef.current = rootRef.current?.closest(container);
+
+      resultRef.current =
+        window.location.href.search(/duckduckgo\.com/gi) > -1
+          ? (rootRef.current?.parentElement as HTMLDivElement)
+          : rootRef.current?.closest(container);
 
       rootRef.current?.setAttribute(
         'style',

@@ -8,6 +8,7 @@ import {
   ANY_URL_CONDITION_MOBILE,
   SEARCH_ENGINE_IS_CONDITION,
   MY_TRUSTLIST_ID,
+  PROCESS_SERP_OVERLAY_MESSAGE,
 } from 'utils';
 
 /**
@@ -52,30 +53,27 @@ if (!Array.prototype.hasOwnProperty('findLastIndex')) {
  * @param document - The document object what to wait for
  * @param callback - The callback to invoke when the document is ready
  */
-export const runFunctionWhenDocumentReady = (
-  document: Document,
-  callback: ({ ...args }?: any) => void,
-): void => {
+export const runFunctionWhenDocumentReady = (document: Document, callback: any) => {
   try {
     if (typeof callback !== 'function') {
       throw new TypeError(`Callback must be callable! Given type is ${typeof callback}`);
     }
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      debug('runFunctionWhenDocumentReady - ready');
+      debug('runFunctionWhenDocumentReady - ready -', callback.name);
       callback();
     } else {
-      debug('runFunctionWhenDocumentReady - attach listener');
+      debug('runFunctionWhenDocumentReady - attach listener -', callback.name);
       document.addEventListener(
         'DOMContentLoaded',
         () => {
-          debug('runFunctionWhenDocumentReady - ready by listener');
+          debug('runFunctionWhenDocumentReady - ready by listener -', callback.name);
           callback();
         },
         false,
       );
     }
   } catch (err) {
-    debug('runFunctionWhenDocumentReady - error', err);
+    debug('runFunctionWhenDocumentReady - error -', callback.name, '\n', err);
   }
 };
 
@@ -86,6 +84,37 @@ export const getRankedDomains = (domains: string[]) =>
   [...domains.reduce((a, e) => a.set(e, (a.get(e) || 0) + 1), new Map()).entries()]
     .sort((a, b) => b[1] - a[1])
     .map(([key]) => key);
+
+export const triggerSerpProcessing = (loader: TSidebarLoader, subtabsOnly = false) => {
+  const augmentation = loader.sidebarTabs.map(({ augmentation }) => augmentation);
+  !subtabsOnly &&
+    window.top.postMessage(
+      {
+        augmentation,
+        hideDomains: loader.hideDomains,
+        name: PROCESS_SERP_OVERLAY_MESSAGE,
+        selector: {
+          link: loader.customSearchEngine.querySelector['desktop'],
+          featured: loader.customSearchEngine.querySelector.featured ?? Array(0),
+          container: loader.customSearchEngine.querySelector.result_container_selector,
+        },
+      },
+      '*',
+    );
+  window.top.postMessage(
+    {
+      augmentation,
+      hideDomains: loader.hideDomains,
+      name: PROCESS_SERP_OVERLAY_MESSAGE,
+      selector: {
+        link: loader.customSearchEngine.querySelector['phone'],
+        featured: loader.customSearchEngine.querySelector.featured,
+        container: loader.customSearchEngine.querySelector.result_container_selector,
+      },
+    },
+    '*',
+  );
+};
 
 /**
  * ! URL MANIPULATION

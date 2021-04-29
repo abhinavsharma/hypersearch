@@ -29,7 +29,7 @@ import {
   SEARCH_DOMAINS_ACTION,
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils/constants';
-import { extractUrlProperties } from 'utils/helpers';
+import { debug, extractUrlProperties, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
 const searchedResults: HTMLElement[] = [];
@@ -127,7 +127,13 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
         });
       }
       processed.push(container);
-      processAugmentation(data.augmentation, resultDomain, container);
+      if (Array.isArray(data.augmentation)) {
+        data.augmentation.forEach((augmentation) =>
+          processAugmentation(augmentation, resultDomain, container),
+        );
+      } else {
+        processAugmentation(data.augmentation, resultDomain, container);
+      }
     });
     return processed;
   };
@@ -145,7 +151,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     );
   };
 
-  window.addEventListener('message', ({ data }: RemoveMessage) => {
+  const handler = ({ data }: RemoveMessage) => {
     switch (data?.name) {
       // Iterate over the SERP results and check if they searched by the augmentation specified
       // by `data.remove` (augmentation ID). If so, remove the ID from their `searched-by` attribute
@@ -196,10 +202,17 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
         processResults(data);
         break;
       case PROCESS_SERP_OVERLAY_MESSAGE:
-        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+        runFunctionWhenDocumentReady(document, function processResultsMessage() {
           processResults(data);
-        }
+        });
         break;
     }
-  });
+  };
+
+  try {
+    window.top.addEventListener('message', handler);
+    window.addEventListener('message', handler);
+  } catch (err) {
+    debug('results listener - error', err);
+  }
 })(document, window);

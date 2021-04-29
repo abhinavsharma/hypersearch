@@ -21,6 +21,7 @@ declare type NullPrototype<
 declare type ProcessSerpOverlayMessage = MessageEvent<{
   augmentation: AugmentationObject;
   name: string;
+  tab?: string;
   hideDomains: string[];
   selector: {
     link: string;
