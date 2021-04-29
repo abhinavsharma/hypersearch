@@ -130,8 +130,8 @@ export const processSerpResults: ProcessSerpResults = (
     const urlProps = extractUrlProperties(
       node instanceof HTMLLinkElement
         ? node.getAttribute('href') // default <a>
-        : node?.closest('a')?.getAttribute('href') ?? // <a> > <cite>
-            node?.querySelector('a')?.getAttribute('href') ?? // featured snippet
+        : node?.closest('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // <a> > <cite>
+            node?.querySelector('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // featured snippet
             node?.textContent, // guessing
     );
 
