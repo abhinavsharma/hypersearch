@@ -45,10 +45,10 @@ import {
   BANNED_EXTENSION_IDS,
   INSTALLED_PREFIX,
   EXTENSION_AUTO_EXPAND,
-  PROCESS_SERP_OVERLAY_MESSAGE,
   DUMMY_AMAZON_SUBTABS_URL,
   MY_TRUSTLIST_ID,
   MY_TRUSTLIST_TEMPLATE,
+  triggerSerpProcessing,
 } from 'utils';
 
 /**
@@ -587,55 +587,36 @@ class SidebarLoader {
     ).then((value) => !value[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
-    response &&
-      runFunctionWhenDocumentReady(this.document, async () => {
-        this.document.documentElement.style.setProperty('color-scheme', 'none');
-        this.domains = this.getDomains(document);
-        this.tabDomains['original'] = this.getDomains(document, true);
-        const checkRequiredParams = () =>
-          this.customSearchEngine?.search_engine_json?.required_params
-            .map((param) => window.location.search.search(`${param}=`) === -1)
-            .indexOf(true) === -1;
+    const prepareDocument = async () => {
+      this.document.documentElement.style.setProperty('color-scheme', 'none');
+      this.domains = this.getDomains(document);
+      this.tabDomains['original'] = this.getDomains(document, true);
+      const checkRequiredParams = () =>
+        this.customSearchEngine?.search_engine_json?.required_params
+          .map((param) => window.location.search.search(`${param}=`) === -1)
+          .indexOf(true) === -1;
 
-        const checkRequiredPrefix = () =>
-          window.location.href.search(
-            this.customSearchEngine?.search_engine_json?.required_prefix,
-          ) > -1;
-        this.isSerp = checkRequiredPrefix() && checkRequiredParams();
-        await this.handleSubtabApiResponse(response);
-        this.isSerp &&
-          this.sendLogMessage(EXTENSION_SERP_LOADED, {
-            query: this.query,
-            url: this.url,
-          });
-        this.createSidebar();
-        this.sidebarTabs.forEach((tab) =>
-          window.postMessage(
-            {
-              augmentation: tab.augmentation,
-              hideDomains: tab.augmentation?.actions.action_list.reduce((a, { key, value }) => {
-                if (key === SEARCH_HIDE_DOMAIN_ACTION) a.push(value[0]);
-                return a;
-              }, []),
-              name: PROCESS_SERP_OVERLAY_MESSAGE,
-              tab: tab.id,
-              selector: {
-                link: this.customSearchEngine.querySelector['desktop'],
-                featured: this.customSearchEngine.querySelector.featured ?? Array(0),
-                container: this.customSearchEngine.querySelector.result_container_selector,
-              },
-            },
-            '*',
-          ),
-        ),
-          this.sidebarTabs.length &&
-            this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
-              url: this.url.href,
-              subtabs: this.strongPrivacy
-                ? this.sidebarTabs.map(({ url }) => md5(url.href))
-                : this.sidebarTabs,
-            });
-      });
+      const checkRequiredPrefix = () =>
+        window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
+        -1;
+      this.isSerp = checkRequiredPrefix() && checkRequiredParams();
+      await this.handleSubtabApiResponse(response);
+      this.isSerp &&
+        this.sendLogMessage(EXTENSION_SERP_LOADED, {
+          query: this.query,
+          url: this.url,
+        });
+      this.createSidebar();
+      triggerSerpProcessing(this);
+      this.sidebarTabs.length &&
+        this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
+          url: this.url.href,
+          subtabs: this.strongPrivacy
+            ? this.sidebarTabs.map(({ url }) => md5(url.href))
+            : this.sidebarTabs,
+        });
+    };
+    response && runFunctionWhenDocumentReady(this.document, prepareDocument);
   }
 
   /**

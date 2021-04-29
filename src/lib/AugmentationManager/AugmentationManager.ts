@@ -13,7 +13,6 @@ import {
   ANY_WEB_SEARCH_CONDITION,
   EXTENSION_SHARE_URL,
   NUM_DOMAINS_TO_EXCLUDE,
-  PROCESS_SERP_OVERLAY_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   SEARCH_CONTAINS_CONDITION,
   SEARCH_DOMAINS_ACTION,
@@ -246,18 +245,6 @@ class AugmentationManager {
     );
     SidebarLoader.suggestedAugmentations = SidebarLoader.suggestedAugmentations.filter(
       (i) => i.id !== augmentation.id,
-    );
-    window.postMessage(
-      {
-        augmentation: augmentation.id,
-        name: PROCESS_SERP_OVERLAY_MESSAGE,
-        selector: {
-          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-        },
-      },
-      '*',
     );
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
@@ -639,22 +626,7 @@ class AugmentationManager {
       installed: true,
     };
     chrome.storage.local.set({ [id]: updated });
-    const hasHideActions = updated.actions.action_list.filter(
-      ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
-    );
-    window.postMessage(
-      {
-        augmentation: updated,
-        name: PROCESS_SERP_OVERLAY_MESSAGE,
-        hideDomains: hasHideActions.map(({ value }) => value[0] ?? ''),
-        selector: {
-          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-        },
-      },
-      '*',
-    );
+
     const { isRelevant } = this.getAugmentationRelevancy(updated);
 
     if (isRelevant) {

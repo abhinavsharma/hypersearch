@@ -24,7 +24,7 @@ import {
   SIDEBAR_Z_INDEX,
 } from 'utils/constants';
 import { v4 as uuid } from 'uuid';
-import { debug, extractUrlProperties } from 'utils/helpers';
+import { extractUrlProperties } from 'utils/helpers';
 import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIcon';
 
 /**
@@ -150,7 +150,7 @@ export const processSerpResults: ProcessSerpResults = (
       // To prevent this behavior, we disable all `pointerEvents` on the container element.
       // See: https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
       if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
-        serpResult.parentElement.style.pointerEvents = 'none';
+        serpResult.style.pointerEvents = 'none';
       }
 
       blockers = typeof augmentations === 'string' ? [] : augmentations.block[serpResultDomain];
@@ -184,12 +184,17 @@ export const processSerpResults: ProcessSerpResults = (
     ) {
       const buttonRoot = document.createElement('div');
 
-      const existingRoot = serpResult.querySelector('.insight-gutter-button-root');
+      const root =
+        window.location.href.search(/duckduckgo\.com/gi) > -1
+          ? serpResult.parentElement
+          : serpResult;
+
+      const existingRoot = root.querySelector('.insight-gutter-button-root');
       if (!!existingRoot) {
         existingRoot.parentElement.replaceChild(buttonRoot, existingRoot);
       }
       buttonRoot.classList.add(`insight-gutter-button-root`);
-      serpResult.appendChild(buttonRoot);
+      root.appendChild(buttonRoot);
 
       render(
         <InlineGutterIcon
