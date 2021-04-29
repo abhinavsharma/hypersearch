@@ -9,6 +9,7 @@ import {
   SEARCH_ENGINE_IS_CONDITION,
   MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
+  DOMAINS_TO_RELEVANT_SLICE,
 } from 'utils';
 
 /**
@@ -223,6 +224,29 @@ export const decodeSpace = (stringLike: string) => {
   return typeof stringLike === 'string'
     ? stringLike.replace(new RegExp(encodeURIComponent('[<INSIGHT_SPACE>]'), 'gi'), '%20')
     : stringLike;
+};
+
+/**
+ * Takes an URL like string and return its publication URL or null if there is no matching publication.
+ *
+ * @param urlLike - The URL like string
+ * @returns - The publication URL or null if URL is not a publication
+ */
+export const getPublicationUrl = (urlLike: string): string | null => {
+  if (typeof urlLike !== 'string') {
+    return null;
+  }
+  const urlProps = extractUrlProperties(urlLike);
+  return DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
+    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? null
+    : null;
+};
+
+export const sanitizeUrl = (urlLike: string) => {
+  if (typeof urlLike !== 'string') {
+    return urlLike;
+  }
+  return encodeURIComponent(urlLike.replace(/[\s]/gi, '_'));
 };
 
 /**

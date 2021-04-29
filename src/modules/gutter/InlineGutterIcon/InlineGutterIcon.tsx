@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, MoreHorizontal } from 'react-feather';
+import { PublicationTimeTracker } from '../PublicationTimeTracker/PublicationTimeTracker';
 import {
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
@@ -114,66 +115,65 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
 
   return (
-    <>
-      <div className="gutter-icon-container" ref={iconRef}>
-        <Tooltip
-          title={`${
-            !!searchingAugmentations.length && !onlySearchedByTrustlist
-              ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
-              : ''
-          } ${
-            inTrustlist
-              ? `Remove ${domain} from my trusted sites`
-              : `Add ${domain} to my trusted sites.`
-          }`}
-          destroyTooltipOnHide={{ keepParent: false }}
-          getPopupContainer={() => tooltipContainer.current}
-          placement="bottom"
-          overlayClassName="gutter-tooltip"
-        >
-          <Button
-            onClick={handleToggleTrusted}
-            icon={
-              <Star
-                stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
-                fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
-              />
-            }
-            type="text"
-          />
-        </Tooltip>
-        <Tooltip
-          title={`${
-            !!blockingAugmentations.length && !onlyBlockedByBlocklist
-              ? `Domain hidden by ${blockingAugmentations.map(({ name }) => name).join(', ')}.`
-              : ''
-          } ${
-            inBlocklist
-              ? `Remove ${domain} from my blocked domains.`
-              : `Add ${domain} to my block list.`
-          }`}
-          destroyTooltipOnHide={{ keepParent: false }}
-          getPopupContainer={() => tooltipContainer.current}
-          placement="bottom"
-          overlayClassName="gutter-tooltip"
-        >
-          <Button
-            onClick={handleToggleBlocked}
-            icon={<EyeOff stroke={isBlocked ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} />}
-            type="text"
-          />
-        </Tooltip>
+    <div className="gutter-icon-container" ref={iconRef}>
+      <PublicationTimeTracker key={domain} domain={domain} />
+      <Tooltip
+        title={`${
+          !!searchingAugmentations.length && !onlySearchedByTrustlist
+            ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
+            : ''
+        } ${
+          inTrustlist
+            ? `Remove ${domain} from my trusted sites`
+            : `Add ${domain} to my trusted sites.`
+        }`}
+        destroyTooltipOnHide={{ keepParent: false }}
+        getPopupContainer={() => tooltipContainer.current}
+        placement="bottom"
+        overlayClassName="gutter-tooltip"
+      >
         <Button
-          onClick={handleOpenBuilder}
-          icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
+          onClick={handleToggleTrusted}
+          icon={
+            <Star
+              stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
+              fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
+            />
+          }
           type="text"
         />
-        <div
-          className="tooltip-container"
-          ref={tooltipContainer}
-          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+      </Tooltip>
+      <Tooltip
+        title={`${
+          !!blockingAugmentations.length && !onlyBlockedByBlocklist
+            ? `Domain hidden by ${blockingAugmentations.map(({ name }) => name).join(', ')}.`
+            : ''
+        } ${
+          inBlocklist
+            ? `Remove ${domain} from my blocked domains.`
+            : `Add ${domain} to my block list.`
+        }`}
+        destroyTooltipOnHide={{ keepParent: false }}
+        getPopupContainer={() => tooltipContainer.current}
+        placement="bottom"
+        overlayClassName="gutter-tooltip"
+      >
+        <Button
+          onClick={handleToggleBlocked}
+          icon={<EyeOff stroke={isBlocked ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} />}
+          type="text"
         />
-      </div>
-    </>
+      </Tooltip>
+      <Button
+        onClick={handleOpenBuilder}
+        icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
+        type="text"
+      />
+      <div
+        className="tooltip-container"
+        ref={tooltipContainer}
+        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+      />
+    </div>
   );
 };

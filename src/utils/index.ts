@@ -1,3 +1,4 @@
+export * from './activityMonitor/activityMonitor';
 export * from './constants';
 export * from './expandSidebar/expandSidebar';
 export * from './flipSidebar/flipSidebar';
