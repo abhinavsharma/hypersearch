@@ -14,6 +14,7 @@ import {
   SYNC_PRIVACY_KEY,
   SYNC_DISTINCT_KEY,
   USE_COUNT_PREFIX,
+  EMPTY_CUSTOM_SEARCH_ENGINE_BLOB,
 } from 'utils';
 
 class SearchEngineManager {
@@ -115,7 +116,7 @@ class SearchEngineManager {
     storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
     if (!storedValue?.[storageKey]) {
       debug('getCustomSearchEngine - fetch from remote\n');
-      const result: CustomSearchEngine = Object.create({});
+      const result: CustomSearchEngine = EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
       const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
       const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
       Object.values(results).forEach((customSearchEngine) => {
@@ -130,7 +131,7 @@ class SearchEngineManager {
       chrome.storage.sync.set({ [storageKey]: result });
       storedValue = { [storageKey]: result };
     }
-    const result = storedValue[storageKey] ?? Object.create(null);
+    const result = storedValue[storageKey] ?? EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
     debug('getCustomSearchEngine - processed\n---\n\tCustom Search Engine JSON', result, '\n---');
     return result;
   }

@@ -262,6 +262,7 @@ class SidebarLoader {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.augmentationStats = Object.create(null);
     this.preventAutoExpand = false;
+    this.domains = [];
     this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
     this.tabDomains = Object.create(null);
     this.sidebarTabs = [];
@@ -289,7 +290,7 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public getDomains(document: Document, getAllFromPage?: boolean) {
-    if (!this.customSearchEngine?.querySelector) return null;
+    if (!this.customSearchEngine?.querySelector) return [];
     let els = [];
     // On Google, we have to use the `pad` selector, since the desktop referencing to the
     // `<cite>` tag, however the process needs the actual link's `href` attribute.
@@ -326,11 +327,10 @@ class SidebarLoader {
    */
   private getTabUrls(augmentation: AugmentationObject) {
     const urls: URL[] = [];
-    const defaultUrl = !this.customSearchEngine.search_engine_json.required_prefix.match(
-      /amazon\.com/gi,
-    )
-      ? this.customSearchEngine.search_engine_json.required_prefix
-      : 'google.com/search';
+    const defaultUrl =
+      this.customSearchEngine.search_engine_json.required_prefix.search(/amazon\.com/gi) > -1
+        ? this.customSearchEngine.search_engine_json?.required_prefix
+        : 'google.com/search';
 
     const emptyUrl = () =>
       new URL(isSafari() ? 'https://www.ecosia.org/search' : `https://${defaultUrl}`);
@@ -414,7 +414,6 @@ class SidebarLoader {
       ...this.suggestedAugmentations,
     ],
   ) {
-    if (!this.customSearchEngine?.querySelector) return null;
     debug(
       'getTabsAndAugmentations - call\n---\n\tDomains on the current page (in preserved order)\n',
       ...this.domains.map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),
@@ -428,7 +427,7 @@ class SidebarLoader {
     const logTabs: any[] = [];
 
     this.query = new URLSearchParams(this.document.location.search).get(
-      this.customSearchEngine.search_engine_json.required_params[0],
+      this.customSearchEngine.search_engine_json?.required_params[0],
     );
 
     augmentations.forEach((augmentation: AugmentationObject) => {
@@ -439,7 +438,6 @@ class SidebarLoader {
       );
 
       if (
-        this.query &&
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id) &&
         !hasInjectJs &&
         !BANNED_EXTENSION_IDS.includes(augmentation.id)
@@ -589,16 +587,18 @@ class SidebarLoader {
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     const prepareDocument = async () => {
       this.document.documentElement.style.setProperty('color-scheme', 'none');
-      this.domains = this.getDomains(document);
+      this.domains = this.getDomains(document) ?? [];
       this.tabDomains['original'] = this.getDomains(document, true);
       const checkRequiredParams = () =>
+        !!this.customSearchEngine?.search_engine_json?.required_params.length &&
         this.customSearchEngine?.search_engine_json?.required_params
           .map((param) => window.location.search.search(`${param}=`) === -1)
           .indexOf(true) === -1;
 
       const checkRequiredPrefix = () =>
+        !!this.customSearchEngine?.search_engine_json?.required_prefix &&
         window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
-        -1;
+          -1;
       this.isSerp = checkRequiredPrefix() && checkRequiredParams();
       await this.handleSubtabApiResponse(response);
       this.isSerp &&
