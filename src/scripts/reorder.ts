@@ -11,7 +11,11 @@
  *  The script need to be run when the document is ready and results
  *  are rendered, also any other modification have been completed.
  */
-import { GOOGLE_SERP_RESULT_A_SELECTOR, GOOGLE_SERP_RESULT_DIV_SELECTOR } from 'utils/constants';
+import {
+  GOOGLE_SERP_RESULT_A_SELECTOR,
+  GOOGLE_SERP_RESULT_CONTAINER,
+  GOOGLE_SERP_RESULT_DIV_SELECTOR,
+} from 'utils/constants';
 import { debug, extractUrlProperties } from 'utils/helpers';
 
 // First X results to replace with unique results.
@@ -23,8 +27,8 @@ const MAXIMUM_MOVES = 3;
 
   // The list of individual search results. Google occasionaly merges more results into one container
   // so we need to use a more specific selector to get the unique result blocks from the SERP.
-  const results = Array.from(document.querySelectorAll(GOOGLE_SERP_RESULT_DIV_SELECTOR)).map(
-    ({ parentNode }) => parentNode,
+  const results = Array.from(document.querySelectorAll(GOOGLE_SERP_RESULT_DIV_SELECTOR)).map((el) =>
+    el.closest(GOOGLE_SERP_RESULT_CONTAINER),
   ) as HTMLElement[];
 
   // The list of elements that could be replaced by a higher ranked result.
