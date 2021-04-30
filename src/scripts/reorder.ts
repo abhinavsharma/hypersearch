@@ -11,19 +11,11 @@
  *  The script need to be run when the document is ready and results
  *  are rendered, also any other modification have been completed.
  */
-
-import {
-  GOOGLE_SERP_RESULT_A_SELECTOR,
-  GOOGLE_SERP_RESULT_DIV_SELECTOR,
-  GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
-} from 'utils/constants';
-import { debug, extractUrlProperties, getRankedDomains } from 'utils/helpers';
+import { GOOGLE_SERP_RESULT_A_SELECTOR, GOOGLE_SERP_RESULT_DIV_SELECTOR } from 'utils/constants';
+import { debug, extractUrlProperties } from 'utils/helpers';
 
 // First X results to replace with unique results.
 const MAXIMUM_MOVES = 3;
-
-// Consider results if its domain is ranked at least X.
-const MINIMUM_RANK = 3;
 
 ((document, window) => {
   // Currently we support only Google SERP reordering.
@@ -35,21 +27,12 @@ const MINIMUM_RANK = 3;
     ({ parentNode }) => parentNode,
   ) as HTMLElement[];
 
-  // Google tends to use absolute URLs. Because of this, we extract the actual URL and get its hostname.
-  // We use these domains to compare the results and reorder the list accordingly.
-  const domains = Array.from(
-    document.querySelectorAll(GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL),
-  ).map(
-    ({ href }: HTMLLinkElement) =>
-      extractUrlProperties(href.replace(/.*https?:\/\//, 'https://')).hostname,
-  );
-
   // The list of elements that could be replaced by a higher ranked result.
   const topResults = results.slice(0, MAXIMUM_MOVES);
 
   // Reordered list of the available domains from SERP. Ordering is made by the unique domains
   // appearence count and their original position in the results page.
-  const rankedDomains = getRankedDomains(domains);
+  //const rankedDomains = getRankedDomains(domains);
 
   // The list of elements that has been already moved.
   const movedDomains = [];
@@ -65,8 +48,6 @@ const MINIMUM_RANK = 3;
       linkElement.getAttribute('href').replace(/.*https?:\/\//, 'https://'),
     ).hostname;
 
-    const rankedPosition = rankedDomains.indexOf(domain);
-
     const isMoved = !!movedDomains.find(
       (movedDomain) => domain.search(movedDomain) > -1 || movedDomain.search(domain) > -1,
     );
@@ -74,7 +55,6 @@ const MINIMUM_RANK = 3;
     if (
       !isMoved && // Ignore if already moved
       index > topResults.length - 1 && // Ignore the first three results
-      rankedPosition < MINIMUM_RANK && // Ignore if the domain is underranked
       movedDomains.length < MAXIMUM_MOVES // Only replace top results
     ) {
       // Due to Google's complex nesting, it's easier to replace the elements with
@@ -88,9 +68,9 @@ const MINIMUM_RANK = 3;
 
       /** DEV START **/
       logData.push('\n\t', {
-        'Domain:': domain,
-        'Move from index: ': index,
-        'Move to index: ': movedDomains.length,
+        Domain: domain,
+        'Move from index': index,
+        'Move to index': movedDomains.length,
       });
       /** DEV END **/
     }
