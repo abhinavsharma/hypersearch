@@ -15,6 +15,7 @@ import {
   SYNC_DISTINCT_KEY,
   USE_COUNT_PREFIX,
   EMPTY_CUSTOM_SEARCH_ENGINE_BLOB,
+  SYNC_PUBLICATION_TIME_TRACK_KEY,
 } from 'utils';
 
 class SearchEngineManager {
@@ -65,7 +66,13 @@ class SearchEngineManager {
 
   constructor() {
     debug('SearchEngineManager - initialize\n---\n\tSingleton Instance', this, '\n---');
-    this.safeElements = [SYNC_DISTINCT_KEY, SYNC_LICENSE_KEY, SYNC_PRIVACY_KEY, SYNC_FINISHED_KEY];
+    this.safeElements = [
+      SYNC_DISTINCT_KEY,
+      SYNC_LICENSE_KEY,
+      SYNC_PRIVACY_KEY,
+      SYNC_FINISHED_KEY,
+      SYNC_PUBLICATION_TIME_TRACK_KEY,
+    ];
     this.throttled = false;
     this.getIntents();
     this.getEngines();

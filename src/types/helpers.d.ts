@@ -41,6 +41,13 @@ declare type RemoveSearchedDomainMessage = MessageEvent<{
   };
 }>;
 
+declare type PublicationTimeTrackerMessage = {
+  type: string;
+  event: 'start' | 'stop';
+  domain?: string;
+  stopTime?: number;
+};
+
 declare type RemoveHideDomainOverlayMessage = MessageEvent<{
   domain: string;
   name: string;

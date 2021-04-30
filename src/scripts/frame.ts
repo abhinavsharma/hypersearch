@@ -1,8 +1,9 @@
-import { extractUrlProperties, runFunctionWhenDocumentReady } from 'utils/helpers';
+import { extractUrlProperties } from 'utils/helpers';
 import './results';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
+  'duckduckgo.com': ['.result', '.result__body', '.result__snippet'],
 };
 
 const REMOVE_ADS = {
@@ -114,6 +115,23 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
       if (target !== '_blank') el.setAttribute('target', '_blank');
     });
   };
+
+  if (window.location.href.search(/duckduckgo\.com/g) > -1 && !APP_FRAME) {
+    setInterval(() => {
+      CLEAN_ELEMENTS_FROM[LOCAL_HOSTNAME]?.forEach((selector) =>
+        getElements(selector).forEach((el) => clearElement(el)),
+      );
+      getElements('a').forEach((el) => {
+        el.onclick = (e: MouseEvent) => {
+          e.stopPropagation();
+          e.preventDefault();
+          window.open(el.getAttribute('href'));
+        };
+        const target = el.getAttribute('target');
+        if (target !== '_blank') el.setAttribute('target', '_blank');
+      });
+    }, 200);
+  }
 
   if (APP_FRAME) {
     setInterval(() => cleanupFrame(), 200);

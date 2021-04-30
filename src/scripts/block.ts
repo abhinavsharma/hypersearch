@@ -1,4 +1,3 @@
-import { runFunctionWhenDocumentReady } from 'utils/helpers';
 import { BLOCKED_ADS } from 'utils/constants';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
