@@ -34,6 +34,9 @@ const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeade
 );
 
 const processCookieString = (header: string) => {
+  if (header.search(/__sso\.key/g) > -1) {
+    return header;
+  }
   let newHeader = header;
   if (newHeader.search(/Secure/) === -1) {
     newHeader = newHeader.concat(' Secure');
@@ -45,10 +48,11 @@ const processCookieString = (header: string) => {
   }
   return newHeader;
 };
+
 // Rewrite all request headers to remove CORS related content and allow remote sites to be loaded into
 // IFrames for example. This is a NOT SAFE solution and ignores any external security concern provided.
 chrome.webRequest.onHeadersReceived.addListener(
-  function (details) {
+  (details) => {
     const strippedHeaders = [
       'x-frame-options',
       'frame-options',
@@ -56,6 +60,7 @@ chrome.webRequest.onHeadersReceived.addListener(
       'access-control-allow-origin',
       'referer-policy',
     ];
+
     const responseHeaders = details.responseHeaders.filter((responseHeader) => {
       const deleted = !strippedHeaders.includes(responseHeader.name.toLowerCase());
       return deleted;
@@ -108,18 +113,21 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     // Bookface needs `_sso.key` cookie to sent with `SameSite=none` to be able to display in iframe.
     chrome.cookies.getAll({ name: '_sso.key' }, (cookies) => {
       const ssoCookie = cookies[0];
-      chrome.cookies.set({
-        domain: ssoCookie.domain,
-        expirationDate: ssoCookie.expirationDate,
-        httpOnly: true,
-        name: '_sso.key',
-        path: '/',
-        value: ssoCookie.value,
-        url: 'https://bookface.ycombinator.com',
-        sameSite: 'no_restriction',
-        secure: true,
-      });
+      if (ssoCookie) {
+        chrome.cookies.set({
+          domain: ssoCookie.domain,
+          expirationDate: ssoCookie.expirationDate,
+          httpOnly: true,
+          name: '_sso.key',
+          path: '/',
+          value: ssoCookie.value,
+          url: 'https://bookface.ycombinator.com',
+          sameSite: 'no_restriction',
+          secure: true,
+        });
+      }
     });
+
     const requestHeaders = details.requestHeaders.map((requestHeader) => {
       if (requestHeader.name.toLowerCase() === 'cookie') {
         requestHeader.value = processCookieString(requestHeader.value);
