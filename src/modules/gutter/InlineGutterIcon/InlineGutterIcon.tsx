@@ -129,7 +129,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
-        placement="bottom"
+        placement="right"
         overlayClassName="gutter-tooltip"
       >
         <Button
@@ -155,7 +155,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
-        placement="bottom"
+        placement="right"
         overlayClassName="gutter-tooltip"
       >
         <Button

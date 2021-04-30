@@ -44,10 +44,10 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
       <Tooltip
         title={`You have spent ${currentTime
           .replace('h', ' hours')
-          .replace('m', ' minutes')} on ${domain} (not shared)`}
+          .replace('m', ' minutes')} on ${domain} (this data is kept locally on this browser)`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
-        placement="bottom"
+        placement="right"
         overlayClassName="gutter-tooltip"
       >
         {currentTime}{' '}
