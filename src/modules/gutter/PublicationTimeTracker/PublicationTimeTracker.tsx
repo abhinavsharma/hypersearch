@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import Tooltip from 'antd/lib/tooltip';
 import {
+  SIDEBAR_Z_INDEX,
   SYNC_PUBLICATION_TIME_TRACK_KEY,
   TRIGGER_PUBLICATION_TIMER_MESSAGE,
 } from 'utils/constants';
 import { sanitizeUrl } from 'utils/helpers';
+import 'antd/lib/tooltip/style/index.css';
 import './PublicationTimeTracker.scss';
 
 export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
-  const [currentTime, setCurrentTime] = useState<string>();
+  const [currentTime, setCurrentTime] = useState<string>('');
+  const tooltipContainer = useRef(null);
 
   const getDisplayTime = (time: number) => {
     if (!time || typeof time !== 'number') {
@@ -35,5 +39,24 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
     });
   }, []);
 
-  return <div className="publication-time-tracker">{currentTime}</div>;
+  return (
+    <div className="publication-time-tracker">
+      <Tooltip
+        title={`You have spent ${currentTime
+          .replace('h', ' hours')
+          .replace('m', ' minutes')} on ${domain} (not shared)`}
+        destroyTooltipOnHide={{ keepParent: false }}
+        getPopupContainer={() => tooltipContainer.current}
+        placement="bottom"
+        overlayClassName="gutter-tooltip"
+      >
+        {currentTime}{' '}
+      </Tooltip>
+      <div
+        className="tooltip-container"
+        ref={tooltipContainer}
+        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+      />
+    </div>
+  );
 };
