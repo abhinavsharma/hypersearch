@@ -328,7 +328,7 @@ class SidebarLoader {
   private getTabUrls(augmentation: AugmentationObject) {
     const urls: URL[] = [];
     const defaultUrl =
-      this.customSearchEngine.search_engine_json.required_prefix.search(/amazon\.com/gi) > -1
+      this.customSearchEngine.search_engine_json.required_prefix.search(/amazon\.com/gi) === -1
         ? this.customSearchEngine.search_engine_json?.required_prefix
         : 'google.com/search';
 
