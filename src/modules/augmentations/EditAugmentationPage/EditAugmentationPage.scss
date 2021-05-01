@@ -62,6 +62,13 @@
     .ant-collapse-header {
       font-weight: bold;
       font-size: 18px;
+
+      .popover-container {
+        z-index: 10000;
+        position: absolute;
+        top: 0px;
+        left: 0;
+      }
     }
 
     .ant-collapse-content-box {

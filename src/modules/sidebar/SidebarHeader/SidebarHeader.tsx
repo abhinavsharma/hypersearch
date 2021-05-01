@@ -28,6 +28,9 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   };
 
   const handleOpenBuilder = () => {
+    if (!!SidebarLoader.tourStep) {
+      SidebarLoader.tourStep = '2';
+    }
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.ACTIVE,
@@ -76,6 +79,11 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
         <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Lenses Menu">
           <Button
             onClick={handleOpenBuilder}
+            className={
+              SidebarLoader.tourStep === 'true' || SidebarLoader.tourStep === '1'
+                ? 'insight-tour-shake'
+                : ''
+            }
             icon={<Menu size={20} stroke={'#999'} />}
             type="text"
           />

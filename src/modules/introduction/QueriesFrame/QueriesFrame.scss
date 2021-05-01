@@ -1,5 +1,21 @@
 #queries-frame-container {
+
+  .ant-collapse-content {
+    background-color: transparent;
+  }
+
   padding: 150px 0;
+  .ant-collapse {
+    margin-top: 20px;
+  }
+
+  .step-button {
+    font-size: 24px;
+    height: auto;
+    margin-top: 20px;
+    color: #fff;
+    border-color: #ffffff;
+  }
 
   .ant-list {
     margin-top: 20px;

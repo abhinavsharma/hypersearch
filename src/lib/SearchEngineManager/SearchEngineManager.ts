@@ -86,7 +86,7 @@ class SearchEngineManager {
    * @method
    * @memberof SidebarLoader
    */
-  private async getIntents() {
+  public async getIntents() {
     const raw = await fetch(INTENTS_BLOB_URL, { mode: 'cors' });
     this.intents = await raw.json();
   }

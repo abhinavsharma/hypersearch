@@ -59,11 +59,12 @@ const Sidebar: Sidebar = () => {
     const isTabsLength = getFirstValidTabIndex(sidebarTabs) !== '0';
     const isSearchTabs = sidebarTabs?.find((tab) => tab.isCse);
     if (
-      isSmallWidth ||
-      !isTabsLength ||
-      !isSearchTabs ||
-      isKnowledgePage(document) ||
-      SidebarLoader.preventAutoExpand
+      !SidebarLoader.tourStep &&
+      (isSmallWidth ||
+        !isTabsLength ||
+        !isSearchTabs ||
+        isKnowledgePage(document) ||
+        SidebarLoader.preventAutoExpand)
     ) {
       flipSidebar(
         document,

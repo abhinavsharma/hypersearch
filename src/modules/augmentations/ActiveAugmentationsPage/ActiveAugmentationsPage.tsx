@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
@@ -24,16 +24,18 @@ const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
 );
 
-const SettingOutlined = React.lazy(
-  async () => await import('@ant-design/icons/SettingOutlined').then((mod) => mod),
-);
-
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
+  const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
+
   const handleOpenSettings = () => {
     chrome.runtime.sendMessage({ type: OPEN_SETTINGS_PAGE_MESSAGE });
   };
 
   const handleClose = () => {
+    if (!!tourStep) {
+      setTourStep(null);
+      SidebarLoader.tourStep = null;
+    }
     if (getFirstValidTabIndex(SidebarLoader.sidebarTabs) === '0') {
       flipSidebar(window.top.document, 'hide', 0, true);
     } else {
@@ -70,7 +72,11 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
       title: 'Your Local Lenses for This Page',
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),
       button: (
-        <Button type="text" onClick={handleCreate}>
+        <Button
+          className={tourStep === '2' ? 'insight-tour-shake' : ''}
+          type="text"
+          onClick={handleCreate}
+        >
           <Suspense fallback={null}>
             <ZoomInOutlined />
           </Suspense>
@@ -115,16 +121,24 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
     },
   ];
 
+  useEffect(() => {
+    setTourStep(SidebarLoader.tourStep);
+  }, [SidebarLoader.tourStep]);
+
   return (
     <div id="active-augmentations-page">
       <header>
-        <Button type="link" className="close-button" onClick={handleClose}>
+        <Button
+          type="link"
+          className={`close-button ${tourStep === '6' ? 'insight-tour-shake' : ''}`}
+          onClick={handleClose}
+        >
           Close
         </Button>
         <span className="title">Lenses</span>
         <Button type="text" className="setting-button" onClick={handleOpenSettings}>
           <Suspense fallback={null}>
-            <Settings stroke={'#999'} size={20}/>
+            <Settings stroke={'#999'} size={20} />
           </Suspense>
         </Button>
       </header>

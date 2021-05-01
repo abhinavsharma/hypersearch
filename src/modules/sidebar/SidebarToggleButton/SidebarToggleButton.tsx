@@ -6,14 +6,11 @@
  */
 import React from 'react';
 import List from 'antd/lib/list';
-import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import {
   flipSidebar,
-  AIRTABLE_IMPROVE_SEARCH_LINK,
   EMPTY_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
-  getFirstValidTabIndex,
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,

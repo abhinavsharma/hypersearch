@@ -260,6 +260,8 @@ class SidebarLoader {
 
   public hideDomains: string[];
 
+  public tourStep = null;
+
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.augmentationStats = Object.create(null);
@@ -417,14 +419,16 @@ class SidebarLoader {
     ],
   ) {
     debug(
-      'getTabsAndAugmentations - call\n---\n\tDomains on the current page (in preserved order)\n',
+      'getTabsAndAugmentations - call\n---\n\tTop domains\n',
       ...this.domains.map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),
+      '\n---',
+      '\n\tAll domains\n',
+      ...this.tabDomains['original'].map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),
       '\n---',
     );
     this.sidebarTabs = [];
     const newTabs: SidebarTab[] = [];
     const logirrelevant: any[] = [];
-    const logProcessed: any[] = [];
     const logSuggested: any[] = [];
     const logTabs: any[] = [];
 
@@ -452,19 +456,22 @@ class SidebarLoader {
         if (hasPreventAutoexpand) this.preventAutoExpand = hasPreventAutoexpand;
 
         /** DEV START **/
-        IN_DEBUG_MODE &&
-          logProcessed.push(
-            '\n\t',
-            {
-              [augmentation.id]: {
-                'Domains to look for': domainsToLookAction,
-                'Matching domains to condition': matchingDomainsCondition,
-                'Matching domains to action': matchingDomainsAction,
-                ...augmentation,
+        if (IN_DEBUG_MODE) {
+          !isRelevant &&
+            (matchingDomainsAction.length || matchingDomainsCondition.length) &&
+            logirrelevant.push(
+              '\n\t',
+              {
+                [augmentation.name]: {
+                  'Domains to look for': domainsToLookAction,
+                  'Matching domains for condition': matchingDomainsCondition,
+                  'Matching domains for action': matchingDomainsAction,
+                  ...augmentation,
+                },
               },
-            },
-            '\n',
-          );
+              '\n',
+            );
+        }
         /** DEV END  **/
 
         if (isRelevant && isAugmentationEnabled(augmentation)) {
@@ -477,29 +484,27 @@ class SidebarLoader {
             [],
           );
 
-          /** DEV START **/
-          IN_DEBUG_MODE &&
-            !isRelevant &&
-            logirrelevant.push(
-              '\n\t',
-              {
-                [augmentation.id]: {
-                  'Domains to look for': domainsToLookAction,
-                  'Matching domains for condition': matchingDomainsCondition,
-                  'Matching domains for action': matchingDomainsAction,
-                  ...augmentation,
-                },
-              },
-              '\n',
-            );
-          /** DEV END **/
-
           if (augmentation.installed) {
             !augmentation.enabled && this.matchingDisabledInstalledAugmentations.push(augmentation);
           } else if (
             !this.suggestedAugmentations.find(({ id }) => id === augmentation.id) &&
             !this.pinnedAugmentations.find(({ id }) => id === augmentation.id)
           ) {
+            /** DEV START **/
+            IN_DEBUG_MODE &&
+              logSuggested.push(
+                '\n\t',
+                {
+                  [augmentation.name]: {
+                    'Domains to look for': domainsToLookAction,
+                    'Matching domains for condition': matchingDomainsCondition,
+                    'Matching domains for action': matchingDomainsAction,
+                    ...augmentation,
+                  },
+                },
+                '\n',
+              );
+            /** DEV END **/
             this.suggestedAugmentations.push(augmentation);
           }
 
@@ -522,8 +527,13 @@ class SidebarLoader {
             /** DEV END **/
           });
         } else {
-          !this.otherAugmentations.find(({ id }) => id === augmentation.id) &&
+          if (!this.otherAugmentations.find(({ id }) => id === augmentation.id)) {
+            /** DEV START **/
+            IN_DEBUG_MODE &&
+              logirrelevant.push('\n\t', { [augmentation.name]: augmentation }, '\n');
+            /** DEV END **/
             this.otherAugmentations.push(augmentation);
+          }
         }
       }
     });
@@ -534,17 +544,14 @@ class SidebarLoader {
     IN_DEBUG_MODE &&
       debug(
         'getTabsAndAugmentations - processed',
-        '\n---\n\tSidebar Tabs (installed + suggested)\n---',
-        ...logTabs,
-        '\n---\n\tSuggested Augmentations (at least one matching domain)\n---',
-        ...logSuggested,
-        '\n---\n\tExcluded Augmentations (at least NUM_DOMAINS_TO_EXCLUDE matching domains at top NUM_DOMAINS_TO_CONSIDER SERP position)\n---',
-        ...logirrelevant,
         '\n---\n\tIs this page a search engine? --- ',
         this.isSerp ? 'Yes' : 'No',
-        '\n---\n\tProcessed Augmentations (response from subtabs API)\n---',
-        ...logProcessed,
-        '\n---',
+        '\n---\n\tSidebar Tabs\n---',
+        ...logTabs,
+        '\n---\n\tSuggested Augmentations\n---',
+        ...logSuggested,
+        '\n---\n\tOther Augmentations\n---',
+        ...logirrelevant,
       );
     /** DEV END **/
   }
@@ -586,6 +593,7 @@ class SidebarLoader {
     this.query = new URLSearchParams(this.document.location.search).get(
       this.customSearchEngine.search_engine_json?.required_params[0],
     );
+    this.tourStep = new URLSearchParams(this.document.location.href).get('insight-tour');
     const prepareDocument = async () => {
       this.document.documentElement.style.setProperty('color-scheme', 'none');
       this.domains = this.getDomains(document) ?? [];
@@ -677,6 +685,11 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   private async getLocalAugmentations() {
+    debug('getLocalAugmentations - call');
+    const logInstalled = [];
+    const logOther = [];
+    const logIgnored = [];
+    const logPinned = [];
     const locals: Record<string, AugmentationObject & number> = await new Promise((resolve) =>
       chrome.storage.local.get(resolve),
     );
@@ -688,12 +701,24 @@ class SidebarLoader {
       const flag = key.split('-')[0];
       switch (flag) {
         case IGNORED_PREFIX:
-          !this.ignoredAugmentations.find(({ id }) => id === value.id) &&
+          if (!this.ignoredAugmentations.find(({ id }) => id === value.id)) {
+            /** DEV START **/
+            if (IN_DEBUG_MODE) {
+              logIgnored.push('\n\t', { [value.name]: { ...(value as AugmentationObject) } }, '\n');
+            }
+            /** DEV END  **/
             this.ignoredAugmentations.push(value);
+          }
           break;
         case PINNED_PREFIX:
-          !this.pinnedAugmentations.find(({ id }) => id === value.id) &&
+          if (!this.pinnedAugmentations.find(({ id }) => id === value.id)) {
+            /** DEV START **/
+            if (IN_DEBUG_MODE) {
+              logPinned.push('\n\t', { [value.name]: { ...(value as AugmentationObject) } }, '\n');
+            }
+            /** DEV END  **/
             this.pinnedAugmentations.push(value);
+          }
           this.installedAugmentations = this.installedAugmentations.filter(
             ({ id }) => id !== value.id,
           );
@@ -702,6 +727,11 @@ class SidebarLoader {
             !this.suggestedAugmentations.find(({ id }) => id === value.id) &&
             !this.enabledOtherAugmentations.find(({ id }) => id === value.id)
           ) {
+            /** DEV START **/
+            if (IN_DEBUG_MODE) {
+              logPinned.push('\n\t', { [value.name]: { ...(value as AugmentationObject) } }, '\n');
+            }
+            /** DEV END  **/
             this.enabledOtherAugmentations.push(value);
           }
           break;
@@ -712,10 +742,29 @@ class SidebarLoader {
               isAugmentationEnabled(value) &&
               !this.installedAugmentations.find(({ id }) => id === value.id)
             ) {
+              /** DEV START **/
+              if (IN_DEBUG_MODE) {
+                logInstalled.push(
+                  '\n\t',
+                  { [value.name]: { ...(value as AugmentationObject) } },
+                  '\n',
+                );
+              }
+              /** DEV END  **/
               this.installedAugmentations.push(value);
             } else {
-              !this.otherAugmentations.find(({ id }) => id === value.id) &&
+              if (!this.otherAugmentations.find(({ id }) => id === value.id)) {
+                /** DEV START **/
+                if (IN_DEBUG_MODE) {
+                  logOther.push(
+                    '\n\t',
+                    { [value.name]: { ...(value as AugmentationObject) } },
+                    '\n',
+                  );
+                }
+                /** DEV END  **/
                 this.otherAugmentations.push(value);
+              }
             }
           }
           break;
@@ -739,12 +788,14 @@ class SidebarLoader {
       AugmentationManager.addOrEditAugmentation(MY_BLOCKLIST_TEMPLATE, {});
     }
     debug(
-      'getLocalAugmentations - call\n---\n\tInstalled Augmentations',
-      this.installedAugmentations,
-      '\n\tIgnored Augmentations',
-      this.ignoredAugmentations,
-      '\n\tPinned Augmentations',
-      this.pinnedAugmentations,
+      'getLocalAugmentations - processed\n---\n\tInstalled Augmentations\n---\n',
+      ...logInstalled,
+      '\n---\n\tIgnored Augmentations\n---\n',
+      ...logIgnored,
+      '\n---\n\tPinned Augmentations\n---\n',
+      ...logPinned,
+      '\n---\n\tOther Augmentations\n---\n',
+      ...logOther,
       '\n---',
     );
   }
@@ -795,6 +846,7 @@ class SidebarLoader {
     this.sidebarTabs = [...this.sidebarTabs, ...subtabs];
     debug('handleSubtabApiResponse - processed', '\n---\n\tMatched Subtabs', subtabs, '\n---');
     ! END DISABLED */
+    debug('handleSubtabApiResponse - processed');
   }
 
   /**
@@ -898,9 +950,9 @@ class SidebarLoader {
     this.document.body.appendChild(wrapper);
     const nonCseTabs = this.sidebarTabs.filter((tab) => !tab.isCse);
     this.sidebarTabs.concat(nonCseTabs);
-    debug('createSidebar - processed\n---\n\tNon CSE Tabs', nonCseTabs, '\n---');
     const sidebarInit = React.createElement(Sidebar);
     this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', link);
+    debug('createSidebar - processed');
   }
 
   /**

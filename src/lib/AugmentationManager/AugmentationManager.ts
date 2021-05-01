@@ -410,7 +410,7 @@ class AugmentationManager {
             !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length <
-        (hasAnyPageCondition ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
+        (hasAnyPageCondition || !!SidebarLoader.tourStep ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
 
     // ! SEARCH QUERY
     const matchingQuery = augmentation.conditions?.condition_list.some(
@@ -436,15 +436,13 @@ class AugmentationManager {
             const intentDomains = matchingIntent.sites.split(',') ?? [];
             intentDomains.forEach(
               (domain) =>
-                !!SidebarLoader.domains?.find(
+                !!SidebarLoader.tabDomains['original']?.find(
                   (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
                 ) && intents.push(domain),
             );
             // matching intent elements on document
             if (matchingIntent.google_css) {
-              return intents.concat(
-                Array.from(document.querySelectorAll(matchingIntent.google_css)),
-              );
+              intents.concat(Array.from(document.querySelectorAll(matchingIntent.google_css)));
             }
           }
         }
@@ -472,6 +470,7 @@ class AugmentationManager {
               .indexOf(false) === -1
           );
         }
+        return null;
       },
     );
 
