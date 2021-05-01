@@ -49,6 +49,8 @@ import {
   MY_TRUSTLIST_ID,
   MY_TRUSTLIST_TEMPLATE,
   triggerSerpProcessing,
+  MY_BLOCKLIST_ID,
+  MY_BLOCKLIST_TEMPLATE,
 } from 'utils';
 
 /**
@@ -729,6 +731,12 @@ class SidebarLoader {
       !this.otherAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID)
     ) {
       AugmentationManager.addOrEditAugmentation(MY_TRUSTLIST_TEMPLATE, {});
+    }
+    if (
+      !this.installedAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID) &&
+      !this.otherAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID)
+    ) {
+      AugmentationManager.addOrEditAugmentation(MY_BLOCKLIST_TEMPLATE, {});
     }
     debug(
       'getLocalAugmentations - call\n---\n\tInstalled Augmentations',

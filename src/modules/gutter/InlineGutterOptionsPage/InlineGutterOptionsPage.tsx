@@ -7,6 +7,7 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   EMPTY_AUGMENTATION,
+  MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
@@ -30,11 +31,14 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   hidingAugmentations,
   domain,
 }) => {
-  const [currentHiders, setCurrentHiders] = useState<AugmentationObject[]>(hidingAugmentations);
+  const [currentHiders, setCurrentHiders] = useState<AugmentationObject[]>(
+    hidingAugmentations.filter(({ id }) => id !== MY_BLOCKLIST_ID),
+  );
   const [isBlocked, setIsBlocked] = useState<boolean>(
-    !!AugmentationManager.blockList.actions?.action_list?.filter(
-      (action) => !!action.value.find((value) => value === domain),
-    ).length,
+    !!SidebarLoader.installedAugmentations
+      .find(({ id }) => id === MY_BLOCKLIST_ID)
+      .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
+      .length,
   );
 
   const searchingAugmentations = [
@@ -122,18 +126,14 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     } as OpenActivePageMessage);
   };
 
-  const init = async () => {
-    await AugmentationManager.initBlockList();
-    setIsBlocked(
-      !!AugmentationManager.blockList.actions?.action_list?.filter(
-        (action) => !!action.value.find((value) => value === domain),
-      ).length,
-    );
-  };
-
   useEffect(() => {
-    init();
-  }, []);
+    setIsBlocked(
+      !!SidebarLoader.installedAugmentations
+        .find(({ id }) => id === MY_BLOCKLIST_ID)
+        .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
+        .length,
+    );
+  }, [SidebarLoader.installedAugmentations]);
 
   const handleAddSearchDomainToLocal = (augmentation: AugmentationObject, index: number) => {
     const newActions = augmentation.actions.action_list.map((action, actionIndex) =>

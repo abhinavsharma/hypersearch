@@ -24,7 +24,6 @@ import {
   INSTALLED_PREFIX,
   PINNED_PREFIX,
   ANY_URL_CONDITION_MOBILE,
-  MY_BLOCKLIST_TEMPLATE,
   MY_BLOCKLIST_ID,
   SEARCH_ENGINE_IS_CONDITION,
   encodeSpace,
@@ -41,39 +40,10 @@ import {
 } from 'utils';
 
 class AugmentationManager {
-  /**
-   * The user's personal blocklist. It's a special augmentation that cannot be
-   * deleted and will be created automatically if not exists and the user wants
-   * to block a domain from SERP results.
-   *
-   * @public
-   * @property
-   * @memberof AugmentationManager
-   */
-  public blockList: AugmentationObject;
-
   public preparedLogMessage: Record<'augmentation', AugmentationObject> | null;
 
   constructor() {
     debug('AugmentationManager - initialize\n---\n\tSingleton Instance', this, '\n---');
-    this.blockList = MY_BLOCKLIST_TEMPLATE;
-  }
-
-  /**
-   * Load or create the user's personal blocklist.
-   *
-   * @param callback - Optional function to invoke after blocklist initialized
-   * @public
-   * @method
-   * @memberof AugmentationManager
-   */
-  public async initBlockList(cb?: any) {
-    const storageId = MY_BLOCKLIST_ID;
-    const existing = await new Promise((resolve) =>
-      chrome.storage.local.get(storageId, resolve),
-    ).then((value) => value[storageId]);
-    this.blockList = existing ?? MY_BLOCKLIST_TEMPLATE;
-    cb?.();
   }
 
   /**
@@ -85,9 +55,10 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public async updateBlockList(domain: string) {
-    const isNewBlock = !this.blockList.actions.action_list.find(({ value }) => value[0] === domain);
+    const blockList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
+    const isNewBlock = !blockList.actions.action_list.find(({ value }) => value[0] === domain);
     const newActionList = [
-      ...this.blockList.actions.action_list.filter(
+      ...blockList.actions.action_list.filter(
         (action) => action.value.length && !action.value.includes(domain),
       ),
       {
@@ -97,17 +68,15 @@ class AugmentationManager {
         value: [domain],
       },
     ] as AugmentationObject['actions']['action_list'];
-    this.blockList.actions.action_list = newActionList;
+    blockList.actions.action_list = newActionList;
     isNewBlock &&
       !SidebarLoader.strongPrivacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_ADD_DOMAIN, {
         domain,
       });
-    await this.initBlockList(
-      this.addOrEditAugmentation(this.blockList, {
-        actions: newActionList,
-      }),
-    );
+    this.addOrEditAugmentation(blockList, {
+      actions: newActionList,
+    });
   }
 
   /**
@@ -119,18 +88,17 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public async deleteFromBlockList(domain: string) {
+    const blockList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
     const newActionList = [
-      ...this.blockList.actions.action_list.filter(({ key, value }) =>
+      ...blockList.actions.action_list.filter(({ key, value }) =>
         key === SEARCH_HIDE_DOMAIN_ACTION ? value[0] !== domain : true,
       ),
     ] as AugmentationObject['actions']['action_list'];
-    this.blockList.actions.action_list = newActionList;
-    await this.initBlockList(
-      this.addOrEditAugmentation(this.blockList, {
-        actions: newActionList,
-      }),
-    );
-    SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
+    blockList.actions.action_list = newActionList;
+    this.addOrEditAugmentation(blockList, {
+      actions: newActionList,
+    }),
+      (SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain));
     !SidebarLoader.strongPrivacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
         domain,
@@ -138,13 +106,10 @@ class AugmentationManager {
     window.postMessage(
       {
         name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-        remove: this.blockList.id,
+        remove: blockList.id,
         domain,
         selector: {
-          link:
-            SidebarLoader.customSearchEngine.querySelector?.[
-              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-            ],
+          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
           featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
           container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
         },
