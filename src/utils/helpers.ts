@@ -238,8 +238,8 @@ export const getPublicationUrl = (urlLike: string): string | null => {
   }
   const urlProps = extractUrlProperties(urlLike);
   return DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
-    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? null
-    : null;
+    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
+    : urlProps.hostname;
 };
 
 export const sanitizeUrl = (urlLike: string) => {
