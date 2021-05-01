@@ -44,7 +44,7 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
       <Tooltip
         title={`You have spent ${currentTime
           .replace('h', ' hours')
-          .replace('m', ' minutes')} on ${domain} (this data is kept locally on this browser)`}
+          .replace('m', ' minutes')} on ${domain} (this data is stored locally on this browser)`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
         placement="right"
