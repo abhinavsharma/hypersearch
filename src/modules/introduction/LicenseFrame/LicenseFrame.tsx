@@ -20,6 +20,11 @@ export const LicenseFrame = () => {
     handleNext();
   };
 
+  const handleFreeTier = () => {
+    stepContext.setLicense({ isActivated: false, key: null });
+    handleNext();
+  };
+
   const validateLicense = () => {
     return stepContext.license.key?.length === 39 && stepContext.license.key?.match(/^[\w-]*$/gi);
   };
@@ -68,7 +73,7 @@ export const LicenseFrame = () => {
           size="large"
           style={{ color: 'white' }}
           className="step-button"
-          onClick={handleNext}
+          onClick={handleFreeTier}
         >
           Use Free Plan
         </Button>

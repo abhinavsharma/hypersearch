@@ -294,34 +294,24 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
     case SEND_LOG_MESSAGE:
       debug('handleLogSend - call');
       try {
-        // We use this for the logging. This ID will be assigned to the instance, throughout the application
-        // lifetime. This way we can follow the exact user actions indentifying them by their ID. Also, we can
-        // keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
-        chrome.storage.sync.get(SYNC_DISTINCT_KEY, (result) => {
-          let userId = result[SYNC_DISTINCT_KEY];
-          if (!userId) {
-            userId = uuid();
-            chrome.storage.sync.set({ [SYNC_DISTINCT_KEY]: userId });
-          }
-          const data: FreshpaintTrackEvent = {
-            event: msg.event,
-            properties: {
-              distinct_id: userId,
-              token: FRESHPAINT_API_TOKEN,
-              time: Date.now() / 1000, // ! Time is epoch seconds
-              ...msg.properties,
-            },
-          };
-          axios({
-            url: FRESHPAINT_API_ENDPOINT,
-            method: 'post',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            data,
-          }).then((result) => {
-            debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
-          });
+        const data: FreshpaintTrackEvent = {
+          event: msg.event,
+          properties: {
+            distinct_id: msg.userId,
+            token: FRESHPAINT_API_TOKEN,
+            time: Date.now() / 1000, // ! Time is epoch seconds
+            ...msg.properties,
+          },
+        };
+        axios({
+          url: FRESHPAINT_API_ENDPOINT,
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          data,
+        }).then((result) => {
+          debug('handleLogSend - processed\n---\n\tResponse', result, '\n---');
         });
       } catch (e) {
         debug('handleLogSend - error\n---\n\tError', e, '\n---');

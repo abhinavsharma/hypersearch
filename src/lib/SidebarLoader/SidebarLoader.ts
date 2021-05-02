@@ -7,6 +7,7 @@
 import React, { ReactElement } from 'react';
 import md5 from 'md5';
 import { render } from 'react-dom';
+import { v4 as uuid } from 'uuid';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
@@ -51,6 +52,7 @@ import {
   triggerSerpProcessing,
   MY_BLOCKLIST_ID,
   MY_BLOCKLIST_TEMPLATE,
+  SYNC_DISTINCT_KEY,
 } from 'utils';
 
 /**
@@ -260,7 +262,9 @@ class SidebarLoader {
 
   public hideDomains: string[];
 
-  public tourStep = null;
+  public tourStep: string;
+
+  public userData: Record<'license' | 'id', string>;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -280,6 +284,7 @@ class SidebarLoader {
     this.ignoredAugmentations = [];
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
+    this.userData = Object.create(null);
   }
 
   /**
@@ -859,15 +864,17 @@ class SidebarLoader {
    */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
-    const license_key = await new Promise((resolve) =>
-      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
-    ).then((mod) => mod?.[SYNC_LICENSE_KEY]);
+    await this.getUserData();
     const getSubtabs = async (url = this.url.href) => {
-      debug('\n---\n\tRequest API', url, '\n\tLicense', license_key, '\n---');
+      debug('\n---\n\tRequest API', url, '\n\tLicense', this.userData.license, '\n---');
       return (await postAPI(
         'subtabs',
         { url },
-        { client: 'desktop', license_keys: license_key ? [license_key] : [] },
+        {
+          client: 'desktop',
+          license_keys: this.userData.license ? [this.userData.license] : [],
+          uuid: this.userData.id,
+        },
       )) as SubtabsResponse;
     };
     let response: SubtabsResponse = Object.create(null);
@@ -955,6 +962,26 @@ class SidebarLoader {
     debug('createSidebar - processed');
   }
 
+  private async getUserData() {
+    // We use this for the logging. This ID will be assigned to the instance, throughout the application
+    // lifetime. This way we can follow the exact user actions indentifying them by their ID. Also, we can
+    // keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
+    const storedId = await new Promise((resolve) =>
+      chrome.storage.sync.get(SYNC_DISTINCT_KEY, resolve),
+    );
+    let userId = storedId[SYNC_DISTINCT_KEY];
+    if (!userId) {
+      userId = uuid();
+      chrome.storage.sync.set({ [SYNC_DISTINCT_KEY]: userId });
+    }
+    const storedLicense =
+      (await new Promise((resolve) => chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve)).then(
+        (mod) => mod?.[SYNC_LICENSE_KEY],
+      )) ?? null;
+    this.userData.id = userId;
+    this.userData.license = storedLicense;
+  }
+
   /**
    * Send a trigger to background page, to send Freshpaint logging.
    *
@@ -983,12 +1010,14 @@ class SidebarLoader {
       '\n---',
     );
 
-    !IN_DEBUG_MODE &&
+    if (!IN_DEBUG_MODE && this.userData.license) {
       chrome.runtime.sendMessage({
         event,
         properties,
+        userId: this.userData.id,
         type: SEND_LOG_MESSAGE,
       });
+    }
   }
 }
 

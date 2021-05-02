@@ -18,8 +18,20 @@ export const PrivacyFrame = () => {
         <title>{APP_NAME} - Privacy Setting</title>
       </Helmet>
       <div id="privacy-frame-container">
-        <Title level={2}>Choose a Privacy Setting</Title>
-        <ToggleAnonymousQueries />
+        {stepContext.license.isActivated ? (
+          <>
+            <Title level={2}>Choose a Privacy Setting</Title>
+            <ToggleAnonymousQueries />
+          </>
+        ) : (
+          <>
+            <Title level={2}>Maximum Privacy Enabled</Title>
+            <p>
+              The basic tier never sends any information about the page you visit to our servers.
+              However, the suggestions we can make are limited
+            </p>
+          </>
+        )}
         <Button
           type="ghost"
           shape="round"
