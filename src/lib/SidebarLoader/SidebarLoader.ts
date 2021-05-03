@@ -367,7 +367,12 @@ class SidebarLoader {
           action.value.forEach((value) => {
             const url = AugmentationManager.processOpenPageActionString(value);
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            url.searchParams.append('insight-tab-title', extractUrlProperties(url.href)?.hostname);
+            if (augmentation.actions.action_list.length > 1) {
+              url.searchParams.append(
+                'insight-tab-title',
+                extractUrlProperties(url.href)?.hostname,
+              );
+            }
             urls.push(url);
           });
           break;
