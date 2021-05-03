@@ -12,6 +12,7 @@ import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'u
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
+  EXTENSION_AUTO_EXPAND,
   HIDE_TAB_FAKE_URL,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
@@ -19,6 +20,7 @@ import {
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
 import './Sidebar.scss';
+import md5 from 'md5';
 
 const Sidebar: Sidebar = () => {
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
@@ -55,30 +57,39 @@ const Sidebar: Sidebar = () => {
     // When one of the following conditions are met, we hide the sidebar by default, regardless
     // of the number of matching tabs. If there are matching tabs and the sidebar can't expand on
     // load, the height of the toggle button (SidebarToggleButton) is set dynamically.
+    const firstValidTab = getFirstValidTabIndex(sidebarTabs);
     const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
-    const isTabsLength = getFirstValidTabIndex(sidebarTabs) !== '0';
+    const isTabsLength = firstValidTab !== '0';
     const isSearchTabs = sidebarTabs?.find((tab) => tab.isCse);
+    const isKP = isKnowledgePage(document);
+    const validTabsLength = sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL).length;
+    let isExpanded = false;
+
     if (
       !SidebarLoader.tourStep &&
-      (isSmallWidth ||
-        !isTabsLength ||
-        !isSearchTabs ||
-        isKnowledgePage(document) ||
-        SidebarLoader.preventAutoExpand)
+      (isSmallWidth || !isTabsLength || !isSearchTabs || isKP || SidebarLoader.preventAutoExpand)
     ) {
-      flipSidebar(
-        document,
-        'hide',
-        sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL).length,
-        true,
-      );
+      flipSidebar(document, 'hide', validTabsLength, true);
     } else {
-      flipSidebar(
-        document,
-        'show',
-        sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL).length,
-      );
+      isExpanded = true;
+      flipSidebar(document, 'show', validTabsLength);
     }
+
+    SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {
+      url: SidebarLoader.url.href,
+      subtabs: SidebarLoader.strongPrivacy
+        ? sidebarTabs.map(({ url }) => md5(url.href))
+        : sidebarTabs.map(({ title }) => title),
+      details: {
+        isExpanded: isExpanded,
+        isKpPage: isKP,
+        screenWidth: window.innerWidth,
+        preventAutoExpand: SidebarLoader.preventAutoExpand,
+        isSerp: SidebarLoader.isSerp,
+        isTour: SidebarLoader.tourStep,
+        firstValidTabIndex: `${firstValidTab} / ${validTabsLength}`,
+      },
+    });
   }, []);
 
   return (

@@ -619,21 +619,14 @@ class SidebarLoader {
         window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
           -1;
       this.isSerp = checkRequiredPrefix() && checkRequiredParams();
-      await this.handleSubtabApiResponse(response);
       this.isSerp &&
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
           url: this.url,
         });
+      await this.handleSubtabApiResponse(response);
       this.createSidebar();
       triggerSerpProcessing(this);
-      this.sidebarTabs.length &&
-        this.sendLogMessage(EXTENSION_AUTO_EXPAND, {
-          url: this.url.href,
-          subtabs: this.strongPrivacy
-            ? this.sidebarTabs.map(({ url }) => md5(url.href))
-            : this.sidebarTabs,
-        });
     };
     response && runFunctionWhenDocumentReady(this.document, prepareDocument);
   }
