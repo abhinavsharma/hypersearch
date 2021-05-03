@@ -115,7 +115,7 @@ export const QueriesFrame = () => {
               shape="round"
               size="large"
               className="step-button"
-              href="https://www.loom.com/embed/9cdcde99a02941e4a07a16d889134b5a"
+              href="https://share.insightbrowser.com/17"
             >
               Click here to watch the walkthrough video.
             </Button>

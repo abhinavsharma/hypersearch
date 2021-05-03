@@ -26,10 +26,12 @@ export const PrivacyFrame = () => {
         ) : (
           <>
             <Title level={2}>Maximum Privacy Enabled</Title>
-            <p>
-              The basic tier never sends any information about the page you visit to our servers.
-              However, the suggestions we can make are limited
-            </p>
+            <div className="privacy-explainer">
+              <p>
+                Unlicensed usage never sends any information about the page you visit to our servers.
+              </p>
+              <p>However, the suggestions we can make are limited.</p>
+            </div>
           </>
         )}
         <Button
