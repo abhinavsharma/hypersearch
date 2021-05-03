@@ -303,7 +303,7 @@ class SidebarLoader {
     let els = [];
     // On Google, we have to use the `pad` selector, since the desktop referencing to the
     // `<cite>` tag, however the process needs the actual link's `href` attribute.
-    const isGoogle = location.href.search(/google\.com/gi) > -1;
+    // !dev const isGoogle = location.href.search(/google\.com/gi) > -1;
     // !dev const isDdg = location.href.search(/duckduckgo\.com/gi) > -1;
     const isBing = location.href.search(/bing\.com/gi) > -1;
     if (!this.customSearchEngine?.querySelector?.desktop) {
@@ -313,14 +313,18 @@ class SidebarLoader {
       (c) => (els = els.concat(Array.from(document.querySelectorAll(c)))),
     );
     els = els.concat(
-      Array.from(
-        document.querySelectorAll(
-          this.customSearchEngine?.querySelector?.[isGoogle ? 'pad' : 'desktop'],
-        ),
-      ),
+      Array.from(document.querySelectorAll(this.customSearchEngine?.querySelector?.['desktop'])),
     );
     const result = els
-      .map((i) => extractUrlProperties(isBing ? i.textContent : i.getAttribute('href')).full)
+      .map((i) =>
+        isBing
+          ? extractUrlProperties(i.textContent).full
+          : extractUrlProperties(
+              i instanceof HTMLLinkElement
+                ? i.getAttribute('href')
+                : i?.closest('a').getAttribute('href'),
+            ).full,
+      )
       .filter((domain) => !BANNED_DOMAINS.includes(domain));
     return getAllFromPage ? result : result.slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
