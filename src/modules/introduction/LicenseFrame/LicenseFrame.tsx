@@ -29,19 +29,9 @@ export const LicenseFrame = () => {
     return stepContext.license.key?.length === 39 && stepContext.license.key?.match(/^[\w-]*$/gi);
   };
 
-  const getStored = useCallback(async () => {
-    const stored = await new Promise((resolve) =>
-      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
-    ).then((result) => result[SYNC_LICENSE_KEY] as string);
-    if (stored) {
-      stepContext.setLicense({ isActivated: true, key: stored });
-    }
-  }, []);
-
   useEffect(() => {
     document.title = `Welcome to ${APP_NAME}`;
-    getStored();
-  }, [getStored]);
+  }, []);
 
   return (
     <div id="license-frame-container">
