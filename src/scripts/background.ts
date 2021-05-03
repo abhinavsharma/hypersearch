@@ -6,7 +6,6 @@
  * @version 1.0.0
  */
 import axios from 'axios';
-import { v4 as uuid } from 'uuid';
 import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
@@ -21,7 +20,6 @@ import {
   OPEN_SETTINGS_PAGE_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
-  SYNC_DISTINCT_KEY,
   SYNC_PUBLICATION_TIME_TRACK_KEY,
   TRIGGER_PUBLICATION_TIMER_MESSAGE,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
@@ -327,3 +325,17 @@ chrome.runtime.onInstalled.addListener((details) => {
   details.reason === 'install' &&
     chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') });
 });
+
+const HEADERS_TO_STRIP_LOWERCASE = ['content-security-policy', 'x-frame-options'];
+
+chrome.webRequest.onHeadersReceived.addListener(
+  (details) => ({
+    responseHeaders: details.responseHeaders.filter(
+      (header) => !HEADERS_TO_STRIP_LOWERCASE.includes(header.name.toLowerCase()),
+    ),
+  }),
+  {
+    urls: ['<all_urls>'],
+  },
+  ['blocking', 'responseHeaders', 'extraHeaders'],
+);
