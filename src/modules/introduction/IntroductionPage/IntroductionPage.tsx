@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Steps } from 'antd';
 import { LicenseFrame, WelcomeFrame, PrivacyFrame, QueriesFrame } from 'modules/introduction';
-import { APP_NAME, SYNC_FINISHED_KEY } from 'utils';
+import { APP_NAME, SYNC_FINISHED_KEY, SYNC_LICENSE_KEY } from 'utils';
 import './IntorductionPage.scss';
 
 const { Step } = Steps;
@@ -24,9 +24,22 @@ export const IntroductionPage = () => {
     }
   }, []);
 
+  const getStoredLicense = useCallback(async () => {
+    const stored = await new Promise((resolve) =>
+      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
+    ).then((result) => result[SYNC_LICENSE_KEY] as string);
+    if (stored) {
+      setLicense({ isActivated: true, key: stored });
+    }
+  }, []);
+
   useEffect(() => {
     checkFinished();
   }, [checkFinished]);
+
+  useEffect(() => {
+    getStoredLicense();
+  }, [getStoredLicense]);
 
   return (
     <div id="insight-intro-container">
