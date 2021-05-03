@@ -36,7 +36,10 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const ListItem = (item: SidebarTab) => (
     <List.Item>
       <List.Item.Meta
-        title={removeEmoji(item.title.length > 36 ? item.title.slice(0, 35) + '...' : item.title)}
+        title={
+          item.url.searchParams.get('insight-tab-title') ??
+          removeEmoji(item.title.length > 36 ? item.title.slice(0, 35) + '...' : item.title)
+        }
       />
     </List.Item>
   );

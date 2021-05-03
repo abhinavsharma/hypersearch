@@ -183,7 +183,10 @@ class AugmentationManager {
       const domainIndices = url.match(/%sr[\d]/gi) ?? [];
       domainIndices.forEach((value) => {
         const index = value.split('%sr')[1];
-        url = url.replace(`%sr${index}`, SidebarLoader.domains?.[index]);
+        url = url.replaceAll(
+          `%sr${index}`,
+          SidebarLoader.tabDomains['original']?.[Number(index) - 1],
+        );
       });
     }
     return new URL(url);

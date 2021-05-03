@@ -9,9 +9,8 @@
         "moduleResolution": "node",
         "jsx": "react",
         "lib": [
-            "es6",
+            "esnext",
             "dom",
-            "es2017"
         ],
         "noEmitOnError": true,
         "typeRoots": [
