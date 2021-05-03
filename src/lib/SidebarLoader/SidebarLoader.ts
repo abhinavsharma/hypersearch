@@ -338,7 +338,7 @@ class SidebarLoader {
     const urls: URL[] = [];
     const defaultUrl =
       this.customSearchEngine.search_engine_json.required_prefix.search(/amazon\.com/gi) === -1
-        ? this.customSearchEngine.search_engine_json?.required_prefix
+        ? this.customSearchEngine.search_engine_json?.required_prefix || 'google.com/search'
         : 'google.com/search';
 
     const emptyUrl = () =>
