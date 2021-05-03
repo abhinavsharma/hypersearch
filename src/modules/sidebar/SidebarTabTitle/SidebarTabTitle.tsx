@@ -53,11 +53,11 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
             title={`Lens suggested by ${APP_NAME}`}
             destroyTooltipOnHide={{ keepParent: false }}
           >
-            {removeEmoji(tab.title)}
+            {tab.url.searchParams.get('insight-tab-title') ?? removeEmoji(tab.title)}
           </Tooltip>
         ) : (
           <Tooltip title={'Local Lens'} destroyTooltipOnHide={{ keepParent: false }}>
-            {removeEmoji(tab.title)}
+            {tab.url.searchParams.get('insight-tab-title') ?? removeEmoji(tab.title)}
           </Tooltip>
         )}
       </span>
