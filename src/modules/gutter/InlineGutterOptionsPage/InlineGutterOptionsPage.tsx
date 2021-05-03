@@ -1,6 +1,5 @@
-import React, { Suspense, useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import Button from 'antd/lib/button';
-import Switch from 'antd/lib/switch';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
@@ -18,10 +17,10 @@ import {
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
-import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './InlineGutterOptionsPage.scss';
+import { DomainStateCheckbox } from '../DomainStateCheckbox/DomainStateCheckbox';
 
 const PlusOutlined = React.lazy(
   async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
@@ -33,12 +32,6 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
 }) => {
   const [currentHiders, setCurrentHiders] = useState<AugmentationObject[]>(
     hidingAugmentations.filter(({ id }) => id !== MY_BLOCKLIST_ID),
-  );
-  const [isBlocked, setIsBlocked] = useState<boolean>(
-    !!SidebarLoader.installedAugmentations
-      .find(({ id }) => id === MY_BLOCKLIST_ID)
-      .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
-      .length,
   );
 
   const searchingAugmentations = [
@@ -52,7 +45,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           return !!value.find((searchedDomain) => searchedDomain === domain);
         }
         return false;
-      }).length,
+      }).length && augmentation.id !== MY_TRUSTLIST_ID,
   );
 
   const availableLocalAugmentations: Record<
@@ -79,12 +72,6 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       });
       a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
     }
-    if (
-      augmentation.id === MY_TRUSTLIST_ID &&
-      !searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID)
-    ) {
-      a[domain].unshift({ ...augmentation, actionIndex: 0 });
-    }
     return a;
   }, Object.create(null));
 
@@ -109,31 +96,12 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     },
   ];
 
-  const handleToggle = useCallback(
-    async (e: boolean) => {
-      e
-        ? await AugmentationManager.updateBlockList(domain)
-        : await AugmentationManager.deleteFromBlockList(domain);
-      setIsBlocked(e);
-    },
-    [domain],
-  );
-
   const handleClose = () => {
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.ACTIVE,
     } as OpenActivePageMessage);
   };
-
-  useEffect(() => {
-    setIsBlocked(
-      !!SidebarLoader.installedAugmentations
-        .find(({ id }) => id === MY_BLOCKLIST_ID)
-        .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
-        .length,
-    );
-  }, [SidebarLoader.installedAugmentations]);
 
   const handleAddSearchDomainToLocal = (augmentation: AugmentationObject, index: number) => {
     const newActions = augmentation.actions.action_list.map((action, actionIndex) =>
@@ -283,15 +251,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
         <h3 className="domain-text sub-title">
           <code>{domain}</code>
         </h3>
-        <div>
-          <Switch
-            checkedChildren="Domain in my blocklist"
-            unCheckedChildren="Domain not in my blocklist"
-            className="blocklist-toggle"
-            checked={isBlocked}
-            onChange={handleToggle}
-          />
-        </div>
+        <DomainStateCheckbox domain={domain} />
       </section>
       {sections.map(({ title, subtitle, augmentations, type }) =>
         !!augmentations?.length ? (

@@ -83,14 +83,11 @@
 
     &.domain-text {
       display: block;
-      color: #666666;
+      color: #333;
+      font-weight: bold;
       margin-right: auto;
       font-size: 16px;
       margin: 10px;
     }
-  }
-
-  .blocklist-toggle {
-    margin-left: 10px;
   }
 }
