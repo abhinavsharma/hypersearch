@@ -90,7 +90,7 @@ export const QueriesFrame = () => {
                 className="step-button"
                 href="https://google.com/search?q=news&insight-tour=true"
               >
-                Make My Custom News Lens
+                Create my personalized news lens
               </Button>
             </div>
           </Panel>
@@ -117,7 +117,7 @@ export const QueriesFrame = () => {
               className="step-button"
               href="https://share.insightbrowser.com/17"
             >
-              Click here to watch the walkthrough video.
+              Watch the full walkthrough video
             </Button>
             {/* <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
               <video
