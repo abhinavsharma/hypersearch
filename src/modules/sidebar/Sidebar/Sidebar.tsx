@@ -83,10 +83,10 @@ const Sidebar: Sidebar = () => {
       details: {
         isExpanded: isExpanded,
         isKpPage: isKP,
-        screenWidth: window.innerWidth,
+        screenWidth: `${window.innerWidth}px`,
         preventAutoExpand: SidebarLoader.preventAutoExpand,
         isSerp: SidebarLoader.isSerp,
-        isTour: SidebarLoader.tourStep,
+        isTour: !!SidebarLoader.tourStep,
         firstValidTabIndex: `${firstValidTab} / ${validTabsLength}`,
       },
     });
