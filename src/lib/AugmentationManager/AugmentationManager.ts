@@ -410,7 +410,9 @@ class AugmentationManager {
             !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length <
-        (hasAnyPageCondition || !!SidebarLoader.tourStep ? Infinity : NUM_DOMAINS_TO_EXCLUDE);
+        (hasAnyPageCondition || !!SidebarLoader.url.searchParams.get('insight-tour')
+          ? Infinity
+          : NUM_DOMAINS_TO_EXCLUDE);
 
     // ! SEARCH QUERY
     const matchingQuery = augmentation.conditions?.condition_list.some(
