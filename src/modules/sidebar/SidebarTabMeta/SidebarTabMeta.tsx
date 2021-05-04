@@ -3,6 +3,7 @@ import { Info } from 'react-feather';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import { DomainStateCheckbox } from 'modules/gutter';
 import { SEARCH_DOMAINS_ACTION } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -29,39 +30,62 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
     symbol: 'more',
   };
 
+  const handleOpenPage = () => {
+    window.open(tab.url.href, '_blank');
+  };
+
   useEffect(() => {
     setCurrentStat(SidebarLoader.augmentationStats[tab.id] ?? 0);
     setDomains(SidebarLoader.tabDomains[tab.id][tab.url]);
   }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url]]);
 
+  const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
+
   const showMeta = currentStat > 0 || !!tab.description.length || !!domains?.length;
 
-  return showMeta ? (
+  return showMeta || titleFromDomain ? (
     <div id="tab-meta-container">
       <div id="meta-info-icon-container">
         <Info stroke={'#999'} />
       </div>
       <div id="sidebar-tab-meta">
-        <Paragraph
-          ellipsis={!expanded && ellipsis}
-          className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
-        >
-          {currentStat > 0 && <span className="space-right">{currentStat} Uses.</span>}
-          {tab.description && <span className="space-right">{tab.description}</span>}
-          {tab.url && tab.isCse && showDomains && (
-            <>
-              <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
-              {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (
-                <a href={`https://${domain}`} className="meta-link" key={domain} target="_blank">
-                  {`${!originalDomainsArray[index + 1] ? domain : `${domain},\u00a0`}`}
-                </a>
-              ))}
-            </>
-          )}
-        </Paragraph>
-        <Button id="meta-toggle-button" type="link" onClick={handleToggle}>
-          {expanded ? 'Hide' : 'Show'}
-        </Button>
+        {titleFromDomain && (
+          <div id="domain-title-container">
+            <Button type="link" onClick={handleOpenPage}>
+              Open in new tab
+            </Button>
+            <DomainStateCheckbox domain={titleFromDomain} />
+          </div>
+        )}
+        {showMeta && (
+          <>
+            <Paragraph
+              ellipsis={!expanded && ellipsis}
+              className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
+            >
+              {currentStat > 0 && <span className="space-right">{currentStat} Uses.</span>}
+              {tab.description && <span className="space-right">{tab.description}</span>}
+              {tab.url && tab.isCse && showDomains && (
+                <>
+                  <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
+                  {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (
+                    <a
+                      href={`https://${domain}`}
+                      className="meta-link"
+                      key={domain}
+                      target="_blank"
+                    >
+                      {`${!originalDomainsArray[index + 1] ? domain : `${domain},\u00a0`}`}
+                    </a>
+                  ))}
+                </>
+              )}
+            </Paragraph>
+            <Button id="meta-toggle-button" type="link" onClick={handleToggle}>
+              {expanded ? 'Hide' : 'Show'}
+            </Button>
+          </>
+        )}
       </div>
     </div>
   ) : null;
