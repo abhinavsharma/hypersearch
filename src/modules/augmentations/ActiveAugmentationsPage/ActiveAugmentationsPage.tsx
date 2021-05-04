@@ -15,17 +15,32 @@ import {
   flipSidebar,
   SWITCH_TO_TAB,
   OPEN_SETTINGS_PAGE_MESSAGE,
+  extractUrlProperties,
+  SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
 import './ActiveAugmentationsPage.scss';
+import { InlineGutterOptionsPage } from 'modules/gutter';
 
 const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
 );
 
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
+  const domain = extractUrlProperties(SidebarLoader.url.href).hostname;
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
+  const [hidingAugmentations] = useState<AugmentationObject[]>(
+    SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .reduce((augmentations, augmentation) => {
+        const isBlockingDomain = !!augmentation.actions.action_list.find(
+          ({ key, value }) => key === SEARCH_HIDE_DOMAIN_ACTION && value.includes(domain),
+        );
+        isBlockingDomain && augmentations.push(augmentation);
+        return augmentations;
+      }, []),
+  );
 
   const handleOpenSettings = () => {
     chrome.runtime.sendMessage({ type: OPEN_SETTINGS_PAGE_MESSAGE });
@@ -125,6 +140,18 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
     setTourStep(SidebarLoader.tourStep);
   }, [SidebarLoader.tourStep]);
 
+  useEffect(() => {
+    SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .reduce((augmentations, augmentation) => {
+        const isBlockingDomain = !!augmentation.actions.action_list.find(
+          ({ key, value }) => key === SEARCH_HIDE_DOMAIN_ACTION && value.includes(domain),
+        );
+        isBlockingDomain && augmentations.push(augmentation);
+        return augmentations;
+      }, []);
+  }, [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations]);
+
   return (
     <div id="active-augmentations-page">
       <header>
@@ -142,6 +169,9 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
           </Suspense>
         </Button>
       </header>
+      {!SidebarLoader.isSerp && (
+        <InlineGutterOptionsPage domain={domain} hidingAugmentations={hidingAugmentations} inline />
+      )}
       {sections.map(({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
         const hasNextSection = !!a[i + 1];
         return augmentations.length || i === 0 ? (

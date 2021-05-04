@@ -11,6 +11,7 @@ declare module './InlineGutterOptionsPage' {
   type InlineGutterOptionsPageProps = {
     hidingAugmentations: AugmentationObject[];
     domain: string;
+    inline?: boolean;
   };
 
   type InlineGutterOptionsPage = FunctionComponent<InlineGutterOptionsPageProps>;

@@ -14,6 +14,7 @@ import 'antd/lib/checkbox/style/index.css';
 export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   const [isBlocked, setIsBlocked] = useState<boolean>(
     !!SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
       .find(({ id }) => id === MY_BLOCKLIST_ID)
       .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
       .length,
@@ -21,6 +22,7 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
 
   const [isTrusted, setIsTrusted] = useState<boolean>(
     !!SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
       .find(({ id }) => id === MY_TRUSTLIST_ID)
       .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
       .length,
@@ -34,7 +36,9 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   };
 
   const handleAddTrusted = async () => {
-    const trustList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+    const trustList = SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .find(({ id }) => id === MY_TRUSTLIST_ID);
     const newActions = trustList.actions.action_list.map((action, actionIndex) =>
       actionIndex === 0 ? { ...action, value: [...action.value, domain] } : action,
     );
@@ -44,7 +48,9 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   };
 
   const handleRemoveTrusted = async () => {
-    const trustList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+    const trustList = SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .find(({ id }) => id === MY_TRUSTLIST_ID);
     const newData: Record<string, any> = {
       actions: trustList.actions.action_list.map((action) => {
         const { key, value } = action;
@@ -82,17 +88,19 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   useEffect(() => {
     setIsBlocked(
       !!SidebarLoader.installedAugmentations
+        .concat(SidebarLoader.otherAugmentations)
         .find(({ id }) => id === MY_BLOCKLIST_ID)
         .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
     setIsTrusted(
       !!SidebarLoader.installedAugmentations
+        .concat(SidebarLoader.otherAugmentations)
         .find(({ id }) => id === MY_TRUSTLIST_ID)
         .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
-  }, [SidebarLoader.installedAugmentations]);
+  }, [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations]);
 
   return (
     <div className="domain-state-checkbox-container">

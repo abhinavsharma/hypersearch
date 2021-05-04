@@ -29,6 +29,7 @@ const PlusOutlined = React.lazy(
 export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   hidingAugmentations,
   domain,
+  inline,
 }) => {
   const [currentHiders, setCurrentHiders] = useState<AugmentationObject[]>(
     hidingAugmentations.filter(({ id }) => id !== MY_BLOCKLIST_ID),
@@ -77,6 +78,12 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
 
   const sections: Section[] = [
     {
+      type: 'local',
+      augmentations: availableLocalAugmentations[domain],
+      title: 'Add this domain to a local lens',
+      subtitle: 'When this lens is triggered then this domain will be searched',
+    },
+    {
       type: 'block',
       augmentations: currentHiders,
       title: 'Lenses that block this domain',
@@ -87,12 +94,6 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       augmentations: searchingAugmentations,
       title: 'Lenses that search this domain',
       subtitle: null,
-    },
-    {
-      type: 'local',
-      augmentations: availableLocalAugmentations[domain],
-      title: 'Add this domain to a local lens',
-      subtitle: 'When this lens is triggered then this domain will be searched',
     },
   ];
 
@@ -240,13 +241,15 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   };
 
   return (
-    <div id="inline-gutter-options-page">
-      <div className="gutter-page-header">
-        <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
-          Close
-        </Button>
-        <span className="insight-domain-tab-title">Domain Settings</span>
-      </div>
+    <div id="inline-gutter-options-page" className={inline ? 'inline-gutter-page-embedded' : ''}>
+      {!inline && (
+        <div className="gutter-page-header">
+          <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
+            Close
+          </Button>
+          <span className="insight-domain-tab-title">Domain Settings</span>
+        </div>
+      )}
       <section>
         <h3 className="domain-text sub-title">
           <code>{domain}</code>
@@ -355,18 +358,24 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           </React.Fragment>
         ) : null,
       )}
-      <Divider />
-      <Button
-        type="text"
-        block
-        onClick={handleCreateAugmentation}
-        className="create-local-search-domain-augmentation-button"
-      >
-        <Suspense fallback={null}>
-          <PlusOutlined />
-        </Suspense>
-        &nbsp;Create new Lens that searches this domain
-      </Button>
+      {!inline ? (
+        <>
+          <Divider />
+          <Button
+            type="text"
+            block
+            onClick={handleCreateAugmentation}
+            className="create-local-search-domain-augmentation-button"
+          >
+            <Suspense fallback={null}>
+              <PlusOutlined />
+            </Suspense>
+            &nbsp;Create new Lens that searches this domain
+          </Button>
+        </>
+      ) : (
+        <Divider />
+      )}
     </div>
   );
 };

@@ -7,6 +7,12 @@
   background: #ffffff;
   overflow-y: auto !important;
 
+  &.inline-gutter-page-embedded {
+    position: relative;
+    height: auto;
+    top: auto;
+  }
+
   .gutter-page-header {
     display: flex;
     position: fixed;

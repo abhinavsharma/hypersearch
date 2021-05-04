@@ -55,7 +55,9 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public async updateBlockList(domain: string) {
-    const blockList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
+    const blockList = SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .find(({ id }) => id === MY_BLOCKLIST_ID);
     const isNewBlock = !blockList.actions.action_list.find(({ value }) => value[0] === domain);
     const newActionList = [
       ...blockList.actions.action_list.filter(
@@ -88,7 +90,9 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public async deleteFromBlockList(domain: string) {
-    const blockList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
+    const blockList = SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .find(({ id }) => id === MY_BLOCKLIST_ID);
     const newActionList = [
       ...blockList.actions.action_list.filter(({ key, value }) =>
         key === SEARCH_HIDE_DOMAIN_ACTION ? value[0] !== domain : true,
@@ -124,7 +128,9 @@ class AugmentationManager {
    * @param domain - The domain to be added or removed from the trusted sources
    */
   public async toggleTrustlist(domain: string) {
-    const trustList = SidebarLoader.installedAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+    const trustList = SidebarLoader.installedAugmentations
+      .concat(SidebarLoader.otherAugmentations)
+      .find(({ id }) => id === MY_TRUSTLIST_ID);
     const existingDomain = !!trustList.actions.action_list[0].value.includes(domain);
     const newActionValue = existingDomain
       ? trustList.actions.action_list[0].value.filter((value) => value !== domain)
@@ -583,11 +589,13 @@ class AugmentationManager {
       actions: {
         ...augmentation.actions,
         action_list: actions
-          ? actions.map((action) => ({
-              ...action,
-              value: action.value.filter((i) => i !== ''),
-            }))
-          : augmentation.actions.action_list,
+          ? actions
+              .map((action) => ({
+                ...action,
+                value: action.value.filter((i) => i !== ''),
+              }))
+              .filter(({ value }) => !!value.length)
+          : augmentation.actions.action_list.filter(({ value }) => !!value.length),
       },
       enabled: isActive ?? augmentation.enabled,
       installed: true,
