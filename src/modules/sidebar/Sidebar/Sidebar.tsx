@@ -45,12 +45,12 @@ const Sidebar: Sidebar = () => {
         case TOGGLE_BLOCKED_DOMAIN_MESSAGE:
           (async () => {
             !msg.isBlocked
-              ? await AugmentationManager.updateBlockList(msg.domain)
-              : await AugmentationManager.deleteFromBlockList(msg.domain);
+              ? await AugmentationManager.updateBlockList(msg.publication)
+              : await AugmentationManager.deleteFromBlockList(msg.publication);
           })();
           break;
         case TOGGLE_TRUSTED_DOMAIN_MESSAGE:
-          (async () => await AugmentationManager.toggleTrustlist(msg.domain))();
+          (async () => await AugmentationManager.toggleTrustlist(msg.publication))();
           break;
       }
     });
