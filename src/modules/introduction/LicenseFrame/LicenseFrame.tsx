@@ -65,7 +65,7 @@ export const LicenseFrame = () => {
           className="step-button"
           onClick={handleFreeTier}
         >
-          Use Unlicensed
+          Try Unlicensed
         </Button>
       </div>
     </div>
