@@ -71,7 +71,7 @@ declare type OpenGutterPageMessage = {
   type: string;
   page: import('utils/constants').OPEN_BUILDER_PAGE.GUTTER;
   augmentations: AugmentationObject[];
-  domain: string;
+  publication: string;
 };
 
 declare type OpenBuilderMessage = {

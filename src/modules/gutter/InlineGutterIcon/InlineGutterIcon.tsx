@@ -43,7 +43,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.GUTTER,
       augmentations: blockingAugmentations,
-      domain: publication,
+      publication,
     } as OpenGutterPageMessage);
   };
 
