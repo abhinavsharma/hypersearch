@@ -4,7 +4,7 @@ import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { DomainStateCheckbox } from 'modules/gutter';
-import { DOMAINS_TO_RELEVANT_SLICE, extractUrlProperties, SEARCH_DOMAINS_ACTION } from 'utils';
+import { extractPublication, SEARCH_DOMAINS_ACTION } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabMeta.scss';
@@ -41,11 +41,6 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
   const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
 
-  const urlProps = extractUrlProperties(tab.url.href);
-  const publication = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
-    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
-    : urlProps.hostname;
-
   const showMeta = currentStat > 0 || !!tab.description.length || !!domains?.length;
 
   return showMeta || titleFromDomain ? (
@@ -54,43 +49,46 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
         <Info stroke={'#999'} />
       </div>
       <div id="sidebar-tab-meta">
-        {titleFromDomain && (
+        {titleFromDomain ? (
           <div id="domain-title-container">
             <Button type="link" onClick={handleOpenPage}>
               Open in new tab
             </Button>
-            <Text strong>{publication.split('/')[1] ?? ''}</Text>
-            <DomainStateCheckbox domain={titleFromDomain} />
+            <div id="publication-meta">
+              <Text strong>{extractPublication(tab.url.href)}</Text>
+              <DomainStateCheckbox domain={titleFromDomain} />
+            </div>
           </div>
-        )}
-        {showMeta && (
-          <>
-            <Paragraph
-              ellipsis={!expanded && ellipsis}
-              className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
-            >
-              {currentStat > 0 && <span className="space-right">{currentStat} Uses.</span>}
-              {tab.description && <span className="space-right">{tab.description}</span>}
-              {tab.url && tab.isCse && showDomains && (
-                <>
-                  <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
-                  {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (
-                    <a
-                      href={`https://${domain}`}
-                      className="meta-link"
-                      key={domain}
-                      target="_blank"
-                    >
-                      {`${!originalDomainsArray[index + 1] ? domain : `${domain},\u00a0`}`}
-                    </a>
-                  ))}
-                </>
-              )}
-            </Paragraph>
-            <Button id="meta-toggle-button" type="link" onClick={handleToggle}>
-              {expanded ? 'Hide' : 'Show'}
-            </Button>
-          </>
+        ) : (
+          showMeta && (
+            <>
+              <Paragraph
+                ellipsis={!expanded && ellipsis}
+                className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
+              >
+                {currentStat > 0 && <span className="space-right">{currentStat} Uses.</span>}
+                {tab.description && <span className="space-right">{tab.description}</span>}
+                {tab.url && tab.isCse && showDomains && (
+                  <>
+                    <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
+                    {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (
+                      <a
+                        href={`https://${domain}`}
+                        className="meta-link"
+                        key={domain}
+                        target="_blank"
+                      >
+                        {`${!originalDomainsArray[index + 1] ? domain : `${domain},\u00a0`}`}
+                      </a>
+                    ))}
+                  </>
+                )}
+              </Paragraph>
+              <Button id="meta-toggle-button" type="link" onClick={handleToggle}>
+                {expanded ? 'Hide' : 'Show'}
+              </Button>
+            </>
+          )
         )}
       </div>
     </div>

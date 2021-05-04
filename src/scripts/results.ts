@@ -15,7 +15,6 @@ const GOOGLE_VERTICAL_NEWS_LINK_SELECTOR = '.EPLo7b a';
 const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
 import {
-  DOMAINS_TO_RELEVANT_SLICE,
   INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
@@ -29,7 +28,7 @@ import {
   SEARCH_DOMAINS_ACTION,
   SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils/constants';
-import { debug, extractUrlProperties, runFunctionWhenDocumentReady } from 'utils/helpers';
+import { debug, extractPublication, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
 const searchedResults: HTMLElement[] = [];
@@ -100,16 +99,12 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     [...featured, ...results].forEach((element) => {
       const result = element instanceof HTMLElement ? element : element.link;
 
-      const urlProps = extractUrlProperties(
+      const resultLink =
         result instanceof HTMLLinkElement
           ? result.getAttribute('href')
-          : result?.closest('a').getAttribute('href'),
-      );
+          : result?.closest('a').getAttribute('href');
 
-      const resultDomain = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
-        ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ??
-          urlProps.hostname
-        : urlProps.hostname;
+      const resultDomain = extractPublication(resultLink);
 
       const container = element instanceof HTMLElement ? result : element.container;
 
