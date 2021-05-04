@@ -9,6 +9,7 @@ import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   SIDEBAR_Z_INDEX,
+  SWITCH_TO_TAB,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
 } from 'utils/constants';
@@ -18,6 +19,7 @@ import './InlineGutterIcon.scss';
 
 const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
+const SWITCH_TO_TAB_DELAY = 500; //ms
 
 export const InlineGutterIcon: InlineGutterIcon = ({
   domain,
@@ -31,6 +33,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   const rootRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const tooltipContainer = useRef(null);
+  const timeoutRef = useRef(null);
 
   const handleOpenBuilder = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
@@ -57,12 +60,30 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   };
 
   const handleMouseEnter = () => {
+    if (resultRef.current) {
+      resultRef.current.style.cursor = 'wait';
+    }
+    timeoutRef.current = setTimeout(() => {
+      if (resultRef.current) {
+        chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, domain });
+        resultRef.current.style.cursor = 'default';
+      }
+    }, SWITCH_TO_TAB_DELAY);
+
     if (isSearched || isBlocked) return null;
     iconRef.current.style.opacity = '1';
     rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
   };
 
   const handleMouseLeave = () => {
+    // ! Known Issue:
+    // ! In Chrome with open DevTools, the cursor won't change until moved
+    // ! See: https://stackoverflow.com/a/51714827/2826713
+    if (resultRef.current) {
+      resultRef.current.style.cursor = 'normal';
+    }
+    clearTimeout(timeoutRef.current);
+
     if (isSearched || isBlocked) return null;
     iconRef.current.style.opacity = '0';
     rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
