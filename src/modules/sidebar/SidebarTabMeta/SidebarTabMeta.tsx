@@ -4,12 +4,12 @@ import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { DomainStateCheckbox } from 'modules/gutter';
-import { SEARCH_DOMAINS_ACTION } from 'utils';
+import { DOMAINS_TO_RELEVANT_SLICE, extractUrlProperties, SEARCH_DOMAINS_ACTION } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabMeta.scss';
 
-const { Paragraph } = Typography;
+const { Paragraph, Text } = Typography;
 
 export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   const [currentStat, setCurrentStat] = useState<number>(
@@ -41,6 +41,11 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
   const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
 
+  const urlProps = extractUrlProperties(tab.url.href);
+  const publication = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
+    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
+    : urlProps.hostname;
+
   const showMeta = currentStat > 0 || !!tab.description.length || !!domains?.length;
 
   return showMeta || titleFromDomain ? (
@@ -54,6 +59,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
             <Button type="link" onClick={handleOpenPage}>
               Open in new tab
             </Button>
+            <Text strong>{publication.split('/')[1] ?? ''}</Text>
             <DomainStateCheckbox domain={titleFromDomain} />
           </div>
         )}
