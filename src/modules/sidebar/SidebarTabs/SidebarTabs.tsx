@@ -34,6 +34,7 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabs.scss';
+import { Sidebar } from '../Sidebar/Sidebar';
 
 const { TabPane } = Tabs;
 
@@ -100,7 +101,18 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           handleLog(msg);
           break;
         case SWITCH_TO_TAB:
-          setActiveKey(msg.index);
+          if (msg.index) {
+            setActiveKey(msg.index);
+          }
+          if (msg.domain) {
+            const index = tabs.findIndex(
+              ({ url }) => msg.domain.match(url.searchParams.get('insight-tab-title'))?.length,
+            );
+            if (index !== -1) {
+              !SidebarLoader.isExpanded && flipSidebar(document, 'show', tabs.length);
+              setActiveKey(String(index + 1));
+            }
+          }
           break;
         default:
           break;
