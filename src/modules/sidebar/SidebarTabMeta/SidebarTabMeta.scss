@@ -13,6 +13,12 @@
     align-items: center;
     padding: 10px 0px;
 
+    #domain-title-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
     .meta-text {
       color: #333;
       margin: 0;
