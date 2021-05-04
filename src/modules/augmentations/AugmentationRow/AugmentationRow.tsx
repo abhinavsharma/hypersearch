@@ -15,7 +15,11 @@ import './AugmentationRow.scss';
 export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned, other }) => {
   const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
   const handleUnpin = () => AugmentationManager.unpinAugmentation(augmentation);
-  const handleEnable = () => AugmentationManager.enableSuggestedAugmentation(augmentation);
+  const handleEnable = () => {
+    augmentation.installed
+      ? AugmentationManager.addOrEditAugmentation(augmentation, { isActive: true })
+      : AugmentationManager.enableSuggestedAugmentation(augmentation);
+  };
   const handleDisable = () => AugmentationManager.disableSuggestedAugmentation(augmentation);
   const handleDelete = () => AugmentationManager.removeInstalledAugmentation(augmentation);
   const handleEdit = () => {
