@@ -486,41 +486,73 @@ class AugmentationManager {
     );
 
     // ! URL/DOMAIN MATCH
-    const matchingUrl =
-      augmentation.conditions.condition_list
-        .reduce((matches, condition) => {
-          const { unique_key: key, value } = condition;
-          if (key === URL_EQUALS_CONDITION && SidebarLoader.url.href === value[0]) {
-            matches.push(true);
-          }
-          if (key === URL_MATCHES_CONDITION && SidebarLoader.url.href.match(value[0])?.length) {
-            matches.push(true);
-          }
-          if (
-            key === DOMAIN_EQUALS_CONDTION &&
-            extractUrlProperties(SidebarLoader.url.href).hostname === value[0]
-          ) {
-            matches.push(true);
-          }
-          if (
-            key === DOMAIN_MATCHES_CONDITION &&
-            extractUrlProperties(SidebarLoader.url.href).hostname.match(value[0])?.length
-          ) {
-            matches.push(true);
-          }
-          return matches;
-        }, [])
-        .indexOf(true) > -1;
+    let numRegexConditions = 0;
+    const regexConditions = [
+      URL_EQUALS_CONDITION,
+      URL_MATCHES_CONDITION,
+      DOMAIN_EQUALS_CONDTION,
+      DOMAIN_MATCHES_CONDITION,
+    ];
+    const matchingUrl = augmentation.conditions.condition_list.reduce((matches, condition) => {
+      const { unique_key: key, value } = condition;
+      if (regexConditions.includes(key)) {
+        numRegexConditions += 1;
+      }
+      if (key === URL_EQUALS_CONDITION && SidebarLoader.url.href === value[0]) {
+        matches.push(true);
+      }
+      if (key === URL_MATCHES_CONDITION && SidebarLoader.url.href.match(value[0])?.length) {
+        matches.push(true);
+      }
+      if (
+        key === DOMAIN_EQUALS_CONDTION &&
+        extractUrlProperties(SidebarLoader.url.href).hostname === value[0]
+      ) {
+        matches.push(true);
+      }
+      if (
+        key === DOMAIN_MATCHES_CONDITION &&
+        extractUrlProperties(SidebarLoader.url.href).hostname.match(value[0])?.length
+      ) {
+        matches.push(true);
+      }
+      return matches;
+    }, []);
+
+    const evaluationMatch =
+      augmentation.conditions.evaluate_with === 'AND'
+        ? augmentation.conditions.condition_list.every(({ key }) => {
+            switch (key) {
+              case SEARCH_CONTAINS_CONDITION:
+                return matchingDomains;
+              case SEARCH_QUERY_CONTAINS_CONDITION:
+                return matchingQuery;
+              case SEARCH_ENGINE_IS_CONDITION:
+                return matchingEngine;
+              case SEARCH_INTENT_IS_CONDITION:
+                return matchingIntent;
+              case ANY_WEB_SEARCH_CONDITION:
+              case ANY_URL_CONDITION_MOBILE:
+                return hasAnyPageCondition;
+              case URL_EQUALS_CONDITION:
+              case URL_MATCHES_CONDITION:
+              case DOMAIN_EQUALS_CONDTION:
+              case DOMAIN_MATCHES_CONDITION:
+                return numRegexConditions === matchingUrl.length;
+            }
+          })
+        : true;
 
     return {
       isRelevant:
+        evaluationMatch &&
         (augmentation.enabled || !augmentation.installed) &&
         (hasAnyPageCondition ||
           matchingQuery ||
           matchingDomains ||
           !!matchingIntent.length ||
           matchingEngine ||
-          matchingUrl ||
+          !!matchingUrl.length ||
           augmentation.pinned),
       matchingIntent,
       hasPreventAutoexpand,
