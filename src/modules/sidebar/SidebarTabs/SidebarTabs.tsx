@@ -109,7 +109,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               ({ url }) => msg.domain.match(url.searchParams.get('insight-tab-title'))?.length,
             );
             if (index !== -1) {
-              !SidebarLoader.isExpanded && flipSidebar(document, 'show', tabs.length);
+              flipSidebar(document, 'show', tabs.length, true);
               setActiveKey(String(index + 1));
             }
           }
