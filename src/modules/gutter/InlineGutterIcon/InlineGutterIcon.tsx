@@ -4,6 +4,7 @@ import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, MoreHorizontal } from 'react-feather';
 import { PublicationTimeTracker } from '../PublicationTimeTracker/PublicationTimeTracker';
 import {
+  HOVER_EXPAND_REQUIRED_MIN_WIDTH,
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -22,7 +23,8 @@ const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const SWITCH_TO_TAB_DELAY = 500; //ms
 
 export const InlineGutterIcon: InlineGutterIcon = ({
-  domain,
+  url,
+  publication,
   container,
   blockingAugmentations = [],
   searchingAugmentations = [],
@@ -41,34 +43,36 @@ export const InlineGutterIcon: InlineGutterIcon = ({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.GUTTER,
       augmentations: blockingAugmentations,
-      domain,
+      publication,
     } as OpenGutterPageMessage);
   };
 
   const handleToggleBlocked = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     (e.target as HTMLElement).classList.add('bounceIn');
-    chrome.runtime.sendMessage({ type: TOGGLE_BLOCKED_DOMAIN_MESSAGE, domain, isBlocked });
+    chrome.runtime.sendMessage({ type: TOGGLE_BLOCKED_DOMAIN_MESSAGE, publication, isBlocked });
     handleOpenBuilder(e);
   };
 
   const handleToggleTrusted = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     (e.target as HTMLElement).classList.add('bounceIn');
-    chrome.runtime.sendMessage({ type: TOGGLE_TRUSTED_DOMAIN_MESSAGE, domain });
+    chrome.runtime.sendMessage({ type: TOGGLE_TRUSTED_DOMAIN_MESSAGE, publication });
     handleOpenBuilder(e);
   };
 
   const handleMouseEnter = () => {
-    if (resultRef.current) {
-      resultRef.current.style.cursor = 'wait';
-    }
-    timeoutRef.current = setTimeout(() => {
+    if (window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH) {
       if (resultRef.current) {
-        chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, domain });
-        resultRef.current.style.cursor = 'default';
+        resultRef.current.style.cursor = 'wait';
       }
-    }, SWITCH_TO_TAB_DELAY);
+      timeoutRef.current = setTimeout(() => {
+        if (resultRef.current) {
+          chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, url });
+          resultRef.current.style.cursor = 'default';
+        }
+      }, SWITCH_TO_TAB_DELAY);
+    }
 
     if (isSearched || isBlocked) return null;
     iconRef.current.style.opacity = '1';
@@ -76,13 +80,15 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   };
 
   const handleMouseLeave = () => {
-    // ! Known Issue:
-    // ! In Chrome with open DevTools, the cursor won't change until moved
-    // ! See: https://stackoverflow.com/a/51714827/2826713
-    if (resultRef.current) {
-      resultRef.current.style.cursor = 'normal';
+    if (window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH) {
+      // ! Known Issue:
+      // ! In Chrome with open DevTools, the cursor won't change until moved
+      // ! See: https://stackoverflow.com/a/51714827/2826713
+      if (resultRef.current) {
+        resultRef.current.style.cursor = 'normal';
+      }
+      clearTimeout(timeoutRef.current);
     }
-    clearTimeout(timeoutRef.current);
 
     if (isSearched || isBlocked) return null;
     iconRef.current.style.opacity = '0';
@@ -137,7 +143,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
   return (
     <div className="gutter-icon-container" ref={iconRef}>
-      <PublicationTimeTracker key={domain} domain={domain} />
+      <PublicationTimeTracker key={publication} domain={publication} />
       <Tooltip
         title={`${
           !!searchingAugmentations.length && !onlySearchedByTrustlist
@@ -145,8 +151,8 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             : ''
         } ${
           inTrustlist
-            ? `Remove ${domain} from my trusted sites`
-            : `Add ${domain} to my trusted sites.`
+            ? `Remove ${publication} from my trusted sites`
+            : `Add ${publication} to my trusted sites.`
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
@@ -171,8 +177,8 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             : ''
         } ${
           inBlocklist
-            ? `Remove ${domain} from my blocked domains.`
-            : `Add ${domain} to my block list.`
+            ? `Remove ${publication} from my blocked domains.`
+            : `Add ${publication} to my block list.`
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}

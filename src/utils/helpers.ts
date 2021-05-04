@@ -170,6 +170,17 @@ export const extractUrlProperties = (urlLike: string): ExtractedURLProperties =>
   }
 };
 
+export const extractPublication = (urlLike: string) => {
+  if (typeof urlLike !== 'string') {
+    return urlLike;
+  }
+  const urlProps = extractUrlProperties(urlLike);
+  const publication = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
+    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
+    : urlProps.hostname;
+  return publication;
+};
+
 /**
  * Takes a location string and manipulates it by the specified conditions. Future required
  * location modifiers should be placed here.

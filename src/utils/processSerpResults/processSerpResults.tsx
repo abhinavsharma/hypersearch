@@ -13,7 +13,6 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
-  DOMAINS_TO_RELEVANT_SLICE,
   INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
@@ -24,7 +23,7 @@ import {
   SIDEBAR_Z_INDEX,
 } from 'utils/constants';
 import { v4 as uuid } from 'uuid';
-import { extractUrlProperties } from 'utils/helpers';
+import { extractPublication } from 'utils/helpers';
 import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIcon';
 
 /**
@@ -127,24 +126,21 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (!(serpResult instanceof HTMLElement)) continue;
 
-    const urlProps = extractUrlProperties(
+    const resultLink =
       node instanceof HTMLLinkElement
         ? node.getAttribute('href') // default <a>
         : node?.closest('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // <a> > <cite>
-            node?.querySelector('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // featured snippet
-            node?.textContent, // guessing
-    );
+          node?.querySelector('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // featured snippet
+          node?.textContent; // guessing
 
-    const serpResultDomain = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
-      ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
-      : urlProps.hostname;
+    const publication = extractPublication(resultLink);
 
-    if (typeof serpResultDomain !== 'string' && typeof augmentations !== 'string') continue;
+    if (typeof publication !== 'string' && typeof augmentations !== 'string') continue;
 
     let blockers = [];
 
-    serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, serpResultDomain);
-    if (typeof augmentations === 'string' || augmentations.block[serpResultDomain]?.length) {
+    serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, publication);
+    if (typeof augmentations === 'string' || augmentations.block[publication]?.length) {
       serpResult.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'false');
       // DuckDuckGo result container are bound to click event and open the page, even if it's blocked.
       // To prevent this behavior, we disable all `pointerEvents` on the container element.
@@ -153,25 +149,25 @@ export const processSerpResults: ProcessSerpResults = (
         serpResult.style.pointerEvents = 'none';
       }
 
-      blockers = typeof augmentations === 'string' ? [] : augmentations.block[serpResultDomain];
+      blockers = typeof augmentations === 'string' ? [] : augmentations.block[publication];
 
       createOverlay(serpResult, blockers, details);
 
       const blockingAugmentationIds = Array.from(new Set(blockers.map(({ id }) => id))).join(' ');
 
       serpResult.setAttribute(INSIGHT_BLOCKED_BY_SELECTOR, blockingAugmentationIds);
-      serpResult.setAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR, serpResultDomain);
+      serpResult.setAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR, publication);
     } else {
       serpResult.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
 
       // There is two type of allowed results:
       // 1.) Searched by an augmentation's action -> Fill the star icon
       // 2.) Not blocked or searched any augmentation -> Show default gutter unit
-      if (augmentations.search[serpResultDomain]?.length) {
+      if (augmentations.search[publication]?.length) {
         serpResult.setAttribute(INSIGHT_SEARCHED_RESULT_SELECTOR, 'true');
         serpResult.setAttribute(
           INSIGHT_SEARCH_BY_SELECTOR,
-          augmentations.search[serpResultDomain].map(({ id }) => id).join(' '),
+          augmentations.search[publication].map(({ id }) => id).join(' '),
         );
       } else {
         serpResult.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
@@ -199,9 +195,10 @@ export const processSerpResults: ProcessSerpResults = (
       render(
         <InlineGutterIcon
           key={uuid()}
-          domain={serpResultDomain}
+          url={resultLink}
+          publication={publication}
           container={containerSelector}
-          searchingAugmentations={augmentations.search[serpResultDomain]}
+          searchingAugmentations={augmentations.search[publication]}
           blockingAugmentations={blockers}
         />,
         buttonRoot,

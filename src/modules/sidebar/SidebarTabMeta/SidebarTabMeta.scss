@@ -16,7 +16,17 @@
     #domain-title-container {
       display: flex;
       align-items: center;
-      width: 100%;
+
+      #publication-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 20px;
+
+        .domain-state-checkbox-container {
+          padding: 0;
+        }
+      }
     }
 
     .meta-text {

@@ -34,7 +34,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabs.scss';
-import { Sidebar } from '../Sidebar/Sidebar';
 
 const { TabPane } = Tabs;
 
@@ -89,7 +88,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           flipSidebar(document, 'show', tabs?.length, true);
           setActiveKey('0');
           if (msg.page === OPEN_BUILDER_PAGE.GUTTER && msg.augmentations) {
-            setPageData({ augmentations: msg.augmentations, domain: msg.domain });
+            setPageData({ augmentations: msg.augmentations, publication: msg.publication });
           }
           if (msg.page === OPEN_BUILDER_PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
@@ -104,10 +103,8 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           if (msg.index) {
             setActiveKey(msg.index);
           }
-          if (msg.domain) {
-            const index = tabs.findIndex(
-              ({ url }) => msg.domain.match(url.searchParams.get('insight-tab-title'))?.length,
-            );
+          if (msg.url) {
+            const index = tabs.findIndex(({ url }) => url.href.match(msg.url));
             if (index !== -1) {
               flipSidebar(document, 'show', tabs.length, true);
               setActiveKey(String(index + 1));
@@ -151,7 +148,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   return (
                     <InlineGutterOptionsPage
                       hidingAugmentations={pageData.augmentations}
-                      domain={pageData.domain}
+                      domain={pageData.publication}
                     />
                   );
                 default:
