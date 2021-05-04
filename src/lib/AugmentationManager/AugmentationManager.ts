@@ -352,6 +352,7 @@ class AugmentationManager {
   public getAugmentationRelevancy(
     augmentation: AugmentationObject,
   ): {
+    isHidden: boolean;
     isRelevant: boolean;
     hasPreventAutoexpand: boolean;
     domainsToLookAction: string[];
@@ -544,6 +545,7 @@ class AugmentationManager {
         : true;
 
     return {
+      isHidden: augmentation.installed && !augmentation.enabled,
       isRelevant:
         evaluationMatch &&
         (augmentation.enabled || !augmentation.installed) &&
@@ -634,7 +636,7 @@ class AugmentationManager {
     };
     chrome.storage.local.set({ [id]: updated });
 
-    const { isRelevant } = this.getAugmentationRelevancy(updated);
+    const { isRelevant, isHidden } = this.getAugmentationRelevancy(updated);
 
     if (isRelevant) {
       SidebarLoader.installedAugmentations = [
@@ -644,14 +646,24 @@ class AugmentationManager {
       SidebarLoader.otherAugmentations = SidebarLoader.otherAugmentations.filter(
         (i) => i.id !== updated.id,
       );
+      SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
+        (i) => i.id !== updated.id,
+      );
     } else {
       SidebarLoader.installedAugmentations = SidebarLoader.installedAugmentations.filter(
         (i) => i.id !== updated.id,
       );
-      SidebarLoader.otherAugmentations = [
-        updated,
-        ...SidebarLoader.otherAugmentations.filter((i) => i.id !== updated.id),
-      ];
+      if (isHidden) {
+        SidebarLoader.ignoredAugmentations = [
+          updated,
+          ...SidebarLoader.ignoredAugmentations.filter((i) => i.id !== updated.id),
+        ];
+      } else {
+        SidebarLoader.otherAugmentations = [
+          updated,
+          ...SidebarLoader.otherAugmentations.filter((i) => i.id !== updated.id),
+        ];
+      }
     }
     this.preparedLogMessage &&
       !SidebarLoader.strongPrivacy &&

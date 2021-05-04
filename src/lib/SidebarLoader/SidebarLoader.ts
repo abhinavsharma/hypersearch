@@ -704,7 +704,7 @@ class SidebarLoader {
       chrome.storage.sync.get(resolve),
     );
     [...Object.entries(locals), ...Object.entries(syncs)].forEach(([key, value]) => {
-      const { isRelevant } = AugmentationManager.getAugmentationRelevancy(value);
+      const { isRelevant, isHidden } = AugmentationManager.getAugmentationRelevancy(value);
       const flag = key.split('-')[0];
       switch (flag) {
         case IGNORED_PREFIX:
@@ -760,7 +760,10 @@ class SidebarLoader {
               /** DEV END  **/
               this.installedAugmentations.push(value);
             } else {
-              if (!this.otherAugmentations.find(({ id }) => id === value.id)) {
+              if (isHidden && !this.ignoredAugmentations.find(({ id }) => id === value.id)) {
+                this.ignoredAugmentations.push(value);
+              }
+              if (!isHidden && !this.otherAugmentations.find(({ id }) => id === value.id)) {
                 /** DEV START **/
                 if (IN_DEBUG_MODE) {
                   logOther.push(
