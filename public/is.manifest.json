@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Insight",
     "description": "Insight supercharges search with results from expert and community trusted sources for any field.",
-    "version": "0.0.77",
+    "version": "0.0.78",
     "web_accessible_resources": [
         "*.png",
         "*.svg",
