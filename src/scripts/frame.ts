@@ -23,6 +23,7 @@ const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
     '.commercial-unit-mobile-top',
   ],
   'bing.com': ['header#b_header'],
+  'ecosia.org': ['.search-header', '.navbar-row'],
 };
 
 const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
