@@ -256,14 +256,17 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
     },
   );
 });
+
 // When the user is clicking the extension button, the sidebar will open the active augmentations page, regardless
 // of the current url.
-chrome.browserAction.onClicked.addListener(({ id }) =>
-  chrome.tabs.sendMessage(id, {
-    type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-    page: OPEN_BUILDER_PAGE.ACTIVE,
-  }),
-);
+chrome.browserAction.onClicked.addListener(({ id, url }) => {
+  !url
+    ? chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') })
+    : chrome.tabs.sendMessage(id, {
+        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+        page: OPEN_BUILDER_PAGE.ACTIVE,
+      });
+});
 // The content script does not support the `tabs` property yet, so we have to pass the messages through the background
 // page. By default it will forward any message as is to the client.
 chrome.runtime.onMessage.addListener((msg, sender) => {
