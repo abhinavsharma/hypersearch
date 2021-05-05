@@ -124,7 +124,7 @@ class SearchEngineManager {
     if (!storedValue?.[storageKey]) {
       debug('getCustomSearchEngine - fetch from remote\n');
       const result: CustomSearchEngine = EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
-      const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
+      const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES, { cache: 'no-cache' });
       const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
       Object.values(results).forEach((customSearchEngine) => {
         const hasAllMatchinParams = !customSearchEngine.search_engine_json.required_params.filter(
