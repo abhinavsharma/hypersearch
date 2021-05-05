@@ -88,10 +88,12 @@ export const getRankedDomains = (domains: string[]) =>
 
 export const triggerSerpProcessing = (loader: TSidebarLoader, subtabsOnly = false) => {
   const augmentation = loader.sidebarTabs.map(({ augmentation }) => augmentation);
+  const createdUrls = loader.sidebarTabs.map(({ url }) => url.href);
   !subtabsOnly &&
     window.top.postMessage(
       {
         augmentation,
+        createdUrls,
         hideDomains: loader.hideDomains,
         name: PROCESS_SERP_OVERLAY_MESSAGE,
         selector: {
@@ -105,6 +107,7 @@ export const triggerSerpProcessing = (loader: TSidebarLoader, subtabsOnly = fals
   window.top.postMessage(
     {
       augmentation,
+      createdUrls,
       hideDomains: loader.hideDomains,
       name: PROCESS_SERP_OVERLAY_MESSAGE,
       selector: {

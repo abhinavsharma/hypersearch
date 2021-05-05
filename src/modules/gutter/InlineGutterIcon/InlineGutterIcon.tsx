@@ -5,6 +5,7 @@ import { EyeOff, Star, MoreHorizontal } from 'react-feather';
 import { PublicationTimeTracker } from '../PublicationTimeTracker/PublicationTimeTracker';
 import {
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
+  INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -62,7 +63,10 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   };
 
   const handleMouseEnter = () => {
-    if (window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH) {
+    if (
+      window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
+      resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
+    ) {
       if (resultRef.current) {
         resultRef.current.style.cursor = 'wait';
       }
@@ -80,7 +84,10 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   };
 
   const handleMouseLeave = () => {
-    if (window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH) {
+    if (
+      window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
+      resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
+    ) {
       // ! Known Issue:
       // ! In Chrome with open DevTools, the cursor won't change until moved
       // ! See: https://stackoverflow.com/a/51714827/2826713

@@ -1,3 +1,4 @@
+import { runFunctionWhenDocumentReady } from 'utils';
 import { BLOCKED_ADS } from 'utils/constants';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
@@ -39,5 +40,5 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
     }, 500);
   };
 
-  setInterval(() => runAdBlock(), 100);
+  runFunctionWhenDocumentReady(document, runAdBlock);
 })(document);

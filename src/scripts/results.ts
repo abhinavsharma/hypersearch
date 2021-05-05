@@ -22,6 +22,7 @@ import {
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
   INSIGHT_SEARCHED_RESULT_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
+  OPEN_URL_ACTION,
   PROCESS_SERP_OVERLAY_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
@@ -34,6 +35,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
 const searchedResults: HTMLElement[] = [];
 const searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
 const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
+const createdSidebarTab: Record<string, boolean> = Object.create(null);
 
 ((document, window) => {
   const processAugmentation = (
@@ -143,6 +145,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
         selectorString: 'hidden-domain',
       },
       { block: blockingAugmentations, search: searchingAugmentations },
+      data.createdUrls,
     );
   };
 

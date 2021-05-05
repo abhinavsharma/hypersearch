@@ -626,7 +626,7 @@ class AugmentationManager {
           ? actions
               .map((action) => ({
                 ...action,
-                value: action.value.filter((i) => i !== ''),
+                value: action.value.filter((isValue) => !!isValue),
               }))
               .filter(({ value }) => !!value.length)
           : augmentation.actions.action_list.filter(({ value }) => !!value.length),

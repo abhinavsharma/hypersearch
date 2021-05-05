@@ -16,6 +16,7 @@ import {
   INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
+  INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_HIDDEN_RESULT_SELECTOR,
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
   INSIGHT_SEARCHED_RESULT_SELECTOR,
@@ -23,7 +24,7 @@ import {
   SIDEBAR_Z_INDEX,
 } from 'utils/constants';
 import { v4 as uuid } from 'uuid';
-import { extractPublication } from 'utils/helpers';
+import { extractPublication, removeProtocol } from 'utils/helpers';
 import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIcon';
 
 /**
@@ -118,6 +119,7 @@ export const processSerpResults: ProcessSerpResults = (
   containerSelector,
   details,
   augmentations,
+  createdUrls = [],
 ) => {
   for (const node of results) {
     if (!(node instanceof HTMLElement)) continue;
@@ -138,6 +140,14 @@ export const processSerpResults: ProcessSerpResults = (
     if (typeof publication !== 'string' && typeof augmentations !== 'string') continue;
 
     let blockers = [];
+
+    const isSubtab = createdUrls.findIndex((url) =>
+      escape(removeProtocol(url)).match(escape(removeProtocol(resultLink))),
+    );
+
+    if (isSubtab > -1) {
+      serpResult.setAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, 'true');
+    }
 
     serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, publication);
     if (typeof augmentations === 'string' || augmentations.block[publication]?.length) {
