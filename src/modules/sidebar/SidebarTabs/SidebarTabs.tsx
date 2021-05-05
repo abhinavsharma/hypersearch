@@ -29,6 +29,7 @@ import {
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
   OPEN_BUILDER_PAGE,
+  removeProtocol,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -104,7 +105,9 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             setActiveKey(msg.index);
           }
           if (msg.url) {
-            const index = tabs.findIndex(({ url }) => url.href.match(msg.url));
+            const index = tabs.findIndex(({ url }) =>
+              escape(removeProtocol(url.href)).match(escape(removeProtocol(msg.url))),
+            );
             if (index !== -1) {
               flipSidebar(document, 'show', tabs.length, true);
               setActiveKey(String(index + 1));
