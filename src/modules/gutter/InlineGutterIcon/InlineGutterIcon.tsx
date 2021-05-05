@@ -20,7 +20,7 @@ import './InlineGutterIcon.scss';
 
 const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
-const SWITCH_TO_TAB_DELAY = 500; //ms
+const SWITCH_TO_TAB_DELAY = 300; //ms
 
 export const InlineGutterIcon: InlineGutterIcon = ({
   url,
