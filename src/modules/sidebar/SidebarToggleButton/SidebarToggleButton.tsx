@@ -38,7 +38,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       <List.Item.Meta
         title={
           item.url.searchParams.get('insight-tab-title') ??
-          removeEmoji(item.title.length > 36 ? item.title.slice(0, 35) + '...' : item.title)
+          removeEmoji(item.title.length > 30 ? item.title.slice(0, 29) + '...' : item.title)
         }
       />
     </List.Item>
@@ -60,7 +60,11 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         <List
           style={{ paddingRight: 5 }}
           itemLayout="horizontal"
-          dataSource={tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)}
+          dataSource={(tabs.length > 3) ? tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).slice(0,3).concat([{
+            title: `${tabs.length - 3} more`,
+            id: 'FAKE_ID',
+            url: new URL('https://example.com')
+          }]) : tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)}
           renderItem={ListItem}
         />
       </div>

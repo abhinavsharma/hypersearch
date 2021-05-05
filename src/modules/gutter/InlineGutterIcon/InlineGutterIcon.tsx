@@ -184,8 +184,8 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             : ''
         } ${
           inBlocklist
-            ? `Remove ${publication} from my blocked domains.`
-            : `Add ${publication} to my block list.`
+            ? `Remove ${publication} from my muted sites.`
+            : `Add ${publication} to my muted sites.`
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}

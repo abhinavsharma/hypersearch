@@ -116,7 +116,7 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
         checked={isBlocked}
         onChange={handleToggleBlocked}
       >
-        Blocked
+        Muted
       </Checkbox>
     </div>
   );
