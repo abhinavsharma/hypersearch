@@ -30,6 +30,7 @@ import {
   USE_COUNT_PREFIX,
   OPEN_BUILDER_PAGE,
   removeProtocol,
+  PRERENDER_TABS,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -172,7 +173,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   activeKey={activeKey}
                 />
               }
-              forceRender
+              forceRender={i <= PRERENDER_TABS}
               className={`insight-full-tab`}
             >
               {tab.augmentation && (
