@@ -142,7 +142,7 @@ export const processSerpResults: ProcessSerpResults = (
     let blockers = [];
 
     const isSubtab = createdUrls.findIndex((url) =>
-      escape(removeProtocol(url)).match(escape(removeProtocol(resultLink))),
+      escape(removeProtocol(url)).match(escape(removeProtocol(resultLink).split('#')[0])),
     );
 
     if (isSubtab > -1) {
