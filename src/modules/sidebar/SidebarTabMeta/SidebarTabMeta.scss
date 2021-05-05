@@ -17,6 +17,15 @@
       display: flex;
       align-items: center;
 
+      .subtab-open-new-tab {
+        padding-right: 20px;
+        border-right: 1px solid #ccc;
+      }
+
+      .ant-btn {
+        padding: 0;
+      }
+
       #publication-meta {
         display: flex;
         flex-direction: column;
@@ -25,6 +34,10 @@
 
         .domain-state-checkbox-container {
           padding: 0;
+        }
+
+        strong {
+          font-family: 'Courier New', Courier, monospace;
         }
       }
     }

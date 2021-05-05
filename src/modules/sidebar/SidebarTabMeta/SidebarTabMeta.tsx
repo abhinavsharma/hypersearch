@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Info } from 'react-feather';
 import Typography from 'antd/lib/typography';
+import Tooltip from 'antd/lib/tooltip';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { DomainStateCheckbox } from 'modules/gutter';
@@ -8,6 +9,8 @@ import { extractPublication, SEARCH_DOMAINS_ACTION } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabMeta.scss';
+import 'antd/lib/tooltip/style/index.css';
+
 
 const { Paragraph, Text } = Typography;
 
@@ -46,14 +49,25 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   return showMeta || titleFromDomain ? (
     <div id="tab-meta-container">
       <div id="meta-info-icon-container">
+      <Tooltip
+        title={titleFromDomain ? `Some pages may not load properly in the sidebar`: `About this lens`}
+        destroyTooltipOnHide={{ keepParent: false }}
+        placement="right"
+      >
         <Info stroke={'#999'} />
+      </Tooltip>
+        
       </div>
       <div id="sidebar-tab-meta">
         {titleFromDomain ? (
           <div id="domain-title-container">
-            <Button type="link" onClick={handleOpenPage}>
-              Open in new tab
-            </Button>
+            <div className="subtab-open-new-tab">
+              <div>Beta feature</div>
+              <Button type="link" onClick={handleOpenPage}>
+                Open in new tab
+              </Button>
+            </div>
+            
             <div id="publication-meta">
               <Text strong>{extractPublication(tab.url.href)}</Text>
               <DomainStateCheckbox domain={titleFromDomain} />
