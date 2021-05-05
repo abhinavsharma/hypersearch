@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
-import { Maximize, Minimize, Menu, Sidebar } from 'react-feather';
+import { Maximize, Minimize, Menu } from 'react-feather';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   expandSidebar,
@@ -16,6 +16,7 @@ import './SidebarHeader.scss';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import Tooltip from 'antd/lib/tooltip';
 import 'antd/lib/tooltip/style/index.css';
+import { CustomSidebarIcon } from 'modules/shared';
 
 const { Title } = Typography;
 
@@ -89,7 +90,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
           />
         </Tooltip>
         <Tooltip destroyTooltipOnHide={{ keepParent: false }} title="Hide (Esc)">
-          <Button onClick={handleClose} icon={<Sidebar size={20} stroke={'#999'} />} type="text" />
+          <Button onClick={handleClose} icon={<CustomSidebarIcon stroke={'#999'} />} type="text" />
         </Tooltip>
       </div>
     </div>
