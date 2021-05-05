@@ -79,7 +79,21 @@ export const QueriesFrame = () => {
       <div id="queries-frame-container">
         <Title level={2}>Ready, Set, Search!</Title>
         <Collapse accordion defaultActiveKey={['1']}>
-          <Panel header="1. Make Your First Lens" key="1">
+          <Panel header="1. Try Some Queries" key="1">
+            <List
+              header={header}
+              dataSource={value}
+              renderItem={(item) => (
+                <List.Item>
+                  <a target="_blank" href={'https://www.google.com/search?q=' + item.text}>
+                    {item.text}
+                  </a>
+                </List.Item>
+              )}
+            />
+          </Panel>
+
+          <Panel header="2. Make Your First Lens" key="2">
             Make a lens that filters news search queries to your trusted sources only.
             <div>
               <Button
@@ -95,19 +109,6 @@ export const QueriesFrame = () => {
             </div>
           </Panel>
 
-          <Panel header="2. Try Some Queries" key="2">
-            <List
-              header={header}
-              dataSource={value}
-              renderItem={(item) => (
-                <List.Item>
-                  <a target="_blank" href={'https://www.google.com/search?q=' + item.text}>
-                    {item.text}
-                  </a>
-                </List.Item>
-              )}
-            />
-          </Panel>
           <Panel header="3. Watch the Walkthrough Video" key="3">
             <Button
               target="_blank"
