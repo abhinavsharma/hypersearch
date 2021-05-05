@@ -106,7 +106,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           }
           if (msg.url) {
             const index = tabs.findIndex(({ url }) =>
-              escape(removeProtocol(url.href)).match(escape(removeProtocol(msg.url))),
+              escape(removeProtocol(url.href)).match(escape(removeProtocol(msg.url).split('#')[0])),
             );
             if (index !== -1) {
               flipSidebar(document, 'show', tabs.length, true);
