@@ -534,10 +534,10 @@ class SidebarLoader {
               title: augmentation.name,
               description: augmentation.description,
             };
-            newTabs.unshift(tab);
+            newTabs.push(tab);
 
             /** DEV START **/
-            IN_DEBUG_MODE && logTabs.unshift('\n\t', { [tab.title]: tab }, '\n');
+            IN_DEBUG_MODE && logTabs.push('\n\t', { [tab.title]: tab }, '\n');
             /** DEV END **/
           });
         } else {
