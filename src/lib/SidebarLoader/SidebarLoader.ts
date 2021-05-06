@@ -623,6 +623,7 @@ class SidebarLoader {
         window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
           -1;
       this.isSerp = checkRequiredPrefix() && checkRequiredParams();
+      this.preventAutoExpand = this.preventAutoExpand || !this.isSerp;
       this.isSerp &&
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
