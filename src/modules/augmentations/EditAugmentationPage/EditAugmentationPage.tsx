@@ -165,23 +165,29 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     );
 
     return (
-      <>
-        <Popover
-          content={content}
-          title="When this lens triggers"
-          visible={isOpenWhen}
-          trigger="click"
-          placement="leftTop"
-          getPopupContainer={() => tooltipContainer?.current}
-        >
-          When
-        </Popover>
-        <div
-          className="tooltip-container popover-container"
-          ref={tooltipContainer}
-          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-        />
-      </>
+      <div className="builder-page-collapse-panel-title">
+        {tourStep === '2' ? (
+          <>
+            <Popover
+              content={content}
+              title="When this lens triggers"
+              visible={isOpenWhen}
+              trigger="click"
+              placement="leftTop"
+              getPopupContainer={() => tooltipContainer?.current}
+            >
+              When
+            </Popover>
+            <div
+              className="tooltip-container popover-container"
+              ref={tooltipContainer}
+              style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+            />
+          </>
+        ) : (
+          'When'
+        )}
+      </div>
     );
   };
 
@@ -208,23 +214,29 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     );
 
     return (
-      <>
-        <Popover
-          content={content}
-          title="What this lens does"
-          visible={isOpenThen}
-          trigger="click"
-          placement="leftTop"
-          getPopupContainer={() => tooltipContainer?.current}
-        >
-          When
-        </Popover>
-        <div
-          className="tooltip-container popover-container"
-          ref={tooltipContainer}
-          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-        />
-      </>
+      <div className="builder-page-collapse-panel-title">
+        {tourStep === '3' ? (
+          <>
+            <Popover
+              content={content}
+              title="What this lens does"
+              visible={isOpenThen}
+              trigger="click"
+              placement="leftTop"
+              getPopupContainer={() => tooltipContainer?.current}
+            >
+              When
+            </Popover>
+            <div
+              className="tooltip-container popover-container"
+              ref={tooltipContainer}
+              style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+            />
+          </>
+        ) : (
+          'Then'
+        )}
+      </div>
     );
   };
 
@@ -248,23 +260,29 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     );
 
     return (
-      <>
-        <Popover
-          content={content}
-          title="Metadata"
-          visible={isOpenMeta}
-          trigger="click"
-          placement="leftTop"
-          getPopupContainer={() => tooltipContainer?.current}
-        >
-          When
-        </Popover>
-        <div
-          className="tooltip-container popover-container"
-          ref={tooltipContainer}
-          style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-        />
-      </>
+      <div className="builder-page-collapse-panel-title">
+        {tourStep === '4' ? (
+          <>
+            <Popover
+              content={content}
+              title="Metadata"
+              visible={isOpenMeta}
+              trigger="click"
+              placement="leftTop"
+              getPopupContainer={() => tooltipContainer?.current}
+            >
+              When
+            </Popover>
+            <div
+              className="tooltip-container popover-container"
+              ref={tooltipContainer}
+              style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+            />
+          </>
+        ) : (
+          'About'
+        )}
+      </div>
     );
   };
 
@@ -273,49 +291,43 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   }, [SidebarLoader.tourStep]);
 
   return (
-    <div className="edit-augmentation-page-container">
-      <div className="edit-augmentation-tab-header ant-tabs-tab">
-        <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
+    <div id="builder-page" className="sidebar-page">
+      <header className="sidebar-page-header">
+        <Button type="link" onClick={handleClose} className="left-button">
           Cancel
         </Button>
-        <span>{`${!isAdding ? 'Edit' : 'Add'} Local Lens`}</span>
+        <span className="page-title">{`${!isAdding ? 'Edit' : 'Add'} Local Lens`}</span>
         <Button
           type="link"
           onClick={handleSave}
-          className={`insight-augmentation-tab-button ${
-            tourStep === '5' ? 'insight-tour-shake' : ''
-          }`}
+          className={`right-button ${tourStep === '5' ? 'insight-tour-shake' : ''}`}
           disabled={isDisabled}
         >
           {!isAdding ? 'Save' : 'Add'}
         </Button>
-      </div>
-      <div className="edit-augmentation-page-wrapper">
+      </header>
+      <div className="sidebar-page-wrapper">
         <Collapse defaultActiveKey={!!tourStep ? [] : ['2', '3']}>
-          <Panel header={tourStep === '2' ? <WhenTourTitle /> : 'When'} key="1">
-            <div className="edit-augmentation-logic-wrapper">
-              <EditAugmentationConditions
-                conditions={conditions}
-                setConditions={setConditions}
-                evaluation={conditionEvaluation}
-                setEvaluation={setConditionEvaluation}
-                onAdd={handleAddCondition}
-                onDelete={handleDeleteCondition}
-                onSave={handleSaveCondition}
-              />
-            </div>
+          <Panel className="builder-page-collapse-panel" header={<WhenTourTitle />} key="1">
+            <EditAugmentationConditions
+              conditions={conditions}
+              setConditions={setConditions}
+              evaluation={conditionEvaluation}
+              setEvaluation={setConditionEvaluation}
+              onAdd={handleAddCondition}
+              onDelete={handleDeleteCondition}
+              onSave={handleSaveCondition}
+            />
           </Panel>
-          <Panel header={tourStep === '3' ? <ThenTourTitle /> : 'Then'} key="2">
-            <div className="edit-augmentation-logic-wrapper">
-              <EditAugmentationActions
-                actions={actions}
-                onAdd={handleAddAction}
-                onSave={handleSaveAction}
-                onDelete={handleDeleteAction}
-              />
-            </div>
+          <Panel className="builder-page-collapse-panel" header={<ThenTourTitle />} key="2">
+            <EditAugmentationActions
+              actions={actions}
+              onAdd={handleAddAction}
+              onSave={handleSaveAction}
+              onDelete={handleDeleteAction}
+            />
           </Panel>
-          <Panel header={tourStep === '4' ? <MetaTourTitle /> : 'About'} key="3">
+          <Panel className="builder-page-collapse-panel" header={<MetaTourTitle />} key="3">
             <EditAugmentationMeta
               augmentation={augmentation}
               name={name}

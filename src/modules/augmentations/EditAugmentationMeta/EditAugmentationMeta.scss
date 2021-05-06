@@ -1,17 +1,16 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
 #meta-button-row {
-  display: flex;
-  align-items: center;
-  width: 100%;
+  @include fullWidthRow;
 
   .button-container {
-    padding: 5px 0 20px 0;
+    @include centerContent;
     width: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: $space_small 0 $space_larger 0;
 
     &:first-of-type {
-      border-right: 1px solid #eee;
+      border-right: 1px solid $color_border_light;
     }
 
     button {
@@ -22,38 +21,38 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-size: 24px;
+        font-size: $sidebar_font_largest;
 
         & > span:last-child {
-          color: black !important;
-          font-size: 16px;
+          color: $color_text_black !important;
+          font-size: $sidebar_font_large;
         }
 
         &.insight-augmentation-delete-button-content {
-          color: red !important;
+          color: $color_icon_danger !important;
 
           & > span:last-child {
-            color: red !important;
+            color: $color_icon_danger !important;
           }
         }
 
         &.disabled {
           cursor: not-allowed;
-          color: #cecece !important;
+          color: $color_text_lighter !important;
 
           & > span:last-child {
-            color: #cecece !important;
+            color: $color_text_lighter !important;
           }
         }
       }
 
       &.insight-augmentation-tab-button {
-        background: white;
+        background: $color_background_white;
         text-align: left;
         font-weight: bold;
 
         &:hover {
-          background: #f9f9f9;
+          background: $color_background_lighter;
         }
       }
     }

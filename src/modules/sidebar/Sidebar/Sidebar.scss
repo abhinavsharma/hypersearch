@@ -1,136 +1,103 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+@use 'styles/animations' as *;
+@use 'sass:math';
+@import 'styles/generics';
+@import 'styles/overwrites';
+
 body {
-  line-height: 1.3 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
-  color: #eee !important;
-  font-size: 14px !important;
-  font-weight: normal !important;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  text-align: left;
-  background: transparent;
+  @include reset;
+  font-family: $font_sans;
+  font-size: $sidebar_font_medium;
 
-  .ant-tooltip-inner {
-    min-height: 0;
-  }
-}
+  #insight-sidebar-container {
+    @include slideAnimation;
+    background: $color_background_white;
 
-#insight-sidebar-container {
-  background: white;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 480px;
-  transition-property: width;
-  transition-duration: 0.5s;
-  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-
-  &.hidden {
-    width: 0;
-  }
-
-  &.insight-expanded {
-    .insight-full-tab,
-    .ant-tabs-content-holder {
-      background: #f1f3f4 !important;
+    .sidebar-tab-panel {
+      background: $color_background_saturated;
     }
 
-    .insight-tab-pill {
-      max-width: none;
-    }
+    .sidebar-page {
+      background: $color_background_saturated;
 
-    .ant-tabs-extra-content:first-of-type {
-      width: auto;
-
-      .expand-icon {
-        margin: 0;
-      }
-    }
-
-    .insight-active-augmentations-page,
-    .edit-augmentation-page-wrapper {
-      transform: translate(-50%, 0px);
-      left: 50%;
-      max-width: 900px;
-      position: absolute;
-      width: 100%;
-    }
-
-    .edit-augmentation-tab-header {
-      width: 100%;
-      left: 0 !important;
-
-      & > span {
+      .sidebar-page-header {
         position: absolute;
-        left: 50%;
-        transform: translate(-50%, 0);
-        margin-left: 0 !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        height: $sidebar_header_height;
+        background: $color_background_lighter;
+        border-bottom: 1px solid $color_border_medium;
+        cursor: default;
+
+        .left-button {
+          margin-left: $space_tiny;
+          margin-right: auto;
+        }
+
+        .page-title {
+          @include centerBox;
+          color: $color_text_black;
+          font-size: $sidebar_font_large;
+          font-weight: bold;
+          cursor: text;
+        }
+
+        .right-button {
+          margin-left: auto;
+          margin-right: $space_tiny;
+        }
       }
 
-      & > button:last-child {
-        margin-right: 0;
+      .sidebar-page-wrapper {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        top: math.abs($sidebar_header_height + 1px);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        max-width: $sidebar_max_page_width;
+        padding-top: $space_medium;
+        overflow-y: auto !important;
+        background: $color_background_white;
+
+        section {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          width: 100%;
+
+          .title {
+            @include reset;
+            font-size: $sidebar_font_large;
+            font-weight: bold;
+            margin-left: $space_medium;
+            margin-bottom: $space_small;
+          }
+
+          .sub-title {
+            @include reset;
+            color: $color_text_light;
+            font-size: $sidebar_font_small;
+            font-weight: normal;
+            margin-left: $space_medium;
+            margin-bottom: $space_large;
+          }
+        }
       }
     }
 
-    .add-augmentation-tab-header {
-      &.active {
-        left: 0 !important;
-
-        & > span {
-          position: absolute;
-          left: 50%;
-          transform: translate(-50%, 0);
-          margin-left: 0 !important;
+    &.insight-expanded {
+      .sidebar-page {
+        .sidebar-page-wrapper {
+          @include centerBox;
         }
       }
     }
   }
-}
-
-@keyframes shake {
-  0% {
-    transform: translate(1px, 1px) rotate(0deg);
-  }
-  3% {
-    transform: translate(-1px, -4px) rotate(-1deg);
-  }
-  6% {
-    transform: translate(-6px, 0px) rotate(1deg);
-  }
-  9% {
-    transform: translate(6px, 4px) rotate(0deg);
-  }
-  12% {
-    transform: translate(1px, -1px) rotate(1deg);
-  }
-  15% {
-    transform: translate(-1px, 4px) rotate(-1deg);
-    background: #ccc;
-  }
-  18% {
-    transform: translate(-6px, 1px) rotate(0deg);
-  }
-  21% {
-    transform: translate(6px, 1px) rotate(-1deg);
-  }
-  24% {
-    transform: translate(-1px, -1px) rotate(1deg);
-  }
-  27% {
-    transform: translate(1px, 4px) rotate(0deg);
-  }
-  30% {
-    transform: translate(1px, -4px) rotate(-1deg);
-  }
-  100% {
-    transform: translate(0px, 0px) rotate(0deg);
-  }
-}
-
-.insight-tour-shake {
-  animation: shake 1s;
-  animation-iteration-count: 2;
-  animation-delay: 1000ms;
 }

@@ -1,34 +1,38 @@
-#privacy-toggle-container, #privacy-frame-containe {
+@use 'styles/variables' as *;
+@use 'sass:math';
+
+#privacy-toggle-container,
+#privacy-frame-containe {
   display: flex;
   flex-direction: column;
 
   a {
     text-decoration: underline;
-    color: #fff;
+    color: $color_text_white;
   }
 
   h3 {
-    margin-top: 20px;
-    font-size: 36px;
+    margin-top: $space_intro_tiny;
+    font-size: $intro_font_large;
     font-weight: 200;
   }
 
   p {
     margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 18px;
+    margin-bottom: math.abs($space_intro_tiny / 2);
+    font-size: $intro_font_smaller;
   }
-  
+
   .privacy-explainer {
-    max-width: 800px;
+    max-width: $intro_max_privacy_explainer_width;
   }
 
   .privacy-toggle-button {
-    margin-top: 20px;
+    margin-top: $space_intro_tiny;
     width: 100px;
     height: 45px;
     background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.85);
+    border: 1px solid $color_border_intro_opaque;
 
     .ant-switch-handle {
       width: 40px;

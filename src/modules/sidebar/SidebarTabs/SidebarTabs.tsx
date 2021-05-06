@@ -135,7 +135,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
   return (
     <>
       <Tabs className="insight-tab-container" renderTabBar={TabBar} activeKey={activeKey}>
-        <TabPane key="0" tab={null} forceRender>
+        <TabPane key="0" tab={null} className="sidebar-tab-panel" forceRender>
           <Router>
             {(() => {
               switch (showPage) {
@@ -162,19 +162,20 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           </Router>
         </TabPane>
         {tabs?.map((tab, i) => {
+          const tabTitle = (
+            <SidebarTabTitle
+              tab={tab}
+              index={i}
+              setActiveKey={setActiveKey}
+              activeKey={activeKey}
+            />
+          );
           return (
             <TabPane
               key={i + 1}
-              tab={
-                <SidebarTabTitle
-                  tab={tab}
-                  index={i}
-                  setActiveKey={setActiveKey}
-                  activeKey={activeKey}
-                />
-              }
+              tab={tabTitle}
               forceRender={i <= PRERENDER_TABS}
-              className={`insight-full-tab`}
+              className="sidebar-tab-panel"
             >
               {tab.augmentation && (
                 <>

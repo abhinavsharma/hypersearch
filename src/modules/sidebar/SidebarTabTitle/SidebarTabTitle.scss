@@ -1,3 +1,5 @@
+@use 'styles/variables' as *;
+
 .insight-tab-bar {
   .insight-tab-pill {
     display: flex;
@@ -14,32 +16,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    width: auto;
     padding: 0;
     margin: 0;
     text-align: center;
-    width: auto;
-    color: #333;
-    background: #f9f9f9;
-    cursor: pointer;
+    font-size: $sidebar_font_medium;
+    color: $color_text_dark;
+    background: $color_background_lighter;
     border-radius: 0;
     border-bottom: 0;
+    cursor: pointer;
   }
 
   .ant-tabs-tab-active {
-    color: black;
+    color: $color_text_black;
   }
 
   .insight-tab-title {
-    color: #666;
-    padding: 5px 10px;
+    color: $color_text_medium;
+    padding: $space_small $space_medium;
 
     &.hidden {
       display: none;
     }
 
     &.active {
-      color: black;
+      color: $color_text_black;
     }
+  }
+
+  .ant-tabs-ink-bar {
+    background: $color_icon_link;
   }
 }

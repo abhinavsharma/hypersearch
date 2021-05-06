@@ -1,43 +1,19 @@
+@use 'styles/variables' as *;
+@use 'styles/animations' as *;
+
 .insight-sidebar-toggle-button {
-  animation: shake 1s;
-  animation-iteration-count: 2;
+  @include shakeAnimation;
   display: none;
   right: 0;
-  bottom: 10px;
-  background: white;
-  line-height: 1.3 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+  bottom: $space_medium;
+  width: $sidebar_toggle_width !important;
+  color: $color_background_darker !important;
+  background: $color_background_white;
+  font-size: $sidebar_font_medium;
   border-right: none;
-  cursor: pointer;
-  width: 200px !important;
-  border-radius: 10px 0 0 10px !important;
-  font-size: 13px;
-  color: #444 !important;
+  border-radius: $space_medium 0 0 $space_medium !important;
   box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 20%);
-
-  .insight-sidebar-toggle-appname {
-    font-weight: bold;
-    font-size: 14px;
-    padding-bottom: 10px;
-    position: relative;
-    text-align: center;
-
-    writing-mode: vertical-lr;
-    padding: 15px;
-    border-left: 1px solid #ccc;
-    transform: rotateZ(180deg);
-  }
-
-  .insight-sidebar-toggle-appname.insight-center {
-    text-align: center;
-
-    .insight-sidebar-toggle-appname-text {
-      position: relative;
-      bottom: auto;
-      left: auto;
-    }
-  }
+  cursor: pointer;
 
   h4 {
     font-weight: normal;
@@ -45,33 +21,19 @@
 
   .ant-list-items {
     list-style-type: none;
-    margin-left: 10px;
     padding: 0;
+    margin-left: $space_medium;
   }
 
-  &.empty {
-    display: flex;
-    flex-direction: column;
-    cursor: default;
-
-    .ant-btn {
-      color: #1a0dab !important;
-      font-size: 16px;
-
-      span {
-        padding-top: 2px;
-      }
-    }
-
-    .ant-divider {
-      margin: 5px 0;
-      background-color: white;
-    }
-  }
-
-  &.add-augmentation-button {
-    font-size: 40px !important;
-    font-weight: 900;
-    justify-content: flex-start;
+  .insight-sidebar-toggle-appname {
+    position: relative;
+    text-align: center;
+    font-size: $sidebar_font_medium;
+    font-weight: bold;
+    writing-mode: vertical-lr;
+    padding: $space_large;
+    padding-bottom: $space_medium;
+    border-left: 1px solid $color_border_medium;
+    transform: rotateZ(180deg);
   }
 }

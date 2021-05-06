@@ -1,0 +1,24 @@
+.ant-tooltip-inner {
+  min-height: 0;
+}
+
+.ant-select-selector {
+  width: auto !important;
+}
+
+.ant-select-item-option {
+  pointer-events: auto !important;
+  align-items: center !important;
+}
+
+.ant-collapse-content {
+  height: auto !important;
+
+  &.ant-collapse-content-inactive {
+    height: 0 !important;
+  }
+}
+
+.ant-tabs-dropdown {
+  display: none;
+}

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
+import Tooltip from 'antd/lib/tooltip';
 import { Maximize, Minimize, Menu } from 'react-feather';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import { CustomSidebarIcon } from 'modules/shared';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   expandSidebar,
@@ -12,11 +15,8 @@ import {
 } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
-import './SidebarHeader.scss';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import Tooltip from 'antd/lib/tooltip';
 import 'antd/lib/tooltip/style/index.css';
-import { CustomSidebarIcon } from 'modules/shared';
+import './SidebarHeader.scss';
 
 const { Title } = Typography;
 

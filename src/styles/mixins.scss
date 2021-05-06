@@ -1,0 +1,61 @@
+@use 'styles/variables' as *;
+@use 'sass:math';
+
+@mixin reset {
+  padding: 0;
+  margin: 0;
+  line-height: 1.3;
+  font-weight: normal;
+  list-style: none;
+  text-align: left;
+  background: transparent;
+}
+
+@mixin fullWidthRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+@mixin centerBox {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+@mixin centerContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin dropdown($width) {
+  width: #{width} !important;
+
+  &.ant-slide-up-leave,
+  &.ant-slide-up-leave-active {
+    opacity: 0;
+    z-index: -1;
+  }
+
+  &.ant-slide-up-enter,
+  &.ant-slide-up-enter-prepare,
+  &.ant-slide-up-enter-active,
+  &.ant-slide-up-appear,
+  &.ant-slide-up-appear-prepare,
+  &.ant-slide-up-appear-active {
+    pointer-events: auto !important;
+    width: 100%;
+    opacity: 1;
+    z-index: math.abs($sidebar_z_index + 1);
+
+    .ant-select-item-option {
+      pointer-events: auto !important;
+      align-items: center;
+    }
+  }
+}
+
+@mixin fullWidthDropdown {
+  @include dropdown(100%);
+}

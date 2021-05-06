@@ -44,6 +44,9 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   };
 
   const handleDisableInstalled = () => {
+    setActiveKey(
+      getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
+    );
     AugmentationManager.addOrEditAugmentation(tab.augmentation, { isActive: false });
   };
 

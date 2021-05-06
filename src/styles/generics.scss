@@ -1,0 +1,85 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+.relative {
+  position: relative;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.no-border {
+  border: none !important;
+}
+
+.inline-medium-text-button {
+  margin-left: -$space_small;
+  margin-right: -$space_medium;
+}
+
+.full-size-fixed {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: $sidebar_max_width;
+}
+
+.large-input-row {
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 30px;
+  padding: $space_medium;
+  border-bottom: 1px solid $color_border_light;
+
+  .large-input-row-content:not(.list) {
+    display: flex;
+    align-items: center;
+    font-weight: normal !important;
+  }
+}
+
+.select-full-width {
+  width: 100%;
+}
+
+.select-full-width-dropdown {
+  @include fullWidthDropdown;
+}
+
+.augmentation-row {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  min-height: 50px;
+  width: 95%;
+  background: $color_background_white;
+  text-align: left;
+
+  .augmentation-row-name {
+    display: flex;
+    width: 320px;
+    flex-direction: column;
+
+    .augmentation-row-extra {
+      color: $color_text_medium;
+      font-size: $sidebar_font_small;
+    }
+  }
+
+  .augmentation-row-button {
+    cursor: pointer;
+
+    &:first-of-type {
+      margin-left: auto;
+    }
+
+    &:last-child {
+      margin-right: $space_medium;
+    }
+  }
+}

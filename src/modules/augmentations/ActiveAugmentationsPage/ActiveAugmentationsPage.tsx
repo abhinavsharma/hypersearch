@@ -3,8 +3,8 @@ import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AugmentationRow } from 'modules/augmentations';
+import { InlineGutterOptionsPage } from 'modules/gutter';
 import { Settings } from 'react-feather';
-
 import {
   makeEllipsis,
   APP_NAME,
@@ -20,8 +20,6 @@ import {
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
-import './ActiveAugmentationsPage.scss';
-import { InlineGutterOptionsPage } from 'modules/gutter';
 
 const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
@@ -153,47 +151,55 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
   }, [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations]);
 
   return (
-    <div id="active-augmentations-page">
-      <header>
+    <div id="active-page" className="sidebar-page">
+      <header className="sidebar-page-header">
         <Button
           type="link"
-          className={`close-button ${tourStep === '6' ? 'insight-tour-shake' : ''}`}
+          className={`left-button ${tourStep === '6' ? 'insight-tour-shake' : ''}`}
           onClick={handleClose}
         >
           Close
         </Button>
-        <span className="title">Lenses</span>
-        <Button type="text" className="setting-button" onClick={handleOpenSettings}>
+        <span className="page-title">Lenses</span>
+        <Button type="text" className="right-button" onClick={handleOpenSettings}>
           <Suspense fallback={null}>
             <Settings stroke={'#999'} size={20} />
           </Suspense>
         </Button>
       </header>
-      {!SidebarLoader.isSerp && (
-        <InlineGutterOptionsPage domain={domain} hidingAugmentations={hidingAugmentations} inline />
-      )}
-      {sections.map(({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
-        const hasNextSection = !!a[i + 1];
-        return augmentations.length || i === 0 ? (
-          <React.Fragment key={title}>
-            <section>
-              {title && <h2 className="title">{title}</h2>}
-              {subtitle && <h3 className="sub-title">{subtitle}</h3>}
-              {augmentations.map((augmentation) => (
-                <AugmentationRow
-                  key={augmentation.id}
-                  augmentation={augmentation}
-                  pinned={pinned}
-                  other={other}
-                  ignored={ignored}
-                />
-              ))}
-              {button && button}
-            </section>
-            {hasNextSection && <Divider />}
-          </React.Fragment>
-        ) : null;
-      })}
+      <div className="sidebar-page-wrapper">
+        {!SidebarLoader.isSerp && (
+          <InlineGutterOptionsPage
+            domain={domain}
+            hidingAugmentations={hidingAugmentations}
+            inline
+          />
+        )}
+        {sections.map(
+          ({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
+            const hasNextSection = !!a[i + 1];
+            return augmentations.length || i === 0 ? (
+              <React.Fragment key={title}>
+                <section>
+                  {title && <h2 className="title">{title}</h2>}
+                  {subtitle && <h3 className="sub-title">{subtitle}</h3>}
+                  {augmentations.map((augmentation) => (
+                    <AugmentationRow
+                      key={augmentation.id}
+                      augmentation={augmentation}
+                      pinned={pinned}
+                      other={other}
+                      ignored={ignored}
+                    />
+                  ))}
+                  {button && button}
+                </section>
+                {hasNextSection && <Divider />}
+              </React.Fragment>
+            ) : null;
+          },
+        )}
+      </div>
     </div>
   );
 };

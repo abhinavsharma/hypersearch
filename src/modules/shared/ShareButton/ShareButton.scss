@@ -1,52 +1,49 @@
-.share-button-container {
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
 
+.share-button-container {
   .ant-input-affix-wrapper {
     width: 90%;
   }
 
   .tooltip-container {
     & > div {
-      
-
       .ant-popover {
         display: block;
         pointer-events: auto !important;
 
         .copyable-text {
-          border: 1px solid #ccc;
-          padding: 5px;
+          border: 1px solid $color_border_medium;
+          padding: $space_small;
           width: 300px;
         }
 
         .popover-button-container {
           display: flex;
           flex-direction: column;
-          button  {
+
+          button {
             width: 100%;
 
             span {
-              padding: 5px !important;
+              padding: $space_small !important;
             }
           }
-          
-          
         }
 
         .popover-title {
-          width: 100%;
-          display: flex;
-          align-items: center;
+          @include fullWidthRow;
 
           .popover-close-button {
             display: flex;
             margin-left: auto;
-            margin-right: 10px;
+            margin-right: $space_medium;
 
             span {
-              color: #40a9ff !important;
+              color: $color_text_link !important;
 
               &:hover {
-                color: #1890ff !important;
+                color: $color_text_hover !important;
               }
             }
           }

@@ -4,6 +4,7 @@ import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import { DomainStateCheckbox } from '../DomainStateCheckbox/DomainStateCheckbox';
 import {
   EMPTY_AUGMENTATION,
   MY_BLOCKLIST_ID,
@@ -20,14 +21,13 @@ import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './InlineGutterOptionsPage.scss';
-import { DomainStateCheckbox } from '../DomainStateCheckbox/DomainStateCheckbox';
 
 const PlusOutlined = React.lazy(
   async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
 );
 
 export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
-  hidingAugmentations,
+  hidingAugmentations = [],
   domain,
   inline,
 }) => {
@@ -241,141 +241,143 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   };
 
   return (
-    <div id="inline-gutter-options-page" className={inline ? 'inline-gutter-page-embedded' : ''}>
+    <div id="gutter-page" className={`sidebar-page ${inline ? 'inline-gutter-page-embedded' : ''}`}>
       {!inline && (
-        <div className="gutter-page-header">
-          <Button type="link" onClick={handleClose} className="insight-augmentation-tab-button">
+        <header className="sidebar-page-header">
+          <Button type="link" onClick={handleClose} className="left-button">
             Close
           </Button>
-          <span className="insight-domain-tab-title">Domain Settings</span>
-        </div>
+          <span className="page-title">Domain Settings</span>
+        </header>
       )}
-      <section>
-        <h3 className="domain-text sub-title">
-          <code>{domain}</code>
-        </h3>
-        <DomainStateCheckbox domain={domain} />
-      </section>
-      {sections.map(({ title, subtitle, augmentations, type }) =>
-        !!augmentations?.length ? (
-          <React.Fragment key={title}>
-            <Divider />
-            <section>
-              {title && augmentations?.length > 0 && <h2 className="title">{title}</h2>}
-              {subtitle && augmentations?.length > 0 && <h3 className="sub-title">{subtitle}</h3>}
-              {augmentations.map((augmentation) => {
-                const handleAddToLocal = () =>
-                  handleAddSearchDomainToLocal(augmentation, augmentation.actionIndex);
-                const handleEdit = () => handleEditInstalled(augmentation);
-                const handleDelete = () => handleDeleteInstalled(augmentation, type);
-                const handleDisable = () => handleDisableSuggested(augmentation, type);
-                switch (type) {
-                  case 'block':
-                    return (
-                      <div className="gutter-page-button-row" key={augmentation.id}>
-                        {augmentation.name}
-                        {!augmentation.installed ? (
-                          <Tag
-                            className="gutter-page-row-button"
-                            color="volcano"
-                            onClick={handleDisable}
-                          >
-                            Disable Lens
-                          </Tag>
-                        ) : (
-                          <Tag
-                            className="gutter-page-row-button"
-                            color="volcano"
-                            onClick={handleDelete}
-                          >
-                            Remove from Lens
-                          </Tag>
-                        )}
-                      </div>
-                    );
-                  case 'search':
-                    return (
-                      <div className="gutter-page-button-row" key={augmentation.id}>
-                        {augmentation.name}
-                        <Tag
-                          className="gutter-page-row-button"
-                          color="geekblue"
-                          onClick={handleEdit}
-                        >
-                          {!augmentation.installed ? 'Fork Lens' : 'Edit Lens'}
-                        </Tag>
-                        {!augmentation.installed ? (
-                          <Tag
-                            className="gutter-page-row-button"
-                            color="volcano"
-                            onClick={handleDisable}
-                          >
-                            Disable Lens
-                          </Tag>
-                        ) : (
-                          <Tag
-                            className="gutter-page-row-button"
-                            color="volcano"
-                            onClick={handleDelete}
-                          >
-                            Remove from Lens
-                          </Tag>
-                        )}
-                      </div>
-                    );
-                  case 'local':
-                    return (
-                      <div
-                        className="gutter-page-button-row"
-                        key={augmentation.id + augmentation.actionIndex}
-                      >
-                        <div className="augmentation-name-box">
+      <div className="sidebar-page-wrapper">
+        <section>
+          <h3 className="domain-text">
+            <code>{domain}</code>
+          </h3>
+          <DomainStateCheckbox domain={domain} />
+        </section>
+        {sections.map(({ title, subtitle, augmentations, type }) =>
+          !!augmentations?.length ? (
+            <React.Fragment key={title}>
+              <Divider />
+              <section>
+                {title && augmentations?.length > 0 && <h2 className="title">{title}</h2>}
+                {subtitle && augmentations?.length > 0 && <h3 className="sub-title">{subtitle}</h3>}
+                {augmentations.map((augmentation) => {
+                  const handleAddToLocal = () =>
+                    handleAddSearchDomainToLocal(augmentation, augmentation.actionIndex);
+                  const handleEdit = () => handleEditInstalled(augmentation);
+                  const handleDelete = () => handleDeleteInstalled(augmentation, type);
+                  const handleDisable = () => handleDisableSuggested(augmentation, type);
+                  switch (type) {
+                    case 'block':
+                      return (
+                        <div className="augmentation-row" key={augmentation.id}>
                           {augmentation.name}
-                          <span className="augmentation-name-bo-domain-list">
-                            {(() => {
-                              const action =
-                                augmentation.actions.action_list[augmentation.actionIndex];
-                              return action?.key === SEARCH_DOMAINS_ACTION
-                                ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
-                                  ? 'Mark domains as trusted sources'
-                                  : `Currently searches\u00a0${action.value.join(', ')}`
-                                : 'Add as new action';
-                            })()}
-                          </span>
+                          {!augmentation.installed ? (
+                            <Tag
+                              className="augmentation-row-button"
+                              color="volcano"
+                              onClick={handleDisable}
+                            >
+                              Disable Lens
+                            </Tag>
+                          ) : (
+                            <Tag
+                              className="augmentation-row-button"
+                              color="volcano"
+                              onClick={handleDelete}
+                            >
+                              Remove from Lens
+                            </Tag>
+                          )}
                         </div>
-                        <Tag
-                          className="gutter-page-row-button"
-                          color="geekblue"
-                          onClick={handleAddToLocal}
+                      );
+                    case 'search':
+                      return (
+                        <div className="augmentation-row" key={augmentation.id}>
+                          {augmentation.name}
+                          <Tag
+                            className="augmentation-row-button"
+                            color="geekblue"
+                            onClick={handleEdit}
+                          >
+                            {!augmentation.installed ? 'Fork Lens' : 'Edit Lens'}
+                          </Tag>
+                          {!augmentation.installed ? (
+                            <Tag
+                              className="augmentation-row-button"
+                              color="volcano"
+                              onClick={handleDisable}
+                            >
+                              Disable Lens
+                            </Tag>
+                          ) : (
+                            <Tag
+                              className="augmentation-row-button"
+                              color="volcano"
+                              onClick={handleDelete}
+                            >
+                              Remove from Lens
+                            </Tag>
+                          )}
+                        </div>
+                      );
+                    case 'local':
+                      return (
+                        <div
+                          className="augmentation-row"
+                          key={augmentation.id + augmentation.actionIndex}
                         >
-                          Add to Lens
-                        </Tag>
-                      </div>
-                    );
-                }
-              })}
-            </section>
-          </React.Fragment>
-        ) : null,
-      )}
-      {!inline ? (
-        <>
+                          <div className="augmentation-row-name">
+                            {augmentation.name}
+                            <span className="augmentation-row-extra">
+                              {(() => {
+                                const action =
+                                  augmentation.actions.action_list[augmentation.actionIndex];
+                                return action?.key === SEARCH_DOMAINS_ACTION
+                                  ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
+                                    ? 'Mark domains as trusted sources'
+                                    : `Currently searches\u00a0${action.value.join(', ')}`
+                                  : 'Add as new action';
+                              })()}
+                            </span>
+                          </div>
+                          <Tag
+                            className="augmentation-row-button"
+                            color="geekblue"
+                            onClick={handleAddToLocal}
+                          >
+                            Add to Lens
+                          </Tag>
+                        </div>
+                      );
+                  }
+                })}
+              </section>
+            </React.Fragment>
+          ) : null,
+        )}
+        {!inline ? (
+          <>
+            <Divider />
+            <Button
+              type="text"
+              block
+              onClick={handleCreateAugmentation}
+              className="create-local-search-domain-augmentation-button"
+            >
+              <Suspense fallback={null}>
+                <PlusOutlined />
+              </Suspense>
+              &nbsp;Create new Lens that searches this domain
+            </Button>
+          </>
+        ) : (
           <Divider />
-          <Button
-            type="text"
-            block
-            onClick={handleCreateAugmentation}
-            className="create-local-search-domain-augmentation-button"
-          >
-            <Suspense fallback={null}>
-              <PlusOutlined />
-            </Suspense>
-            &nbsp;Create new Lens that searches this domain
-          </Button>
-        </>
-      ) : (
-        <Divider />
-      )}
+        )}
+      </div>
     </div>
   );
 };

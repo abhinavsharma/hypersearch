@@ -175,14 +175,14 @@ export const EditConditionInput: EditConditionInput = ({
 
   return (
     <>
-      <Row className={newKey ? 'edit-input-row' : 'edit-input-row edit-input-new-item-row'}>
-        <Col xs={!newKey ? 24 : 12} className="condition-label">
+      <Row className="large-input-row">
+        <Col xs={!newKey ? 24 : 12} className="large-input-row-content">
           {!newKey ? (
             <Select
-              style={{ width: '100%' }}
-              className="label-select"
               placeholder="Add new condition"
               onChange={handleLabelChange}
+              className="select-full-width"
+              dropdownClassName="select-full-width-dropdown"
               getPopupContainer={() => dropdownRef.current}
             >
               <OptGroup label="Search">
@@ -209,21 +209,16 @@ export const EditConditionInput: EditConditionInput = ({
             </Select>
           ) : (
             <>
-              <Button
-                onClick={handleDelete}
-                className="edit-input-delete-button"
-                danger
-                type="link"
-              >
+              <Button onClick={handleDelete} danger type="link">
                 <Suspense fallback={null}>
                   <MinusCircleOutlined />
                 </Suspense>
               </Button>
-              <span>{condition.label}</span>
+              <span> {condition.label}</span>
             </>
           )}
         </Col>
-        <Col xs={11} className="value-col">
+        <Col xs={12} className="large-input-row-content">
           {(() => {
             switch (newKey) {
               case SEARCH_INTENT_IS_CONDITION:
@@ -264,10 +259,10 @@ export const EditConditionInput: EditConditionInput = ({
                           return 'Select search engine...';
                       }
                     })()}
-                    dropdownClassName="search-dropdown"
-                    className="search-dropdown-block"
                     filterOption={handleFilter}
                     onChange={handleSelect}
+                    className="select-full-width"
+                    dropdownClassName="select-full-width-dropdown"
                     getPopupContainer={() => dropdownRef.current}
                   >
                     {(() => {
@@ -309,12 +304,7 @@ export const EditConditionInput: EditConditionInput = ({
               case DOMAIN_EQUALS_CONDTION:
               case DOMAIN_MATCHES_CONDITION:
                 return (
-                  <Input
-                    key={condition.id}
-                    className="add-condition-value-input"
-                    onChange={handleChange}
-                    value={newValue as string}
-                  />
+                  <Input key={condition.id} onChange={handleChange} value={newValue as string} />
                 );
               default:
                 return null;

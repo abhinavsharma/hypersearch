@@ -1,3 +1,5 @@
+@use 'styles/variables' as *;
+
 #privacy-frame-container {
-  padding: 100px 0;
+  padding: $space_intro_large 0;
 }

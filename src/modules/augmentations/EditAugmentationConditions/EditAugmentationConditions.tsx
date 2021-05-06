@@ -52,13 +52,13 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
 
   return (
     <>
-      <Row className="no-border">
+      <Row>
         <Col>
-          <span className="operation-description">
+          <span>
             <Button
               type="link"
               onClick={() => setEvaluation((prev) => (prev == 'AND' ? 'OR' : 'AND'))}
-              className="insight-augmentation-edit-evaluation"
+              className="inline-medium-text-button"
             >
               <strong>{evaluation == 'AND' ? 'All' : 'Any'}</strong>
             </Button>
