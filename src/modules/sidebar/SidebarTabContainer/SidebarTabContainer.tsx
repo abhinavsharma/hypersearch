@@ -26,7 +26,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <iframe
       ref={frameRef}
-      sandbox="allow-forms allow-presentation allow-scripts allow-same-origin"
+      sandbox="allow-forms allow-presentation allow-scripts allow-same-origin allow-popups"
       src={decodeSpace(tab.url.href)}
       className="insight-tab-iframe"
       onLoad={() => {
