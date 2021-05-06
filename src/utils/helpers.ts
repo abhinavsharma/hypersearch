@@ -420,6 +420,7 @@ export const isSafari = () => {
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
   if (a.augmentation.id === MY_TRUSTLIST_ID) return 1;
+  if (b.augmentation.id === MY_TRUSTLIST_ID) return -1;
 
   const aConditions = Array.from(
     new Set(a.augmentation.conditions.condition_list.map(({ key }) => key)),
@@ -428,8 +429,8 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     new Set(b.augmentation.conditions.condition_list.map(({ key }) => key)),
   );
 
-  const aSuggested = !a.augmentation.hasOwnProperty('enabled');
-  const bSuggested = !b.augmentation.hasOwnProperty('enabled');
+  const aSuggested = !a.augmentation.installed;
+  const bSuggested = !b.augmentation.installed;
   const bothSuggested = aSuggested && bSuggested;
 
   const aIsAny =
@@ -484,9 +485,9 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     });
   };
 
-  if (a.matchingDomainsCondition && !b.matchingDomainsCondition) return 1;
-  if (!a.matchingDomainsCondition && b.matchingDomainsCondition) return -1;
-  if (a.matchingDomainsCondition && b.matchingDomainsCondition) {
+  if (a.matchingDomainsCondition.length && !b.matchingDomainsCondition.length) return 1;
+  if (!a.matchingDomainsCondition.length && b.matchingDomainsCondition.length) return -1;
+  if (a.matchingDomainsCondition.length && b.matchingDomainsCondition.length) {
     getTabDomainRatings(aLowestSearchDomains.domains, bLowestSearchDomains.domains);
     if (aLowestSearchDomains.rate === bLowestSearchDomains.rate) {
       getTabDomainRatings(
@@ -497,9 +498,9 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     return aLowestSearchDomains.rate > bLowestSearchDomains.rate ? 1 : -1;
   }
 
-  if (a.matchingIntent && !b.matchingIntent) return 1;
-  if (b.matchingIntent && b.matchingIntent) return -1;
-  if (a.matchingIntent && b.matchingIntent) {
+  if (a.matchingIntent.length && !b.matchingIntent.length) return 1;
+  if (b.matchingIntent.length && b.matchingIntent.length) return -1;
+  if (a.matchingIntent.length && b.matchingIntent.length) {
     getTabDomainRatings(aLowestIntentDomains.domains, aLowestIntentDomains.domains);
     if (aLowestIntentDomains.rate === aLowestIntentDomains.rate) {
       getTabDomainRatings(
@@ -509,6 +510,7 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     }
     return aLowestIntentDomains.rate > bLowestIntentDomains.rate ? 1 : -1;
   }
+  return 0;
 };
 
 export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
