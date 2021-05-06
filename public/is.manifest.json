@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Insight",
-    "description": "Insight supercharges search with inline previews, trusted sources, muting and highlighting results from expert and community trusted sources for any field.",
+    "description": "Insight supercharges search with fast previews, trusted sources, muting and lenses that offer unique and useful perspectives.",
     "version": "0.0.80",
     "web_accessible_resources": [
         "*.png",
