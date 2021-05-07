@@ -134,11 +134,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
         requestHeader.value = processCookieString(requestHeader.value);
       }
       const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
-      const urlMatchesSearchPattern =
-        specialUrl /* ||
-        Object.values(HOSTNAME_TO_PATTERN)
-          .map((s) => s.replace('{searchTerms}', ''))
-          .filter((substring) => details.url.includes(substring)).length > 0; */
+      const urlMatchesSearchPattern = specialUrl;
       if (
         urlMatchesSearchPattern &&
         details.frameId > 0 &&
