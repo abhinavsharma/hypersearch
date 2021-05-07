@@ -6,26 +6,6 @@ import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabTitle.scss';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
-/**
- * ! DISABLED
- * TODO: decide wheter to extract logic or remove
-
- const insertNewlineAfterEmoji = (s, showVerified: boolean) => {
-  return (
-    <div>
-      {showVerified && (
-        <Suspense fallback={null}>
-          <CloudDownloadOutlined />
-        </Suspense>
-      )}
-      {s?.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])(.*)/g, '$1\n$2')}
-    </div>
-  );
-};
-
- * ! DISABLED END
- */
-
 export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setActiveKey }) => {
   const handleClick = () => {
     setActiveKey((index + 1).toString());

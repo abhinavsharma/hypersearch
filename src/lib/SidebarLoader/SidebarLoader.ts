@@ -316,13 +316,13 @@ class SidebarLoader {
     );
     const result = els
       .map((i) =>
-        isBing
-          ? extractUrlProperties(i.textContent).full
-          : extractUrlProperties(
-              i instanceof HTMLLinkElement
-                ? i.getAttribute('href')
-                : i?.closest('a').getAttribute('href'),
-            ).full,
+        removeProtocol(
+          isBing
+            ? i.textContent
+            : i instanceof HTMLLinkElement
+            ? i.getAttribute('href')
+            : i?.closest('a').getAttribute('href'),
+        ),
       )
       .filter((domain) => !BANNED_DOMAINS.includes(domain));
     return getAllFromPage ? result : result.slice(0, NUM_DOMAINS_TO_CONSIDER);
@@ -379,15 +379,17 @@ class SidebarLoader {
         // the current search query with *(site: <domain_'> OR <domain_2> ... )* to filter results. The
         // hostname and query parameters are coming from the local/remote search engine data.
         case SEARCH_DOMAINS_ACTION:
-          const tabAppendages = action.value;
-          if (!tabAppendages.length) {
-            customSearchUrl.href = HIDE_TAB_FAKE_URL;
+          {
+            const tabAppendages = action.value;
+            if (!tabAppendages.length) {
+              customSearchUrl.href = HIDE_TAB_FAKE_URL;
+            }
+            const append =
+              tabAppendages.length === 1
+                ? `site:${tabAppendages[0]}`
+                : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
+            customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
           }
-          const append =
-            tabAppendages.length === 1
-              ? `site:${tabAppendages[0]}`
-              : `(${tabAppendages.map((x) => `site:${x}`).join(' OR ')})`;
-          customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
           break;
         case SEARCH_APPEND_ACTION:
           customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
