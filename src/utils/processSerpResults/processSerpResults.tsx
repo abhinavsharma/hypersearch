@@ -196,7 +196,7 @@ export const processSerpResults: ProcessSerpResults = (
           : serpResult;
 
       const existingRoot = root.querySelector('.insight-gutter-button-root');
-      if (!!existingRoot) {
+      if (existingRoot) {
         existingRoot.parentElement.replaceChild(buttonRoot, existingRoot);
       }
       buttonRoot.classList.add(`insight-gutter-button-root`);

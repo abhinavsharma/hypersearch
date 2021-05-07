@@ -45,7 +45,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
   };
 
   const handleClose = () => {
-    if (!!tourStep) {
+    if (tourStep) {
       setTourStep(null);
       SidebarLoader.tourStep = null;
     }

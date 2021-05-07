@@ -186,7 +186,7 @@ class AugmentationManager {
     }
     if (value.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
     if (value.search(/%sr[\d]{1,}/gi) > -1) {
-      const domainIndices = url.match(/%sr[\d]/gi) ?? [];
+      const domainIndices = url.match(/%sr[\d]*/gi) ?? [];
       domainIndices.forEach((value) => {
         const index = value.split('%sr')[1];
         url = url.replaceAll(
@@ -311,7 +311,7 @@ class AugmentationManager {
         ),
       );
     }
-    if (!!hasHideDomains) {
+    if (hasHideDomains) {
       hasHideDomains.forEach((domain) => {
         SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
           (hidden) => hidden !== domain.value[0],
@@ -440,7 +440,7 @@ class AugmentationManager {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
           );
-          if (!!matchingIntent.stay_collapsed) {
+          if (matchingIntent.stay_collapsed) {
             hasPreventAutoexpand = true;
           }
           if (matchingIntent) {
@@ -471,7 +471,7 @@ class AugmentationManager {
               SidebarLoader.customSearchEngine.search_engine_json ?? Object.create(null),
             )
               .map(([entryKey, entryValue]) => {
-                return !!Array.isArray(entryValue)
+                return Array.isArray(entryValue)
                   ? !!entryValue.find((subValue) => {
                       return (
                         Array.isArray(value[0][entryKey]) && value[0][entryKey].includes(subValue)

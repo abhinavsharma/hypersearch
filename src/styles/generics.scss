@@ -83,3 +83,12 @@
     }
   }
 }
+
+.insight-frame-overlay {
+  display: block;
+  position: absolute;
+  height: 100%;
+  inset: unset;
+  width: 100%;
+  background: $color_background_lighter;
+}
