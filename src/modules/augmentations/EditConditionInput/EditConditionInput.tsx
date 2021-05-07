@@ -97,10 +97,24 @@ export const EditConditionInput: EditConditionInput = ({
   };
 
   const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    const key =
+      ((newKey === URL_EQUALS_CONDITION ||
+        newKey === URL_MATCHES_CONDITION ||
+        newKey === ANY_URL_CONDITION_MOBILE) &&
+        'url') ||
+      ((newKey === DOMAIN_EQUALS_CONDTION || newKey === DOMAIN_MATCHES_CONDITION) && 'domain') ||
+      newKey;
+
+    const evaluation =
+      ((newKey === URL_EQUALS_CONDITION || newKey === DOMAIN_EQUALS_CONDTION) && 'equals') ||
+      ((newKey === URL_MATCHES_CONDITION || newKey === DOMAIN_MATCHES_CONDITION) && 'matches') ||
+      (newKey === ANY_URL_CONDITION_MOBILE && 'any') ||
+      undefined;
     setNewValue(value);
     const newCondition = {
       ...condition,
-      key: newKey,
+      key,
+      evaluation,
       unique_key: newKey,
       label: newLabel,
       value: [value],
