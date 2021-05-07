@@ -21,19 +21,19 @@ export const EditAugmentationMeta: EditAugmentationMeta = ({
 }) => {
   return (
     <>
-      <Row className="large-input-row">
+      <Row className="insight-large-input-row">
         <Col xs={12}>Name</Col>
         <Col xs={12}>
           <Input onChange={onNameChange} value={name} />
         </Col>
       </Row>
-      <Row className="large-input-row">
+      <Row className="insight-large-input-row">
         <Col xs={12}>Description (optional)</Col>
         <Col xs={12}>
           <Input onChange={onDescriptionChange} value={description} />
         </Col>
       </Row>
-      <Row className="large-input-row">
+      <Row className="insight-large-input-row">
         <Col xs={12}>Enabled</Col>
         <Col xs={12}>
           <Switch

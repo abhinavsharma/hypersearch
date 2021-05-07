@@ -1,4 +1,3 @@
-import { LUMOS_API_URL, LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG } from 'lumos-shared-js';
 import {
   KP_SELECTORS,
   IN_DEBUG_MODE,
@@ -10,6 +9,9 @@ import {
   MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
   DOMAINS_TO_RELEVANT_SLICE,
+  LUMOS_API_URL,
+  LUMOS_APP_BASE_URL_PROD,
+  LUMOS_APP_BASE_URL_DEBUG,
 } from 'utils';
 
 /**
@@ -27,7 +29,7 @@ import {
  *
  * See: https://stackoverflow.com/a/53187807/2826713
  */
-if (!Array.prototype.hasOwnProperty('findLastIndex')) {
+if (!Array.prototype['findLastIndex']) {
   Object.defineProperty(Array.prototype, 'findLastIndex', {
     value: function <T>(
       this: Array<any>,

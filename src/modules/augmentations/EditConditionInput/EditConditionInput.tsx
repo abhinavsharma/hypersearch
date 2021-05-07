@@ -175,14 +175,14 @@ export const EditConditionInput: EditConditionInput = ({
 
   return (
     <>
-      <Row className="large-input-row">
-        <Col xs={!newKey ? 24 : 12} className="large-input-row-content">
+      <Row className="insight-large-input-row">
+        <Col xs={!newKey ? 24 : 12} className="insight-large-input-row-content">
           {!newKey ? (
             <Select
               placeholder="Add new condition"
               onChange={handleLabelChange}
-              className="select-full-width"
-              dropdownClassName="select-full-width-dropdown"
+              className="insight-select-full-width"
+              dropdownClassName="insight-select-full-width-dropdown"
               getPopupContainer={() => dropdownRef.current}
             >
               <OptGroup label="Search">
@@ -218,7 +218,7 @@ export const EditConditionInput: EditConditionInput = ({
             </>
           )}
         </Col>
-        <Col xs={12} className="large-input-row-content">
+        <Col xs={12} className="insight-large-input-row-content">
           {(() => {
             switch (newKey) {
               case SEARCH_INTENT_IS_CONDITION:
@@ -261,8 +261,8 @@ export const EditConditionInput: EditConditionInput = ({
                     })()}
                     filterOption={handleFilter}
                     onChange={handleSelect}
-                    className="select-full-width"
-                    dropdownClassName="select-full-width-dropdown"
+                    className="insight-select-full-width"
+                    dropdownClassName="insight-select-full-width-dropdown"
                     getPopupContainer={() => dropdownRef.current}
                   >
                     {(() => {
@@ -312,7 +312,7 @@ export const EditConditionInput: EditConditionInput = ({
           })()}
         </Col>
       </Row>
-      <div className="relative" ref={dropdownRef} />
+      <div className="insight-relative" ref={dropdownRef} />
     </>
   );
 };

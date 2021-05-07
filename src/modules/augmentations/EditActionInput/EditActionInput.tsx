@@ -63,13 +63,13 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
   };
 
   return (
-    <Row className="large-input-row">
-      <Col xs={!action.key ? 24 : 12} className="large-input-row-content">
+    <Row className="insight-large-input-row">
+      <Col xs={!action.key ? 24 : 12} className="insight-large-input-row-content">
         {!action.key ? (
           <Select
             style={{ width: '100%' }}
-            className="select-full-width"
-            dropdownClassName="select-full-width-dropdown"
+            className="insight-select-full-width"
+            dropdownClassName="insight-select-full-width-dropdown"
             placeholder="Add new action"
             onChange={handleLabelChange}
             getPopupContainer={() => dropdownRef.current}
@@ -91,7 +91,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           </>
         )}
       </Col>
-      <Col xs={12} className="large-input-row-content list">
+      <Col xs={12} className="insight-large-input-row-content insight-list">
         {newKey === SEARCH_DOMAINS_ACTION &&
           action.value.map((value, i) => (
             <div key={value + i} style={{ display: 'flex', alignItems: 'center' }}>
@@ -114,7 +114,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           newKey && <Input key={action.id} value={action.value} onChange={handleChange} />
         )}
       </Col>
-      <div className="relative" ref={dropdownRef} />
+      <div className="insight-relative" ref={dropdownRef} />
     </Row>
   );
 };

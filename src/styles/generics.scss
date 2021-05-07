@@ -1,26 +1,26 @@
 @use 'styles/variables' as *;
 @use 'styles/mixins' as *;
 
-.relative {
+.insight-relative {
   position: relative;
 }
 
-.list {
+.insight-list {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.no-border {
+.insight-no-border {
   border: none !important;
 }
 
-.inline-medium-text-button {
+.insight-inline-medium-text-button {
   margin-left: -$sidebar_space_small;
   margin-right: -$sidebar_space_medium;
 }
 
-.full-size-fixed {
+.insight-full-size-fixed {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -28,7 +28,7 @@
   width: $sidebar_max_width;
 }
 
-.large-input-row {
+.insight-large-input-row {
   display: flex;
   align-items: center;
   height: auto;
@@ -36,22 +36,22 @@
   padding: $sidebar_space_medium;
   border-bottom: 1px solid $color_border_light;
 
-  .large-input-row-content:not(.list) {
+  .insight-large-input-row-content:not(.insight-list) {
     display: flex;
     align-items: center;
     font-weight: normal !important;
   }
 }
 
-.select-full-width {
+.insight-select-full-width {
   width: 100%;
 }
 
-.select-full-width-dropdown {
+.insight-select-full-width-dropdown {
   @include fullWidthDropdown;
 }
 
-.augmentation-row {
+.insight-augmentation-row {
   display: flex;
   align-items: center;
   margin: auto;
@@ -60,18 +60,18 @@
   background: $color_background_white;
   text-align: left;
 
-  .augmentation-row-name {
+  .insight-augmentation-row-name {
     display: flex;
     width: 320px;
     flex-direction: column;
 
-    .augmentation-row-extra {
+    .insight-augmentation-row-extra {
       color: $color_text_medium;
       font-size: $sidebar_font_small;
     }
   }
 
-  .augmentation-row-button {
+  .insight-augmentation-row-button {
     cursor: pointer;
 
     &:first-of-type {

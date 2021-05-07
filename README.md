@@ -4,17 +4,10 @@ Insight supercharges search with results from expert and community trusted sourc
 
 ## Installation
 
-Add [lumos-shared-js](https://github.com/lumosbrowser/lumos-shared-js) to the `npm` global `link` namespace:
-
-- `~ git clone https://github.com/lumosbrowser/lumos-shared-js.git` *Ask [Abhinav](https://github.com/abhinavsharma) for permission.*
-- `~ cd lumos-shared-js`
-- `$ npm link` *Note: it might not need `sudo`, it depends on the current platform.*
-
-Install and link dependencies:
+Install dependencies:
 
 - `~ cd lumos-extension`
 - `~ npm install`
-- `~ npm link lumos-shared-js`
 
 Alternatively, `make setup` is available executing the same commands as above. However, this will install `json-bump` as a global dependency to have `make ship` working properly.
 
