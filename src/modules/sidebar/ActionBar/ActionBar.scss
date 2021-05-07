@@ -1,22 +1,25 @@
+@use 'styles/variables' as *;
+
 #actionbar {
   .insight-suggested-tab-popup {
     display: flex;
-    background: #ffffff;
     justify-content: space-around;
-    border-bottom: 1px solid #ccc;
-    padding: 5px  ;
+    padding: $sidebar_space_small;
+    background: $color_background_white;
+    border-bottom: 1px solid $color_border_medium;
 
     button,
     a {
       padding: 0;
+
       span {
-        padding: 5px 0;
-        color: #666;
+        padding: $sidebar_space_small 0;
+        color: $color_text_medium;
       }
     }
 
     .insight-suggested-text {
-      padding-top: 5px;
+      padding-top: $sidebar_space_small;
     }
   }
 

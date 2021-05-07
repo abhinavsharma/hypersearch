@@ -1,25 +1,27 @@
+@use 'styles/variables' as *;
+
 #tab-meta-container {
   display: flex;
-  border-bottom: 1px solid #ccc;
-  background: #fafafa;
+  border-bottom: 1px solid $color_border_medium;
+  background: $color_background_lightest;
 
   #meta-info-icon-container {
-    margin: auto 10px;
+    margin: auto $sidebar_space_medium;
   }
 
   #sidebar-tab-meta {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    padding: 10px 0px;
+    padding: $sidebar_space_medium 0;
 
     #domain-title-container {
       display: flex;
       align-items: center;
 
       .subtab-open-new-tab {
-        padding-right: 20px;
-        border-right: 1px solid #ccc;
+        padding-right: $sidebar_space_larger;
+        border-right: 1px solid $color_border_medium;
       }
 
       .ant-btn {
@@ -30,20 +32,20 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin-left: 20px;
+        margin-left: $sidebar_space_larger;
 
         .domain-state-checkbox-container {
           padding: 0;
         }
 
         strong {
-          font-family: 'Courier New', Courier, monospace;
+          font-family: $font_mono;
         }
       }
     }
 
     .meta-text {
-      color: #333;
+      color: $color_text_dark;
       margin: 0;
       padding: 0;
       width: 340px;
@@ -53,27 +55,27 @@
       }
 
       .space-right {
-        margin-right: 5px;
+        margin-right: $sidebar_space_small;
       }
     }
 
     .meta-link {
       display: inline;
+      color: $color_text_dark;
       text-decoration: underline;
-      text-decoration-color: #ccc;
+      text-decoration-color: $color_border_medium;
       cursor: pointer;
-      color: #333;
 
       &:hover {
-        color: #40a9ff;
-        text-decoration-color: #40a9ff;
+        color: $color_text_hover;
+        text-decoration-color: $color_text_hover;
       }
     }
 
     #meta-toggle-button {
       display: inline;
       height: auto;
-      padding: 0 10px;
+      padding: 0 $sidebar_space_medium;
     }
   }
 }

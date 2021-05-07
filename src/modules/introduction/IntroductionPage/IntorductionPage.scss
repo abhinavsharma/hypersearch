@@ -1,7 +1,8 @@
+@use 'styles/variables' as *;
 
 body {
-  font-family: 'Inter', sans-serif !important;
-  background-color: rgba(2, 19, 52, 1) !important;
+  font-family: $font_sans !important;
+  background-color: $intro_color_background !important;
 
   .horizontal-container {
     display: flex;
@@ -11,44 +12,43 @@ body {
   #insight-intro-container {
     display: flex;
     flex-direction: column;
-    margin: 20px auto;
+    margin: $intro_space_medium auto;
     width: 100%;
-    max-width: 1200px;
+    max-width: $intro_max_width;
 
     h1 {
-      color: #fff !important;
-      font-family: 'DM Serif Display', serif;
-      font-size: 150px;
-      font-weight: 400;
+      color: $color_text_white !important;
+      font-family: $font_serif;
+      font-size: $intro_font_largest;
+      font-weight: normal;
       margin-bottom: 0px;
     }
 
     h2 {
-      color: #fff !important;
-      font-size: 64px;
+      color: $color_text_white !important;
+      font-size: $intro_font_larger;
       margin: 0;
       font-weight: 500;
     }
 
     button.step-button {
       display: flex;
-      font-size: 24px;
+      font-size: $intro_font_small;
       height: auto;
-      margin-top: 50px;
-      border-color: #ffffff;
+      margin-top: $sidebar_space_largest;
+      border-color: $color_border_white;
 
       &:not([disabled]) {
         &:visited,
         &:link {
-          color: rgba(255, 255, 255, 0.85);
-          border-color: #434343;
+          color: $intro_color_text_link;
+          border-color: $color_border_dark;
         }
 
         &:hover,
         &:focus,
         &:active {
-          color: rgba(255, 255, 255, 1);
-          // border-color: rgba(255, 255, 255, 0.85);
+          color: $intro_color_text_hover;
         }
       }
     }
@@ -57,8 +57,8 @@ body {
       &:hover,
       &:focus,
       &:active {
-        color: rgba(255, 255, 255, 1);
-        border-color: rgba(255, 255, 255, 0.85);
+        color: $intro_color_text_hover;
+        border-color: $intro_color_text_hover;
       }
     }
 
@@ -68,7 +68,7 @@ body {
         &:not(.ant-steps-item-disabled) {
           .ant-steps-item-container:hover {
             .ant-steps-item-title {
-              color: #ffffff;
+              color: $color_text_white;
             }
           }
         }
@@ -76,7 +76,7 @@ body {
         &.ant-steps-item-disabled {
           .ant-steps-item-container:hover {
             .ant-steps-item-title {
-              color: rgba(255, 255, 255, 0.45);
+              color: $intro_color_text_opaque;
             }
           }
         }
@@ -84,13 +84,13 @@ body {
 
       .ant-steps-item-container {
         .ant-steps-item-icon {
-          border-color: #ffffff;
+          border-color: $color_border_white;
           display: inline-flex;
           justify-content: center;
           align-items: center;
 
           span {
-            color: #ffffff;
+            color: $color_text_white;
           }
         }
       }
@@ -98,10 +98,10 @@ body {
       .ant-steps-item-process {
         .ant-steps-item-container {
           .ant-steps-item-icon {
-            background: #ffffff;
+            background: $color_background_white;
 
             span {
-              color: #000000;
+              color: $color_text_black;
             }
           }
         }
@@ -111,7 +111,7 @@ body {
         .ant-steps-item-container {
           .ant-steps-item-content {
             .ant-steps-item-title:after {
-              background-color: #ffffff;
+              background-color: $color_background_white;
             }
           }
         }

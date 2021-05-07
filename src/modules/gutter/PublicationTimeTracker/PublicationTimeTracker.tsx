@@ -7,7 +7,6 @@ import {
 } from 'utils/constants';
 import { sanitizeUrl } from 'utils/helpers';
 import 'antd/lib/tooltip/style/index.css';
-import './PublicationTimeTracker.scss';
 
 export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
   const [currentTime, setCurrentTime] = useState<string>('');

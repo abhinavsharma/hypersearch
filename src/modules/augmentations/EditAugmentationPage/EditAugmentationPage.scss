@@ -1,236 +1,35 @@
-.edit-augmentation-page-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #f9f9f9 !important;
-  margin-top: -65px;
-  align-items: flex-start !important;
+@use 'styles/variables' as *;
+@use 'sass:math';
 
-  textarea.ant-input {
-    max-height: 30px !important;
-    margin-bottom: -10px !important;
-  }
+#builder-page.sidebar-page {
+  .sidebar-page-wrapper {
+    padding-top: 0 !important;
 
-  .edit-augmentation-tab-header {
-    display: flex;
-    position: fixed;
-    top: 0 !important;
-    height: 60px;
-    width: calc(100% - 5px);
-    padding: 0;
-    background: #f9f9f9 !important;
-    align-items: center;
-
-    & > button {
-      display: inline-flex;
-
-      &:last-child {
-        margin-left: auto;
-        margin-right: 20px;
+    .builder-page-collapse-panel {
+      .builder-page-collapse-panel-title {
         font-weight: bold;
+        font-size: $sidebar_font_larger;
+
+        .popover-container {
+          position: absolute;
+          top: 0px;
+          left: 0;
+          z-index: math.abs($sidebar_z_index + 1);
+        }
       }
-    }
 
-    & > span {
-      align-self: center;
-      color: black;
-      cursor: text;
-      display: inline-flex;
-      font-size: 16px;
-      font-weight: bold;
-      left: 50%;
-      position: absolute;
-      transform: translate(-50%, 0px);
-    }
-  }
+      .ant-collapse-content-box {
+        padding: 0;
 
-  .edit-augmentation-page-wrapper {
-    display: block;
-    position: absolute;
-    width: 100%;
-    top: 60px;
-    bottom: 0px;
-    padding-bottom: 30px;
-    background: #f9f9f9;
-    overflow-y: auto !important;
+        .ant-btn-dangerous {
+          font-size: $icon_large;
+          padding: 0 $sidebar_space_small;
+        }
 
-    h2 {
-      padding-left: 10px;
-      font-size: 16px;
-    }
-
-    .ant-collapse-header {
-      font-weight: bold;
-      font-size: 18px;
-
-      .popover-container {
-        z-index: 10000;
-        position: absolute;
-        top: 0px;
-        left: 0;
-      }
-    }
-
-    .ant-collapse-content-box {
-      padding: 0;
-    }
-
-    .ant-row {
-      background: white !important;
-      min-height: 30px;
-      height: auto;
-      border-bottom: 1px solid #eee;
-      align-items: center;
-      padding: 10px 10px;
-
-      .ant-col {
-        width: 450px;
-
-        & .ant-switch {
+        .augmentation-enabled-switch {
           display: flex;
           margin-left: auto;
-          margin-right: 15px;
-        }
-      }
-    }
-
-    .edit-augmentation-logic-wrapper {
-      margin-bottom: 20px;
-
-      h3 {
-        font-size: 14px;
-      }
-
-      .relative {
-        position: relative;
-
-        .ant-select-item-option {
-          pointer-events: auto !important;
-          align-items: center;
-        }
-      }
-
-      .add-intent-button {
-        border-radius: 0;
-      }
-
-      .label-select {
-        width: 200px;
-
-        .ant-select-selector {
-          width: auto;
-        }
-      }
-
-      .ant-select-dropdown {
-        width: 195px !important;
-
-        &.ant-slide-up-leave,
-        &.ant-slide-up-leave-active {
-          opacity: 0;
-          z-index: -1;
-        }
-
-        &.ant-slide-up-enter,
-        &.ant-slide-up-enter-prepare,
-        &.ant-slide-up-enter-active,
-        &.ant-slide-up-appear,
-        &.ant-slide-up-appear-prepare,
-        &.ant-slide-up-appear-active {
-          pointer-events: auto !important;
-          width: 100%;
-          opacity: 1;
-          z-index: 9999;
-
-          .ant-select-item-option {
-            pointer-events: auto !important;
-            align-items: center;
-          }
-        }
-      }
-
-      .search-dropdown-block {
-        .ant-select {
-          width: 170px;
-        }
-
-        .ant-select-selector {
-          width: 170px;
-          height: auto;
-          border-radius: 0;
-
-          .ant-select-selection-search {
-            right: 0;
-          }
-        }
-
-        .ant-select-arrow {
-          right: 11px;
-        }
-      }
-
-      button.insight-augmentation-edit-evaluation {
-        margin-left: -5px;
-        margin-right: -2px;
-      }
-
-      span.operation-description {
-        font-size: 14px;
-      }
-
-      .ant-row {
-        &.no-border {
-          border-bottom: none !important;
-        }
-
-        &.no-padding {
-          padding: 0 !important;
-        }
-
-        &.condition-footer {
-          display: flex;
-          justify-content: space-between;
-        }
-
-        button.add-operation-button {
-          text-align: left;
-        }
-
-        .ant-col {
-          display: flex;
-          align-items: flex-start;
-          font-weight: normal !important;
-
-          &:first-child {
-            span {
-              button {
-                padding: 4px;
-              }
-
-              strong {
-                color: #1890ff;
-                text-decoration: underline;
-              }
-            }
-          }
-        }
-
-        &.edit-input-row {
-          display: flex;
-          align-items: center;
-          background: white !important;
-          min-height: 20px;
-          height: auto;
-          border-bottom: 1px solid #eee;
-          padding: 10px 10px;
-
-          &.edit-input-new-item-row {
-            width: calc(100% - 20px);
-          }
-
-          .condition-label {
-            align-items: center;
-          }
+          margin-right: $sidebar_space_large;
         }
       }
     }

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
   SEARCH_DOMAINS_ACTION,
 } from 'utils';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import './DomainStateCheckbox.scss';
 import 'antd/lib/checkbox/style/index.css';
 
 export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {

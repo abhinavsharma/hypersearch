@@ -21,22 +21,26 @@ export const EditAugmentationMeta: EditAugmentationMeta = ({
 }) => {
   return (
     <>
-      <Row>
+      <Row className="large-input-row">
         <Col xs={12}>Name</Col>
         <Col xs={12}>
           <Input onChange={onNameChange} value={name} />
         </Col>
       </Row>
-      <Row>
+      <Row className="large-input-row">
         <Col xs={12}>Description (optional)</Col>
         <Col xs={12}>
           <Input onChange={onDescriptionChange} value={description} />
         </Col>
       </Row>
-      <Row>
+      <Row className="large-input-row">
         <Col xs={12}>Enabled</Col>
         <Col xs={12}>
-          <Switch defaultChecked={enabled} onChange={setEnabled} />
+          <Switch
+            className="augmentation-enabled-switch"
+            defaultChecked={enabled}
+            onChange={setEnabled}
+          />
         </Col>
       </Row>
       <div id="meta-button-row">

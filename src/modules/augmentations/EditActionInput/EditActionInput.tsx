@@ -14,7 +14,6 @@ import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/select/style/index.css';
-import './EditActionInput.scss';
 
 const { Option } = Select;
 
@@ -64,12 +63,13 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
   };
 
   return (
-    <Row className={action.key ? 'edit-input-row' : 'edit-input-row edit-input-new-item-row'}>
-      <Col xs={!action.key ? 24 : 12} className="action-value-col">
+    <Row className="large-input-row">
+      <Col xs={!action.key ? 24 : 12} className="large-input-row-content">
         {!action.key ? (
           <Select
             style={{ width: '100%' }}
-            className="label-select"
+            className="select-full-width"
+            dropdownClassName="select-full-width-dropdown"
             placeholder="Add new action"
             onChange={handleLabelChange}
             getPopupContainer={() => dropdownRef.current}
@@ -81,59 +81,37 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
             ))}
           </Select>
         ) : (
-          <div className="edit-input-row">
-            <Button
-              onClick={() => deleteAction(action)}
-              className="edit-input-delete-button"
-              danger
-              type="link"
-            >
+          <>
+            <Button onClick={() => deleteAction(action)} danger type="link">
               <Suspense fallback={null}>
                 <MinusCircleOutlined />
               </Suspense>
             </Button>
             <span>{action.label}</span>
-          </div>
+          </>
         )}
       </Col>
-      <Col xs={12} className="action-value-col">
+      <Col xs={12} className="large-input-row-content list">
         {newKey === SEARCH_DOMAINS_ACTION &&
           action.value.map((value, i) => (
-            <div key={value + i} className="action-value-row">
-              <span>{value.slice(0, 25) + (value.length > 25 ? '...' : '')}</span>
-              <Button
-                onClick={() => handleValueDelete(value)}
-                className="edit-input-delete-button"
-                danger
-                type="link"
-              >
+            <div key={value + i} style={{ display: 'flex', alignItems: 'center' }}>
+              <Button onClick={() => handleValueDelete(value)} danger type="link">
                 <Suspense fallback={null}>
                   <MinusCircleOutlined />
                 </Suspense>
               </Button>
+              <span>{value}</span>
             </div>
           ))}
         {newKey === SEARCH_DOMAINS_ACTION ? (
-          <Row className="no-border edit-input-row">
-            <Input.Search
-              enterButton="Add"
-              className="add-action-value-input"
-              value={newValue}
-              onChange={(e) => setNewValue(e.target.value)}
-              onSearch={() => handleSaveValue(newValue, action.value.length)}
-            />
-          </Row>
+          <Input.Search
+            enterButton="Add"
+            value={newValue}
+            onChange={(e) => setNewValue(e.target.value)}
+            onSearch={() => handleSaveValue(newValue, action.value.length)}
+          />
         ) : (
-          newKey && (
-            <Row className="no-border edit-input-row">
-              <Input
-                key={action.id}
-                className="add-action-value-input"
-                value={action.value}
-                onChange={handleChange}
-              />
-            </Row>
-          )
+          newKey && <Input key={action.id} value={action.value} onChange={handleChange} />
         )}
       </Col>
       <div className="relative" ref={dropdownRef} />

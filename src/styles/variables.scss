@@ -1,0 +1,100 @@
+/**
+ * LAYERS
+ */
+$sidebar_z_index: 9999;
+
+/**
+ * DIMENSIONS
+ */
+$sidebar_header_height: 50px;
+$sidebar_max_width: 480px;
+$sidebar_max_page_width: 900px;
+$sidebar_toggle_width: 200px;
+
+$intro_max_width: 1200px;
+$intro_max_privacy_explainer_width: 800px;
+
+/**
+ * SPACING
+ */
+$sidebar_space_tiny: 2px;
+$sidebar_space_small: 5px;
+$sidebar_space_medium: 10px;
+$sidebar_space_large: 15px;
+$sidebar_space_larger: 20px;
+$sidebar_space_largest: 40px;
+
+$intro_space_tiny: 20px;
+$intro_space_small: 30px;
+$intro_space_medium: 50px;
+$intro_space_large: 100px;
+$intro_space_larger: 150px;
+
+/**
+ * FONTS
+ */
+$font_serif: 'DM Serif', 'Georgia', serif;
+$font_sans: 'Inter', sans-serif;
+$font_mono: 'Consolas', 'Incosolata', 'Courier New', monospace;
+
+$sidebar_font_small: 11px;
+$sidebar_font_medium: 14px;
+$sidebar_font_large: 16px;
+$sidebar_font_larger: 18px;
+$sidebar_font_largest: 24px;
+
+$intro_font_tiny: 14px;
+$intro_font_smaller: 18px;
+$intro_font_small: 24px;
+$intro_font_medium: 28px;
+$intro_font_large: 36px;
+$intro_font_larger: 64px;
+$intro_font_largest: 150px;
+
+/**
+ * ICONS
+ */
+$icon_small: 16px;
+$icon_medium: 18px;
+$icon_large: 20px;
+$icon_larger: 36px;
+
+/**
+ * COLORS
+ */
+$color_text_black: #000000;
+$color_text_dark: #333333;
+$color_text_medium: #666666;
+$color_text_light: #999999;
+$color_text_lighter: #cecece;
+$color_text_white: #ffffff;
+$color_text_link: #1890ff;
+$color_text_hover: #40a9ff;
+
+$color_border_black: #000000;
+$color_border_dark: #434343;
+$color_border_medium: #cccccc;
+$color_border_light: #eeeeee;
+$color_border_white: #ffffff;
+
+$color_background_black: #000000;
+$color_background_darker: #444444;
+$color_background_dark: #cccccc;
+$color_background_medium: #eeeeee;
+$color_background_light: #f5f5f5;
+$color_background_lighter: #f9f9f9;
+$color_background_lightest: #fafafa;
+$color_background_white: #ffffff;
+$color_background_saturated: #f1f3f4;
+
+$color_icon_dark: #999999;
+$color_icon_medium: #cccccc;
+$color_icon_light: #ffffff;
+$color_icon_link: #1890ff;
+$color_icon_danger: #ff4d4f;
+
+$intro_color_text_opaque: rgba(255, 255, 255, 0.45);
+$intro_color_text_link: rgba(255, 255, 255, 0.85);
+$intro_color_text_hover: rgba(255, 255, 255, 1);
+$intro_color_border_opaque: rgba(255, 255, 255, 0.85);
+$intro_color_background: rgba(2, 19, 52, 1);

@@ -1,39 +1,41 @@
+@use 'styles/variables' as *;
+
 #queries-frame-container {
+  padding: $intro_space_larger 0;
 
   .ant-collapse-content {
     background-color: transparent;
   }
 
-  padding: 150px 0;
   .ant-collapse {
-    margin-top: 20px;
+    margin-top: $intro_space_tiny;
   }
 
   .step-button {
-    font-size: 24px;
+    font-size: $intro_font_small;
     height: auto;
-    margin-top: 20px;
-    color: #fff;
-    border-color: #ffffff;
+    margin-top: $intro_space_tiny;
+    color: $color_text_white;
+    border-color: $color_border_white;
   }
 
   .ant-list {
-    margin-top: 20px;
+    margin-top: $intro_space_tiny;
 
     a {
-      font-size: 18px;
+      font-size: $intro_font_smaller;
       text-decoration: underline;
-      color: #fff;
+      color: $intro_color_text_link;
 
       &:visited,
       &:link {
-        color: #fff;
+        color: $intro_color_text_link;
       }
 
       &:hover,
       &:focus,
       &:active {
-        color: rgba(255, 255, 255, 1);
+        color: $intro_color_text_hover;
       }
     }
 
@@ -47,22 +49,22 @@
       }
 
       button {
-        margin-right: 15px;
-        color: rgba(255, 255, 255, 0.45);
+        margin-right: $intro_space_tiny;
+        color: $intro_color_text_opaque;
 
         span {
-          font-size: 28px;
+          font-size: $intro_font_medium;
         }
 
         &:visited,
         &:link {
-          color: rgba(255, 255, 255, 0.45);
+          color: $intro_color_text_opaque;
         }
 
         &:hover,
         &:focus,
         &:active {
-          color: rgba(255, 255, 255, 1);
+          color: $intro_color_text_hover;
         }
       }
     }

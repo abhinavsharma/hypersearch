@@ -10,7 +10,6 @@ import {
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
-import './AugmentationRow.scss';
 
 export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned, other }) => {
   const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
@@ -37,7 +36,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
 
   return (
     <div className="augmentation-row">
-      <div className="augmentation-name">
+      <div className="augmentation-row-name">
         {augmentation.installed ? (
           <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
             {augmentation.name}
@@ -46,18 +45,14 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
           augmentation.name
         )}
         {augmentation.stats && (
-          <span className="augmentation-stat-text">{augmentation.stats} uses</span>
+          <span className="augmentation-row-extra">{augmentation.stats} uses</span>
         )}
       </div>
       <Tooltip
         title={augmentation.installed ? null : 'Duplicate and edit locally'}
         destroyTooltipOnHide={{ keepParent: false }}
       >
-        <Tag
-          color="geekblue"
-          className={`augmentation-row-button force-left-margin`}
-          onClick={handleEdit}
-        >
+        <Tag color="geekblue" className="augmentation-row-button" onClick={handleEdit}>
           {augmentation.installed ? 'Edit' : 'Fork'}
         </Tag>
       </Tooltip>

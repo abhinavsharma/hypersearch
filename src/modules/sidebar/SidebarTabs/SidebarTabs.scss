@@ -1,3 +1,5 @@
+@use 'styles/variables' as *;
+
 .insight-tab-container {
   display: flex;
   flex-direction: column;
@@ -8,92 +10,47 @@
     margin: 0;
   }
 
-  .ant-tabs-extra-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    width: 50px;
-    min-height: 60px;
-
-    .expand-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      outline: 0;
-
-      &:first-of-type {
-        margin-bottom: 20px;
-      }
-    }
-  }
-
   .insight-tab-bar {
     display: flex;
   }
-}
 
-.insight-tab-bottom-message {
-  position: absolute;
-  bottom: 0;
-  background: #eee;
-  width: 100%;
-  text-align: center;
-  border-top: 1px solid #ccc;
-  color: black;
-  padding: 10px;
-
-  a {
-    text-decoration: none;
-  }
-}
-
-.insight-full-tab {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.insight-tab-iframe {
-  display: flex;
-  flex-grow: 1;
-  border: none;
-  padding: 0 0 50px 0;
-
-  &.insight-expanded {
-    width: 100% !important;
-    max-width: 900px !important;
-    align-self: center;
-  }
-}
-
-.insight-readable-content {
-  position: absolute;
-  height: auto;
-  overflow-x: auto;
-  right: 0;
-  left: 2px;
-  top: 55px;
-  bottom: 0;
-  padding: 10px 15px;
-  background: #ffffff;
-}
-
-.insight-tab-bar {
-  margin-bottom: 0 !important;
-  background: #f9f9f9;
-
-  .ant-tabs-nav-more {
-    display: none;
+  .sidebar-tab-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
-  .ant-tabs-ink-bar {
-    /* display: none; */
-  }
-}
+  .insight-tab-iframe {
+    display: flex;
+    flex-grow: 1;
+    border: none;
+    padding: 0 0 $sidebar_space_largest 0;
 
-.ant-tabs-dropdown {
-  display: none;
+    &.insight-expanded {
+      width: 100% !important;
+      max-width: $sidebar_max_page_width !important;
+      align-self: center;
+    }
+  }
+
+  .insight-readable-content {
+    position: absolute;
+    right: 0;
+    left: 2px;
+    bottom: 0;
+    height: auto;
+    top: $sidebar_header_height;
+    padding: $sidebar_space_medium $sidebar_space_large;
+    background: $color_background_white;
+    overflow-x: auto;
+  }
+
+  .insight-tab-bar {
+    margin-bottom: 0 !important;
+    background: $color_background_lighter;
+
+    .ant-tabs-nav-more {
+      display: none;
+    }
+  }
 }

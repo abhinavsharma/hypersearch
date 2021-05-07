@@ -60,11 +60,20 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         <List
           style={{ paddingRight: 5 }}
           itemLayout="horizontal"
-          dataSource={(tabs.length > 3) ? tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).slice(0,3).concat([{
-            title: `${tabs.length - 3} more`,
-            id: 'FAKE_ID',
-            url: new URL('https://example.com')
-          }]) : tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)}
+          dataSource={
+            tabs.length > 3
+              ? tabs
+                  .filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)
+                  .slice(0, 3)
+                  .concat([
+                    {
+                      title: `${tabs.length - 3} more`,
+                      id: 'FAKE_ID',
+                      url: new URL('https://example.com'),
+                    },
+                  ])
+              : tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)
+          }
           renderItem={ListItem}
         />
       </div>

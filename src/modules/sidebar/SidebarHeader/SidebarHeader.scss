@@ -1,28 +1,29 @@
+@use 'styles/variables' as *;
+
 #sidebar-header {
   display: flex;
-  background: #f9f9f9;
   justify-content: space-between;
-  
+  height: $sidebar_header_height;
+  background: $color_background_lighter;
+
   .app-name-and-feedback {
     display: block;
-    padding: 5px 10px;
+    padding: $sidebar_space_small $sidebar_space_medium;
 
     .app-name {
       margin: 0;
     }
 
     .app-feedback {
+      color: $color_text_medium;
+      font-size: $sidebar_font_small;
       text-decoration: none;
-      color: #666;
-      font-size: 11px;
-
     }
   }
 
   #header-actions-container {
     display: flex;
-    width: 200px;
     justify-content: flex-end;
-    padding: 10px 15px;
+    padding: $sidebar_space_medium $sidebar_space_large;
   }
 }
