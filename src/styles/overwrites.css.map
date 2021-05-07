@@ -1,9 +1,0 @@
-{
-    "version": 3,
-    "mappings": "AAAA,AAAA,kBAAkB,CAAC;EACjB,UAAU,EAAE,CAAC;CACd;;AAED,AAAA,oBAAoB,CAAC;EACnB,KAAK,EAAE,eAAe;CACvB;;AAED,AAAA,uBAAuB,CAAC;EACtB,cAAc,EAAE,eAAe;EAC/B,WAAW,EAAE,iBAAiB;CAC/B;;AAED,AAAA,qBAAqB,CAAC;EACpB,MAAM,EAAE,eAAe;CAKxB;;AAND,AAGE,qBAHmB,AAGlB,8BAA8B,CAAC;EAC9B,MAAM,EAAE,YAAY;CACrB;;AAGH,AAAA,kBAAkB,CAAC;EACjB,OAAO,EAAE,IAAI;CACd",
-    "sources": [
-        "overwrites.scss"
-    ],
-    "names": [],
-    "file": "overwrites.css"
-}

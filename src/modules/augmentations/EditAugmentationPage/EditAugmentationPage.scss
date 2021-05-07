@@ -23,13 +23,13 @@
 
         .ant-btn-dangerous {
           font-size: $icon_large;
-          padding: 0 $space_small;
+          padding: 0 $sidebar_space_small;
         }
 
         .augmentation-enabled-switch {
           display: flex;
           margin-left: auto;
-          margin-right: $space_large;
+          margin-right: $sidebar_space_large;
         }
       }
     }

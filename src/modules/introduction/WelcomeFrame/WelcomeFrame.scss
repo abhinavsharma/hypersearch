@@ -1,7 +1,7 @@
 @use 'styles/variables' as *;
 
 #welcome-frame-container {
-  padding: $space_intro_larger 0;
+  padding: $intro_space_larger 0;
 
   #fade-section {
     opacity: 0;

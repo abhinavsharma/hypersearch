@@ -16,8 +16,8 @@
 }
 
 .inline-medium-text-button {
-  margin-left: -$space_small;
-  margin-right: -$space_medium;
+  margin-left: -$sidebar_space_small;
+  margin-right: -$sidebar_space_medium;
 }
 
 .full-size-fixed {
@@ -33,7 +33,7 @@
   align-items: center;
   height: auto;
   min-height: 30px;
-  padding: $space_medium;
+  padding: $sidebar_space_medium;
   border-bottom: 1px solid $color_border_light;
 
   .large-input-row-content:not(.list) {
@@ -79,7 +79,7 @@
     }
 
     &:last-child {
-      margin-right: $space_medium;
+      margin-right: $sidebar_space_medium;
     }
   }
 }

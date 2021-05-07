@@ -12,14 +12,14 @@
   }
 
   h3 {
-    margin-top: $space_intro_tiny;
+    margin-top: $intro_space_tiny;
     font-size: $intro_font_large;
     font-weight: 200;
   }
 
   p {
     margin-top: 0;
-    margin-bottom: math.abs($space_intro_tiny / 2);
+    margin-bottom: math.abs($intro_space_tiny / 2);
     font-size: $intro_font_smaller;
   }
 
@@ -28,11 +28,11 @@
   }
 
   .privacy-toggle-button {
-    margin-top: $space_intro_tiny;
+    margin-top: $intro_space_tiny;
     width: 100px;
     height: 45px;
     background-color: transparent;
-    border: 1px solid $color_border_intro_opaque;
+    border: 1px solid $intro_color_border_opaque;
 
     .ant-switch-handle {
       width: 40px;

@@ -5,13 +5,13 @@
   @include shakeAnimation;
   display: none;
   right: 0;
-  bottom: $space_medium;
+  bottom: $sidebar_space_medium;
   width: $sidebar_toggle_width !important;
   color: $color_background_darker !important;
   background: $color_background_white;
   font-size: $sidebar_font_medium;
   border-right: none;
-  border-radius: $space_medium 0 0 $space_medium !important;
+  border-radius: $sidebar_space_medium 0 0 $sidebar_space_medium !important;
   box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 20%);
   cursor: pointer;
 
@@ -22,7 +22,7 @@
   .ant-list-items {
     list-style-type: none;
     padding: 0;
-    margin-left: $space_medium;
+    margin-left: $sidebar_space_medium;
   }
 
   .insight-sidebar-toggle-appname {
@@ -31,8 +31,8 @@
     font-size: $sidebar_font_medium;
     font-weight: bold;
     writing-mode: vertical-lr;
-    padding: $space_large;
-    padding-bottom: $space_medium;
+    padding: $sidebar_space_large;
+    padding-bottom: $sidebar_space_medium;
     border-left: 1px solid $color_border_medium;
     transform: rotateZ(180deg);
   }

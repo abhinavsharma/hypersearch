@@ -2,7 +2,7 @@
 
 body {
   font-family: $font_sans !important;
-  background-color: $color_background_intro !important;
+  background-color: $intro_color_background !important;
 
   .horizontal-container {
     display: flex;
@@ -12,7 +12,7 @@ body {
   #insight-intro-container {
     display: flex;
     flex-direction: column;
-    margin: $space_intro_medium auto;
+    margin: $intro_space_medium auto;
     width: 100%;
     max-width: $intro_max_width;
 
@@ -35,20 +35,20 @@ body {
       display: flex;
       font-size: $intro_font_small;
       height: auto;
-      margin-top: $space_largest;
+      margin-top: $sidebar_space_largest;
       border-color: $color_border_white;
 
       &:not([disabled]) {
         &:visited,
         &:link {
-          color: $color_text_intro_link;
+          color: $intro_color_text_link;
           border-color: $color_border_dark;
         }
 
         &:hover,
         &:focus,
         &:active {
-          color: $color_text_intro_hover;
+          color: $intro_color_text_hover;
         }
       }
     }
@@ -57,8 +57,8 @@ body {
       &:hover,
       &:focus,
       &:active {
-        color: $color_text_intro_hover;
-        border-color: $color_text_intro_hover;
+        color: $intro_color_text_hover;
+        border-color: $intro_color_text_hover;
       }
     }
 
@@ -76,7 +76,7 @@ body {
         &.ant-steps-item-disabled {
           .ant-steps-item-container:hover {
             .ant-steps-item-title {
-              color: $color_text_intro_opaque;
+              color: $intro_color_text_opaque;
             }
           }
         }

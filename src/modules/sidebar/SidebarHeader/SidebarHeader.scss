@@ -8,7 +8,7 @@
 
   .app-name-and-feedback {
     display: block;
-    padding: $space_small $space_medium;
+    padding: $sidebar_space_small $sidebar_space_medium;
 
     .app-name {
       margin: 0;
@@ -24,6 +24,6 @@
   #header-actions-container {
     display: flex;
     justify-content: flex-end;
-    padding: $space_medium $space_large;
+    padding: $sidebar_space_medium $sidebar_space_large;
   }
 }

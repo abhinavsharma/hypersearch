@@ -24,7 +24,7 @@
     display: flex;
     flex-grow: 1;
     border: none;
-    padding: 0 0 $space_largest 0;
+    padding: 0 0 $sidebar_space_largest 0;
 
     &.insight-expanded {
       width: 100% !important;
@@ -40,7 +40,7 @@
     bottom: 0;
     height: auto;
     top: $sidebar_header_height;
-    padding: $space_medium $space_large;
+    padding: $sidebar_space_medium $sidebar_space_large;
     background: $color_background_white;
     overflow-x: auto;
   }

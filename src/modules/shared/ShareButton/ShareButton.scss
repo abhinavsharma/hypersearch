@@ -14,7 +14,7 @@
 
         .copyable-text {
           border: 1px solid $color_border_medium;
-          padding: $space_small;
+          padding: $sidebar_space_small;
           width: 300px;
         }
 
@@ -26,7 +26,7 @@
             width: 100%;
 
             span {
-              padding: $space_small !important;
+              padding: $sidebar_space_small !important;
             }
           }
         }
@@ -37,7 +37,7 @@
           .popover-close-button {
             display: flex;
             margin-left: auto;
-            margin-right: $space_medium;
+            margin-right: $sidebar_space_medium;
 
             span {
               color: $color_text_link !important;

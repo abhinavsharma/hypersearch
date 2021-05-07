@@ -1,10 +1,10 @@
 @use 'styles/variables' as *;
 
 #license-frame-container {
-  padding: $space_intro_larger 0;
+  padding: $intro_space_larger 0;
 
   input {
-    margin-top: $space_intro_small;
+    margin-top: $intro_space_small;
     height: 50px;
     width: 41ch;
     font-size: $intro_font_small;

@@ -34,7 +34,7 @@ body {
         cursor: default;
 
         .left-button {
-          margin-left: $space_tiny;
+          margin-left: $sidebar_space_tiny;
           margin-right: auto;
         }
 
@@ -48,7 +48,7 @@ body {
 
         .right-button {
           margin-left: auto;
-          margin-right: $space_tiny;
+          margin-right: $sidebar_space_tiny;
         }
       }
 
@@ -61,7 +61,7 @@ body {
         right: 0;
         bottom: 0;
         max-width: $sidebar_max_page_width;
-        padding-top: $space_medium;
+        padding-top: $sidebar_space_medium;
         overflow-y: auto !important;
         background: $color_background_white;
 
@@ -76,8 +76,8 @@ body {
             @include reset;
             font-size: $sidebar_font_large;
             font-weight: bold;
-            margin-left: $space_medium;
-            margin-bottom: $space_small;
+            margin-left: $sidebar_space_medium;
+            margin-bottom: $sidebar_space_small;
           }
 
           .sub-title {
@@ -85,8 +85,8 @@ body {
             color: $color_text_light;
             font-size: $sidebar_font_small;
             font-weight: normal;
-            margin-left: $space_medium;
-            margin-bottom: $space_large;
+            margin-left: $sidebar_space_medium;
+            margin-bottom: $sidebar_space_large;
           }
         }
       }

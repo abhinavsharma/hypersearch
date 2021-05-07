@@ -7,7 +7,7 @@
   .button-container {
     @include centerContent;
     width: 50%;
-    padding: $space_small 0 $space_larger 0;
+    padding: $sidebar_space_small 0 $sidebar_space_larger 0;
 
     &:first-of-type {
       border-right: 1px solid $color_border_light;

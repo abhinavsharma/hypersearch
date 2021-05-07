@@ -6,21 +6,21 @@
   background: $color_background_lightest;
 
   #meta-info-icon-container {
-    margin: auto $space_medium;
+    margin: auto $sidebar_space_medium;
   }
 
   #sidebar-tab-meta {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    padding: $space_medium 0;
+    padding: $sidebar_space_medium 0;
 
     #domain-title-container {
       display: flex;
       align-items: center;
 
       .subtab-open-new-tab {
-        padding-right: $space_larger;
+        padding-right: $sidebar_space_larger;
         border-right: 1px solid $color_border_medium;
       }
 
@@ -32,7 +32,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin-left: $space_larger;
+        margin-left: $sidebar_space_larger;
 
         .domain-state-checkbox-container {
           padding: 0;
@@ -55,7 +55,7 @@
       }
 
       .space-right {
-        margin-right: $space_small;
+        margin-right: $sidebar_space_small;
       }
     }
 
@@ -75,7 +75,7 @@
     #meta-toggle-button {
       display: inline;
       height: auto;
-      padding: 0 $space_medium;
+      padding: 0 $sidebar_space_medium;
     }
   }
 }
