@@ -3,8 +3,11 @@
 #gutter-page.sidebar-page {
   &.inline-gutter-page-embedded {
     position: relative;
-    height: auto;
-    top: auto;
+    height: 100%;
+
+    .sidebar-page-wrapper {
+      position: unset;
+    }
   }
 
   .domain-state-checkbox-container {
