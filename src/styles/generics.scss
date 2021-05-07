@@ -1,5 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/mixins' as *;
+@use 'sass:math';
 
 .insight-relative {
   position: relative;
@@ -87,8 +88,9 @@
 .insight-frame-overlay {
   display: block;
   position: absolute;
-  height: 100%;
   inset: unset;
-  width: 100%;
+  width: calc(100% - #{(2 * $sidebar_space_medium)});
+  height: calc(100% - #{(2 * $sidebar_space_medium)});
+  padding: $sidebar_space_medium;
   background: $color_background_lighter;
 }
