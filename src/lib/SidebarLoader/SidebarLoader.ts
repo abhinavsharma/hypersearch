@@ -324,7 +324,7 @@ class SidebarLoader {
             : i?.closest('a').getAttribute('href'),
         ),
       )
-      .filter((domain) => !BANNED_DOMAINS.includes(domain));
+      .filter((domain) => !BANNED_DOMAINS.includes(extractUrlProperties(domain).full));
     return getAllFromPage ? result : result.slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
 
