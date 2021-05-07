@@ -273,11 +273,11 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                   switch (type) {
                     case 'block':
                       return (
-                        <div className="augmentation-row" key={augmentation.id}>
+                        <div className="insight-augmentation-row" key={augmentation.id}>
                           {augmentation.name}
                           {!augmentation.installed ? (
                             <Tag
-                              className="augmentation-row-button"
+                              className="insight-augmentation-row-button"
                               color="volcano"
                               onClick={handleDisable}
                             >
@@ -285,7 +285,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                             </Tag>
                           ) : (
                             <Tag
-                              className="augmentation-row-button"
+                              className="insight-augmentation-row-button"
                               color="volcano"
                               onClick={handleDelete}
                             >
@@ -296,10 +296,10 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                       );
                     case 'search':
                       return (
-                        <div className="augmentation-row" key={augmentation.id}>
+                        <div className="insight-augmentation-row" key={augmentation.id}>
                           {augmentation.name}
                           <Tag
-                            className="augmentation-row-button"
+                            className="insight-augmentation-row-button"
                             color="geekblue"
                             onClick={handleEdit}
                           >
@@ -307,7 +307,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                           </Tag>
                           {!augmentation.installed ? (
                             <Tag
-                              className="augmentation-row-button"
+                              className="insight-augmentation-row-button"
                               color="volcano"
                               onClick={handleDisable}
                             >
@@ -315,7 +315,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                             </Tag>
                           ) : (
                             <Tag
-                              className="augmentation-row-button"
+                              className="insight-augmentation-row-button"
                               color="volcano"
                               onClick={handleDelete}
                             >
@@ -327,12 +327,12 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                     case 'local':
                       return (
                         <div
-                          className="augmentation-row"
+                          className="insight-augmentation-row"
                           key={augmentation.id + augmentation.actionIndex}
                         >
-                          <div className="augmentation-row-name">
+                          <div className="insight-augmentation-row-name">
                             {augmentation.name}
-                            <span className="augmentation-row-extra">
+                            <span className="insight-augmentation-row-extra">
                               {(() => {
                                 const action =
                                   augmentation.actions.action_list[augmentation.actionIndex];
@@ -345,7 +345,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                             </span>
                           </div>
                           <Tag
-                            className="augmentation-row-button"
+                            className="insight-augmentation-row-button"
                             color="geekblue"
                             onClick={handleAddToLocal}
                           >

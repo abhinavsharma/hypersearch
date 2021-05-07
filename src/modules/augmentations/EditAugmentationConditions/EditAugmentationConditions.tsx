@@ -58,7 +58,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
             <Button
               type="link"
               onClick={() => setEvaluation((prev) => (prev == 'AND' ? 'OR' : 'AND'))}
-              className="inline-medium-text-button"
+              className="insight-inline-medium-text-button"
             >
               <strong>{evaluation == 'AND' ? 'All' : 'Any'}</strong>
             </Button>

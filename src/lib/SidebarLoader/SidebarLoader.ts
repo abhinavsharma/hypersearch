@@ -8,7 +8,6 @@ import React, { ReactElement } from 'react';
 import md5 from 'md5';
 import { render } from 'react-dom';
 import { v4 as uuid } from 'uuid';
-import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { Sidebar } from 'modules/sidebar';
@@ -52,6 +51,7 @@ import {
   MY_BLOCKLIST_ID,
   MY_BLOCKLIST_TEMPLATE,
   SYNC_DISTINCT_KEY,
+  SPECIAL_URL_JUNK_STRING,
 } from 'utils';
 
 /**

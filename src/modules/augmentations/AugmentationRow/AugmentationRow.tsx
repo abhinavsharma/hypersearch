@@ -35,8 +35,8 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
   };
 
   return (
-    <div className="augmentation-row">
-      <div className="augmentation-row-name">
+    <div className="insight-augmentation-row">
+      <div className="insight-augmentation-row-name">
         {augmentation.installed ? (
           <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
             {augmentation.name}
@@ -45,43 +45,43 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
           augmentation.name
         )}
         {augmentation.stats && (
-          <span className="augmentation-row-extra">{augmentation.stats} uses</span>
+          <span className="insight-augmentation-row-extra">{augmentation.stats} uses</span>
         )}
       </div>
       <Tooltip
         title={augmentation.installed ? null : 'Duplicate and edit locally'}
         destroyTooltipOnHide={{ keepParent: false }}
       >
-        <Tag color="geekblue" className="augmentation-row-button" onClick={handleEdit}>
+        <Tag color="geekblue" className="insight-augmentation-row-button" onClick={handleEdit}>
           {augmentation.installed ? 'Edit' : 'Fork'}
         </Tag>
       </Tooltip>
       {!PROTECTED_AUGMENTATIONS.includes(augmentation.id) && (
         <>
           {ignored ? (
-            <Tag className="augmentation-row-button" color="geekblue" onClick={handleEnable}>
+            <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handleEnable}>
               Unhide
             </Tag>
           ) : (
             <>
               {!augmentation.installed && !other && (
-                <Tag className="augmentation-row-button" color="geekblue" onClick={handleDisable}>
+                <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handleDisable}>
                   Hide
                 </Tag>
               )}
               {pinned ? (
-                <Tag className="augmentation-row-button" color="geekblue" onClick={handleUnpin}>
+                <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handleUnpin}>
                   Unpin
                 </Tag>
               ) : (
-                <Tag className="augmentation-row-button" color="geekblue" onClick={handlePin}>
+                <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handlePin}>
                   Pin
                 </Tag>
               )}
             </>
           )}
           {augmentation.installed && (
-            <Tag className="augmentation-row-button" color="volcano" onClick={handleDelete}>
+            <Tag className="insight-augmentation-row-button" color="volcano" onClick={handleDelete}>
               Delete
             </Tag>
           )}

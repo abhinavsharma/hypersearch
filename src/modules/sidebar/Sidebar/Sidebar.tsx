@@ -94,7 +94,7 @@ const Sidebar: Sidebar = () => {
 
   return (
     <>
-      <div id="insight-sidebar-container" className="full-size-fixed">
+      <div id="insight-sidebar-container" className="insight-full-size-fixed">
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
       {!!sidebarTabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length && (

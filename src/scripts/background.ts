@@ -6,8 +6,6 @@
  * @version 1.0.0
  */
 import axios from 'axios';
-import { SPECIAL_URL_JUNK_STRING } from 'lumos-shared-js';
-import { HOSTNAME_TO_PATTERN } from 'lumos-shared-js/src/content/constants_altsearch';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import { debug, getPublicationUrl, sanitizeUrl } from 'utils/helpers';
 import {
@@ -25,6 +23,7 @@ import {
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   TRIGGER_STOP_TRACK_TIMER_MESSAGE,
   URL_UPDATED_MESSAGE,
+  SPECIAL_URL_JUNK_STRING,
 } from 'utils/constants';
 // ! INITIALIZATION
 // See: https://stackoverflow.com/a/9851769/2826713
@@ -136,10 +135,10 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
       }
       const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
       const urlMatchesSearchPattern =
-        specialUrl ||
+        specialUrl /* ||
         Object.values(HOSTNAME_TO_PATTERN)
           .map((s) => s.replace('{searchTerms}', ''))
-          .filter((substring) => details.url.includes(substring)).length > 0;
+          .filter((substring) => details.url.includes(substring)).length > 0; */
       if (
         urlMatchesSearchPattern &&
         details.frameId > 0 &&
