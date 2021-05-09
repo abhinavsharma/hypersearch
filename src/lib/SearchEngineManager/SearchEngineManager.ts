@@ -119,7 +119,9 @@ class SearchEngineManager {
     let storedValue: Record<string, CustomSearchEngine>;
     const { hostname, params } = extractUrlProperties(url);
     if (!hostname) return null;
-    const storageKey = hostname.replace(/\./g, '_');
+    const localized =
+      hostname.search(/google\.[\w]*/) > -1 ? hostname.replace(/\.[\w.]*$/, '.com') : hostname;
+    const storageKey = localized.replace(/\./g, '_');
     storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
     if (!storedValue?.[storageKey]) {
       debug('getCustomSearchEngine - fetch from remote\n');

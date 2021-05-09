@@ -65,10 +65,7 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
         remove: trustList.id,
         domain,
         selector: {
-          link:
-            SidebarLoader.customSearchEngine.querySelector?.[
-              window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-            ],
+          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
           featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
           container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
         },

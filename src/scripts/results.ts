@@ -82,7 +82,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
 
     const results = Array.from(document.querySelectorAll(data.selector.link)).concat(
       // handle Google's news results
-      document.location.href.match(/google\.com/gi)?.length
+      document.location.href.match(/google\.[\w]*]/gi)?.length
         ? processNewsResults(GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR).concat(
             processNewsResults(GOOGLE_VERTICAL_NEWS_LINK_SELECTOR),
           )
