@@ -134,7 +134,7 @@ export const processSerpResults: ProcessSerpResults = (
         : node?.closest('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // <a> > <cite>
           node
             ?.querySelector('div:not(div[data-attrid=image]) > a cite')
-            .closest('a')
+            ?.closest('a')
             ?.getAttribute('href') ?? // featured snippet
           node?.textContent; // guessing
 

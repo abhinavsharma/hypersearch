@@ -36,7 +36,11 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         key={decodeSpace(tab.url.href)}
         ref={frameRef}
         sandbox="allow-forms allow-presentation allow-scripts allow-same-origin allow-popups"
-        src={decodeSpace(tab.url.href)}
+        src={
+          tab.url.pathname.match(/\.pdf$/)
+            ? `https://docs.google.com/viewer?url=${decodeSpace(tab.url.href)}&embedded=true`
+            : decodeSpace(tab.url.href)
+        }
         className="insight-tab-iframe"
         onError={() => setIsLoaded(true)}
         onLoad={() => {
