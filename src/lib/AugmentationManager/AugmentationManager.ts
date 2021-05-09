@@ -516,8 +516,9 @@ class AugmentationManager {
 
     const evaluationMatch =
       augmentation.conditions.evaluate_with === 'AND'
-        ? augmentation.conditions.condition_list.every(({ key }) => {
-            switch (key) {
+        ? augmentation.conditions.condition_list.every(({ key, unique_key }) => {
+            const actualKey = unique_key ?? key;
+            switch (actualKey) {
               case SEARCH_CONTAINS_CONDITION:
                 return matchingDomains;
               case SEARCH_QUERY_CONTAINS_CONDITION:
