@@ -20,29 +20,34 @@
     min-height: 100vh;
   }
 
-  .insight-tab-iframe {
+  .insight-tab-iframe-container {
     display: flex;
     flex-grow: 1;
-    border: none;
-    padding: 0 0 $sidebar_space_largest 0;
 
-    &.insight-expanded {
-      width: 100% !important;
-      max-width: $sidebar_max_page_width !important;
-      align-self: center;
+    .insight-tab-iframe {
+      display: flex;
+      flex-grow: 1;
+      border: none;
+      padding: 0 0 $sidebar_space_largest 0;
+
+      &.insight-expanded {
+        width: 100% !important;
+        max-width: $sidebar_max_page_width !important;
+        align-self: center;
+      }
     }
-  }
 
-  .insight-readable-content {
-    position: absolute;
-    right: 0;
-    left: 2px;
-    bottom: 0;
-    height: auto;
-    top: $sidebar_header_height;
-    padding: $sidebar_space_medium $sidebar_space_large;
-    background: $color_background_white;
-    overflow-x: auto;
+    .insight-readable-content {
+      position: absolute;
+      right: 0;
+      left: 2px;
+      bottom: 0;
+      height: auto;
+      top: $sidebar_header_height;
+      padding: $sidebar_space_medium $sidebar_space_large;
+      background: $color_background_white;
+      overflow-x: auto;
+    }
   }
 
   .insight-tab-bar {

@@ -13,22 +13,25 @@ import 'antd/lib/skeleton/style/index.css';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
 
   useEffect(() => {
-    const { current } = frameRef;
-    current?.contentWindow.addEventListener('keydown', handleKeyDown);
-    current?.contentWindow.addEventListener('keyup', handleKeyUp);
+    const { current: frame } = frameRef;
+
+    frame?.contentWindow.addEventListener('keydown', handleKeyDown);
+    frame?.contentWindow.addEventListener('keyup', handleKeyUp);
     return () => {
-      current?.contentWindow.removeEventListener('keydown', handleKeyDown);
-      current?.contentWindow.removeEventListener('keyup', handleKeyUp);
+      frame?.contentWindow.removeEventListener('keydown', handleKeyDown);
+      frame?.contentWindow.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
 
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
-    <>
+    <div ref={containerRef} className="insight-tab-iframe-container">
       <iframe
         key={decodeSpace(tab.url.href)}
         ref={frameRef}
@@ -46,8 +49,12 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
           });
         }}
       />
-      {!isLoaded && (
-        <div className="insight-frame-overlay">
+      {!isLoaded && tab.url.searchParams.get('insight-tab-title') && (
+        <div
+          className="insight-frame-overlay"
+          ref={overlayRef}
+          style={{ height: `${containerRef?.current?.clientHeight}px` }}
+        >
           {Array(Math.trunc(window.innerHeight / 120))
             .fill(null)
             .map((_, i) => (
@@ -55,6 +62,6 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
             ))}
         </div>
       )}
-    </>
+    </div>
   ) : null;
 };

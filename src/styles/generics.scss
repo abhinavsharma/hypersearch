@@ -90,7 +90,6 @@
   position: absolute;
   inset: unset;
   width: calc(100% - #{(2 * $sidebar_space_medium)});
-  height: calc(100% - #{(2 * $sidebar_space_medium)});
   padding: $sidebar_space_medium;
   background: $color_background_lighter;
 }
