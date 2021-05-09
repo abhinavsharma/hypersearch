@@ -132,7 +132,10 @@ export const processSerpResults: ProcessSerpResults = (
       node instanceof HTMLLinkElement
         ? node.getAttribute('href') // default <a>
         : node?.closest('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // <a> > <cite>
-          node?.querySelector('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // featured snippet
+          node
+            ?.querySelector('div:not(div[data-attrid=image]) > a cite')
+            .closest('a')
+            ?.getAttribute('href') ?? // featured snippet
           node?.textContent; // guessing
 
     const publication = extractPublication(resultLink);

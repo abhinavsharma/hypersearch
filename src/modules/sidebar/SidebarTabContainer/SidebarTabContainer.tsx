@@ -53,7 +53,11 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         <div
           className="insight-frame-overlay"
           ref={overlayRef}
-          style={{ height: `${containerRef?.current?.clientHeight}px` }}
+          style={{
+            height: containerRef?.current?.clientHeight
+              ? `${containerRef?.current?.clientHeight}px`
+              : '100%',
+          }}
         >
           {Array(Math.trunc(window.innerHeight / 120))
             .fill(null)
