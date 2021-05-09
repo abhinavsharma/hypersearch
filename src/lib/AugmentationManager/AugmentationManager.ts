@@ -299,10 +299,7 @@ class AugmentationManager {
             remove: augmentation.id,
             domain: value[0],
             selector: {
-              link:
-                SidebarLoader.customSearchEngine.querySelector?.[
-                  window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-                ],
+              link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
               featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
               container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
             },
@@ -322,10 +319,7 @@ class AugmentationManager {
             remove: augmentation.id,
             domain,
             selector: {
-              link:
-                SidebarLoader.customSearchEngine.querySelector?.[
-                  window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-                ],
+              link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
               featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
               container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
             },

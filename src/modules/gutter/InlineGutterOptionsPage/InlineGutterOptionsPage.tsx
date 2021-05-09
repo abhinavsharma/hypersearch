@@ -147,10 +147,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           remove: augmentation.id,
           domain,
           selector: {
-            link:
-              SidebarLoader.customSearchEngine.querySelector?.[
-                window.top.location.href.search(/google\.com/) > -1 ? 'pad' : 'desktop'
-              ],
+            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
             featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
             container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
           },
@@ -258,7 +255,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           <DomainStateCheckbox domain={domain} />
         </section>
         {sections.map(({ title, subtitle, augmentations, type }) =>
-          !!augmentations?.length ? (
+          augmentations?.length ? (
             <React.Fragment key={title}>
               <Divider />
               <section>

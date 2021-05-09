@@ -23,7 +23,7 @@ const MAXIMUM_MOVES = 3;
 
 ((document, window) => {
   // Currently we support only Google SERP reordering.
-  if (window.location.href.search(/google\.com/gi) === -1) return;
+  if (window.location.href.search(/google\.[\w]*]/gi) === -1) return;
 
   // The list of individual search results. Google occasionaly merges more results into one container
   // so we need to use a more specific selector to get the unique result blocks from the SERP.

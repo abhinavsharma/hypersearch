@@ -620,10 +620,15 @@ class SidebarLoader {
           .map((param) => window.location.search.search(`${param}=`) === -1)
           .indexOf(true) === -1;
 
+      const hostname =
+        window.location.href.search(/google\.[\w]*/) > -1
+          ? window.location.href.replace(/google\.[\w.]*/, 'google.com')
+          : window.location.href;
+
       const checkRequiredPrefix = () =>
         !!this.customSearchEngine?.search_engine_json?.required_prefix &&
-        window.location.href.search(this.customSearchEngine?.search_engine_json?.required_prefix) >
-          -1;
+        hostname.search(this.customSearchEngine?.search_engine_json?.required_prefix) > -1;
+
       this.isSerp = checkRequiredPrefix() && checkRequiredParams();
       this.preventAutoExpand = this.preventAutoExpand || !this.isSerp;
       this.isSerp &&

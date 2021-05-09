@@ -2,18 +2,18 @@ import { extractUrlProperties } from 'utils/helpers';
 import './results';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
-  'google.com': ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
-  'duckduckgo.com': ['.result', '.result__body', '.result__snippet'],
+  google: ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
+  duckduckgo: ['.result', '.result__body', '.result__snippet'],
 };
 
 const REMOVE_ADS = {
-  'google.com': ['[aria-label=Ads]'],
+  google: ['[aria-label=Ads]'],
   'bing.com': ['.b_ad'],
   'duckduckgo.com': ['#ads', '.results--ads'],
 };
 
 const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
-  'google.com': [
+  google: [
     '#appbar.appbar',
     '.I7zR5',
     'header.Fh5muf',
@@ -22,19 +22,22 @@ const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
     '[data-has-queries]',
     '.commercial-unit-mobile-top',
   ],
-  'bing.com': ['header#b_header'],
-  'ecosia.org': ['.search-header', '.navbar-row'],
+  bing: ['header#b_header'],
+  ecosia: ['.search-header', '.navbar-row'],
 };
 
 const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
-  'google.com': ['span[aria-label="AMP logo"]'],
-  'duckduckgo.com': ['div#header_wrapper', '.search-filters-wrap'],
+  google: ['span[aria-label="AMP logo"]'],
+  duckduckgo: ['div#header_wrapper', '.search-filters-wrap'],
 };
 
 type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
 
 ((document, window) => {
-  const LOCAL_HOSTNAME = extractUrlProperties(window.location.href)?.hostname;
+  const LOCAL_HOSTNAME = extractUrlProperties(window.location.href)?.hostname.replace(
+    /\.[\w.]*$/,
+    '',
+  );
   const APP_FRAME = window.location !== window.parent.location;
 
   const clearElement = (el: ALLOWED_ELEMENT) => {
@@ -99,7 +102,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
       clearElement(el);
       const href = el.getAttribute('href');
       if (href?.search(/amp(\.|-)reddit(\.|-)com/gi) > -1) {
-        const redditLink = href.match(/reddit\.com[\w\/?=%_-]*/gi)[0];
+        const redditLink = href.match(/reddit\.com[\w/?=%_-]*/gi)[0];
         el.setAttribute('href', `https://www.${redditLink}`);
       }
       if (el.innerHTML?.search('amp.reddit') > -1 || href?.search('amp.reddit') > -1) {

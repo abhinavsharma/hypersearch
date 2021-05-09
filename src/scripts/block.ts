@@ -3,7 +3,11 @@ import { BLOCKED_ADS } from 'utils/constants';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
 ((document) => {
-  const host = document.location.host.replace('www.', '');
+  const originalHost = document.location.host.replace('www.', '');
+  const host =
+    originalHost.search(/google\.[\w]*/) > -1
+      ? originalHost.replace(/\.[\w.]*$/, '.com')
+      : originalHost;
 
   const adBlocks = BLOCKED_ADS.filter((adBlock) => {
     const site = adBlock.site.split(',');
