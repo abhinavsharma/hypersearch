@@ -40,7 +40,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     augmentation: AugmentationObject,
     domain: string,
     result?: HTMLElement,
-  ) => {
+  ): void => {
     if (!augmentation || !domain) return null;
     if (!searchingAugmentations[domain]) searchingAugmentations[domain] = [];
     if (!blockingAugmentations[domain]) blockingAugmentations[domain] = [];

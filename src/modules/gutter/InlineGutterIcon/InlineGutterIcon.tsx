@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, MoreHorizontal } from 'react-feather';
@@ -14,6 +14,7 @@ import {
   SWITCH_TO_TAB,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
+  TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
@@ -62,28 +63,24 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     handleOpenBuilder(e);
   };
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback((): any => {
     if (
       window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
       resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
     ) {
-      if (resultRef.current) {
-        resultRef.current.style.cursor = 'wait';
-      }
+      resultRef.current.style.cursor = 'wait';
       timeoutRef.current = setTimeout(() => {
-        if (resultRef.current) {
-          chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, url });
-          resultRef.current.style.cursor = 'default';
-        }
+        chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
+        chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, url });
+        resultRef.current.style.cursor = 'default';
       }, SWITCH_TO_TAB_DELAY);
     }
 
-    if (isSearched || isBlocked) return null;
     iconRef.current.style.opacity = '1';
     rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
-  };
+  }, [url]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback((): any => {
     if (
       window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
       resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
@@ -100,7 +97,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     if (isSearched || isBlocked) return null;
     iconRef.current.style.opacity = '0';
     rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
-  };
+  }, [isSearched, isBlocked]);
 
   useEffect(() => {
     if (iconRef.current) {
@@ -108,10 +105,10 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         iconRef.current.style.opacity = '1';
       }
 
-      rootRef.current = iconRef.current.closest('.insight-gutter-button-root');
+      rootRef.current = rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root');
 
       resultRef.current =
-        window.location.href.search(/duckduckgo\.com/gi) > -1
+        resultRef.current ?? window.location.href.search(/duckduckgo\.com/gi) > -1
           ? (rootRef.current?.parentElement as HTMLDivElement)
           : rootRef.current?.closest(container);
 
@@ -136,7 +133,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [iconRef.current, resultRef.current, rootRef.current]);
+  }, [container, handleMouseEnter, handleMouseLeave, isSearched, isBlocked]);
 
   const onlyBlockedByBlocklist =
     blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
