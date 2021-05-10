@@ -1,4 +1,6 @@
+import { HIDE_FRAME_OVERLAY_MESSAGE } from 'utils';
 import { extractUrlProperties } from 'utils/helpers';
+import { getLCP, ReportHandler } from 'web-vitals';
 import './results';
 
 const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
@@ -6,7 +8,7 @@ const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
   duckduckgo: ['.result', '.result__body', '.result__snippet'],
 };
 
-const REMOVE_ADS = {
+const REMOVE_ADS: Record<string, string[]> = {
   google: ['[aria-label=Ads]'],
   'bing.com': ['.b_ad'],
   'duckduckgo.com': ['#ads', '.results--ads'],
@@ -39,6 +41,14 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     '',
   );
   const APP_FRAME = window.location !== window.parent.location;
+
+  const handleLCP: ReportHandler = () => {
+    chrome.runtime.sendMessage({
+      type: HIDE_FRAME_OVERLAY_MESSAGE,
+    });
+  };
+
+  getLCP(handleLCP, true);
 
   const clearElement = (el: ALLOWED_ELEMENT) => {
     el.onclick = (e: MouseEvent) => {
