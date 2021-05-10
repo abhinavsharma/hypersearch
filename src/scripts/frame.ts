@@ -1,4 +1,4 @@
-import { HIDE_FRAME_OVERLAY_MESSAGE } from 'utils';
+import { TRIGGER_FRAME_SCROLL_LOG_MESSAGE, HIDE_FRAME_OVERLAY_MESSAGE } from 'utils/constants';
 import { extractUrlProperties } from 'utils/helpers';
 import { getLCP, ReportHandler } from 'web-vitals';
 import './results';
@@ -149,5 +149,15 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
 
   if (APP_FRAME) {
     setInterval(() => cleanupFrame(), 200);
+    document.addEventListener(
+      'scroll',
+      () => {
+        chrome.runtime.sendMessage({
+          type: TRIGGER_FRAME_SCROLL_LOG_MESSAGE,
+          url: window.location.href,
+        });
+      },
+      { once: true },
+    );
   }
 })(document, window);
