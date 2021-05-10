@@ -588,7 +588,9 @@ class SidebarLoader {
     this.url = url;
     if (
       this.url.href.search(/amazon\.com/gi) > -1 ||
-      this.url.searchParams.get('tbm') === 'isch' ||
+      // TBM will be added to the Google search URL and have a certain value when you select
+      // any of the “special” searches, like image search or video search.
+      this.url.searchParams.get('tbm') ||
       this.url.searchParams.get('ia') === 'images' ||
       this.url.searchParams.get('iax') === 'images'
     ) {
