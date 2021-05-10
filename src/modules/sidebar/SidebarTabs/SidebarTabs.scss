@@ -23,6 +23,7 @@
   .insight-tab-iframe-container {
     display: flex;
     flex-grow: 1;
+    justify-content: center;
 
     .insight-tab-iframe {
       display: flex;
@@ -33,7 +34,6 @@
       &.insight-expanded {
         width: 100% !important;
         max-width: $sidebar_max_page_width !important;
-        align-self: center;
       }
     }
 
