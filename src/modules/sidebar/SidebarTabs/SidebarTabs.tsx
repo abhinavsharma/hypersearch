@@ -8,7 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
 import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { InlineGutterOptionsPage } from 'modules/gutter';
+import { GutterPage } from 'modules/pages';
 import { ActiveAugmentationsPage, EditAugmentationPage } from 'modules/augmentations/';
 import {
   ActionBar,
@@ -155,7 +155,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   );
                 case OPEN_BUILDER_PAGE.GUTTER:
                   return (
-                    <InlineGutterOptionsPage
+                    <GutterPage
                       hidingAugmentations={pageData.augmentations}
                       domain={pageData.publication}
                     />
