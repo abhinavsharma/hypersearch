@@ -5,47 +5,50 @@ import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
 import Select, { OptionProps } from 'antd/lib/select';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
+import {
+  SIDEBAR_Z_INDEX,
+  CONDITION_KEYS,
+  CONDITION_LABELS,
+  LEGACY_KEYS,
+  LEGACY_EVALUATION,
+} from 'utils';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
-import {
-  SEARCH_CONTAINS_CONDITION,
-  SEARCH_QUERY_CONTAINS_CONDITION,
-  ANY_WEB_SEARCH_CONDITION,
-  SEARCH_INTENT_IS_CONDITION,
-  SIDEBAR_Z_INDEX,
-  SEARCH_ENGINE_IS_CONDITION,
-  URL_EQUALS_CONDITION,
-  URL_MATCHES_CONDITION,
-  DOMAIN_MATCHES_CONDITION,
-  DOMAIN_EQUALS_CONDTION,
-  ANY_URL_CONDITION_MOBILE,
-} from 'utils';
+
+/** MAGICS  **/
+const NEW_CONDITION_PLACEHOLDER = 'Add new condition';
+const SEARCH_DROPDOWN_GROUP_TITLE = 'Search';
+const URL_DROPDOWN_GROUP_TITLE = 'URL';
+const DOMAIN_DROPDOWN_GROUP_TITLE = 'Domain';
+const SEARCH_INTENT_DROPDOWN_LABEL = 'Search for intents...';
+const SEARCH_ENGINE_DROPDOWN_LABEL = 'Select search engine...';
 
 const { OptGroup, Option } = Select;
+type TSelect = Record<'key' | 'value' | 'label', string>;
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
-const SEARCH_CONDITION_LABELS = {
-  'Search results contain domain': SEARCH_CONTAINS_CONDITION,
-  'Search query contains': SEARCH_QUERY_CONTAINS_CONDITION,
-  'Search intent is': SEARCH_INTENT_IS_CONDITION,
-  'Search engine is': SEARCH_ENGINE_IS_CONDITION,
-  'Match any search engine (removes other conditions)': ANY_WEB_SEARCH_CONDITION,
+const SEARCH_CONDITIONS: Partial<{ [x in CONDITION_LABELS]: CONDITION_KEYS }> = {
+  [CONDITION_LABELS.SEARCH_CONTAINS]: CONDITION_KEYS.SEARCH_CONTAINS,
+  [CONDITION_LABELS.SEARCH_QUERY_CONTAINS]: CONDITION_KEYS.SEARCH_QUERY_CONTAINS,
+  [CONDITION_LABELS.SEARCH_INTENT_IS]: CONDITION_KEYS.SEARCH_INTENT_IS,
+  [CONDITION_LABELS.SEARCH_ENGINE_IS]: CONDITION_KEYS.SEARCH_ENGINE_IS,
+  [CONDITION_LABELS.ANY_SEARCH_ENGINE]: CONDITION_KEYS.ANY_SEARCH_ENGINE,
 };
 
-const DOMAIN_CONDITION_LABELS = {
-  'Domain matches regex': DOMAIN_MATCHES_CONDITION,
-  'Domain equals': DOMAIN_EQUALS_CONDTION,
+const DOMAIN_CONDITIONS: Partial<{ [x in CONDITION_LABELS]: CONDITION_KEYS }> = {
+  [CONDITION_LABELS.DOMAIN_MATCHES]: CONDITION_KEYS.DOMAIN_MATCHES,
+  [CONDITION_LABELS.DOMAIN_EQUALS]: CONDITION_KEYS.DOMAIN_EQUALS,
 };
 
-const URL_CONDITION_LABELS = {
-  'URL equals': URL_EQUALS_CONDITION,
-  'URL matches regex': URL_MATCHES_CONDITION,
-  'Match any page (removes other conditions)': ANY_URL_CONDITION_MOBILE,
+const URL_CONDITIONS: Partial<{ [x in CONDITION_LABELS]: CONDITION_KEYS }> = {
+  [CONDITION_LABELS.URL_EQUALS]: CONDITION_KEYS.URL_EQUALS,
+  [CONDITION_LABELS.URL_MATCHES]: CONDITION_KEYS.URL_MATCHES,
+  [CONDITION_LABELS.ANY_URL]: CONDITION_KEYS.ANY_URL,
 };
 
 export const EditConditionInput: EditConditionInput = ({
@@ -55,8 +58,10 @@ export const EditConditionInput: EditConditionInput = ({
   handleAnyUrl,
   handleAnySearchEngine,
 }) => {
-  const [newKey, setNewKey] = useState<string>(condition?.unique_key ?? condition?.key);
-  const [newLabel, setNewLabel] = useState<string>(condition?.label);
+  const [newKey, setNewKey] = useState<CONDITION_KEYS | LEGACY_KEYS>(
+    condition?.unique_key ?? condition.key,
+  );
+  const [newLabel, setNewLabel] = useState<CONDITION_LABELS>(condition?.label as CONDITION_LABELS);
   const [newValue, setNewValue] = useState<any>(condition?.value[0]);
   const [intents, setIntents] = useState<any[]>();
   const [engines, setEngines] = useState<Record<string, CustomSearchEngine>>(Object.create(null));
@@ -64,32 +69,46 @@ export const EditConditionInput: EditConditionInput = ({
 
   useEffect(() => {
     setIntents(SearchEngineManager.intents);
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SearchEngineManager.intents]);
 
   useEffect(() => {
     setEngines(SearchEngineManager.engines);
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SearchEngineManager.engines]);
 
-  const handleSave = (value?: string) => {
+  const getLegacyProps = () => {
     const key =
-      ((newKey === URL_EQUALS_CONDITION ||
-        newKey === URL_MATCHES_CONDITION ||
-        newKey === ANY_URL_CONDITION_MOBILE) &&
-        'url') ||
-      ((newKey === DOMAIN_EQUALS_CONDTION || newKey === DOMAIN_MATCHES_CONDITION) && 'domain') ||
-      newKey;
+      ((newKey === CONDITION_KEYS.URL_EQUALS ||
+        newKey === CONDITION_KEYS.URL_MATCHES ||
+        newKey === CONDITION_KEYS.ANY_URL) &&
+        LEGACY_KEYS.URL) ||
+      ((newKey === CONDITION_KEYS.DOMAIN_EQUALS || newKey === CONDITION_KEYS.DOMAIN_MATCHES) &&
+        LEGACY_KEYS.DOMAIN) ||
+      (newKey as LEGACY_KEYS);
 
     const evaluation =
-      ((newKey === URL_EQUALS_CONDITION || newKey === DOMAIN_EQUALS_CONDTION) && 'equals') ||
-      ((newKey === URL_MATCHES_CONDITION || newKey === DOMAIN_MATCHES_CONDITION) && 'matches') ||
-      (newKey === ANY_URL_CONDITION_MOBILE && 'any') ||
+      ((newKey === CONDITION_KEYS.URL_EQUALS || newKey === CONDITION_KEYS.DOMAIN_EQUALS) &&
+        LEGACY_EVALUATION.EQUALS) ||
+      ((newKey === CONDITION_KEYS.URL_MATCHES || newKey === CONDITION_KEYS.DOMAIN_MATCHES) &&
+        LEGACY_EVALUATION.MATCHES) ||
+      (newKey === CONDITION_KEYS.ANY_URL && LEGACY_EVALUATION.ANY) ||
       undefined;
 
+    return { key, evaluation };
+  };
+
+  const handleSave = (value?: string) => {
+    const { key, evaluation } = getLegacyProps();
     const newCondition = {
       ...condition,
       key,
       evaluation,
-      unique_key: newKey,
+      unique_key: newKey as CONDITION_KEYS,
       label: newLabel,
       value: [value ?? newValue],
     };
@@ -97,25 +116,13 @@ export const EditConditionInput: EditConditionInput = ({
   };
 
   const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-    const key =
-      ((newKey === URL_EQUALS_CONDITION ||
-        newKey === URL_MATCHES_CONDITION ||
-        newKey === ANY_URL_CONDITION_MOBILE) &&
-        'url') ||
-      ((newKey === DOMAIN_EQUALS_CONDTION || newKey === DOMAIN_MATCHES_CONDITION) && 'domain') ||
-      newKey;
-
-    const evaluation =
-      ((newKey === URL_EQUALS_CONDITION || newKey === DOMAIN_EQUALS_CONDTION) && 'equals') ||
-      ((newKey === URL_MATCHES_CONDITION || newKey === DOMAIN_MATCHES_CONDITION) && 'matches') ||
-      (newKey === ANY_URL_CONDITION_MOBILE && 'any') ||
-      undefined;
+    const { key, evaluation } = getLegacyProps();
     setNewValue(value);
     const newCondition = {
       ...condition,
       key,
       evaluation,
-      unique_key: newKey,
+      unique_key: newKey as CONDITION_KEYS,
       label: newLabel,
       value: [value],
     };
@@ -130,46 +137,25 @@ export const EditConditionInput: EditConditionInput = ({
     return String(key).toLowerCase().search(inputValue.toLowerCase()) > -1;
   };
 
-  const handleSelect = (e) => {
-    const updated = newKey === SEARCH_ENGINE_IS_CONDITION ? JSON.parse(e.value) : e;
+  const handleSelect = (e: TSelect) => {
+    const updated = newKey === CONDITION_KEYS.SEARCH_ENGINE_IS ? JSON.parse(e.value) : e;
     setNewValue(
-      newKey === SEARCH_ENGINE_IS_CONDITION
+      newKey === CONDITION_KEYS.SEARCH_ENGINE_IS
         ? { value: JSON.stringify(updated), key: e.label, label: e.label }
         : e,
     );
     handleSave(updated);
   };
 
-  const handleLabelChange = (label: string) => {
-    const key =
-      ((URL_CONDITION_LABELS[label] === URL_EQUALS_CONDITION ||
-        URL_CONDITION_LABELS[label] === URL_MATCHES_CONDITION ||
-        URL_CONDITION_LABELS[label] === ANY_URL_CONDITION_MOBILE) &&
-        'url') ||
-      ((DOMAIN_CONDITION_LABELS[label] === DOMAIN_EQUALS_CONDTION ||
-        DOMAIN_CONDITION_LABELS[label] === DOMAIN_MATCHES_CONDITION) &&
-        'domain') ||
-      newKey;
-
-    const evaluation =
-      ((URL_CONDITION_LABELS[label] === URL_EQUALS_CONDITION ||
-        DOMAIN_CONDITION_LABELS[label] === DOMAIN_EQUALS_CONDTION) &&
-        'equals') ||
-      ((URL_CONDITION_LABELS[label] === URL_MATCHES_CONDITION ||
-        DOMAIN_CONDITION_LABELS[label] === DOMAIN_MATCHES_CONDITION) &&
-        'matches') ||
-      (URL_CONDITION_LABELS[label] === ANY_URL_CONDITION_MOBILE && 'any') ||
-      undefined;
-
+  const handleLabelChange = (label: CONDITION_LABELS) => {
+    const { key, evaluation } = getLegacyProps();
     const unique_key =
-      SEARCH_CONDITION_LABELS[label] ??
-      URL_CONDITION_LABELS[label] ??
-      DOMAIN_CONDITION_LABELS[label];
+      SEARCH_CONDITIONS[label] ?? URL_CONDITIONS[label] ?? DOMAIN_CONDITIONS[label];
 
     if (
       unique_key &&
-      URL_CONDITION_LABELS[label] !== ANY_URL_CONDITION_MOBILE &&
-      SEARCH_CONDITION_LABELS[label] !== ANY_WEB_SEARCH_CONDITION
+      URL_CONDITIONS[label] !== CONDITION_KEYS.ANY_URL &&
+      SEARCH_CONDITIONS[label] !== CONDITION_KEYS.ANY_SEARCH_ENGINE
     ) {
       setNewLabel(label);
       setNewKey(unique_key);
@@ -182,10 +168,12 @@ export const EditConditionInput: EditConditionInput = ({
         value: [],
       });
     } else {
-      SEARCH_CONDITION_LABELS[label] === ANY_WEB_SEARCH_CONDITION && handleAnySearchEngine();
-      URL_CONDITION_LABELS[label] === ANY_URL_CONDITION_MOBILE && handleAnyUrl();
+      SEARCH_CONDITIONS[label] === CONDITION_KEYS.ANY_SEARCH_ENGINE && handleAnySearchEngine();
+      URL_CONDITIONS[label] === CONDITION_KEYS.ANY_URL && handleAnyUrl();
     }
   };
+
+  const getPopupContainer = () => dropdownRef.current;
 
   return (
     <>
@@ -193,28 +181,28 @@ export const EditConditionInput: EditConditionInput = ({
         <Col xs={!newKey ? 24 : 12} className="insight-large-input-row-content">
           {!newKey ? (
             <Select
-              placeholder="Add new condition"
+              placeholder={NEW_CONDITION_PLACEHOLDER}
               onChange={handleLabelChange}
               className="insight-select-full-width"
               dropdownClassName="insight-select-full-width-dropdown"
-              getPopupContainer={() => dropdownRef.current}
+              getPopupContainer={getPopupContainer}
             >
-              <OptGroup label="Search">
-                {Object.keys(SEARCH_CONDITION_LABELS).map((key) => (
+              <OptGroup label={SEARCH_DROPDOWN_GROUP_TITLE}>
+                {Object.keys(SEARCH_CONDITIONS).map((key) => (
                   <Option key={key} value={key}>
                     {key}
                   </Option>
                 ))}
               </OptGroup>
-              <OptGroup label="URL">
-                {Object.keys(URL_CONDITION_LABELS).map((key) => (
+              <OptGroup label={URL_DROPDOWN_GROUP_TITLE}>
+                {Object.keys(URL_CONDITIONS).map((key) => (
                   <Option key={key} value={key}>
                     {key}
                   </Option>
                 ))}
               </OptGroup>
-              <OptGroup label="Domain">
-                {Object.keys(DOMAIN_CONDITION_LABELS).map((key) => (
+              <OptGroup label={DOMAIN_DROPDOWN_GROUP_TITLE}>
+                {Object.keys(DOMAIN_CONDITIONS).map((key) => (
                   <Option key={key} value={key}>
                     {key}
                   </Option>
@@ -235,17 +223,17 @@ export const EditConditionInput: EditConditionInput = ({
         <Col xs={12} className="insight-large-input-row-content">
           {(() => {
             switch (newKey) {
-              case SEARCH_INTENT_IS_CONDITION:
-              case SEARCH_ENGINE_IS_CONDITION:
+              case CONDITION_KEYS.SEARCH_INTENT_IS:
+              case CONDITION_KEYS.SEARCH_ENGINE_IS:
                 return (
                   <Select
                     showSearch
-                    labelInValue={newKey === SEARCH_ENGINE_IS_CONDITION}
+                    labelInValue={newKey === CONDITION_KEYS.SEARCH_ENGINE_IS}
                     value={(() => {
-                      if (newKey === SEARCH_ENGINE_IS_CONDITION) {
+                      if (newKey === CONDITION_KEYS.SEARCH_ENGINE_IS) {
                         const [label, value] =
                           Object.entries(engines)?.find(([, entry]) => {
-                            const updatedValue =
+                            const updatedValue: CustomSearchEngine['search_engine_json'] =
                               typeof newValue?.value === 'string'
                                 ? JSON.parse(newValue.value)
                                 : newValue;
@@ -267,10 +255,10 @@ export const EditConditionInput: EditConditionInput = ({
                     })()}
                     placeholder={(() => {
                       switch (newKey) {
-                        case SEARCH_INTENT_IS_CONDITION:
-                          return 'Search for intents...';
-                        case SEARCH_ENGINE_IS_CONDITION:
-                          return 'Select search engine...';
+                        case CONDITION_KEYS.SEARCH_INTENT_IS:
+                          return SEARCH_INTENT_DROPDOWN_LABEL;
+                        case CONDITION_KEYS.SEARCH_ENGINE_IS:
+                          return SEARCH_ENGINE_DROPDOWN_LABEL;
                       }
                     })()}
                     filterOption={handleFilter}
@@ -281,7 +269,7 @@ export const EditConditionInput: EditConditionInput = ({
                   >
                     {(() => {
                       switch (newKey) {
-                        case SEARCH_INTENT_IS_CONDITION:
+                        case CONDITION_KEYS.SEARCH_INTENT_IS:
                           return (
                             intents?.map(({ name, intent_id }) => (
                               <Option
@@ -293,7 +281,7 @@ export const EditConditionInput: EditConditionInput = ({
                               </Option>
                             )) ?? null
                           );
-                        case SEARCH_ENGINE_IS_CONDITION:
+                        case CONDITION_KEYS.SEARCH_ENGINE_IS:
                           return (
                             Object.entries(engines).map(([key, cse]) =>
                               !key.match(/amazon/gi) ? (
@@ -311,12 +299,12 @@ export const EditConditionInput: EditConditionInput = ({
                     })()}
                   </Select>
                 );
-              case SEARCH_CONTAINS_CONDITION:
-              case SEARCH_QUERY_CONTAINS_CONDITION:
-              case URL_EQUALS_CONDITION:
-              case URL_MATCHES_CONDITION:
-              case DOMAIN_EQUALS_CONDTION:
-              case DOMAIN_MATCHES_CONDITION:
+              case CONDITION_KEYS.SEARCH_CONTAINS:
+              case CONDITION_KEYS.SEARCH_QUERY_CONTAINS:
+              case CONDITION_KEYS.URL_EQUALS:
+              case CONDITION_KEYS.URL_MATCHES:
+              case CONDITION_KEYS.DOMAIN_EQUALS:
+              case CONDITION_KEYS.DOMAIN_MATCHES:
                 return (
                   <Input key={condition.id} onChange={handleChange} value={newValue as string} />
                 );

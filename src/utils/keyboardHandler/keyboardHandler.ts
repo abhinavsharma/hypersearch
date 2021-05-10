@@ -6,9 +6,14 @@ import {
   shouldPreventEventBubble,
   SWITCH_TO_TAB,
   UPDATE_SIDEBAR_TABS_MESSAGE,
+  EXPAND_KEY,
+  FULLSCREEN_KEY,
+  SHRINK_KEY,
+  SWITCH_LEFT_TAB,
+  SWITCH_RIGHT_TAB,
 } from 'utils';
 
-let buffer = [];
+let buffer: boolean[] = [];
 
 export const keyUpHandler = (event: KeyboardEvent) => {
   if (!!event.metaKey || !!event.ctrlKey) {
@@ -32,21 +37,21 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
   }
 
   switch (event.code) {
-    case 'KeyF':
+    case FULLSCREEN_KEY.CODE:
       handleToggle();
       buffer = [];
       break;
-    case 'KeyI':
+    case EXPAND_KEY.CODE:
       loader.isExpanded && handleToggle();
       flipSidebar(document, 'show', loader.sidebarTabs.length);
       buffer = [];
       break;
-    case 'Escape':
+    case SHRINK_KEY.CODE:
       loader.isExpanded && handleToggle();
       flipSidebar(document, 'hide', loader.sidebarTabs.length);
       buffer = [];
       break;
-    case 'ArrowRight':
+    case SWITCH_RIGHT_TAB.CODE:
       chrome.runtime.sendMessage({
         type: SWITCH_TO_TAB,
         index:
@@ -59,13 +64,15 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
       });
       buffer = [];
       break;
-    case 'ArrowLeft':
-      const lastIndex = getLastValidTabIndex(loader.sidebarTabs.slice(0, currentTabIndex - 1));
-      chrome.runtime.sendMessage({
-        type: SWITCH_TO_TAB,
-        index: lastIndex === '0' ? getLastValidTabIndex(loader.sidebarTabs) : lastIndex,
-      });
-      buffer = [];
+    case SWITCH_LEFT_TAB.CODE:
+      {
+        const lastIndex = getLastValidTabIndex(loader.sidebarTabs.slice(0, currentTabIndex - 1));
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index: lastIndex === '0' ? getLastValidTabIndex(loader.sidebarTabs) : lastIndex,
+        });
+        buffer = [];
+      }
       break;
     default:
       (!!event.metaKey || !!event.ctrlKey) && buffer.push(true);

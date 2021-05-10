@@ -15,6 +15,7 @@ const GOOGLE_VERTICAL_NEWS_LINK_SELECTOR = '.EPLo7b a';
 const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
 import {
+  ACTION_KEYS,
   INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
@@ -25,8 +26,6 @@ import {
   PROCESS_SERP_OVERLAY_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
-  SEARCH_DOMAINS_ACTION,
-  SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils/constants';
 import { debug, extractPublication, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
@@ -47,12 +46,12 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     augmentation.actions?.action_list.forEach(({ value, key }) => {
       if (value.find((valueDomain) => domain === valueDomain)) {
         switch (key) {
-          case SEARCH_HIDE_DOMAIN_ACTION:
+          case ACTION_KEYS.SEARCH_HIDE_DOMAIN:
             if (!blockingAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               blockingAugmentations[domain].push(augmentation);
             }
             break;
-          case SEARCH_DOMAINS_ACTION:
+          case ACTION_KEYS.SEARCH_DOMAINS:
             result && searchedResults.push(result);
             if (!searchingAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               searchingAugmentations[domain].push(augmentation);

@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { EditActionInput } from 'modules/augmentations';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
+import { ACTION_TYPES } from 'utils';
 
 export const EditAugmentationActions: EditAugmentationActions = ({
   actions,
@@ -10,11 +11,11 @@ export const EditAugmentationActions: EditAugmentationActions = ({
   onSave,
   onDelete,
 }) => {
-  const newAction = {
+  const newAction: TCustomAction = {
     id: uuid(),
     key: null,
     label: null,
-    type: 'list',
+    type: ACTION_TYPES.LIST,
     value: [''],
   };
   return (

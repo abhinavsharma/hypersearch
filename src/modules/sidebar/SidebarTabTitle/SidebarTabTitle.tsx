@@ -12,11 +12,16 @@ import {
   removeProtocol,
   TRIGGER_FRAME_SCROLL_LOG_MESSAGE,
   TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
+  URL_PARAM_TAB_TITLE_KEY,
 } from 'utils';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabTitle.scss';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { useDebouncedFn } from 'beautiful-react-hooks';
+
+/** MAGICS **/
+const SUGGESTED_TOOLTIP_TEXT = `Lens suggested by ${APP_NAME}`;
+const INSTALLED_TOOLTIP_TEXT = 'Local Lens';
 
 export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setActiveKey }) => {
   const handleHoverOpenLog = useDebouncedFn(
@@ -71,7 +76,9 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
         handleHoverOpenLog(msg);
       }
     });
-  }, [tab.url.href]);
+  }, [tab.url.href, tab.title, handleHoverOpenLog]);
+
+  const keepParent = { keepParent: false };
 
   return (
     <div
@@ -84,15 +91,12 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
         }`}
       >
         {!tab.augmentation?.installed ? (
-          <Tooltip
-            title={`Lens suggested by ${APP_NAME}`}
-            destroyTooltipOnHide={{ keepParent: false }}
-          >
-            {tab.url.searchParams.get('insight-tab-title') ?? removeEmoji(tab.title)}
+          <Tooltip title={SUGGESTED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
+            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(tab.title)}
           </Tooltip>
         ) : (
-          <Tooltip title={'Local Lens'} destroyTooltipOnHide={{ keepParent: false }}>
-            {tab.url.searchParams.get('insight-tab-title') ?? removeEmoji(tab.title)}
+          <Tooltip title={INSTALLED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
+            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(tab.title)}
           </Tooltip>
         )}
       </span>

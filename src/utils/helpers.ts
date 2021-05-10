@@ -1,18 +1,15 @@
 import {
   KP_SELECTORS,
   IN_DEBUG_MODE,
-  ENABLED_AUGMENTATION_TYPES,
-  ANY_WEB_SEARCH_CONDITION,
   HIDE_TAB_FAKE_URL,
-  ANY_URL_CONDITION_MOBILE,
-  SEARCH_ENGINE_IS_CONDITION,
   MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
   DOMAINS_TO_RELEVANT_SLICE,
   LUMOS_API_URL,
   LUMOS_APP_BASE_URL_PROD,
   LUMOS_APP_BASE_URL_DEBUG,
-} from 'utils';
+  CONDITION_KEYS,
+} from 'utils/constants';
 
 /**
  * ! PROTOTYPE EXTENSIONS
@@ -276,7 +273,7 @@ export const sanitizeUrl = (urlLike: string) => {
  */
 export const debug = (...args: any[]) => {
   if (args && Symbol.iterator in Object(args) && IN_DEBUG_MODE) {
-    console.log('LUMOS SHARED DEBUG: ', ...args);
+    console.log('INSIGHT DEBUG: ', ...args);
   }
 };
 
@@ -318,10 +315,23 @@ export const shouldPreventEventBubble = (event: KeyboardEvent) => {
 export const removeEmoji = (stringLike: string) =>
   typeof stringLike !== 'string' ? stringLike : stringLike.replace(/^[^\w\s]*/gi, '');
 
-// TODO #1: extarct to API manager class
+/**
+ * Converts a stringified augmentation object to valid Base64 string.
+ *
+ * @param str - The stringified augmentation
+ * @returns The encoded augmentation
+ */
+export const b64EncodeUnicode = (stringLike: string) => {
+  if (typeof stringLike !== 'string') return stringLike;
+  const escapedString = encodeURIComponent(stringLike);
+  const replacerFunction = (_: string, p1: string) => String.fromCharCode(parseInt(p1, 16));
+  return btoa(escapedString.replace(/%([0-9A-F]{2})/g, replacerFunction));
+};
+
+// TODO #1: extract to API manager class
 
 /**
- * Changes exisitng production URL to development URL (localhost) in a HTTP response
+ * Changes existing production URL to development URL (localhost) in a HTTP response
  *
  * @param json The HTTP response body
  * @returns
@@ -436,13 +446,13 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
   const bothSuggested = aSuggested && bSuggested;
 
   const aIsAny =
-    aConditions.indexOf(SEARCH_ENGINE_IS_CONDITION) > -1 ||
-    aConditions.indexOf(ANY_WEB_SEARCH_CONDITION) > -1 ||
-    aConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
+    aConditions.indexOf(CONDITION_KEYS.SEARCH_ENGINE_IS) > -1 ||
+    aConditions.indexOf(CONDITION_KEYS.ANY_SEARCH_ENGINE) > -1 ||
+    aConditions.indexOf(CONDITION_KEYS.ANY_URL) > -1;
   const bIsAny =
-    bConditions.indexOf(SEARCH_ENGINE_IS_CONDITION) > -1 ||
-    bConditions.indexOf(ANY_WEB_SEARCH_CONDITION) > -1 ||
-    bConditions.indexOf(ANY_URL_CONDITION_MOBILE) > -1;
+    bConditions.indexOf(CONDITION_KEYS.SEARCH_ENGINE_IS) > -1 ||
+    bConditions.indexOf(CONDITION_KEYS.ANY_SEARCH_ENGINE) > -1 ||
+    bConditions.indexOf(CONDITION_KEYS.ANY_URL) > -1;
 
   // Trivial cases that can be handled by checking tab types:
   // Pinned > Installed > Suggested > Any URL
@@ -471,7 +481,7 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
   const bLowestIntentDomains = { name: '', rate: Infinity, domains: b.matchingIntent };
 
   // Check if tabs under consideration are having any matching domains from SERP. If so, set their
-  // reating accordingly. We care the lowest rating as the most relevant (highter SERP position).
+  // rating accordingly. We care the lowest rating as the most relevant (higher SERP position).
   const getTabDomainRatings = (domainsA: string[], domainsB: string[]) => {
     domainsA.forEach((domain) => {
       if (tabRatings[domain] < aLowestSearchDomains.rate) {
@@ -515,6 +525,13 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
   return 0;
 };
 
+/**
+ * Takes the list of current sidebar tabs and returns the first index of the tab, that
+ * is not a fake hidden tab.
+ *
+ * @param tabs - The list of sidebar tabs
+ * @returns {string} The first valid tab index
+ */
 export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
   return (tabs.findIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
 };
@@ -524,26 +541,3 @@ export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
 };
 
 // TODO #2 END
-
-// TODO #3 decouple to AugmentationManager
-
-export const isAugmentationEnabled = (augmentation: AugmentationObject) =>
-  augmentation.conditions.condition_list
-    .map(
-      (condition) =>
-        ENABLED_AUGMENTATION_TYPES.includes(condition.unique_key) ||
-        ENABLED_AUGMENTATION_TYPES.includes(condition.key),
-    )
-    .indexOf(false) === -1 &&
-  augmentation.actions.action_list
-    .map((action) => ENABLED_AUGMENTATION_TYPES.includes(action.key))
-    .indexOf(false) === -1;
-
-export const b64EncodeUnicode = (str: string) =>
-  btoa(
-    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
-      String.fromCharCode(parseInt(p1, 16)),
-    ),
-  );
-
-// TODO #3 END

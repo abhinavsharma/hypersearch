@@ -3,7 +3,7 @@ declare module './processSerpResults' {
     nodes: HTMLElement[],
     selector: string,
     details: Record<'text' | 'header' | 'selectorString', string>,
-    augmentations: Record<string, Record<'block' | 'search', AugmentationObject[]>> | string,
+    augmentations: Record<'block' | 'search', Record<string, AugmentationObject[]>> | string,
     createdUrls?: string[],
   ) => void;
 }

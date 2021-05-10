@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Tooltip from 'antd/lib/tooltip';
 import {
   SIDEBAR_Z_INDEX,
@@ -7,6 +7,10 @@ import {
 } from 'utils/constants';
 import { sanitizeUrl } from 'utils/helpers';
 import 'antd/lib/tooltip/style/index.css';
+
+/** MAGICS **/
+const TOOLTIP_TEXT = `You have spent <time_placeholder> on <domain_placeholder> (this data is stored locally on this browser)`;
+const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
 export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -21,13 +25,13 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
     return `${hours > 0 ? `${hours}h` : ''} ${mins > 0 ? `${mins}m` : ''}`;
   };
 
-  const getCurrentTimeStamp = async () => {
+  const getCurrentTimeStamp = useCallback(async () => {
     const stored =
-      (await new Promise((resolve) =>
+      (await new Promise<Record<string, string>>((resolve) =>
         chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
       ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
     setCurrentTime(getDisplayTime(stored[sanitizeUrl(domain)]));
-  };
+  }, [domain]);
 
   useEffect(() => {
     getCurrentTimeStamp();
@@ -36,26 +40,27 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
         msg.domain === domain && setCurrentTime(getDisplayTime(msg.currentTime));
       }
     });
-  }, []);
+  }, [domain, getCurrentTimeStamp]);
+
+  const timeString = currentTime.replace('h', ' hours').replace('m', ' minutes');
+  const keepParent = { keepParent: false };
+  const getPopupContainer = () => tooltipContainer.current;
 
   return (
     <div className="publication-time-tracker">
       <Tooltip
-        title={`You have spent ${currentTime
-          .replace('h', ' hours')
-          .replace('m', ' minutes')} on ${domain} (this data is stored locally on this browser)`}
-        destroyTooltipOnHide={{ keepParent: false }}
-        getPopupContainer={() => tooltipContainer.current}
+        title={TOOLTIP_TEXT.replace('<time_placeholder>', timeString).replace(
+          '<domain_placeholder>',
+          domain,
+        )}
+        destroyTooltipOnHide={keepParent}
+        getPopupContainer={getPopupContainer}
         placement="right"
         overlayClassName="gutter-tooltip"
       >
-        {currentTime}{' '}
+        {currentTime}
       </Tooltip>
-      <div
-        className="tooltip-container"
-        ref={tooltipContainer}
-        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-      />
+      <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />
     </div>
   );
 };

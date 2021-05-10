@@ -8,7 +8,7 @@ import { getPublicationUrl } from 'utils/helpers';
 
 const MAX_INACTIVE_SECONDS = 10;
 
-export const activityMonitor = (document: Document) => {
+export const activityMonitor = (document: Document): void => {
   if (!getPublicationUrl(window.location.href)) {
     return null;
   }

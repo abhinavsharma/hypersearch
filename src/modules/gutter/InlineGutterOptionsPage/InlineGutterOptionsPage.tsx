@@ -6,6 +6,9 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { DomainStateCheckbox } from '../DomainStateCheckbox/DomainStateCheckbox';
 import {
+  ACTION_KEYS,
+  ACTION_LABELS,
+  ACTION_TYPES,
   EMPTY_AUGMENTATION,
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
@@ -14,13 +17,30 @@ import {
   PROTECTED_AUGMENTATIONS,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
-  SEARCH_DOMAINS_ACTION,
-  SEARCH_HIDE_DOMAIN_ACTION,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './InlineGutterOptionsPage.scss';
+
+/** MAGICS **/
+const HEADER_LEFT_BUTTON_TEXT = 'Close';
+const HEADER_TITLE = 'Domain Settings';
+const INSTALLED_SECTION_TITLE = 'Add this domain to a local lens';
+const INSTALLED_SECTION_SUBTITLE = 'When this lens is triggered then this domain will be searched';
+const HIDING_SECTION_TITLE = 'Lenses that block this domain';
+const HIDING_SECTION_SUBTITLE = '';
+const SEARCHING_SECTION_TITLE = 'Lenses that search this domain';
+const SEARCHING_SECTION_SUBTITLE = '';
+const DISABLED_SUGGESTED_BUTTON_TEXT = 'Disable Lens';
+const REMOVE_FROM_INSTALLED_BUTTON_TEXT = 'Remove from Lens';
+const ADD_TO_AUGMENTATION_BUTTON_TEXT = 'Add to Lens';
+const ADD_TO_TRUSTLIST_BUTTON_SUBTITLE = 'Mark domains as trusted source';
+const ADD_TO_AUGMENTATION_BUTTON_SUBTITLE = 'Currently searches';
+const ADD_TO_AUGMENTATION_BUTTON_NEW_ACTION = 'Add as new action';
+const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new Lens that searches this domain';
+const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Lens';
+const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
 
 const PlusOutlined = React.lazy(
   async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
@@ -42,7 +62,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   ].filter(
     (augmentation) =>
       !!augmentation.actions.action_list.filter(({ key, value }) => {
-        if (key === SEARCH_DOMAINS_ACTION) {
+        if (key === ACTION_KEYS.SEARCH_DOMAINS) {
           return !!value.find((searchedDomain) => searchedDomain === domain);
         }
         return false;
@@ -59,7 +79,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     const searchDomainActions = augmentation.actions.action_list.reduce(
       (actions, action, index) => {
         const { key, value } = action;
-        if (key === SEARCH_DOMAINS_ACTION && !value.includes(domain)) {
+        if (key === ACTION_KEYS.SEARCH_DOMAINS && !value.includes(domain)) {
           actions.push({ ...action, index });
         }
         return actions;
@@ -80,20 +100,20 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     {
       type: 'local',
       augmentations: availableLocalAugmentations[domain],
-      title: 'Add this domain to a local lens',
-      subtitle: 'When this lens is triggered then this domain will be searched',
+      title: INSTALLED_SECTION_TITLE,
+      subtitle: INSTALLED_SECTION_SUBTITLE,
     },
     {
       type: 'block',
       augmentations: currentHiders,
-      title: 'Lenses that block this domain',
-      subtitle: null,
+      title: HIDING_SECTION_TITLE,
+      subtitle: HIDING_SECTION_SUBTITLE,
     },
     {
       type: 'search',
       augmentations: searchingAugmentations,
-      title: 'Lenses that search this domain',
-      subtitle: null,
+      title: SEARCHING_SECTION_TITLE,
+      subtitle: SEARCHING_SECTION_SUBTITLE,
     },
   ];
 
@@ -110,10 +130,10 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
     );
     if (index === augmentation.actions.action_list.length) {
       newActions.push({
-        key: SEARCH_DOMAINS_ACTION,
-        label: 'Search only these domains',
+        key: ACTION_KEYS.SEARCH_DOMAINS,
+        label: ACTION_LABELS.SEARCH_DOMAINS,
         value: [domain],
-        type: 'list',
+        type: ACTION_TYPES.LIST,
       });
     }
     AugmentationManager.addOrEditAugmentation(augmentation, {
@@ -130,7 +150,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
   };
 
   const handleDeleteInstalled = (augmentation: AugmentationObject, type: Section['type']) => {
-    const checkKey = type === 'block' ? SEARCH_HIDE_DOMAIN_ACTION : SEARCH_DOMAINS_ACTION;
+    const checkKey = type === 'block' ? ACTION_KEYS.SEARCH_HIDE_DOMAIN : ACTION_KEYS.SEARCH_DOMAINS;
     const newData: Record<string, any> = {
       actions: augmentation.actions.action_list.map((action) => {
         const { key, value } = action;
@@ -226,9 +246,9 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
           ...EMPTY_AUGMENTATION.actions,
           action_list: [
             {
-              key: SEARCH_DOMAINS_ACTION,
-              label: 'Search only these domains',
-              type: 'list',
+              key: ACTION_KEYS.SEARCH_DOMAINS,
+              label: ACTION_LABELS.SEARCH_DOMAINS,
+              type: ACTION_TYPES.LIST,
               value: [domain],
             },
           ],
@@ -242,9 +262,9 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
       {!inline && (
         <header className="sidebar-page-header">
           <Button type="link" onClick={handleClose} className="left-button">
-            Close
+            {HEADER_LEFT_BUTTON_TEXT}
           </Button>
-          <span className="page-title">Domain Settings</span>
+          <span className="page-title">{HEADER_TITLE}</span>
         </header>
       )}
       <div className="sidebar-page-wrapper">
@@ -278,7 +298,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                               color="volcano"
                               onClick={handleDisable}
                             >
-                              Disable Lens
+                              {DISABLED_SUGGESTED_BUTTON_TEXT}
                             </Tag>
                           ) : (
                             <Tag
@@ -286,7 +306,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                               color="volcano"
                               onClick={handleDelete}
                             >
-                              Remove from Lens
+                              {REMOVE_FROM_INSTALLED_BUTTON_TEXT}
                             </Tag>
                           )}
                         </div>
@@ -300,7 +320,9 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                             color="geekblue"
                             onClick={handleEdit}
                           >
-                            {!augmentation.installed ? 'Fork Lens' : 'Edit Lens'}
+                            {!augmentation.installed
+                              ? EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT
+                              : EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT}
                           </Tag>
                           {!augmentation.installed ? (
                             <Tag
@@ -308,7 +330,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                               color="volcano"
                               onClick={handleDisable}
                             >
-                              Disable Lens
+                              {DISABLED_SUGGESTED_BUTTON_TEXT}
                             </Tag>
                           ) : (
                             <Tag
@@ -316,7 +338,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                               color="volcano"
                               onClick={handleDelete}
                             >
-                              Remove from Lens
+                              {REMOVE_FROM_INSTALLED_BUTTON_TEXT}
                             </Tag>
                           )}
                         </div>
@@ -333,11 +355,13 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                               {(() => {
                                 const action =
                                   augmentation.actions.action_list[augmentation.actionIndex];
-                                return action?.key === SEARCH_DOMAINS_ACTION
+                                return action?.key === ACTION_KEYS.SEARCH_DOMAINS
                                   ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
-                                    ? 'Mark domains as trusted sources'
-                                    : `Currently searches\u00a0${action.value.join(', ')}`
-                                  : 'Add as new action';
+                                    ? ADD_TO_TRUSTLIST_BUTTON_SUBTITLE
+                                    : `${ADD_TO_AUGMENTATION_BUTTON_SUBTITLE}\u00a0${action.value.join(
+                                        ', ',
+                                      )}`
+                                  : ADD_TO_AUGMENTATION_BUTTON_NEW_ACTION;
                               })()}
                             </span>
                           </div>
@@ -346,7 +370,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
                             color="geekblue"
                             onClick={handleAddToLocal}
                           >
-                            Add to Lens
+                            {ADD_TO_AUGMENTATION_BUTTON_TEXT}
                           </Tag>
                         </div>
                       );
@@ -368,7 +392,7 @@ export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
               <Suspense fallback={null}>
                 <PlusOutlined />
               </Suspense>
-              &nbsp;Create new Lens that searches this domain
+              {`\u0a00${CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT}`}
             </Button>
           </>
         ) : (

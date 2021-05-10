@@ -4,16 +4,15 @@ import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import Select from 'antd/lib/select';
 import Input from 'antd/lib/input';
-import {
-  OPEN_URL_ACTION,
-  SEARCH_APPEND_ACTION,
-  SEARCH_DOMAINS_ACTION,
-  SEARCH_HIDE_DOMAIN_ACTION,
-} from 'utils';
+import { ACTION_KEYS, ACTION_LABELS, LEGACY_KEYS } from 'utils/constants';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/select/style/index.css';
+
+/** MAGICS **/
+const NEW_ACTION_PLACEHOLDER = 'Add new action';
+const ADD_ACTION_VALUE_BUTTON_TEXT = 'Add';
 
 const { Option } = Select;
 
@@ -21,17 +20,17 @@ const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
-const ACTION_LABELS = {
-  'Search only these domains': SEARCH_DOMAINS_ACTION,
-  'Open page': OPEN_URL_ACTION,
-  'Hide results from domain': SEARCH_HIDE_DOMAIN_ACTION,
-  'Seach with string appended': SEARCH_APPEND_ACTION,
+const ACTIONS = {
+  [ACTION_LABELS.SEARCH_DOMAINS]: ACTION_KEYS.SEARCH_DOMAINS,
+  [ACTION_LABELS.OPEN_URL]: ACTION_KEYS.OPEN_URL,
+  [ACTION_LABELS.SEARCH_HIDE_DOMAIN]: ACTION_KEYS.SEARCH_HIDE_DOMAIN,
+  [ACTION_LABELS.SEARCH_APPEND]: ACTION_KEYS.SEARCH_APPEND,
 };
 
 export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
   const [newValue, setNewValue] = useState('');
-  const [newKey, setNewKey] = useState<string>(action?.key);
-  const [newLabel, setNewLabel] = useState<string>(action?.label);
+  const [newKey, setNewKey] = useState<ACTION_KEYS | LEGACY_KEYS>(action?.key);
+  const [newLabel, setNewLabel] = useState<ACTION_LABELS>(action?.label);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSaveValue = (e: string, i: number) => {
@@ -51,30 +50,37 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
     saveAction({ ...action, value: newValue });
   };
 
-  const handleLabelChange = (label: string) => {
+  const handleLabelChange = (label: ACTION_LABELS) => {
     setNewLabel(label);
-    setNewKey(ACTION_LABELS[label]);
+    setNewKey(ACTIONS[label]);
     saveAction({
       ...action,
       label,
-      key: ACTION_LABELS[label],
+      key: ACTIONS[label],
       value: [],
     });
   };
+
+  const handleAddNewValue = (e: React.ChangeEvent<HTMLInputElement>) => setNewValue(e.target.value);
+
+  const handleSaveNewValue = () => handleSaveValue(newValue, action.value.length);
+
+  const handleDelete = () => deleteAction(action);
+
+  const getPopupContainer = () => dropdownRef.current;
 
   return (
     <Row className="insight-large-input-row">
       <Col xs={!action.key ? 24 : 12} className="insight-large-input-row-content">
         {!action.key ? (
           <Select
-            style={{ width: '100%' }}
             className="insight-select-full-width"
             dropdownClassName="insight-select-full-width-dropdown"
-            placeholder="Add new action"
+            placeholder={NEW_ACTION_PLACEHOLDER}
             onChange={handleLabelChange}
-            getPopupContainer={() => dropdownRef.current}
+            getPopupContainer={getPopupContainer}
           >
-            {Object.keys(ACTION_LABELS).map((key) => (
+            {Object.keys(ACTIONS).map((key) => (
               <Option key={key} value={key}>
                 {key}
               </Option>
@@ -82,7 +88,7 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
           </Select>
         ) : (
           <>
-            <Button onClick={() => deleteAction(action)} danger type="link">
+            <Button onClick={handleDelete} danger type="link">
               <Suspense fallback={null}>
                 <MinusCircleOutlined />
               </Suspense>
@@ -92,9 +98,9 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
         )}
       </Col>
       <Col xs={12} className="insight-large-input-row-content insight-list">
-        {newKey === SEARCH_DOMAINS_ACTION &&
+        {newKey === ACTION_KEYS.SEARCH_DOMAINS &&
           action.value.map((value, i) => (
-            <div key={value + i} style={{ display: 'flex', alignItems: 'center' }}>
+            <div key={value + i}>
               <Button onClick={() => handleValueDelete(value)} danger type="link">
                 <Suspense fallback={null}>
                   <MinusCircleOutlined />
@@ -103,12 +109,12 @@ export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAct
               <span>{value}</span>
             </div>
           ))}
-        {newKey === SEARCH_DOMAINS_ACTION ? (
+        {newKey === ACTION_KEYS.SEARCH_DOMAINS ? (
           <Input.Search
-            enterButton="Add"
+            enterButton={ADD_ACTION_VALUE_BUTTON_TEXT}
             value={newValue}
-            onChange={(e) => setNewValue(e.target.value)}
-            onSearch={() => handleSaveValue(newValue, action.value.length)}
+            onChange={handleAddNewValue}
+            onSearch={handleSaveNewValue}
           />
         ) : (
           newKey && <Input key={action.id} value={action.value} onChange={handleChange} />

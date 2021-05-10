@@ -8,6 +8,7 @@ import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
   AIRTABLE_PUBLIC_LENSES_CREATE,
   b64EncodeUnicode,
+  BAZAAR_URL,
   EXTENSION_SHARE_URL,
   EXTENSION_SHORT_URL_RECEIVED,
   MY_BLOCKLIST_ID,
@@ -17,6 +18,18 @@ import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import './ShareButton.scss';
+
+/** MAGICS **/
+const ELLIPSIS_ROWS = 3;
+const POPOVER_WIDTH = 400; //px
+const SHARE_BUTTON_COLOR = '#999999';
+const CLICK_TO_COPY_TEXT = 'Click to Copy';
+const COPIED_TEXT = 'Copied';
+const SUBMIT_TO_BAZAAR_BUTTON_TEXT = 'Submit to Bazaar';
+const BROWSE_BAZAAR_BUTTON_TEXT = 'Browse Bazaar';
+const SHARE_AUGMENTATION_BUTTON_TITLE = 'Share Lens';
+const POPOVER_TITLE = 'Share <placeholder>';
+const POPOVER_CLOSE_BUTTON_TEXT = 'Close';
 
 const { Paragraph } = Typography;
 
@@ -51,6 +64,10 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
     setShared(true);
   };
 
+  const handleClose = () => setVisible(false);
+
+  const handleVisibleChange = (visible: boolean) => visible && !shared && handleShare();
+
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.type === EXTENSION_SHORT_URL_RECEIVED) {
@@ -59,68 +76,78 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
     });
   }, []);
 
-  const popoverContent = () => (
-    <>
-      <Paragraph
-        className="copyable-text"
-        copyable={{
-          icon: [
-            <Suspense fallback={null}>
-              <CopyOutlined />
-            </Suspense>,
-            <Suspense fallback={null}>
-              <CopyOutlined />
-            </Suspense>,
-          ],
-          tooltips: ['Click to Copy', 'Copied'],
-        }}
-        ellipsis={{ rows: 3 }}
-      >
-        {url}
-      </Paragraph>
-      <div className="popover-button-container">
-        <Button
-          type="default"
-          className="popover-primary-button"
-          onClick={() =>
-            window.open(
-              AIRTABLE_PUBLIC_LENSES_CREATE.replace('<base64>', encoded)
-                .replace('<name>', augmentation.name)
-                .replace('<description>', augmentation.description),
-            )
-          }
-        >
-          Submit to Bazaar
-        </Button>
-        <Button type="link" target="_blank" href="https://bazaar.insight.so">
-          Browse Bazaar
-        </Button>
-      </div>
-    </>
+  const popoverContent = () => {
+    const copyable = {
+      icon: [
+        <Suspense key={1} fallback={null}>
+          <CopyOutlined />
+        </Suspense>,
+        <Suspense key={2} fallback={null}>
+          <CopyOutlined />
+        </Suspense>,
+      ],
+      tooltips: [CLICK_TO_COPY_TEXT, COPIED_TEXT],
+    };
+
+    const ellipsis = { rows: ELLIPSIS_ROWS };
+
+    const handleSubmitToBazaar = () =>
+      window.open(
+        AIRTABLE_PUBLIC_LENSES_CREATE.replace('<base64>', encoded)
+          .replace('<name>', augmentation.name)
+          .replace('<description>', augmentation.description),
+      );
+
+    return (
+      <>
+        <Paragraph className="copyable-text" copyable={copyable} ellipsis={ellipsis}>
+          {url}
+        </Paragraph>
+        <div className="popover-button-container">
+          <Button type="default" className="popover-primary-button" onClick={handleSubmitToBazaar}>
+            {SUBMIT_TO_BAZAAR_BUTTON_TEXT}
+          </Button>
+          <Button type="link" target="_blank" href={BAZAAR_URL}>
+            {BROWSE_BAZAAR_BUTTON_TEXT}
+          </Button>
+        </div>
+      </>
+    );
+  };
+
+  const popoverTitle = (
+    <div className="popover-title">
+      {POPOVER_TITLE.replace('<placeholder>', augmentation.name)}
+      <Button className="popover-close-button" type="link" onClick={handleClose}>
+        {POPOVER_CLOSE_BUTTON_TEXT}
+      </Button>
+    </div>
   );
+
+  const popoverWidth = { width: POPOVER_WIDTH };
+  const keepParent = { keepParent: false };
+  const getPopupContainer = () => tooltipContainer.current;
+  const containerStyle: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
   return (
     <div className="share-button-container  button-container">
       <Popover
-        style={{ width: 400 }}
+        style={popoverWidth}
         content={popoverContent}
-        title={
-          <div className="popover-title">
-            {`Share ${augmentation.name}`}
-            <Button className="popover-close-button" type="link" onClick={() => setVisible(false)}>
-              Close
-            </Button>
-          </div>
-        }
+        title={popoverTitle}
         trigger="hover"
-        onVisibleChange={(visible) => visible && !shared && handleShare()}
+        onVisibleChange={handleVisibleChange}
         visible={!disabled && visible}
-        destroyTooltipOnHide={{ keepParent: false }}
-        getPopupContainer={() => tooltipContainer.current}
+        destroyTooltipOnHide={keepParent}
+        getPopupContainer={getPopupContainer}
         placement={icon ? 'bottomRight' : 'topLeft'}
       >
         {icon ? (
-          <Button type="link" onClick={handleShare} icon={<Share size={15} stroke={'#999'} />} />
+          <Button
+            type="link"
+            onClick={handleShare}
+            icon={<Share size={15} stroke={SHARE_BUTTON_COLOR} />}
+          />
         ) : (
           <Button
             type="link"
@@ -134,16 +161,12 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
               <Suspense fallback={null}>
                 <UploadOutlined />
               </Suspense>
-              <span>Share Lens</span>
+              <span>{SHARE_AUGMENTATION_BUTTON_TITLE}</span>
             </div>
           </Button>
         )}
       </Popover>
-      <div
-        className="tooltip-container"
-        ref={tooltipContainer}
-        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-      />
+      <div className="tooltip-container" ref={tooltipContainer} style={containerStyle} />
     </div>
   );
 };

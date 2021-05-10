@@ -96,7 +96,7 @@ chrome.webRequest.onHeadersReceived.addListener(
   },
   extraSpec,
 );
-// Rewrite outgoing headers to mimick if UA was a mobile device. We are always want to show the mobile page in
+// Rewrite outgoing headers to mimic if UA was a mobile device. We are always want to show the mobile page in
 // the sidebar. However, this solution is not covering every case. See: `scripts/frame.ts` for details. The idea
 // here is to append the URL with a junk string on each request we want mobile page back and check for this junk.
 chrome.webRequest.onBeforeSendHeaders.addListener(
@@ -162,7 +162,7 @@ const trackData: Record<string, number> = Object.create(null);
 // After the value is stored, we fire an update message which will update the gutter unit.
 const stopTrackingTimer = async () => {
   const stored =
-    (await new Promise((resolve) =>
+    (await new Promise<Record<string, number>>((resolve) =>
       chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
     ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
   Object.entries(trackData).forEach(([publication, startTime]) => {
@@ -189,11 +189,11 @@ const stopTrackingTimer = async () => {
     }
   });
 };
-// Event listener ivoked when the user changes the current tab. If the new tab matches
+// Event listener invoked when the user changes the current tab. If the new tab matches
 // a known publication, we start to track the time spent on this tab. Switching to another
 // tab or STOP message from the frontend will stop the timer and add the tracked time to
 // the stored value of the corresponding publication. Spent time calculated by subtracting
-// the starttime from the current time (timestamps in miliseconds converted to minutes).
+// the start time from the current time (timestamps in milliseconds converted to minutes).
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.query({}, async (tabs) => {
     const currentTab = tabs.find(({ id }) => id == tabId);
@@ -230,8 +230,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 // Fire an event when the user is navigating away from the current site. This will run asynchronously and it's not
-// guaranteed that `SidebarLoader`'s `getCustomSearchEngine` method finds a value in the storage, beacuse of the
-// race conditions. On the other hand, we can safely ignore this behaviour, because in that case, both results will
+// guaranteed that `SidebarLoader`'s `getCustomSearchEngine` method finds a value in the storage, because of the
+// race conditions. On the other hand, we can safely ignore this behavior, because in that case, both results will
 // come from the same source, and going to be identical. The only drawback is an extra fetch request from the client.
 chrome.webNavigation.onBeforeNavigate.addListener(async () => {
   SearchEngineManager.sync();

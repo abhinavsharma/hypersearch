@@ -20,9 +20,17 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './InlineGutterIcon.scss';
 
+/** MAGICS **/
+const ADD_TO_TRUSTLIST_TOOLTIP_TITLE = 'Add <placeholder> to my trusted sites.';
+const REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE = `Remove <placeholder> from my muted sites.`;
+const ADD_TO_BLOCKLIST_TOOLTIP_TITLE = 'Add <placeholder> to my muted sites.';
+const REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE = 'Remove <placeholder> from my muted sites.';
+const BLOCKER_AUGMENTATION_LIST_TEXT = 'Domain hidden by <placeholder>.';
+const SEARCHING_AUGMENTATION_LIST_TEXT = `Domain featured in <placeholder>.`;
 const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const SWITCH_TO_TAB_DELAY = 300; //ms
+const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
 export const InlineGutterIcon: InlineGutterIcon = ({
   url,
@@ -145,21 +153,26 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
   const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
 
+  const getPopupContainer = () => tooltipContainer.current;
+
   return (
     <div className="gutter-icon-container" ref={iconRef}>
       <PublicationTimeTracker key={publication} domain={publication} />
       <Tooltip
         title={`${
           !!searchingAugmentations.length && !onlySearchedByTrustlist
-            ? `Domain featured in ${searchingAugmentations.map(({ name }) => name).join(', ')}.`
+            ? SEARCHING_AUGMENTATION_LIST_TEXT.replace(
+                '<placeholder>',
+                searchingAugmentations.map(({ name }) => name).join(', '),
+              )
             : ''
         } ${
           inTrustlist
-            ? `Remove ${publication} from my trusted sites`
-            : `Add ${publication} to my trusted sites.`
+            ? REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
+            : ADD_TO_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
-        getPopupContainer={() => tooltipContainer.current}
+        getPopupContainer={getPopupContainer}
         placement="right"
         overlayClassName="gutter-tooltip"
       >
@@ -177,12 +190,15 @@ export const InlineGutterIcon: InlineGutterIcon = ({
       <Tooltip
         title={`${
           !!blockingAugmentations.length && !onlyBlockedByBlocklist
-            ? `Domain hidden by ${blockingAugmentations.map(({ name }) => name).join(', ')}.`
+            ? BLOCKER_AUGMENTATION_LIST_TEXT.replace(
+                '<placeholder>',
+                blockingAugmentations.map(({ name }) => name).join(', '),
+              )
             : ''
         } ${
           inBlocklist
-            ? `Remove ${publication} from my muted sites.`
-            : `Add ${publication} to my muted sites.`
+            ? REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
+            : ADD_TO_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
         }`}
         destroyTooltipOnHide={{ keepParent: false }}
         getPopupContainer={() => tooltipContainer.current}
@@ -200,11 +216,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
         type="text"
       />
-      <div
-        className="tooltip-container"
-        ref={tooltipContainer}
-        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-      />
+      <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />
     </div>
   );
 };

@@ -10,6 +10,11 @@ import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './EditAugmentationMeta.scss';
 
+/** MAGICS **/
+const NAME_SECTION_LABEL = 'Name';
+const DESCRIPTION_SECTION_LABEL = 'Description (optional)';
+const ENABLED_SECTION_LABEL = 'Enabled';
+
 export const EditAugmentationMeta: EditAugmentationMeta = ({
   augmentation,
   name,
@@ -22,19 +27,19 @@ export const EditAugmentationMeta: EditAugmentationMeta = ({
   return (
     <>
       <Row className="insight-large-input-row">
-        <Col xs={12}>Name</Col>
+        <Col xs={12}>{NAME_SECTION_LABEL}</Col>
         <Col xs={12}>
           <Input onChange={onNameChange} value={name} />
         </Col>
       </Row>
       <Row className="insight-large-input-row">
-        <Col xs={12}>Description (optional)</Col>
+        <Col xs={12}>{DESCRIPTION_SECTION_LABEL}</Col>
         <Col xs={12}>
           <Input onChange={onDescriptionChange} value={description} />
         </Col>
       </Row>
       <Row className="insight-large-input-row">
-        <Col xs={12}>Enabled</Col>
+        <Col xs={12}>{ENABLED_SECTION_LABEL}</Col>
         <Col xs={12}>
           <Switch
             className="augmentation-enabled-switch"

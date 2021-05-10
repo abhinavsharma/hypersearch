@@ -9,12 +9,14 @@ import {
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 
+const DELETE_TEXT = 'Delete Lens';
+
 const DeleteOutlined = React.lazy(
   async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
 );
 
 export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentation, disabled }) => {
-  const handleDelete = () => {
+  const handleDelete = (): void => {
     if (disabled || augmentation.id === MY_BLOCKLIST_ID) return null;
     AugmentationManager.removeInstalledAugmentation(augmentation);
     chrome.runtime.sendMessage({
@@ -40,7 +42,7 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
           <Suspense fallback={null}>
             <DeleteOutlined />
           </Suspense>
-          <span>Delete Lens</span>
+          <span>{DELETE_TEXT}</span>
         </div>
       </Button>
     </div>

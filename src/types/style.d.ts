@@ -1,24 +1,14 @@
-declare module '*.module.css' {
+declare module '*.css' {
   const classes: { [key: string]: string };
   export default classes;
 }
 
-declare module '*.module.scss' {
+declare module '*.scss' {
   const classes: { [key: string]: string };
   export default classes;
 }
 
-declare module '*.module.sass' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.module.less' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.module.styl' {
+declare module '*.sass' {
   const classes: { [key: string]: string };
   export default classes;
 }

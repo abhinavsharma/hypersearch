@@ -152,7 +152,7 @@ class SearchEngineManager {
    * @method
    * @memberof SidebarLoader
    */
-  public async sync() {
+  public async sync(): Promise<void> {
     if (this.throttled) {
       debug('SearchEngineManager - sync - throttle execution');
       return null;

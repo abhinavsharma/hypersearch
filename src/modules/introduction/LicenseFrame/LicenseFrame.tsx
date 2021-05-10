@@ -1,9 +1,19 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
 import { Input, Button, Typography } from 'antd';
 import { StepContext } from 'modules/introduction';
 import { APP_NAME, SYNC_LICENSE_KEY } from 'utils';
 import './LicenseFrame.scss';
+
+/** MAGICS **/
+const TAB_TITLE = `${APP_NAME} - Enter License Key`;
+const PAGE_MAIN_HEADER = 'Enter Your License Key';
+const LICENSE_INPUT_PLACEHOLDER = 'If you have a special access key, paste it here';
+const USE_LICENSE_BUTTON_TEXT = 'Next';
+const USE_UNLICENSED_BUTTON_TEXT = 'Try Unlicensed';
+const LICENSE_KEY_LENGTH = 39;
+const BUTTON_CONTAINER_STYLE: React.CSSProperties = { width: '400px' };
+const USE_UNLICENSED_BUTTON_STYLE: React.CSSProperties = { color: 'white' };
 
 const { Title } = Typography;
 
@@ -29,25 +39,24 @@ export const LicenseFrame = () => {
     return stepContext.license.key?.length === 39 && stepContext.license.key?.match(/^[\w-]*$/gi);
   };
 
-  useEffect(() => {
-    document.title = `Welcome to ${APP_NAME}`;
-  }, []);
+  const handleLicenseChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    stepContext.setLicense({ key: e.target.value });
 
   return (
     <div id="license-frame-container">
       <Helmet>
-        <title>{APP_NAME} - Enter License Key</title>
+        <title>{TAB_TITLE}</title>
       </Helmet>
-      <Title level={2}>Enter Your License Key</Title>
+      <Title level={2}>{PAGE_MAIN_HEADER}</Title>
       <Input
         type="text"
-        minLength={39}
-        maxLength={39}
+        minLength={LICENSE_KEY_LENGTH}
+        maxLength={LICENSE_KEY_LENGTH}
         value={stepContext.license.key}
-        placeholder="If you have a special access key, paste it here"
-        onChange={(e) => stepContext.setLicense({ key: e.target.value })}
+        placeholder={LICENSE_INPUT_PLACEHOLDER}
+        onChange={handleLicenseChange}
       />
-      <div className="horizontal-container" style={{ width: '400px' }}>
+      <div className="horizontal-container" style={BUTTON_CONTAINER_STYLE}>
         <Button
           type="ghost"
           shape="round"
@@ -56,16 +65,16 @@ export const LicenseFrame = () => {
           onClick={handleLicenseSubmit}
           disabled={!validateLicense()}
         >
-          Next
+          {USE_LICENSE_BUTTON_TEXT}
         </Button>
         <Button
           type="link"
           size="large"
-          style={{ color: 'white' }}
+          style={USE_UNLICENSED_BUTTON_STYLE}
           className="step-button"
           onClick={handleFreeTier}
         >
-          Try Unlicensed
+          {USE_UNLICENSED_BUTTON_TEXT}
         </Button>
       </div>
     </div>
