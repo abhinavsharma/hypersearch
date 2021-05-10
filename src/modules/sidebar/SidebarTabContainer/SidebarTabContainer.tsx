@@ -8,6 +8,7 @@ import {
   keyUpHandler,
   decodeSpace,
   triggerSerpProcessing,
+  HIDE_FRAME_OVERLAY_MESSAGE,
 } from 'utils';
 import 'antd/lib/skeleton/style/index.css';
 
@@ -21,6 +22,12 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
 
   useEffect(() => {
     const { current: frame } = frameRef;
+
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg.type === HIDE_FRAME_OVERLAY_MESSAGE) {
+        setIsLoaded(true);
+      }
+    });
 
     frame?.contentWindow.addEventListener('keydown', handleKeyDown);
     frame?.contentWindow.addEventListener('keyup', handleKeyUp);
