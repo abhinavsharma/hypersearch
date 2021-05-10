@@ -365,6 +365,7 @@ class SidebarLoader {
         case OPEN_URL_ACTION:
           action.value.forEach((value) => {
             const url = AugmentationManager.processOpenPageActionString(value);
+            if (url.hostname === 'undefined') return;
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             if (augmentation.actions.action_list.length > 1) {
               url.searchParams.append(
@@ -588,7 +589,9 @@ class SidebarLoader {
     this.url = url;
     if (
       this.url.href.search(/amazon\.com/gi) > -1 ||
-      this.url.searchParams.get('tbm') === 'isch' ||
+      // TBM will be added to the Google search URL and have a certain value when you select
+      // any of the “special” searches, like image search or video search.
+      this.url.searchParams.get('tbm') ||
       this.url.searchParams.get('ia') === 'images' ||
       this.url.searchParams.get('iax') === 'images'
     ) {
