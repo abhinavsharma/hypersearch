@@ -365,6 +365,7 @@ class SidebarLoader {
         case OPEN_URL_ACTION:
           action.value.forEach((value) => {
             const url = AugmentationManager.processOpenPageActionString(value);
+            if (url.hostname === 'undefined') return;
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             if (augmentation.actions.action_list.length > 1) {
               url.searchParams.append(
