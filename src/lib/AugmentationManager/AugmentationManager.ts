@@ -241,11 +241,12 @@ class AugmentationManager {
     );
     chrome.storage.local.remove(`${IGNORED_PREFIX}-${augmentation.id}`);
     const { isRelevant } = this.getAugmentationRelevancy(augmentation);
+    // prettier-ignore
     augmentation.pinned
       ? SidebarLoader.pinnedAugmentations.push(augmentation)
       : isRelevant
-      ? SidebarLoader.suggestedAugmentations.push(augmentation)
-      : SidebarLoader.otherAugmentations.push(augmentation);
+        ? SidebarLoader.suggestedAugmentations.push(augmentation)
+        : SidebarLoader.otherAugmentations.push(augmentation);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 

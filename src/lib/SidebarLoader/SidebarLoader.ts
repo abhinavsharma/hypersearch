@@ -395,14 +395,32 @@ class SidebarLoader {
           customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
           break;
         case ACTION_KEYS.SEARCH_ALSO:
-          const url = AugmentationManager.processSearchAlsoActionString(
-            (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
-          );
-          url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          urls.push(url);
+          {
+            const url = AugmentationManager.processSearchAlsoActionString(
+              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
+            );
+            url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+            urls.push(url);
+          }
+          break;
+        case ACTION_KEYS.OPEN_LINK_CSS:
+          {
+            try {
+              const elements = this.document.querySelectorAll(action.value[0]);
+              elements.forEach((element) => {
+                const url = new URL(element.getAttribute('href'));
+                url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+                urls.push(url);
+              });
+            } catch (e) {
+              debug('getTabUrls - error\n---\n\tFailed to create URL', e, '\n---');
+            }
+          }
+
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
+          break;
       }
 
       switch (action.key) {

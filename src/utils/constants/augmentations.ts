@@ -19,6 +19,7 @@ export enum ACTION_KEYS {
   SEARCH_APPEND = 'search_append',
   INJECT_JS = 'inject_js',
   SEARCH_ALSO = 'search_also',
+  OPEN_LINK_CSS = 'open_link_css',
 }
 
 export enum CONDITION_LABELS {
@@ -47,6 +48,7 @@ export enum ACTION_LABELS {
   SEARCH_ALSO = 'Search also',
   // ! URL ACTION
   OPEN_URL = 'Open page',
+  OPEN_LINK_CSS = 'Open links matching CSS selector',
 }
 
 export enum CONDITION_LIST_EVALUATIONS {
