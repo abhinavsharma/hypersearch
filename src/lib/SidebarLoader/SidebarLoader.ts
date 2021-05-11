@@ -104,7 +104,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public tabDomains: Record<string, Record<string, string[]>> & Record<'original', string[]>;
+  public publicationSlices: Record<string, Record<string, string[]>> & Record<'original', string[]>;
 
   /**
    * The current document object.
@@ -270,7 +270,7 @@ class SidebarLoader {
     this.preventAutoExpand = false;
     this.domains = [];
     this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
-    this.tabDomains = Object.create(null);
+    this.publicationSlices = Object.create(null);
     this.sidebarTabs = [];
     this.domainsToSearch = Object.create(null);
     this.customSearchEngine = Object.create(null);
@@ -401,9 +401,9 @@ class SidebarLoader {
       switch (action.key) {
         case ACTION_KEYS.SEARCH_DOMAINS:
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          this.tabDomains[augmentation.id][customSearchUrl.href] = action.value.map((value) =>
-            removeProtocol(value),
-          );
+          this.publicationSlices[augmentation.id][
+            customSearchUrl.href
+          ] = action.value.map((value) => removeProtocol(value));
           urls.push(customSearchUrl);
           break;
         case ACTION_KEYS.SEARCH_APPEND:
@@ -435,11 +435,13 @@ class SidebarLoader {
     ],
   ) {
     debug(
-      'getTabsAndAugmentations - call\n---\n\tTop domains\n',
+      'getTabsAndAugmentations - call\n---\n\tTop Results\n',
       ...this.domains.map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),
       '\n---',
-      '\n\tAll domains\n',
-      ...this.tabDomains['original'].map((domain, index) => `\n\t${index + 1}.) ${domain}\n`),
+      '\n\tPublication Slices\n',
+      ...this.publicationSlices['original'].map(
+        (domain, index) => `\n\t${index + 1}.) ${domain}\n`,
+      ),
       '\n---',
     );
     this.sidebarTabs = [];
@@ -491,7 +493,7 @@ class SidebarLoader {
         /** DEV END  **/
 
         if (isRelevant && AugmentationManager.isAugmentationEnabled(augmentation)) {
-          this.tabDomains[augmentation.id] = Object.create(null);
+          this.publicationSlices[augmentation.id] = Object.create(null);
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list.reduce(
             (a, { key, value }) => {
               if (key === ACTION_KEYS.SEARCH_DOMAINS) a = a.concat(value);
@@ -617,7 +619,7 @@ class SidebarLoader {
     const prepareDocument = async () => {
       this.document.documentElement.style.setProperty('color-scheme', 'none');
       this.domains = this.getDomains(document) ?? [];
-      this.tabDomains['original'] = this.getDomains(document, true);
+      this.publicationSlices['original'] = this.getDomains(document, true);
       const checkRequiredParams = () =>
         !!this.customSearchEngine?.search_engine_json?.required_params.length &&
         this.customSearchEngine?.search_engine_json?.required_params

@@ -22,6 +22,12 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "react/prop-types": "off",
+    "indent": [
+      {
+        "offsetTernaryExpressions": true,
+        "flatTernaryExpressions": false
+      }
+    ],
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

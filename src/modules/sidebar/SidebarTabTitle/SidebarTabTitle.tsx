@@ -30,7 +30,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
         query: SidebarLoader.query,
         url: msg.url,
         position_in_serp:
-          (SidebarLoader.tabDomains as any)['original'].indexOf(
+          (SidebarLoader.publicationSlices as any)['original'].indexOf(
             extractUrlProperties(msg.url).full,
           ) + 1,
       });

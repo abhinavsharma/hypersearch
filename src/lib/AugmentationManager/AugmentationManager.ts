@@ -29,6 +29,7 @@ import {
   ACTION_KEYS,
   CONDITION_TYPES,
   CONDITION_KEYS,
+  ACTION_LABELS,
 } from 'utils';
 
 class AugmentationManager {
@@ -71,7 +72,7 @@ class AugmentationManager {
       ),
       {
         key: ACTION_KEYS.SEARCH_HIDE_DOMAIN,
-        label: ACTION_KEYS.SEARCH_HIDE_DOMAIN,
+        label: ACTION_LABELS.SEARCH_HIDE_DOMAIN,
         type: CONDITION_TYPES.LIST,
         value: [domain],
       },
@@ -197,7 +198,7 @@ class AugmentationManager {
         const index = value.split('%sr')[1];
         url = url.replaceAll(
           `%sr${index}`,
-          SidebarLoader.tabDomains['original']?.[Number(index) - 1],
+          SidebarLoader.publicationSlices['original']?.[Number(index) - 1],
         );
       });
     }
@@ -451,7 +452,7 @@ class AugmentationManager {
             const intentDomains = matchingIntent.sites.split(',') ?? [];
             intentDomains.forEach(
               (domain) =>
-                !!SidebarLoader.tabDomains['original']?.find(
+                !!SidebarLoader.publicationSlices['original']?.find(
                   (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
                 ) && intents.push(domain),
             );

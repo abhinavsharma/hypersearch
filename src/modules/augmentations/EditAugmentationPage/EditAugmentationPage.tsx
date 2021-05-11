@@ -67,16 +67,16 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     tourStep
       ? TOUR_AUGMENTATION.name
       : !augmentation.installed && !!augmentation.name?.length
-      ? `${augmentation.name}${FORKED_AUGMENTATION_APPENDAGE}`
-      : augmentation.name || NEW_AUGMENTATION_TITLE,
+        ? `${augmentation.name}${FORKED_AUGMENTATION_APPENDAGE}`
+        : augmentation.name || NEW_AUGMENTATION_TITLE,
   );
 
   const [description, setDescription] = useState<string>(
     tourStep
       ? TOUR_AUGMENTATION.description
       : !augmentation.installed
-      ? ''
-      : augmentation.description,
+        ? ''
+        : augmentation.description,
   );
   const [isActive, setIsActive] = useState<boolean>(
     augmentation.enabled || !augmentation.installed,
@@ -89,31 +89,31 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   const [conditions, setConditions] = useState<CustomCondition[]>(
     isAdding
       ? [
-          {
-            ...(tourStep === '2'
-              ? TOUR_AUGMENTATION.conditions.condition_list[0]
-              : ANY_URL_CONDITION_TEMPLATE),
-            id: uuid(),
-          },
-        ]
-      : augmentation.conditions.condition_list.map((condition) => ({
-          ...condition,
+        {
+          ...(tourStep === '2'
+            ? TOUR_AUGMENTATION.conditions.condition_list[0]
+            : ANY_URL_CONDITION_TEMPLATE),
           id: uuid(),
-        })),
+        },
+      ]
+      : augmentation.conditions.condition_list.map((condition) => ({
+        ...condition,
+        id: uuid(),
+      })),
   );
 
   const [actions, setActions] = useState<CustomAction[]>(
     tourStep
       ? [
-          {
-            id: uuid(),
-            ...TOUR_AUGMENTATION.actions.action_list[0],
-          },
-        ]
-      : augmentation.actions.action_list.map((action) => ({
+        {
           id: uuid(),
-          ...action,
-        })),
+          ...TOUR_AUGMENTATION.actions.action_list[0],
+        },
+      ]
+      : augmentation.actions.action_list.map((action) => ({
+        id: uuid(),
+        ...action,
+      })),
   );
 
   const handleClose = () => {
@@ -175,9 +175,9 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   useEffect(() => {
     setIsDisabled(
       !name ||
-        !actions.length ||
-        !conditions.length ||
-        !!actions?.filter((action) => !action.key).length,
+      !actions.length ||
+      !conditions.length ||
+      !!actions?.filter((action) => !action.key).length,
     );
   }, [name, actions, conditions.length]);
 

@@ -50,7 +50,9 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           query: SidebarLoader.query,
           url: msg.url,
           position_in_serp:
-            SidebarLoader.tabDomains['original'].indexOf(extractUrlProperties(msg.url).full) + 1,
+            SidebarLoader.publicationSlices['original'].indexOf(
+              extractUrlProperties(msg.url).full,
+            ) + 1,
         });
       } else {
         const sourceTab = tabs.find(
@@ -72,7 +74,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               url: msg.url,
               filter_name: sourceTab.title,
               position_in_serp:
-                SidebarLoader.tabDomains[sourceTab.id][sourceTab.url.href].indexOf(
+                SidebarLoader.publicationSlices[sourceTab.id][sourceTab.url.href].indexOf(
                   extractUrlProperties(msg.url).hostname,
                 ) + 1,
             }),

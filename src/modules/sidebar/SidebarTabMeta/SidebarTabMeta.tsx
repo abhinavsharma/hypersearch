@@ -25,7 +25,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
     SidebarLoader.augmentationStats[tab.id] ?? 0,
   );
   const [domains, setDomains] = useState<string[]>(
-    SidebarLoader.tabDomains[tab.id][tab.url.href] ?? [],
+    SidebarLoader.publicationSlices[tab.id][tab.url.href] ?? [],
   );
   const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -46,11 +46,14 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
   useEffect(() => {
     setCurrentStat(SidebarLoader.augmentationStats[tab.id] ?? 0);
-    setDomains(SidebarLoader.tabDomains[tab.id][tab.url.href]);
+    setDomains(SidebarLoader.publicationSlices[tab.id][tab.url.href]);
     // Singleton instance not reinitialized on rerender.
     // ! Be careful when updating the dependency list!
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [SidebarLoader.augmentationStats[tab.id], SidebarLoader.tabDomains[tab.id][tab.url.href]]);
+  }, [
+    SidebarLoader.augmentationStats[tab.id],
+    SidebarLoader.publicationSlices[tab.id][tab.url.href],
+  ]);
 
   const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
 
