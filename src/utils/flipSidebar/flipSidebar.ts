@@ -62,6 +62,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         'style',
         `
         position: fixed;
+        min-height: ${tabsLength === 0 ? '0' : '100px'};
         height: ${showButton.getAttribute('data-height') ?? '0'}px;
         width: ${tabsLength === 0 ? '0' : '160px'};
         border-width: 0 !important;

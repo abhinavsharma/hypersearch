@@ -50,14 +50,15 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     </List.Item>
   );
 
+  const filteredTabs = tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL);
+
   // Calculate the relative height of the nub by using the tab's title length
-  const tabHeight = tabs.slice(0, MAX_TAB_LENGTH + 1).reduce((a, tab) => {
+  const tabHeight = filteredTabs.length ? tabs.slice(0, MAX_TAB_LENGTH + 1).reduce((a, tab) => {
     const titleLength = tab.title.length * 8 < 50 ? 50 : tab.title.length * 8; // 1 ch is approximately 8 px
     const titleSpace = 50; // space for one line
     return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line
-  }, 0);
+  }, 0) : 0;
 
-  const filteredTabs = tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL);
 
   const dataSource =
     tabs.length > 3
