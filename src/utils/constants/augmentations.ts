@@ -9,7 +9,7 @@ export enum CONDITION_KEYS {
   URL_MATCHES = 'url_matches',
   DOMAIN_EQUALS = 'domain_equals',
   DOMAIN_MATCHES = 'domain_matches',
-  DOMAIN_CONTAINS = "domain_contains"
+  DOMAIN_CONTAINS = 'domain_contains',
 }
 
 export enum ACTION_KEYS {
@@ -19,7 +19,7 @@ export enum ACTION_KEYS {
   SEARCH_APPEND = 'search_append',
   INJECT_JS = 'inject_js',
   SEARCH_ALSO = 'search_also',
-  OPEN_LINK_CSS = 'open_link_css',
+  OPEN_LINK_CSS = 'open_links_css',
 }
 
 export enum CONDITION_LABELS {

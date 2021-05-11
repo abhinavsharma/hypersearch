@@ -410,6 +410,10 @@ class SidebarLoader {
               elements.forEach((element) => {
                 const url = new URL(element.getAttribute('href'));
                 url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+                url.searchParams.append(
+                  URL_PARAM_TAB_TITLE_KEY,
+                  extractUrlProperties(url.href)?.hostname,
+                );
                 urls.push(url);
               });
             } catch (e) {
