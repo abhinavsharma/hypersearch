@@ -20,6 +20,7 @@ export enum ACTION_KEYS {
   INJECT_JS = 'inject_js',
   SEARCH_ALSO = 'search_also',
   OPEN_LINK_CSS = 'open_links_css',
+  NO_COOKIE = 'no_cookie',
 }
 
 export enum CONDITION_LABELS {
@@ -49,6 +50,7 @@ export enum ACTION_LABELS {
   // ! URL ACTION
   OPEN_URL = 'Open page',
   OPEN_LINK_CSS = 'Open links matching CSS selector',
+  NO_COOKIE = 'Open page with cookies disabled',
 }
 
 export enum CONDITION_LIST_EVALUATIONS {

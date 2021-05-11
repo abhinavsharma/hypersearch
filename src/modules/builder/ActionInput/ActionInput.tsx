@@ -53,6 +53,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
     ACTION_KEYS.SEARCH_APPEND,
     ACTION_KEYS.SEARCH_HIDE_DOMAIN,
     ACTION_KEYS.OPEN_LINK_CSS,
+    ACTION_KEYS.NO_COOKIE,
   ];
 
   const INPUTS: Partial<Record<Partial<ACTION_KEYS | 'default'>, ReactElement>> = {

@@ -24,6 +24,7 @@ import {
   TRIGGER_STOP_TRACK_TIMER_MESSAGE,
   URL_UPDATED_MESSAGE,
   SPECIAL_URL_JUNK_STRING,
+  URL_PARAM_NO_COOKIE_KEY,
 } from 'utils/constants';
 // ! INITIALIZATION
 // See: https://stackoverflow.com/a/9851769/2826713
@@ -62,10 +63,13 @@ chrome.webRequest.onHeadersReceived.addListener(
       'referer-policy',
     ];
 
-    const responseHeaders = details.responseHeaders.filter((responseHeader) => {
-      const deleted = !strippedHeaders.includes(responseHeader.name.toLowerCase());
-      return deleted;
-    });
+    const banCookies = details.url.search(URL_PARAM_NO_COOKIE_KEY) > -1;
+
+    banCookies && strippedHeaders.push('set-cookie');
+
+    const responseHeaders = details.responseHeaders.filter(
+      (responseHeader) => !strippedHeaders.includes(responseHeader.name.toLowerCase()),
+    );
 
     const result = {
       responseHeaders: [
