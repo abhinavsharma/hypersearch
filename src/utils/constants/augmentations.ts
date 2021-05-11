@@ -9,6 +9,7 @@ export enum CONDITION_KEYS {
   URL_MATCHES = 'url_matches',
   DOMAIN_EQUALS = 'domain_equals',
   DOMAIN_MATCHES = 'domain_matches',
+  DOMAIN_CONTAINS = "domain_contains"
 }
 
 export enum ACTION_KEYS {
@@ -35,6 +36,7 @@ export enum CONDITION_LABELS {
   // ! DOMAIN CONDITIONS
   DOMAIN_EQUALS = 'Domain equals',
   DOMAIN_MATCHES = 'Domain matches regex',
+  DOMAIN_CONTAINS = 'Domain is one of',
 }
 
 export enum ACTION_LABELS {
