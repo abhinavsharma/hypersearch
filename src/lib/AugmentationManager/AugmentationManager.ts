@@ -507,6 +507,7 @@ class AugmentationManager {
       CONDITION_KEYS.URL_MATCHES,
       CONDITION_KEYS.DOMAIN_EQUALS,
       CONDITION_KEYS.DOMAIN_MATCHES,
+      CONDITION_KEYS.DOMAIN_CONTAINS
     ];
     const matchingUrl = augmentation.conditions.condition_list.reduce((matches, condition) => {
       const { unique_key: key, value } = condition;
@@ -531,7 +532,13 @@ class AugmentationManager {
       ) {
         matches.push(true);
       }
-      return matches;
+      if (
+        key === CONDITION_KEYS.DOMAIN_CONTAINS &&
+        value.includes(extractUrlProperties(SidebarLoader.url.href).hostname)
+      ){
+        matches.push(true);
+      }
+        return matches;
     }, []);
 
     const evaluationMatch =

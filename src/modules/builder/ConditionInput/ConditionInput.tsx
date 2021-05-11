@@ -4,7 +4,7 @@ import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
 import { CONDITION_KEYS, CONDITION_LABELS, LEGACY_KEYS, LEGACY_EVALUATION } from 'utils';
-import { NewConditionDropdown, SearchEngineDropdown, SearchIntentDropdown } from 'modules/builder';
+import { MultiValueInput,NewConditionDropdown, SearchEngineDropdown, SearchIntentDropdown } from 'modules/builder';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
@@ -63,16 +63,16 @@ export const ConditionInput: ConditionInput = ({
     saveCondition(newCondition);
   };
 
-  const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string[]) => {
     const { key, evaluation } = getLegacyProps();
-    setNewValue(value);
+    setNewValue(Array.isArray(e) ? e : [e.target.value]);
     const newCondition = {
       ...condition,
       key,
       evaluation,
       unique_key: newKey as CONDITION_KEYS,
       label: newLabel,
-      value: [value],
+      value: Array.isArray(e) ? e : [e.target.value],
     };
     saveCondition(newCondition);
   };
@@ -129,6 +129,9 @@ export const ConditionInput: ConditionInput = ({
     ),
     [CONDITION_KEYS.SEARCH_INTENT_IS]: (
       <SearchIntentDropdown handleSelect={handleSelect} newValue={newValue} />
+    ),
+    [CONDITION_KEYS.DOMAIN_CONTAINS]: (
+      <MultiValueInput values={condition.value} handleAdd={handleChange} />
     ),
     default: <Input key={condition.id} onChange={handleChange} value={newValue as string} />,
   };

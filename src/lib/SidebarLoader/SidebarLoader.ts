@@ -395,11 +395,11 @@ class SidebarLoader {
           customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
           break;
         case ACTION_KEYS.SEARCH_ALSO:
-          urls.push(
-            AugmentationManager.processSearchAlsoActionString(
-              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
-            ),
+          const url = AugmentationManager.processSearchAlsoActionString(
+            (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
           );
+          url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+          urls.push(url);
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
