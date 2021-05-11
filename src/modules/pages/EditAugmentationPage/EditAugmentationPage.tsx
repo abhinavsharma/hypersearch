@@ -9,7 +9,7 @@ import {
   EditAugmentationMeta,
   EditAugmentationActions,
   EditAugmentationConditions,
-} from 'modules/augmentations';
+} from 'modules/builder';
 import {
   ANY_URL_CONDITION_TEMPLATE,
   EMPTY_AUGMENTATION,

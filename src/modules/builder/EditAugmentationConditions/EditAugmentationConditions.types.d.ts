@@ -1,5 +1,5 @@
 import { Dispatch, FunctionComponent, SetStateAction } from 'react';
-import { CustomCondition } from 'modules/augmentations';
+import { CustomCondition } from 'modules/builder';
 
 declare module './EditAugmentationConditions' {
   type TCustomCondition = CustomCondition;

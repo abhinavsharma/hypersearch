@@ -1,6 +1,6 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
-import { EditActionInput } from 'modules/augmentations';
+import { EditActionInput } from 'modules/builder';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import { ACTION_TYPES } from 'utils';

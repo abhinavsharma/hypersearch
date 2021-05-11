@@ -1,5 +1,5 @@
 import { ChangeEventHandler, Dispatch, FunctionComponent, SetStateAction } from 'react';
-import { CustomAugmentationObject } from 'modules/augmentations';
+import { CustomAugmentationObject } from 'modules/builder';
 
 declare module './EditAugmentationMeta' {
   type EditAugmentationMetaProps = {

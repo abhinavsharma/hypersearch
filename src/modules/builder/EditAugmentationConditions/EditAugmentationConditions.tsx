@@ -3,13 +3,13 @@ import { v4 as uuid } from 'uuid';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
-import { EditConditionInput } from 'modules/augmentations';
 import {
   CONDITION_KEYS,
   CONDITION_LABELS,
   CONDITION_LIST_EVALUATIONS,
   CONDITION_TYPES,
 } from 'utils';
+import { EditConditionInput } from 'modules/builder';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
 

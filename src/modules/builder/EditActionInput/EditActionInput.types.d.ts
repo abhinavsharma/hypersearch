@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { CustomAction } from 'modules/augmentations';
+import { CustomAction } from 'modules/builder';
 
 declare module './EditActionInput' {
   type EditActionInputProps = {

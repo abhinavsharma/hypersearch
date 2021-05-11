@@ -3,7 +3,7 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
 import Switch from 'antd/lib/switch';
-import { DeleteAugmentationButton } from 'modules/augmentations';
+import { DeleteAugmentationButton } from 'modules/builder';
 import { ShareButton } from 'modules/shared';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/input/style/index.css';

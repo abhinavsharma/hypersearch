@@ -9,6 +9,7 @@ import {
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 
+/** MAGICS **/
 const DELETE_TEXT = 'Delete Lens';
 
 const DeleteOutlined = React.lazy(

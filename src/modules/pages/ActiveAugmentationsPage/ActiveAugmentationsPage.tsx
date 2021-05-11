@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { AugmentationRow } from 'modules/augmentations';
+import { AugmentationRow } from 'modules/builder';
 import { InlineGutterOptionsPage } from 'modules/pages';
 import { Settings } from 'react-feather';
 import {
