@@ -45,7 +45,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   );
 
   // Calculate the relative height of the nub by using the tab's title length
-  const tabHeight = tabs.reduce((a, tab) => {
+  const tabHeight = tabs.slice(0, 4).reduce((a, tab) => {
     const titleLength = tab.title.length * 8 < 70 ? 70 : tab.title.length * 8; // 1 ch is approximately 8 px
     const titleSpace = 70; // space for one line is 75px
     return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line is 25px
