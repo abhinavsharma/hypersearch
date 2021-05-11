@@ -4,7 +4,7 @@ import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { DomainStateCheckbox } from '../DomainStateCheckbox/DomainStateCheckbox';
+import { DomainStateCheckbox } from 'modules/gutter/DomainStateCheckbox/DomainStateCheckbox';
 import {
   ACTION_KEYS,
   ACTION_LABELS,

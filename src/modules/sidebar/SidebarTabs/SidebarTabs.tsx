@@ -8,8 +8,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
 import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { GutterPage } from 'modules/pages';
-import { ActiveAugmentationsPage, EditAugmentationPage } from 'modules/augmentations/';
+import {
+  ActiveAugmentationsPage,
+  EditAugmentationPage,
+  InlineGutterOptionsPage,
+} from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,

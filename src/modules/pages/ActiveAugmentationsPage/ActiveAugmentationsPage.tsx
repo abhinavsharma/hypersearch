@@ -3,7 +3,7 @@ import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AugmentationRow } from 'modules/augmentations';
-import { InlineGutterOptionsPage } from 'modules/gutter';
+import { InlineGutterOptionsPage } from 'modules/pages';
 import { Settings } from 'react-feather';
 import {
   makeEllipsis,
