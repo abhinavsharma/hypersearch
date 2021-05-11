@@ -1,10 +1,11 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
-import { EditActionInput } from 'modules/builder';
+import { ActionInput } from 'modules/builder';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import { ACTION_TYPES } from 'utils';
 
+<<<<<<< HEAD:src/modules/builder/EditAugmentationActions/EditAugmentationActions.tsx
 export const EditAugmentationActions: EditAugmentationActions = ({
   actions,
   onAdd,
@@ -12,6 +13,10 @@ export const EditAugmentationActions: EditAugmentationActions = ({
   onDelete,
 }) => {
   const newAction: TCustomAction = {
+=======
+export const ActionsSection: ActionsSection = ({ actions, onAdd, onSave, onDelete }) => {
+  const newAction = {
+>>>>>>> chore: rename builder and page copmponents:src/modules/builder/ActionsSection/ActionsSection.tsx
     id: uuid(),
     key: null,
     label: null,
@@ -21,14 +26,9 @@ export const EditAugmentationActions: EditAugmentationActions = ({
   return (
     <>
       {actions.map((action) => (
-        <EditActionInput
-          key={action.id}
-          action={action}
-          saveAction={onSave}
-          deleteAction={onDelete}
-        />
+        <ActionInput key={action.id} action={action} saveAction={onSave} deleteAction={onDelete} />
       ))}
-      <EditActionInput
+      <ActionInput
         key={newAction.id}
         action={newAction}
         saveAction={onAdd}

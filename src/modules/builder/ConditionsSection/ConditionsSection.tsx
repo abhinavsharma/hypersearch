@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
+<<<<<<< HEAD:src/modules/builder/EditAugmentationConditions/EditAugmentationConditions.tsx
 import {
   CONDITION_KEYS,
   CONDITION_LABELS,
@@ -18,6 +19,14 @@ const AND_CONDITION_EVALUATION_TEXT = 'All';
 const OR_CONDITION_EVALUATION_TEXT = 'Any';
 
 export const EditAugmentationConditions: EditAugmentationConditions = ({
+=======
+import { ConditionInput } from 'modules/builder';
+import { ANY_URL_CONDITION_MOBILE, ANY_WEB_SEARCH_CONDITION } from 'utils';
+import 'antd/lib/grid/style/index.css';
+import 'antd/lib/button/style/index.css';
+
+export const ConditionsSection: ConditionsSection = ({
+>>>>>>> chore: rename builder and page copmponents:src/modules/builder/ConditionsSection/ConditionsSection.tsx
   conditions,
   setConditions,
   evaluation,
@@ -86,7 +95,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
         </Col>
       </Row>
       {conditions.map((condition) => (
-        <EditConditionInput
+        <ConditionInput
           key={condition.id}
           handleAnySearchEngine={handleMatchAnySearchEngine}
           handleAnyUrl={handleMatchAnyPage}
@@ -95,7 +104,7 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
           deleteCondition={onDelete}
         />
       ))}
-      <EditConditionInput
+      <ConditionInput
         key={newCondition.id}
         handleAnySearchEngine={handleMatchAnySearchEngine}
         handleAnyUrl={handleMatchAnyPage}

@@ -12,8 +12,7 @@ import 'antd/lib/grid/style/index.css';
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
-
-export const EditActionInput: EditActionInput = ({ action, saveAction, deleteAction }) => {
+export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) => {
   const [newKey, setNewKey] = useState<Partial<ACTION_KEYS>>(action?.key);
   const [newLabel, setNewLabel] = useState<ACTION_LABELS>(action?.label);
   const dropdownRef = useRef<HTMLDivElement>(null);

@@ -16,7 +16,7 @@ const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 
-export const EditConditionInput: EditConditionInput = ({
+export const ConditionInput: ConditionInput = ({
   condition,
   saveCondition,
   deleteCondition,

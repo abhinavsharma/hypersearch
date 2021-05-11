@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 
-declare module './InlineGutterOptionsPage' {
+declare module './GutterPage' {
   type Section = {
     type: 'block' | 'search' | 'local';
     augmentations: Array<AugmentationObject & { actionIndex?: number }>;
@@ -8,11 +8,11 @@ declare module './InlineGutterOptionsPage' {
     subtitle: string;
   };
 
-  type InlineGutterOptionsPageProps = {
+  type GutterPageProps = {
     hidingAugmentations: AugmentationObject[];
     domain: string;
     inline?: boolean;
   };
 
-  type InlineGutterOptionsPage = FunctionComponent<InlineGutterOptionsPageProps>;
+  type GutterPage = FunctionComponent<GutterPageProps>;
 }

@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react';
-import { CustomCondition } from '..';
+import { CustomCondition } from 'modules/pages';
 
-declare module './EditConditionInput' {
-  type EditConditionInputProps = {
+declare module './ConditionInput' {
+  type ConditionInputProps = {
     condition: CustomCondition;
     handleAnyUrl: () => void;
     handleAnySearchEngine: () => void;
@@ -10,5 +10,5 @@ declare module './EditConditionInput' {
     deleteCondition: (e: CustomCondition) => void;
   };
 
-  type EditConditionInput = FunctionComponent<EditConditionInputProps>;
+  type ConditionInput = FunctionComponent<ConditionInputProps>;
 }

@@ -1,8 +1,8 @@
 import { ChangeEventHandler, Dispatch, FunctionComponent, SetStateAction } from 'react';
-import { CustomAugmentationObject } from 'modules/builder';
+import { CustomAugmentationObject } from 'modules/pages';
 
-declare module './EditAugmentationMeta' {
-  type EditAugmentationMetaProps = {
+declare module './MetaSection' {
+  type MetaSectionProps = {
     augmentation: CustomAugmentationObject<AugmentationObject>;
     name: string;
     onNameChange: ChangeEventHandler<HTMLInputElement>;
@@ -12,5 +12,5 @@ declare module './EditAugmentationMeta' {
     setEnabled: Dispatch<SetStateAction<boolean>>;
   };
 
-  type EditAugmentationMeta = FunctionComponent<EditAugmentationMetaProps>;
+  type MetaSection = FunctionComponent<MetaSectionProps>;
 }

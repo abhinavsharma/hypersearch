@@ -1,3 +1,3 @@
-export * from './ActiveAugmentationsPage/ActiveAugmentationsPage';
-export * from './EditAugmentationPage/EditAugmentationPage';
-export * from './InlineGutterOptionsPage/InlineGutterOptionsPage';
+export * from './ActivePage/ActivePage';
+export * from './BuilderPage/BuilderPage';
+export * from './GutterPage/GutterPage';

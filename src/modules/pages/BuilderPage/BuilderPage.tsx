@@ -5,11 +5,7 @@ import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import {
-  EditAugmentationMeta,
-  EditAugmentationActions,
-  EditAugmentationConditions,
-} from 'modules/builder';
+import { MetaSection, ActionsSection, ConditionsSection } from 'modules/builder';
 import {
   ANY_URL_CONDITION_TEMPLATE,
   EMPTY_AUGMENTATION,
@@ -23,7 +19,7 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import 'antd/lib/collapse/style/index.css';
-import './EditAugmentationPage.scss';
+import './BuilderPage.scss';
 
 /** MAGICS **/
 const HEADER_LEFT_BUTTON = 'Cancel';
@@ -56,10 +52,7 @@ const TOUR_TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_IN
 
 const { Panel } = Collapse;
 
-export const EditAugmentationPage: EditAugmentationPage = ({
-  augmentation = EMPTY_AUGMENTATION,
-  isAdding,
-}) => {
+export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, isAdding }) => {
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
 
@@ -254,6 +247,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
       </header>
       <div className="sidebar-page-wrapper">
         <Collapse defaultActiveKey={tourStep ? [] : ['2', '3']}>
+<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.tsx
           <Panel
             className="builder-page-collapse-panel"
             header={
@@ -266,6 +260,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             key="1"
           >
             <EditAugmentationConditions
+=======
+          <Panel className="builder-page-collapse-panel" header={<WhenTourTitle />} key="1">
+            <ConditionsSection
+>>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.tsx
               conditions={conditions}
               setConditions={setConditions}
               evaluation={conditionEvaluation}
@@ -275,6 +273,7 @@ export const EditAugmentationPage: EditAugmentationPage = ({
               onSave={handleSaveCondition}
             />
           </Panel>
+<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.tsx
           <Panel
             className="builder-page-collapse-panel"
             header={
@@ -287,12 +286,17 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             key="2"
           >
             <EditAugmentationActions
+=======
+          <Panel className="builder-page-collapse-panel" header={<ThenTourTitle />} key="2">
+            <ActionsSection
+>>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.tsx
               actions={actions}
               onAdd={handleAddAction}
               onSave={handleSaveAction}
               onDelete={handleDeleteAction}
             />
           </Panel>
+<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.tsx
           <Panel
             className="builder-page-collapse-panel"
             header={
@@ -305,6 +309,10 @@ export const EditAugmentationPage: EditAugmentationPage = ({
             key="3"
           >
             <EditAugmentationMeta
+=======
+          <Panel className="builder-page-collapse-panel" header={<MetaTourTitle />} key="3">
+            <MetaSection
+>>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.tsx
               augmentation={augmentation}
               name={name}
               description={description}

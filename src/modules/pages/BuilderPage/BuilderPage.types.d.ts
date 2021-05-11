@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react';
 
-declare module './EditAugmentationPage' {
+declare module './BuilderPage' {
   type CustomAugmentationObject<T = AugmentationObject> = T & {
     installed?: boolean;
   };
 
-  type EditAugmentationPageProps = {
+  type BuilderPageProps = {
     augmentation: AugmentationObject;
     isAdding?: boolean;
   };
@@ -18,6 +18,7 @@ declare module './EditAugmentationPage' {
     id: string;
   };
 
+<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.types.d.ts
   type SectionHeaderProps = {
     title: string;
     tourTitle: string;
@@ -27,6 +28,9 @@ declare module './EditAugmentationPage' {
   type SectionHeader = FunctionComponent<SectionHeaderProps>;
 
   type EditAugmentationPage = FunctionComponent<EditAugmentationPageProps>;
+=======
+  type BuilderPage = FunctionComponent<BuilderPageProps>;
+>>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.types.d.ts
 
-  type Header = FunctionComponent<EditAugmentationPageProps>;
+  type Header = FunctionComponent<BuilderPageProps>;
 }

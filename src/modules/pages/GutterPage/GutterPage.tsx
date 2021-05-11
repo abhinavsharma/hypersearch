@@ -21,7 +21,7 @@ import {
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
-import './InlineGutterOptionsPage.scss';
+import './GutterPage.scss';
 
 /** MAGICS **/
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
@@ -46,11 +46,7 @@ const PlusOutlined = React.lazy(
   async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
 );
 
-export const InlineGutterOptionsPage: InlineGutterOptionsPage = ({
-  hidingAugmentations = [],
-  domain,
-  inline,
-}) => {
+export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inline }) => {
   const [currentHiders, setCurrentHiders] = useState<AugmentationObject[]>(
     hidingAugmentations.filter(({ id }) => id !== MY_BLOCKLIST_ID),
   );

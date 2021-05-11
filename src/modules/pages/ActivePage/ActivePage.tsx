@@ -3,7 +3,7 @@ import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { AugmentationRow } from 'modules/builder';
-import { InlineGutterOptionsPage } from 'modules/pages';
+import { GutterPage } from 'modules/pages';
 import { Settings } from 'react-feather';
 import {
   makeEllipsis,
@@ -39,7 +39,7 @@ const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
 );
 
-export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
+export const ActivePage: ActivePage = () => {
   const domain = extractUrlProperties(SidebarLoader.url.href).hostname;
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [hidingAugmentations, setHidingAugmentations] = useState<AugmentationObject[]>(
@@ -191,11 +191,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
       </header>
       <div className="sidebar-page-wrapper">
         {!SidebarLoader.isSerp && (
-          <InlineGutterOptionsPage
-            domain={domain}
-            hidingAugmentations={hidingAugmentations}
-            inline
-          />
+          <GutterPage domain={domain} hidingAugmentations={hidingAugmentations} inline />
         )}
         {sections.map(
           ({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {
