@@ -7,3 +7,6 @@ export * from './EditAugmentationConditions/EditAugmentationConditions';
 export * from './EditAugmentationMeta/EditAugmentationMeta';
 export * from './EditAugmentationPage/EditAugmentationPage';
 export * from './EditConditionInput/EditConditionInput';
+export * from './SearchEngineDropdown/SearchEngineDropdown';
+export * from './SearchIntentDropdown/SearchIntentDropdown';
+export * from './NewConditionDropdown/NewConditionDropdown';
