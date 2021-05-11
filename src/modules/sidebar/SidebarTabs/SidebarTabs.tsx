@@ -8,8 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
 import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { InlineGutterOptionsPage } from 'modules/gutter';
-import { ActiveAugmentationsPage, EditAugmentationPage } from 'modules/augmentations/';
+import { ActivePage, BuilderPage, GutterPage } from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -145,17 +144,17 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             {(() => {
               switch (showPage) {
                 case OPEN_BUILDER_PAGE.ACTIVE:
-                  return <ActiveAugmentationsPage />;
+                  return <ActivePage />;
                 case OPEN_BUILDER_PAGE.BUILDER:
                   return (
-                    <EditAugmentationPage
+                    <BuilderPage
                       augmentation={pageData.augmentation}
                       isAdding={pageData.isAdding}
                     />
                   );
                 case OPEN_BUILDER_PAGE.GUTTER:
                   return (
-                    <InlineGutterOptionsPage
+                    <GutterPage
                       hidingAugmentations={pageData.augmentations}
                       domain={pageData.publication}
                     />

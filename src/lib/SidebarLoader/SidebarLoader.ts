@@ -394,6 +394,13 @@ class SidebarLoader {
         case ACTION_KEYS.SEARCH_APPEND:
           customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
           break;
+        case ACTION_KEYS.SEARCH_ALSO:
+          urls.push(
+            AugmentationManager.processSearchAlsoActionString(
+              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
+            ),
+          );
+          break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
       }

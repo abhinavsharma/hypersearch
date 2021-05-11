@@ -205,6 +205,12 @@ class AugmentationManager {
     return new URL(url);
   }
 
+  public processSearchAlsoActionString(value: CustomSearchEngine['search_engine_json']) {
+    const url = new URL(`https://${removeProtocol(value.required_prefix)}`);
+    value.required_params.forEach((param) => url.searchParams.append(param, SidebarLoader.query));
+    return url;
+  }
+
   /**
    * Takes an augmentation as first parameter and puts it to the ignored list. Also,
    * this method will trigger an update on the sidebar. When an augmentation is ignored,
