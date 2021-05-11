@@ -34,7 +34,7 @@ export const NewActionDropdown: NewActionDropdown = ({ handleSaveLabel }) => {
         onChange={handleLabelChange}
         getPopupContainer={getPopupContainer}
       >
-        {Object.keys(ACTION_LABELS).map((key) => (
+        {Object.keys(ACTIONS).map((key) => (
           <Option key={key} value={key}>
             {key}
           </Option>
