@@ -30,6 +30,31 @@ export const MY_TRUSTLIST_NAME = '🤝 Sites I Trust';
 export const MY_TRUSTLIST_ID = `${INSTALLED_PREFIX}-my-trust-list`;
 
 /**
+<<<<<<< HEAD:src/utils/constants/index.ts
+=======
+ * ! KEYS
+ */
+export const ANY_URL_CONDITION_MOBILE = 'any_url';
+export const ANY_WEB_SEARCH_CONDITION = 'any_web_search_url';
+export const SEARCH_CONTAINS_CONDITION = 'search_contains';
+export const SEARCH_QUERY_CONTAINS_CONDITION = 'search_query';
+export const SEARCH_INTENT_IS_CONDITION = 'search_intent';
+export const SEARCH_ENGINE_IS_CONDITION = 'search_engine';
+export const OPEN_URL_ACTION = 'open_url';
+export const SEARCH_DOMAINS_ACTION = 'search_domains';
+export const SEARCH_HIDE_DOMAIN_ACTION = 'search_hide_domain';
+export const SEARCH_APPEND_ACTION = 'search_append';
+export const INJECT_JS_ACTION = 'inject_js';
+export const SEARCH_ALSO_ACTION = 'search_also';
+
+// ! UNIQUE_KEYS
+export const URL_EQUALS_CONDITION = 'url_equals';
+export const URL_MATCHES_CONDITION = 'url_matches';
+export const DOMAIN_EQUALS_CONDTION = 'domain_equals';
+export const DOMAIN_MATCHES_CONDITION = 'domain_matches';
+
+/**
+>>>>>>> feat(actions): add support for also search action:src/utils/constants.ts
  * ! MAGICS
  */
 export const APP_NAME = process.env.PROJECT === 'is' ? 'Insight' : 'Insight';
@@ -83,6 +108,7 @@ export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
  * ! FLAGS
  */
 export const ENABLED_AUGMENTATION_TYPES = [
+<<<<<<< HEAD:src/utils/constants/index.ts
   CONDITION_KEYS.URL_EQUALS,
   CONDITION_KEYS.URL_MATCHES,
   CONDITION_KEYS.DOMAIN_EQUALS,
@@ -99,6 +125,23 @@ export const ENABLED_AUGMENTATION_TYPES = [
   ACTION_KEYS.SEARCH_APPEND,
   LEGACY_KEYS.DOMAIN,
   LEGACY_KEYS.URL,
+=======
+  URL_EQUALS_CONDITION,
+  URL_MATCHES_CONDITION,
+  DOMAIN_EQUALS_CONDTION,
+  DOMAIN_MATCHES_CONDITION,
+  ANY_WEB_SEARCH_CONDITION,
+  ANY_URL_CONDITION_MOBILE,
+  SEARCH_CONTAINS_CONDITION,
+  SEARCH_QUERY_CONTAINS_CONDITION,
+  OPEN_URL_ACTION,
+  SEARCH_DOMAINS_ACTION,
+  SEARCH_HIDE_DOMAIN_ACTION,
+  SEARCH_APPEND_ACTION,
+  SEARCH_INTENT_IS_CONDITION,
+  SEARCH_ENGINE_IS_CONDITION,
+  SEARCH_ALSO_ACTION,
+>>>>>>> feat(actions): add support for also search action:src/utils/constants.ts
 ];
 
 export const PROTECTED_AUGMENTATIONS = [MY_BLOCKLIST_ID, MY_TRUSTLIST_ID];

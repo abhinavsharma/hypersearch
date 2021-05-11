@@ -9,7 +9,11 @@ const SEARCH_ENGINE_DROPDOWN_LABEL = 'Select search engine...';
 
 const { Option } = Select;
 
-export const SearchEngineDropdown: SearchEngineDropdown = ({ newValue, handleSelect }) => {
+export const SearchEngineDropdown: SearchEngineDropdown = ({
+  newValue,
+  handleSelect,
+  placeholder = 'Select search engine...',
+}) => {
   const [engines, setEngines] = useState<Record<string, CustomSearchEngine>>(Object.create(null));
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -48,7 +52,11 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({ newValue, handleSel
             label,
           };
         })()}
+<<<<<<< HEAD
         placeholder={SEARCH_ENGINE_DROPDOWN_LABEL}
+=======
+        placeholder={placeholder}
+>>>>>>> feat(actions): add support for also search action
         filterOption={handleFilter}
         onChange={handleSelect}
         className="insight-select-full-width"

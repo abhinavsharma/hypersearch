@@ -3,16 +3,19 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
-import { NewActionDropdown, MultiValueInput } from 'modules/builder';
 import { ACTION_KEYS, ACTION_LABELS } from 'utils/constants';
+import { NewActionDropdown, MultiValueInput, SearchEngineDropdown } from 'modules/builder';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
+
+type TSelect = Record<'key' | 'value' | 'label', string>;
 
 const MinusCircleOutlined = React.lazy(
   async () => await import('@ant-design/icons/MinusCircleOutlined').then((mod) => mod),
 );
 export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) => {
+  const [newValue, setNewValue] = useState<any>(action?.value[0]);
   const [newKey, setNewKey] = useState<Partial<ACTION_KEYS>>(action?.key);
   const [newLabel, setNewLabel] = useState<ACTION_LABELS>(action?.label);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -39,6 +42,12 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
 
   const handleDelete = () => deleteAction(action);
 
+  const handleSelect = (e: TSelect) => {
+    const updated = JSON.parse(e.value);
+    setNewValue({ value: JSON.stringify(updated), key: e.label, label: e.label });
+    handleChange([updated]);
+  };
+
   const DEFAULT_INPUTS = [
     ACTION_KEYS.OPEN_URL,
     ACTION_KEYS.SEARCH_APPEND,
@@ -48,6 +57,13 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
   const INPUTS: Partial<Record<Partial<ACTION_KEYS | 'default'>, ReactElement>> = {
     [ACTION_KEYS.SEARCH_DOMAINS]: (
       <MultiValueInput values={action.value} handleAdd={handleChange} />
+    ),
+    [ACTION_KEYS.SEARCH_ALSO]: (
+      <SearchEngineDropdown
+        newValue={newValue}
+        handleSelect={handleSelect}
+        placeholder={ACTION_LABELS.SEARCH_ALSO}
+      />
     ),
     default: <Input key={action.id} value={action.value} onChange={handleChange} />,
   };

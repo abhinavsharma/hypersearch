@@ -17,6 +17,7 @@ export enum ACTION_KEYS {
   SEARCH_HIDE_DOMAIN = 'search_hide_domain',
   SEARCH_APPEND = 'search_append',
   INJECT_JS = 'inject_js',
+  SEARCH_ALSO = 'search_also',
 }
 
 export enum CONDITION_LABELS {
@@ -41,6 +42,7 @@ export enum ACTION_LABELS {
   SEARCH_DOMAINS = 'Search only these domains',
   SEARCH_HIDE_DOMAIN = 'Hide results from domain',
   SEARCH_APPEND = 'Search with string appended',
+  SEARCH_ALSO = 'Search also',
   // ! URL ACTION
   OPEN_URL = 'Open page',
 }

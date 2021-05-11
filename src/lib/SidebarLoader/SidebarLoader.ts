@@ -46,11 +46,15 @@ import {
   MY_BLOCKLIST_TEMPLATE,
   SYNC_DISTINCT_KEY,
   SPECIAL_URL_JUNK_STRING,
+<<<<<<< HEAD
   SAFARI_FALLBACK_URL,
   ACTION_KEYS,
   DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX,
   FORCE_FALLBACK_CSE,
   URL_PARAM_TAB_TITLE_KEY,
+=======
+  SEARCH_ALSO_ACTION,
+>>>>>>> feat(actions): add support for also search action
 } from 'utils';
 
 /**
@@ -393,6 +397,13 @@ class SidebarLoader {
           break;
         case ACTION_KEYS.SEARCH_APPEND:
           customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
+          break;
+        case SEARCH_ALSO_ACTION:
+          urls.push(
+            AugmentationManager.processSearchAlsoActionString(
+              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
+            ),
+          );
           break;
         default:
           debug(`\n---\n\tIncompatible action in ${augmentation.name}`, action, '\n---');
