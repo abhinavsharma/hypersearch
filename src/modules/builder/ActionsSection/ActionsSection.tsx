@@ -5,18 +5,8 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import { ACTION_TYPES } from 'utils';
 
-<<<<<<< HEAD:src/modules/builder/EditAugmentationActions/EditAugmentationActions.tsx
-export const EditAugmentationActions: EditAugmentationActions = ({
-  actions,
-  onAdd,
-  onSave,
-  onDelete,
-}) => {
-  const newAction: TCustomAction = {
-=======
 export const ActionsSection: ActionsSection = ({ actions, onAdd, onSave, onDelete }) => {
-  const newAction = {
->>>>>>> chore: rename builder and page copmponents:src/modules/builder/ActionsSection/ActionsSection.tsx
+  const newAction: TCustomAction = {
     id: uuid(),
     key: null,
     label: null,

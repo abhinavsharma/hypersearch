@@ -3,14 +3,13 @@ import { v4 as uuid } from 'uuid';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
-<<<<<<< HEAD:src/modules/builder/EditAugmentationConditions/EditAugmentationConditions.tsx
 import {
   CONDITION_KEYS,
   CONDITION_LABELS,
   CONDITION_LIST_EVALUATIONS,
   CONDITION_TYPES,
 } from 'utils';
-import { EditConditionInput } from 'modules/builder';
+import { ConditionInput } from 'modules/builder';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
 
@@ -18,15 +17,7 @@ import 'antd/lib/button/style/index.css';
 const AND_CONDITION_EVALUATION_TEXT = 'All';
 const OR_CONDITION_EVALUATION_TEXT = 'Any';
 
-export const EditAugmentationConditions: EditAugmentationConditions = ({
-=======
-import { ConditionInput } from 'modules/builder';
-import { ANY_URL_CONDITION_MOBILE, ANY_WEB_SEARCH_CONDITION } from 'utils';
-import 'antd/lib/grid/style/index.css';
-import 'antd/lib/button/style/index.css';
-
 export const ConditionsSection: ConditionsSection = ({
->>>>>>> chore: rename builder and page copmponents:src/modules/builder/ConditionsSection/ConditionsSection.tsx
   conditions,
   setConditions,
   evaluation,

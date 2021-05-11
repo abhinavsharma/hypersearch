@@ -10,16 +10,12 @@ import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
 import './MetaSection.scss';
 
-<<<<<<< HEAD:src/modules/builder/EditAugmentationMeta/EditAugmentationMeta.tsx
 /** MAGICS **/
 const NAME_SECTION_LABEL = 'Name';
 const DESCRIPTION_SECTION_LABEL = 'Description (optional)';
 const ENABLED_SECTION_LABEL = 'Enabled';
 
-export const EditAugmentationMeta: EditAugmentationMeta = ({
-=======
 export const MetaSection: MetaSection = ({
->>>>>>> chore: rename builder and page copmponents:src/modules/builder/MetaSection/MetaSection.tsx
   augmentation,
   name,
   onNameChange,

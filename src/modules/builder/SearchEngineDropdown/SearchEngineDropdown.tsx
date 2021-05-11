@@ -12,7 +12,7 @@ const { Option } = Select;
 export const SearchEngineDropdown: SearchEngineDropdown = ({
   newValue,
   handleSelect,
-  placeholder = 'Select search engine...',
+  placeholder = SEARCH_ENGINE_DROPDOWN_LABEL,
 }) => {
   const [engines, setEngines] = useState<Record<string, CustomSearchEngine>>(Object.create(null));
 
@@ -28,6 +28,8 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
     // ! Be careful when updating the dependency list!
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SearchEngineManager.engines]);
+
+  const getPopupContainer = () => dropdownRef.current;
 
   return (
     <>
@@ -52,16 +54,12 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
             label,
           };
         })()}
-<<<<<<< HEAD
-        placeholder={SEARCH_ENGINE_DROPDOWN_LABEL}
-=======
         placeholder={placeholder}
->>>>>>> feat(actions): add support for also search action
         filterOption={handleFilter}
         onChange={handleSelect}
         className="insight-select-full-width"
         dropdownClassName="insight-select-full-width-dropdown"
-        getPopupContainer={() => dropdownRef.current}
+        getPopupContainer={getPopupContainer}
       >
         {Object.entries(engines).map(([key, cse]) =>
           !key.match(/amazon/gi) ? (

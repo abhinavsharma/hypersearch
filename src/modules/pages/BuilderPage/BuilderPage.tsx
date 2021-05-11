@@ -247,7 +247,6 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
       </header>
       <div className="sidebar-page-wrapper">
         <Collapse defaultActiveKey={tourStep ? [] : ['2', '3']}>
-<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.tsx
           <Panel
             className="builder-page-collapse-panel"
             header={
@@ -259,11 +258,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
             }
             key="1"
           >
-            <EditAugmentationConditions
-=======
-          <Panel className="builder-page-collapse-panel" header={<WhenTourTitle />} key="1">
             <ConditionsSection
->>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.tsx
               conditions={conditions}
               setConditions={setConditions}
               evaluation={conditionEvaluation}
@@ -273,7 +268,6 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
               onSave={handleSaveCondition}
             />
           </Panel>
-<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.tsx
           <Panel
             className="builder-page-collapse-panel"
             header={
@@ -285,18 +279,13 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
             }
             key="2"
           >
-            <EditAugmentationActions
-=======
-          <Panel className="builder-page-collapse-panel" header={<ThenTourTitle />} key="2">
             <ActionsSection
->>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.tsx
               actions={actions}
               onAdd={handleAddAction}
               onSave={handleSaveAction}
               onDelete={handleDeleteAction}
             />
           </Panel>
-<<<<<<< HEAD:src/modules/pages/EditAugmentationPage/EditAugmentationPage.tsx
           <Panel
             className="builder-page-collapse-panel"
             header={
@@ -308,11 +297,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
             }
             key="3"
           >
-            <EditAugmentationMeta
-=======
-          <Panel className="builder-page-collapse-panel" header={<MetaTourTitle />} key="3">
             <MetaSection
->>>>>>> chore: rename builder and page copmponents:src/modules/pages/BuilderPage/BuilderPage.tsx
               augmentation={augmentation}
               name={name}
               description={description}
