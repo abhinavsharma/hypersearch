@@ -9,6 +9,7 @@ import Tabs from 'antd/lib/tabs';
 import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { ActivePage, BuilderPage, GutterPage } from 'modules/pages';
+
 import {
   ActionBar,
   SidebarHeader,
