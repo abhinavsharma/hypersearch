@@ -8,3 +8,5 @@ export * from './EditConditionInput/EditConditionInput';
 export * from './SearchEngineDropdown/SearchEngineDropdown';
 export * from './SearchIntentDropdown/SearchIntentDropdown';
 export * from './NewConditionDropdown/NewConditionDropdown';
+export * from './NewActionDropdown/NewActionDropdown';
+export * from './MultiValueInput/MultiValueInput';
