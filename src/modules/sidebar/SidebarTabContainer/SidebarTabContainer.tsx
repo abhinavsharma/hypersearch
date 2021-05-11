@@ -9,6 +9,8 @@ import {
   decodeSpace,
   triggerSerpProcessing,
   HIDE_FRAME_OVERLAY_MESSAGE,
+  URL_PARAM_TAB_TITLE_KEY,
+  EXTERNAL_PDF_RENDERER_URL,
 } from 'utils';
 import 'antd/lib/skeleton/style/index.css';
 
@@ -37,6 +39,24 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     };
   }, []);
 
+  const handleLoad = () => {
+    setIsLoaded(true);
+    triggerSerpProcessing(SidebarLoader, true);
+    SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
+      query: SidebarLoader.query,
+      filter_name: tab.title,
+      domains_to_search: SidebarLoader.domainsToSearch[tab.id],
+    });
+  };
+
+  const handleError = () => setIsLoaded(true);
+
+  const OVERLAY_STYLE = {
+    height: containerRef?.current?.clientHeight
+      ? `${containerRef?.current?.clientHeight}px`
+      : '100%',
+  };
+
   return tab.url.href !== HIDE_TAB_FAKE_URL ? (
     <div ref={containerRef} className="insight-tab-iframe-container">
       <iframe
@@ -45,31 +65,15 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         sandbox="allow-forms allow-presentation allow-scripts allow-same-origin allow-popups"
         src={
           tab.url.pathname.match(/\.pdf$/)
-            ? `https://docs.google.com/viewer?url=${decodeSpace(tab.url.href)}&embedded=true`
+            ? EXTERNAL_PDF_RENDERER_URL.replace('<placeholder>', decodeSpace(tab.url.href))
             : decodeSpace(tab.url.href)
         }
         className="insight-tab-iframe"
-        onError={() => setIsLoaded(true)}
-        onLoad={() => {
-          setIsLoaded(true);
-          triggerSerpProcessing(SidebarLoader, true);
-          SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
-            query: SidebarLoader.query,
-            filter_name: tab.title,
-            domains_to_search: SidebarLoader.domainsToSearch[tab.id],
-          });
-        }}
+        onError={handleError}
+        onLoad={handleLoad}
       />
-      {!isLoaded && tab.url.searchParams.get('insight-tab-title') && (
-        <div
-          className="insight-frame-overlay"
-          ref={overlayRef}
-          style={{
-            height: containerRef?.current?.clientHeight
-              ? `${containerRef?.current?.clientHeight}px`
-              : '100%',
-          }}
-        >
+      {!isLoaded && tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) && (
+        <div className="insight-frame-overlay" ref={overlayRef} style={OVERLAY_STYLE}>
           {Array(Math.trunc(window.innerHeight / 120))
             .fill(null)
             .map((_, i) => (

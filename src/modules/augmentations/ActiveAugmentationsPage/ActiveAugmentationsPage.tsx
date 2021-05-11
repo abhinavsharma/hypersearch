@@ -16,10 +16,24 @@ import {
   SWITCH_TO_TAB,
   OPEN_SETTINGS_PAGE_MESSAGE,
   extractUrlProperties,
-  SEARCH_HIDE_DOMAIN_ACTION,
+  ACTION_KEYS,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
+
+/** MAGICS **/
+const HEADER_TITLE = 'Lenses';
+const HEADER_LEFT_BUTTON_TEXT = 'Close';
+const INSTALLED_SECTION_TITLE = 'Your Local Lenses for This Page';
+const PINNED_SECTION_TITLE = 'Currently Pinned Lenses';
+const SUGGESTED_SECTION_TITLE = 'Suggested for This Page';
+const SUGGESTED_SECTION_SUBTITLE = `Lenses suggested by ${APP_NAME} for this page.`;
+const HIDDEN_SECTION_TITLE = ' Hidden';
+const HIDDEN_SECTION_SUBTITLE = 'Lenses you have hidden.';
+const UNMATCHED_SECTION_TITLE = 'Unmatched Lenses';
+const UNMATCHED_SECTION_SUBTITLE = 'Lenses not matching this page.';
+const CREATE_LENS_BUTTON_TEXT = 'Create New Lens';
+const SETTINGS_ICON_COLOR = '#999999';
 
 const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
@@ -28,12 +42,12 @@ const ZoomInOutlined = React.lazy(
 export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
   const domain = extractUrlProperties(SidebarLoader.url.href).hostname;
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
-  const [hidingAugmentations] = useState<AugmentationObject[]>(
+  const [hidingAugmentations, setHidingAugmentations] = useState<AugmentationObject[]>(
     SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
       .reduce((augmentations, augmentation) => {
         const isBlockingDomain = !!augmentation.actions.action_list.find(
-          ({ key, value }) => key === SEARCH_HIDE_DOMAIN_ACTION && value.includes(domain),
+          ({ key, value }) => key === ACTION_KEYS.SEARCH_HIDE_DOMAIN && value.includes(domain),
         );
         isBlockingDomain && augmentations.push(augmentation);
         return augmentations;
@@ -82,7 +96,7 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
         (augmentation) =>
           !SidebarLoader.pinnedAugmentations.find(({ id }) => id === augmentation.id),
       ),
-      title: 'Your Local Lenses for This Page',
+      title: INSTALLED_SECTION_TITLE,
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),
       button: (
         <Button
@@ -93,13 +107,13 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
           <Suspense fallback={null}>
             <ZoomInOutlined />
           </Suspense>
-          &nbsp;Create New Lens
+          {`\u00a0${CREATE_LENS_BUTTON_TEXT}`}
         </Button>
       ),
     },
     {
       augmentations: SidebarLoader.pinnedAugmentations,
-      title: 'Currently Pinned Lenses',
+      title: PINNED_SECTION_TITLE,
       pinned: true,
     },
     {
@@ -107,8 +121,8 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
         (augmentation) =>
           !SidebarLoader.pinnedAugmentations.find(({ id }) => id === augmentation.id),
       ),
-      title: 'Suggested for This Page',
-      subtitle: `Lenses suggested by ${APP_NAME} for this page.`,
+      title: SUGGESTED_SECTION_TITLE,
+      subtitle: SUGGESTED_SECTION_SUBTITLE,
     },
     {
       augmentations: SidebarLoader.ignoredAugmentations
@@ -117,8 +131,8 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
             !SidebarLoader.pinnedAugmentations.find(({ id }) => id === augmentation.id),
         )
         .sort(augmentationSorter),
-      title: 'Hidden',
-      subtitle: 'Lenses you have hidden.',
+      title: HIDDEN_SECTION_TITLE,
+      subtitle: HIDDEN_SECTION_SUBTITLE,
       ignored: true,
     },
     {
@@ -128,26 +142,34 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
             !SidebarLoader.pinnedAugmentations.find(({ id }) => id === augmentation.id),
         )
         .sort(augmentationSorter),
-      title: 'Unmatched Lenses',
-      subtitle: 'Lenses not matching this page.',
+      title: UNMATCHED_SECTION_TITLE,
+      subtitle: UNMATCHED_SECTION_SUBTITLE,
       other: true,
     },
   ];
 
   useEffect(() => {
     setTourStep(SidebarLoader.tourStep);
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SidebarLoader.tourStep]);
 
   useEffect(() => {
-    SidebarLoader.installedAugmentations
-      .concat(SidebarLoader.otherAugmentations)
-      .reduce((augmentations, augmentation) => {
-        const isBlockingDomain = !!augmentation.actions.action_list.find(
-          ({ key, value }) => key === SEARCH_HIDE_DOMAIN_ACTION && value.includes(domain),
-        );
-        isBlockingDomain && augmentations.push(augmentation);
-        return augmentations;
-      }, []);
+    setHidingAugmentations(
+      SidebarLoader.installedAugmentations
+        .concat(SidebarLoader.otherAugmentations)
+        .reduce((augmentations, augmentation) => {
+          const isBlockingDomain = !!augmentation.actions.action_list.find(
+            ({ key, value }) => key === ACTION_KEYS.SEARCH_HIDE_DOMAIN && value.includes(domain),
+          );
+          isBlockingDomain && augmentations.push(augmentation);
+          return augmentations;
+        }, []),
+    );
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations]);
 
   return (
@@ -158,12 +180,12 @@ export const ActiveAugmentationsPage: ActiveAugmentationsPage = () => {
           className={`left-button ${tourStep === '6' ? 'insight-tour-shake' : ''}`}
           onClick={handleClose}
         >
-          Close
+          {HEADER_LEFT_BUTTON_TEXT}
         </Button>
-        <span className="page-title">Lenses</span>
+        <span className="page-title">{HEADER_TITLE}</span>
         <Button type="text" className="right-button" onClick={handleOpenSettings}>
           <Suspense fallback={null}>
-            <Settings stroke={'#999'} size={20} />
+            <Settings stroke={SETTINGS_ICON_COLOR} size={20} />
           </Suspense>
         </Button>
       </header>

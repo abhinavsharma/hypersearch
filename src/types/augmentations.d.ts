@@ -1,27 +1,27 @@
 declare type Condition = {
-  evaluate_with: 'AND' | 'OR';
+  evaluate_with: import('utils/constants').CONDITION_LIST_EVALUATIONS;
   condition_list: ConditionObject[];
 };
 
 declare type Action = {
-  evaluate_with: 'AND' | 'OR';
+  evaluate_with: import('utils/constants').ACTION_LIST_EVALUATIONS;
   action_list: ActionObject[];
 };
 
 declare type ActionObject = {
-  label: string;
-  key: string;
-  type: string;
+  label: import('utils/constants').ACTION_LABELS;
+  key: import('utils/constants').ACTION_KEYS | import('utils/constants').LEGACY_KEYS;
+  type: import('utils/constants').ACTION_TYPES;
   value: string[];
 };
 
 declare type ConditionObject = {
-  label: string;
-  key: string;
-  unique_key?: string;
-  type: string;
+  label: import('utils/constants').CONDITION_LABELS;
+  key: import('utils/constants').CONDITION_KEYS | import('utils/constants').LEGACY_KEYS;
+  unique_key?: import('utils/constants').CONDITION_KEYS;
+  type: import('utils/constants').CONDITION_TYPES;
   value: string[];
-  evaluation?: string;
+  evaluation?: import('utils/constants').LEGACY_EVALUATION;
 };
 
 declare type AugmentationObject = {

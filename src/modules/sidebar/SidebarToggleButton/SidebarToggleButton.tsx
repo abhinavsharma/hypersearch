@@ -1,5 +1,6 @@
 /**
  * @module SidebarToggleButton
+ * @author Abhinav Sharma<abhinav@laso.ai>
  * @author Matyas Angyal<matyas@laso.ai>
  * @license (C) Insight
  * @version 1.0.0
@@ -9,17 +10,25 @@ import List from 'antd/lib/list';
 import Tooltip from 'antd/lib/tooltip';
 import {
   flipSidebar,
+  removeEmoji,
+  APP_NAME,
   EMPTY_AUGMENTATION,
   HIDE_TAB_FAKE_URL,
-  APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
-  removeEmoji,
+  URL_PARAM_TAB_TITLE_KEY,
+  EXPAND_KEY,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
+
+/** MAGICS **/
+const TOOLTIP_TEXT = `Preview lenses ("${EXPAND_KEY.KEY}" key)`;
+const MORE_TABS_TEXT = '<placeholder> more';
+const LIST_STYLE = { paddingRight: 5 };
+const MAX_TAB_LENGTH = 3;
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const handleClick = () => {
@@ -36,46 +45,46 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const ListItem = (item: SidebarTab) => (
     <List.Item>
       <List.Item.Meta
-        title={
-          item.url.searchParams.get('insight-tab-title') ??
-          removeEmoji(item.title.length > 30 ? item.title.slice(0, 29) + '...' : item.title)
-        }
+        title={item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.title)}
       />
     </List.Item>
   );
 
   // Calculate the relative height of the nub by using the tab's title length
-  const tabHeight = tabs.slice(0, 4).reduce((a, tab) => {
-    const titleLength = tab.title.length * 8 < 70 ? 70 : tab.title.length * 8; // 1 ch is approximately 8 px
-    const titleSpace = 70; // space for one line is 75px
-    return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line is 25px
+  const tabHeight = tabs.slice(0, MAX_TAB_LENGTH + 1).reduce((a, tab) => {
+    const titleLength = tab.title.length * 8 < 50 ? 50 : tab.title.length * 8; // 1 ch is approximately 8 px
+    const titleSpace = 50; // space for one line
+    return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line
   }, 0);
 
+  const filteredTabs = tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL);
+
+  const dataSource =
+    tabs.length > 3
+      ? filteredTabs.slice(0, MAX_TAB_LENGTH).concat([
+          {
+            id: '0',
+            url: new URL('https://example.com'),
+            title: MORE_TABS_TEXT.replace(
+              '<placeholder>',
+              String(filteredTabs.length - MAX_TAB_LENGTH),
+            ),
+          },
+        ])
+      : filteredTabs;
+
+  const keepParent = { keepParent: false };
+
   return (
-    <Tooltip title={'Preview lenses ("I" key)'} destroyTooltipOnHide={{ keepParent: false }}>
+    <Tooltip title={TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
       <div onClick={handleClick} className="insight-sidebar-toggle-button" data-height={tabHeight}>
         <div className="insight-sidebar-toggle-appname">
           <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
         </div>
         <List
-          style={{ paddingRight: 5 }}
+          style={LIST_STYLE}
           itemLayout="horizontal"
-          dataSource={
-            tabs.length > 3
-              ? tabs
-                  .filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)
-                  .slice(0, 3)
-                  .concat([
-                    {
-                      title: `${
-                        tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length - 3
-                      } more`,
-                      id: 'FAKE_ID',
-                      url: new URL('https://example.com'),
-                    },
-                  ])
-              : tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL)
-          }
+          dataSource={dataSource}
           renderItem={ListItem}
         />
       </div>

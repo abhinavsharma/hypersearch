@@ -18,13 +18,20 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
 
+/** MAGICS **/
+const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit local lens';
+const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork: Duplicate lens and edit locally';
+const PIN_AUGMENTATION_BUTTON_TEXT = 'Temporarily pin this lens';
+const UNPIN_AUGMENTATION_BUTTON_TEXT = 'Unpin this lens';
+const DISABLE_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Disable local lens';
+const DISABLE_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Hide lens';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const ICON_UNSELECTED_COLOR = '#999';
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const tooltipContainer = useRef(null);
 
-  const handleOpenAugmentationBuilder = (_e, isEdit?: boolean) => {
+  const handleOpenAugmentationBuilder = (isEdit?: boolean) => {
     AugmentationManager.preparedLogMessage =
       isEdit || SidebarLoader.strongPrivacy
         ? null
@@ -65,21 +72,34 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
     AugmentationManager.disableSuggestedAugmentation(tab.augmentation);
   };
 
+  const handleHide = () =>
+    tab.augmentation?.installed ? handleDisableInstalled() : handleHideSuggested(tab);
+
+  const handleEditInstalled = () => handleOpenAugmentationBuilder(true);
+
+  const handleEditSuggested = () => handleOpenAugmentationBuilder(false);
+
+  const keepParent = { keepParent: false };
+  const getPopupContainer = () => tooltipContainer.current;
+  const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
+
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
         {!PROTECTED_AUGMENTATIONS.includes(tab.augmentation?.id) && (
           <Tooltip
-            title={tab.augmentation?.installed ? 'Disable local lens' : 'Hide lens'}
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
+            title={
+              tab.augmentation?.installed
+                ? DISABLE_INSTALLED_AUGMENTATION_BUTTON_TEXT
+                : DISABLE_SUGGESTED_AUGMENTATION_BUTTON_TEXT
+            }
+            destroyTooltipOnHide={keepParent}
+            getPopupContainer={getPopupContainer}
             placement="bottom"
           >
             <Button
               type="link"
-              onClick={() =>
-                tab.augmentation?.installed ? handleDisableInstalled() : handleHideSuggested(tab)
-              }
+              onClick={handleHide}
               icon={<EyeOff size={15} stroke={ICON_UNSELECTED_COLOR} />}
             />
           </Tooltip>
@@ -87,9 +107,9 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
 
         {tab.augmentation?.pinned ? (
           <Tooltip
-            title="Unpin this lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
+            title={UNPIN_AUGMENTATION_BUTTON_TEXT}
+            destroyTooltipOnHide={keepParent}
+            getPopupContainer={getPopupContainer}
             placement="bottom"
           >
             <Button
@@ -104,9 +124,9 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           </Tooltip>
         ) : (
           <Tooltip
-            title="Temporarily pin this lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
+            title={PIN_AUGMENTATION_BUTTON_TEXT}
+            destroyTooltipOnHide={keepParent}
+            getPopupContainer={getPopupContainer}
             placement="bottom"
           >
             <Button
@@ -123,14 +143,14 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
 
         {tab.augmentation?.installed && (
           <Tooltip
-            title="Edit local lens"
-            destroyTooltipOnHide={{ keepParent: false }}
-            getPopupContainer={() => tooltipContainer.current}
+            title={EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT}
+            destroyTooltipOnHide={keepParent}
+            getPopupContainer={getPopupContainer}
             placement="bottom"
           >
             <Button
               type="link"
-              onClick={(e) => handleOpenAugmentationBuilder(e, true)}
+              onClick={handleEditInstalled}
               icon={
                 <Suspense fallback={null}>
                   <Edit size={15} stroke={ICON_UNSELECTED_COLOR} />
@@ -141,25 +161,21 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         )}
 
         <Tooltip
-          title="Fork: Duplicate lens and edit locally"
-          destroyTooltipOnHide={{ keepParent: false }}
-          getPopupContainer={() => tooltipContainer.current}
+          title={EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT}
+          destroyTooltipOnHide={keepParent}
+          getPopupContainer={getPopupContainer}
           placement="bottom"
         >
           <Button
             type="link"
-            onClick={handleOpenAugmentationBuilder}
+            onClick={handleEditSuggested}
             icon={<GitMerge size={15} stroke={ICON_UNSELECTED_COLOR} />}
           />
         </Tooltip>
 
         <ShareButton icon augmentation={tab.augmentation} />
       </div>
-      <div
-        className="tooltip-container"
-        ref={tooltipContainer}
-        style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-      />
+      <div className="tooltip-container" ref={tooltipContainer} style={containerStyle} />
     </div>
   );
 };

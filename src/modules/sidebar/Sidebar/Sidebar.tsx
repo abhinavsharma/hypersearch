@@ -5,6 +5,7 @@
  * @version 1.0.0
  */
 import React, { useEffect, useState } from 'react';
+import md5 from 'md5';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
@@ -20,23 +21,57 @@ import {
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
 import './Sidebar.scss';
-import md5 from 'md5';
 
 const Sidebar: Sidebar = () => {
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
   const [activeKey, setActiveKey] = useState<string>(
     getFirstValidTabIndex(SidebarLoader.sidebarTabs),
   );
-  // SIDE-EFFECTS
+
   useEffect(() => {
-    // Set up a listener for a message when an augmentation has been either installed
-    // deleted or modified. To keep the sidebar up-to-date we generate sidebar tabs from
-    // the actually installed augmentations and non-serp subtabs.
+    const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
+    const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
+    const isTabsLength = firstValidTab !== '0';
+    const isSearchTabs = SidebarLoader.sidebarTabs?.find(({ isCse }) => isCse);
+    const isKpPage = isKnowledgePage(document);
+    const validTabsLength = SidebarLoader.sidebarTabs.filter(
+      ({ url }) => url.href !== HIDE_TAB_FAKE_URL,
+    ).length;
+
+    const shouldPreventExpand =
+      !SidebarLoader.tourStep &&
+      (isSmallWidth ||
+        !isTabsLength ||
+        !isSearchTabs ||
+        isKpPage ||
+        SidebarLoader.preventAutoExpand);
+
+    shouldPreventExpand
+      ? flipSidebar(document, 'hide', validTabsLength, true)
+      : flipSidebar(document, 'show', validTabsLength);
+
+    SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {
+      url: SidebarLoader.url.href,
+      subtabs: SidebarLoader.strongPrivacy
+        ? SidebarLoader.sidebarTabs.map(({ url }) => md5(url.href))
+        : SidebarLoader.sidebarTabs.map(({ title }) => title),
+      details: {
+        isKpPage,
+        firstValidTabIndex: `${firstValidTab} / ${validTabsLength}`,
+        isExpanded: !shouldPreventExpand,
+        isSerp: SidebarLoader.isSerp,
+        isTour: !!SidebarLoader.tourStep,
+        preventAutoExpand: SidebarLoader.preventAutoExpand,
+        screenWidth: `${window.innerWidth}px`,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
       switch (msg.type) {
         case UPDATE_SIDEBAR_TABS_MESSAGE:
-          SidebarLoader.getTabsAndAugmentations();
-          setSidebarTabs(SidebarLoader.sidebarTabs);
+          setSidebarTabs(SidebarLoader.getTabsAndAugmentations());
           triggerSerpProcessing(SidebarLoader);
           break;
         case DISABLE_SUGGESTED_AUGMENTATION:
@@ -52,54 +87,20 @@ const Sidebar: Sidebar = () => {
         case TOGGLE_TRUSTED_DOMAIN_MESSAGE:
           (async () => await AugmentationManager.toggleTrustlist(msg.publication))();
           break;
+        default:
+          break;
       }
     });
-    // When one of the following conditions are met, we hide the sidebar by default, regardless
-    // of the number of matching tabs. If there are matching tabs and the sidebar can't expand on
-    // load, the height of the toggle button (SidebarToggleButton) is set dynamically.
-    const firstValidTab = getFirstValidTabIndex(sidebarTabs);
-    const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
-    const isTabsLength = firstValidTab !== '0';
-    const isSearchTabs = sidebarTabs?.find((tab) => tab.isCse);
-    const isKP = isKnowledgePage(document);
-    const validTabsLength = sidebarTabs.filter(({ url }) => url.href !== HIDE_TAB_FAKE_URL).length;
-    let isExpanded = false;
-
-    if (
-      !SidebarLoader.tourStep &&
-      (isSmallWidth || !isTabsLength || !isSearchTabs || isKP || SidebarLoader.preventAutoExpand)
-    ) {
-      flipSidebar(document, 'hide', validTabsLength, true);
-    } else {
-      isExpanded = true;
-      flipSidebar(document, 'show', validTabsLength);
-    }
-
-    SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {
-      url: SidebarLoader.url.href,
-      subtabs: SidebarLoader.strongPrivacy
-        ? sidebarTabs.map(({ url }) => md5(url.href))
-        : sidebarTabs.map(({ title }) => title),
-      details: {
-        isExpanded: isExpanded,
-        isKpPage: isKP,
-        screenWidth: `${window.innerWidth}px`,
-        preventAutoExpand: SidebarLoader.preventAutoExpand,
-        isSerp: SidebarLoader.isSerp,
-        isTour: !!SidebarLoader.tourStep,
-        firstValidTabIndex: `${firstValidTab} / ${validTabsLength}`,
-      },
-    });
   }, []);
+
+  const tabsLength = !!sidebarTabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length;
 
   return (
     <>
       <div id="insight-sidebar-container" className="insight-full-size-fixed">
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
-      {!!sidebarTabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length && (
-        <SidebarToggleButton tabs={sidebarTabs} />
-      )}
+      {tabsLength && <SidebarToggleButton tabs={sidebarTabs} />}
     </>
   );
 };

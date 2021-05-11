@@ -4,9 +4,18 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import { EditConditionInput } from 'modules/augmentations';
-import { ANY_URL_CONDITION_MOBILE, ANY_WEB_SEARCH_CONDITION } from 'utils';
+import {
+  CONDITION_KEYS,
+  CONDITION_LABELS,
+  CONDITION_LIST_EVALUATIONS,
+  CONDITION_TYPES,
+} from 'utils';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
+
+/** MAGICS **/
+const AND_CONDITION_EVALUATION_TEXT = 'All';
+const OR_CONDITION_EVALUATION_TEXT = 'Any';
 
 export const EditAugmentationConditions: EditAugmentationConditions = ({
   conditions,
@@ -17,11 +26,11 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
   onSave,
   onDelete,
 }) => {
-  const newCondition = {
+  const newCondition: TCustomCondition = {
     id: uuid(),
     key: null,
     unique_key: null,
-    type: 'list',
+    type: CONDITION_TYPES.LIST,
     label: null,
     value: [],
   };
@@ -30,10 +39,10 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
     setConditions([
       {
         id: '0',
-        key: ANY_URL_CONDITION_MOBILE,
-        unique_key: ANY_URL_CONDITION_MOBILE,
-        label: 'Match any page',
-        type: 'list',
+        key: CONDITION_KEYS.ANY_URL,
+        unique_key: CONDITION_KEYS.ANY_URL,
+        label: CONDITION_LABELS.ANY_URL,
+        type: CONDITION_TYPES.LIST,
         value: ['.*'],
       },
     ]);
@@ -42,10 +51,10 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
     setConditions([
       {
         id: '0',
-        key: ANY_WEB_SEARCH_CONDITION,
-        unique_key: ANY_WEB_SEARCH_CONDITION,
-        label: 'Match any search engine',
-        type: 'list',
+        key: CONDITION_KEYS.ANY_SEARCH_ENGINE,
+        unique_key: CONDITION_KEYS.ANY_SEARCH_ENGINE,
+        label: CONDITION_LABELS.ANY_SEARCH_ENGINE,
+        type: CONDITION_TYPES.LIST,
         value: ['.*'],
       },
     ]);
@@ -57,10 +66,20 @@ export const EditAugmentationConditions: EditAugmentationConditions = ({
           <span>
             <Button
               type="link"
-              onClick={() => setEvaluation((prev) => (prev == 'AND' ? 'OR' : 'AND'))}
+              onClick={() =>
+                setEvaluation((prev) =>
+                  prev == CONDITION_LIST_EVALUATIONS.AND
+                    ? CONDITION_LIST_EVALUATIONS.OR
+                    : CONDITION_LIST_EVALUATIONS.AND,
+                )
+              }
               className="insight-inline-medium-text-button"
             >
-              <strong>{evaluation == 'AND' ? 'All' : 'Any'}</strong>
+              <strong>
+                {evaluation == CONDITION_LIST_EVALUATIONS.AND
+                  ? AND_CONDITION_EVALUATION_TEXT
+                  : OR_CONDITION_EVALUATION_TEXT}
+              </strong>
             </Button>
             of these conditions are true
           </span>

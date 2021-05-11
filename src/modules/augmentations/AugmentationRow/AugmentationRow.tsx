@@ -11,6 +11,19 @@ import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 
+/** MAGICS **/
+const LOCAL_AUGMENTATION_TOOLTIP_TEXT = 'Local';
+const USAGE_TEXT = `<placeholder> uses`;
+const INSTALLED_EDIT_TOOLTIP_TEXT = '';
+const SUGGESTED_EDIT_TOOLTIP_TEXT = 'Duplicate and edit locally';
+const INSTALLED_EDIT_TEXT = 'Edit';
+const SUGGESTED_EDIT_TEXT = 'Fork';
+const HIDE_TEXT = 'Hide';
+const UNHIDE_TEXT = 'Unhide';
+const PIN_TEXT = 'Pin';
+const UNPIN_TEXT = 'Unpin';
+const DELETE_TEXT = 'Delete';
+
 export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned, other }) => {
   const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
   const handleUnpin = () => AugmentationManager.unpinAugmentation(augmentation);
@@ -34,55 +47,79 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
     } as OpenBuilderMessage);
   };
 
+  const keepParent = { keepParent: false };
+
   return (
     <div className="insight-augmentation-row">
       <div className="insight-augmentation-row-name">
         {augmentation.installed ? (
-          <Tooltip title={'Local'} destroyTooltipOnHide={{ keepParent: false }}>
+          <Tooltip title={LOCAL_AUGMENTATION_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
             {augmentation.name}
           </Tooltip>
         ) : (
           augmentation.name
         )}
         {augmentation.stats && (
-          <span className="insight-augmentation-row-extra">{augmentation.stats} uses</span>
+          <span className="insight-augmentation-row-extra">
+            {USAGE_TEXT.replace('<placeholder>', String(augmentation.stats))}
+          </span>
         )}
       </div>
       <Tooltip
-        title={augmentation.installed ? null : 'Duplicate and edit locally'}
-        destroyTooltipOnHide={{ keepParent: false }}
+        title={
+          augmentation.installed
+            ? INSTALLED_EDIT_TOOLTIP_TEXT ?? null
+            : SUGGESTED_EDIT_TOOLTIP_TEXT ?? null
+        }
+        destroyTooltipOnHide={keepParent}
       >
         <Tag color="geekblue" className="insight-augmentation-row-button" onClick={handleEdit}>
-          {augmentation.installed ? 'Edit' : 'Fork'}
+          {augmentation.installed ? INSTALLED_EDIT_TEXT : SUGGESTED_EDIT_TEXT}
         </Tag>
       </Tooltip>
       {!PROTECTED_AUGMENTATIONS.includes(augmentation.id) && (
         <>
           {ignored ? (
-            <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handleEnable}>
-              Unhide
+            <Tag
+              className="insight-augmentation-row-button"
+              color="geekblue"
+              onClick={handleEnable}
+            >
+              {UNHIDE_TEXT}
             </Tag>
           ) : (
             <>
               {!augmentation.installed && !other && (
-                <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handleDisable}>
-                  Hide
+                <Tag
+                  className="insight-augmentation-row-button"
+                  color="geekblue"
+                  onClick={handleDisable}
+                >
+                  {HIDE_TEXT}
                 </Tag>
               )}
               {pinned ? (
-                <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handleUnpin}>
-                  Unpin
+                <Tag
+                  className="insight-augmentation-row-button"
+                  color="geekblue"
+                  onClick={handleUnpin}
+                >
+                  {UNPIN_TEXT}
                 </Tag>
               ) : (
-                <Tag className="insight-augmentation-row-button" color="geekblue" onClick={handlePin}>
-                  Pin
+                <Tag
+                  className="insight-augmentation-row-button"
+                  color="geekblue"
+                  onClick={handlePin}
+                >
+                  {PIN_TEXT}
                 </Tag>
               )}
             </>
           )}
           {augmentation.installed && (
             <Tag className="insight-augmentation-row-button" color="volcano" onClick={handleDelete}>
-              Delete
+              {DELETE_TEXT}
             </Tag>
           )}
         </>

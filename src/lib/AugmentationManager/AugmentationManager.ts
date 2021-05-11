@@ -10,33 +10,26 @@ import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import {
   debug,
   removeProtocol,
-  ANY_WEB_SEARCH_CONDITION,
+  encodeSpace,
+  extractUrlProperties,
   EXTENSION_SHARE_URL,
   NUM_DOMAINS_TO_EXCLUDE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-  SEARCH_CONTAINS_CONDITION,
-  SEARCH_DOMAINS_ACTION,
-  SEARCH_HIDE_DOMAIN_ACTION,
-  SEARCH_INTENT_IS_CONDITION,
-  SEARCH_QUERY_CONTAINS_CONDITION,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   IGNORED_PREFIX,
   INSTALLED_PREFIX,
   PINNED_PREFIX,
-  ANY_URL_CONDITION_MOBILE,
   MY_BLOCKLIST_ID,
-  SEARCH_ENGINE_IS_CONDITION,
-  encodeSpace,
   EXTENSION_BLOCKLIST_ADD_DOMAIN,
   EXTENSION_BLOCKLIST_REMOVE_DOMAIN,
   EXTENSION_AUGMENTATION_SAVE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
-  URL_EQUALS_CONDITION,
-  URL_MATCHES_CONDITION,
-  DOMAIN_MATCHES_CONDITION,
-  extractUrlProperties,
-  DOMAIN_EQUALS_CONDTION,
   MY_TRUSTLIST_ID,
+  ENABLED_AUGMENTATION_TYPES,
+  ACTION_KEYS,
+  CONDITION_TYPES,
+  CONDITION_KEYS,
+  ACTION_LABELS,
 } from 'utils';
 
 class AugmentationManager {
@@ -46,8 +39,22 @@ class AugmentationManager {
     debug('AugmentationManager - initialize\n---\n\tSingleton Instance', this, '\n---');
   }
 
+  public isAugmentationEnabled(augmentation: AugmentationObject) {
+    const operations: Array<ActionObject | ConditionObject> = [
+      ...augmentation.conditions.condition_list,
+      ...augmentation.actions.action_list,
+    ];
+
+    return operations.every(
+      (operation) =>
+        ((operation as ConditionObject).unique_key !== undefined &&
+          ENABLED_AUGMENTATION_TYPES.includes((operation as ConditionObject).unique_key)) ||
+        ENABLED_AUGMENTATION_TYPES.includes(operation.key),
+    );
+  }
+
   /**
-   * Add a domian to the user's personal blocklist.
+   * Add a domain to the user's personal blocklist.
    *
    * @param domain - The domain to add to the blocklist
    * @public
@@ -64,9 +71,9 @@ class AugmentationManager {
         (action) => action.value.length && !action.value.includes(domain),
       ),
       {
-        key: SEARCH_HIDE_DOMAIN_ACTION,
-        label: 'Hide results from domain',
-        type: 'list',
+        key: ACTION_KEYS.SEARCH_HIDE_DOMAIN,
+        label: ACTION_LABELS.SEARCH_HIDE_DOMAIN,
+        type: CONDITION_TYPES.LIST,
         value: [domain],
       },
     ] as AugmentationObject['actions']['action_list'];
@@ -95,7 +102,7 @@ class AugmentationManager {
       .find(({ id }) => id === MY_BLOCKLIST_ID);
     const newActionList = [
       ...blockList.actions.action_list.filter(({ key, value }) =>
-        key === SEARCH_HIDE_DOMAIN_ACTION ? value[0] !== domain : true,
+        key === ACTION_KEYS.SEARCH_HIDE_DOMAIN ? value[0] !== domain : true,
       ),
     ] as AugmentationObject['actions']['action_list'];
     blockList.actions.action_list = newActionList;
@@ -191,7 +198,7 @@ class AugmentationManager {
         const index = value.split('%sr')[1];
         url = url.replaceAll(
           `%sr${index}`,
-          SidebarLoader.tabDomains['original']?.[Number(index) - 1],
+          SidebarLoader.publicationSlices['original']?.[Number(index) - 1],
         );
       });
     }
@@ -264,7 +271,7 @@ class AugmentationManager {
   }
 
   /**
-   * Remove an installed augmnetation form the sidebar and the storage as well. When the corresponding
+   * Remove an installed augmentation form the sidebar and the storage as well. When the corresponding
    * augmentation has `SEARCH_HIDE_DOMAIN_ACTION`, this method will trigger a `postMessage` to update the
    * related overlay on the host page. This method will trigger a sidebar update.
    *
@@ -286,10 +293,10 @@ class AugmentationManager {
     );
     chrome.storage.local.remove(augmentation.id);
     const hasHideDomains = augmentation.actions.action_list.filter(
-      ({ key }) => key === SEARCH_HIDE_DOMAIN_ACTION,
+      ({ key }) => key === ACTION_KEYS.SEARCH_HIDE_DOMAIN,
     );
     const hasSearchDomains = augmentation.actions.action_list.filter(
-      ({ key }) => key === SEARCH_DOMAINS_ACTION,
+      ({ key }) => key === ACTION_KEYS.SEARCH_DOMAINS,
     );
     if (hasSearchDomains) {
       hasSearchDomains.forEach(({ value }) =>
@@ -362,21 +369,21 @@ class AugmentationManager {
     // ! SEARCH DOMAINS
     const hasAnyPageCondition = !!augmentation.conditions.condition_list.filter(
       ({ key, unique_key }) =>
-        (key === ANY_WEB_SEARCH_CONDITION &&
+        (key === CONDITION_KEYS.ANY_SEARCH_ENGINE &&
           SidebarLoader.isSerp &&
           !SidebarLoader.url.href.match(/amazon\.com/gi)) ||
-        (unique_key === ANY_WEB_SEARCH_CONDITION &&
+        (unique_key === CONDITION_KEYS.ANY_SEARCH_ENGINE &&
           SidebarLoader.isSerp &&
           !SidebarLoader.url.href.match(/amazon\.com/gi)) ||
-        key === ANY_URL_CONDITION_MOBILE ||
-        unique_key === ANY_URL_CONDITION_MOBILE,
+        key === CONDITION_KEYS.ANY_URL ||
+        unique_key === CONDITION_KEYS.ANY_URL,
     ).length;
 
     const domainsToLookCondition =
       augmentation.conditions.condition_list.reduce(
         (conditions, { key, unique_key, value }) =>
           // search contains domain
-          unique_key === SEARCH_CONTAINS_CONDITION || key === SEARCH_CONTAINS_CONDITION
+          unique_key === CONDITION_KEYS.SEARCH_CONTAINS || key === CONDITION_KEYS.SEARCH_CONTAINS
             ? conditions.concat(value)
             : conditions,
         [],
@@ -385,7 +392,7 @@ class AugmentationManager {
     const domainsToLookAction =
       augmentation.actions?.action_list.reduce(
         (actions, { key, value }) =>
-          key === SEARCH_DOMAINS_ACTION ? actions.concat(value) : actions,
+          key === ACTION_KEYS.SEARCH_DOMAINS ? actions.concat(value) : actions,
         [],
       ) ?? [];
 
@@ -421,8 +428,8 @@ class AugmentationManager {
     // ! SEARCH QUERY
     const matchingQuery = augmentation.conditions?.condition_list.some(
       ({ key, unique_key, value }) =>
-        (unique_key === SEARCH_QUERY_CONTAINS_CONDITION ||
-          key === SEARCH_QUERY_CONTAINS_CONDITION) &&
+        (unique_key === CONDITION_KEYS.SEARCH_QUERY_CONTAINS ||
+          key === CONDITION_KEYS.SEARCH_QUERY_CONTAINS) &&
         SidebarLoader.query?.search(value[0]) > -1,
     );
 
@@ -430,7 +437,10 @@ class AugmentationManager {
     let hasPreventAutoexpand = false;
     const matchingIntent = augmentation.conditions.condition_list
       .reduce((intents, { key, unique_key, value }) => {
-        if (key === SEARCH_INTENT_IS_CONDITION || unique_key === SEARCH_INTENT_IS_CONDITION) {
+        if (
+          key === CONDITION_KEYS.SEARCH_INTENT_IS ||
+          unique_key === CONDITION_KEYS.SEARCH_INTENT_IS
+        ) {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
           );
@@ -442,7 +452,7 @@ class AugmentationManager {
             const intentDomains = matchingIntent.sites.split(',') ?? [];
             intentDomains.forEach(
               (domain) =>
-                !!SidebarLoader.tabDomains['original']?.find(
+                !!SidebarLoader.publicationSlices['original']?.find(
                   (mainSerpDomain) => !!mainSerpDomain.match(domain)?.length,
                 ) && intents.push(domain),
             );
@@ -459,7 +469,10 @@ class AugmentationManager {
     // ! SEARCH ENGINE
     const matchingEngine = !!augmentation.conditions.condition_list.find(
       ({ key, unique_key, value }) => {
-        if (key === SEARCH_ENGINE_IS_CONDITION || unique_key === SEARCH_ENGINE_IS_CONDITION) {
+        if (
+          key === CONDITION_KEYS.SEARCH_ENGINE_IS ||
+          unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
+        ) {
           return (
             Object.entries(
               SidebarLoader.customSearchEngine.search_engine_json ?? Object.create(null),
@@ -468,10 +481,11 @@ class AugmentationManager {
                 return Array.isArray(entryValue)
                   ? !!entryValue.find((subValue) => {
                       return (
-                        Array.isArray(value[0][entryKey]) && value[0][entryKey].includes(subValue)
+                        Array.isArray(value[0][Number(entryKey)]) &&
+                        value[0][Number(entryKey)].includes(subValue)
                       );
                     })
-                  : entryValue === value[0][entryKey];
+                  : entryValue === value[0][Number(entryKey)];
               })
               .indexOf(false) === -1
           );
@@ -483,30 +497,30 @@ class AugmentationManager {
     // ! URL/DOMAIN MATCH
     let numRegexConditions = 0;
     const regexConditions = [
-      URL_EQUALS_CONDITION,
-      URL_MATCHES_CONDITION,
-      DOMAIN_EQUALS_CONDTION,
-      DOMAIN_MATCHES_CONDITION,
+      CONDITION_KEYS.URL_EQUALS,
+      CONDITION_KEYS.URL_MATCHES,
+      CONDITION_KEYS.DOMAIN_EQUALS,
+      CONDITION_KEYS.DOMAIN_MATCHES,
     ];
     const matchingUrl = augmentation.conditions.condition_list.reduce((matches, condition) => {
       const { unique_key: key, value } = condition;
       if (regexConditions.includes(key)) {
         numRegexConditions += 1;
       }
-      if (key === URL_EQUALS_CONDITION && SidebarLoader.url.href === value[0]) {
+      if (key === CONDITION_KEYS.URL_EQUALS && SidebarLoader.url.href === value[0]) {
         matches.push(true);
       }
-      if (key === URL_MATCHES_CONDITION && SidebarLoader.url.href.match(value[0])?.length) {
+      if (key === CONDITION_KEYS.URL_MATCHES && SidebarLoader.url.href.match(value[0])?.length) {
         matches.push(true);
       }
       if (
-        key === DOMAIN_EQUALS_CONDTION &&
+        key === CONDITION_KEYS.DOMAIN_EQUALS &&
         extractUrlProperties(SidebarLoader.url.href).hostname === value[0]
       ) {
         matches.push(true);
       }
       if (
-        key === DOMAIN_MATCHES_CONDITION &&
+        key === CONDITION_KEYS.DOMAIN_MATCHES &&
         extractUrlProperties(SidebarLoader.url.href).hostname.match(value[0])?.length
       ) {
         matches.push(true);
@@ -519,21 +533,21 @@ class AugmentationManager {
         ? augmentation.conditions.condition_list.every(({ key, unique_key }) => {
             const actualKey = unique_key ?? key;
             switch (actualKey) {
-              case SEARCH_CONTAINS_CONDITION:
+              case CONDITION_KEYS.SEARCH_CONTAINS:
                 return matchingDomains;
-              case SEARCH_QUERY_CONTAINS_CONDITION:
+              case CONDITION_KEYS.SEARCH_QUERY_CONTAINS:
                 return matchingQuery;
-              case SEARCH_ENGINE_IS_CONDITION:
+              case CONDITION_KEYS.SEARCH_ENGINE_IS:
                 return matchingEngine;
-              case SEARCH_INTENT_IS_CONDITION:
+              case CONDITION_KEYS.SEARCH_INTENT_IS:
                 return matchingIntent;
-              case ANY_WEB_SEARCH_CONDITION:
-              case ANY_URL_CONDITION_MOBILE:
+              case CONDITION_KEYS.ANY_SEARCH_ENGINE:
+              case CONDITION_KEYS.ANY_URL:
                 return hasAnyPageCondition;
-              case URL_EQUALS_CONDITION:
-              case URL_MATCHES_CONDITION:
-              case DOMAIN_EQUALS_CONDTION:
-              case DOMAIN_MATCHES_CONDITION:
+              case CONDITION_KEYS.URL_EQUALS:
+              case CONDITION_KEYS.URL_MATCHES:
+              case CONDITION_KEYS.DOMAIN_EQUALS:
+              case CONDITION_KEYS.DOMAIN_MATCHES:
                 return numRegexConditions === matchingUrl.length;
             }
           })
@@ -542,15 +556,15 @@ class AugmentationManager {
     return {
       isHidden: augmentation.installed && !augmentation.enabled,
       isRelevant:
-        evaluationMatch &&
         (augmentation.enabled || !augmentation.installed) &&
-        (hasAnyPageCondition ||
-          matchingQuery ||
-          matchingDomains ||
-          !!matchingIntent.length ||
-          matchingEngine ||
-          !!matchingUrl.length ||
-          augmentation.pinned),
+        (augmentation.pinned ||
+          (evaluationMatch &&
+            (hasAnyPageCondition ||
+              matchingQuery ||
+              matchingDomains ||
+              !!matchingIntent.length ||
+              matchingEngine ||
+              !!matchingUrl.length))),
       matchingIntent,
       hasPreventAutoexpand,
       domainsToLookAction,

@@ -25,7 +25,7 @@ const MAXIMUM_MOVES = 3;
   // Currently we support only Google SERP reordering.
   if (window.location.href.search(/google\.[\w]*]/gi) === -1) return;
 
-  // The list of individual search results. Google occasionaly merges more results into one container
+  // The list of individual search results. Google occasionally merges more results into one container
   // so we need to use a more specific selector to get the unique result blocks from the SERP.
   const results = Array.from(document.querySelectorAll(GOOGLE_SERP_RESULT_DIV_SELECTOR)).map((el) =>
     el.closest(GOOGLE_SERP_RESULT_CONTAINER),
@@ -35,14 +35,14 @@ const MAXIMUM_MOVES = 3;
   const topResults = results.slice(0, MAXIMUM_MOVES);
 
   // Reordered list of the available domains from SERP. Ordering is made by the unique domains
-  // appearence count and their original position in the results page.
+  // appearance count and their original position in the results page.
   //const rankedDomains = getRankedDomains(domains);
 
   // The list of elements that has been already moved.
-  const movedDomains = [];
+  const movedDomains: string[] = [];
 
   /** DEV START **/
-  const logData = [];
+  const logData: any[] = [];
   /** DEV END **/
 
   results.forEach((node, index) => {

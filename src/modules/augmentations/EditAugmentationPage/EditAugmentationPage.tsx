@@ -13,16 +13,46 @@ import {
 import {
   ANY_URL_CONDITION_TEMPLATE,
   EMPTY_AUGMENTATION,
+  FORKED_AUGMENTATION_APPENDAGE,
+  NEW_AUGMENTATION_TITLE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
-  SEARCH_DOMAINS_ACTION,
-  SEARCH_INTENT_IS_US_NEWS_TEMPLATE,
   SIDEBAR_Z_INDEX,
+  TOUR_AUGMENTATION,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './EditAugmentationPage.scss';
+
+/** MAGICS **/
+const HEADER_LEFT_BUTTON = 'Cancel';
+const HEADER_ADD_TITLE = 'Add Local Lens';
+const HEADER_EDIT_TITLE = 'Edit Local Lens';
+const HEADER_ADD_RIGHT_BUTTON = 'Add';
+const HEADER_EDIT_RIGHT_BUTTON = 'Save';
+// * WHEN
+const WHEN_HEADER_TEXT = 'When';
+const WHEN_TOUR_POPUP_TITLE = 'When this lens triggers';
+const WHEN_TOUR_POPUP_CONTENT = 'Here, you can set the conditions for when this lens is shown';
+// * THEN
+const THEN_HEADER_TEXT = 'Then';
+const THEN_TOUR_POPUP_TITLE = 'What this lens does';
+const THEN_TOUR_POPUP_TEXT =
+  'We’re going to create a lens that searches only some domains. Click here to see all the different types of lens actions.';
+// * META
+const META_HEADER_TEXT = 'About';
+const META_TOUR_POPUP_TITLE = 'Metadata';
+const META_TOUR_POPUP_TEXT =
+  'From here you can rename your lens, disable it temporarily or share it.';
+
+const TOUR_TOOLTIP_STYLE: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  width: '200px',
+};
+
+const TOUR_TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
 const { Panel } = Collapse;
 
@@ -32,19 +62,26 @@ export const EditAugmentationPage: EditAugmentationPage = ({
 }) => {
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
+
   const [name, setName] = useState<string>(
-    !!tourStep
-      ? '🗞 My Trusted News'
+    tourStep
+      ? TOUR_AUGMENTATION.name
       : !augmentation.installed && !!augmentation.name?.length
-      ? `${augmentation.name} / Forked`
-      : augmentation.name || '🎉 My Lens',
+        ? `${augmentation.name}${FORKED_AUGMENTATION_APPENDAGE}`
+        : augmentation.name || NEW_AUGMENTATION_TITLE,
   );
+
   const [description, setDescription] = useState<string>(
-    !!tourStep ? 'News sources I trust' : !augmentation.installed ? '' : augmentation.description,
+    tourStep
+      ? TOUR_AUGMENTATION.description
+      : !augmentation.installed
+        ? ''
+        : augmentation.description,
   );
   const [isActive, setIsActive] = useState<boolean>(
     augmentation.enabled || !augmentation.installed,
   );
+
   const [conditionEvaluation, setConditionEvaluation] = useState<Condition['evaluate_with']>(
     augmentation.conditions.evaluate_with,
   );
@@ -52,42 +89,32 @@ export const EditAugmentationPage: EditAugmentationPage = ({
   const [conditions, setConditions] = useState<CustomCondition[]>(
     isAdding
       ? [
-          {
-            ...(tourStep === '2' ? SEARCH_INTENT_IS_US_NEWS_TEMPLATE : ANY_URL_CONDITION_TEMPLATE),
-            id: uuid(),
-          },
-        ]
-      : augmentation.conditions.condition_list.map((condition) => ({
-          ...condition,
+        {
+          ...(tourStep === '2'
+            ? TOUR_AUGMENTATION.conditions.condition_list[0]
+            : ANY_URL_CONDITION_TEMPLATE),
           id: uuid(),
-        })),
+        },
+      ]
+      : augmentation.conditions.condition_list.map((condition) => ({
+        ...condition,
+        id: uuid(),
+      })),
   );
 
   const [actions, setActions] = useState<CustomAction[]>(
-    !!tourStep
+    tourStep
       ? [
-          {
-            id: uuid(),
-            key: SEARCH_DOMAINS_ACTION,
-            label: 'Search only these domains',
-            type: 'list',
-            value: ['cnn.com', 'foxnews.com', 'wsj.com', 'bloomberg.com', 'apnews.com'],
-          },
-        ]
-      : augmentation.actions.action_list.map((action) => ({
-          ...action,
+        {
           id: uuid(),
-        })),
+          ...TOUR_AUGMENTATION.actions.action_list[0],
+        },
+      ]
+      : augmentation.actions.action_list.map((action) => ({
+        id: uuid(),
+        ...action,
+      })),
   );
-
-  useEffect(() => {
-    setIsDisabled(
-      !name ||
-        !actions.length ||
-        !conditions.length ||
-        !!actions?.filter((action) => !action.key).length,
-    );
-  }, [name, actions, conditions.length]);
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
@@ -96,9 +123,9 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     } as OpenActivePageMessage);
   };
 
-  const handleSave = () => {
+  const handleSave = (): void => {
     if (isDisabled) return null;
-    if (!!tourStep) {
+    if (tourStep) {
       setTourStep('6');
       SidebarLoader.tourStep = '6';
     }
@@ -145,24 +172,42 @@ export const EditAugmentationPage: EditAugmentationPage = ({
     setDescription(e.target.value);
   };
 
-  const WhenTourTitle = () => {
-    const [isOpenWhen, setIsOpenWhen] = useState<boolean>(tourStep === '2');
+  useEffect(() => {
+    setIsDisabled(
+      !name ||
+      !actions.length ||
+      !conditions.length ||
+      !!actions?.filter((action) => !action.key).length,
+    );
+  }, [name, actions, conditions.length]);
+
+  useEffect(() => {
+    setTourStep(SidebarLoader.tourStep);
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [SidebarLoader.tourStep]);
+
+  const SectionHeader: SectionHeader = ({ title, tourTitle, tourText }) => {
+    const [isVisible, setIsVisible] = useState<boolean>(tourStep === '2');
     const tooltipContainer = useRef(null);
 
     const handleCloseWhenPopover = () => {
-      setIsOpenWhen(false);
+      setIsVisible(false);
       setTourStep('3');
       SidebarLoader.tourStep = '3';
     };
 
     const content = (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
-        <span>Here, you can set the conditions for when this lens is shown</span>
+      <div style={TOUR_TOOLTIP_STYLE}>
+        <span>{tourText}</span>
         <Button block type="link" onClick={handleCloseWhenPopover}>
           Ok
         </Button>
       </div>
     );
+
+    const getPopupContainer = () => tooltipContainer.current;
 
     return (
       <div className="builder-page-collapse-panel-title">
@@ -170,145 +215,56 @@ export const EditAugmentationPage: EditAugmentationPage = ({
           <>
             <Popover
               content={content}
-              title="When this lens triggers"
-              visible={isOpenWhen}
+              title={tourTitle}
+              visible={isVisible}
               trigger="click"
               placement="leftTop"
-              getPopupContainer={() => tooltipContainer?.current}
+              getPopupContainer={getPopupContainer}
             >
-              When
+              {title}
             </Popover>
             <div
               className="tooltip-container popover-container"
               ref={tooltipContainer}
-              style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
+              style={TOUR_TOOLTIP_CONTAINER_STYLE}
             />
           </>
         ) : (
-          'When'
+          title
         )}
       </div>
     );
   };
-
-  const ThenTourTitle = () => {
-    const [isOpenThen, setIsOpenThen] = useState<boolean>(tourStep === '3');
-    const tooltipContainer = useRef(null);
-
-    const handleCloseThenPopover = () => {
-      setIsOpenThen(false);
-      setTourStep('4');
-      SidebarLoader.tourStep = '4';
-    };
-
-    const content = (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
-        <span>
-          We’re going to create a lens that searches only some domains. Click here to see all the
-          different types of lens actions.
-        </span>
-        <Button block type="link" onClick={handleCloseThenPopover}>
-          Ok
-        </Button>
-      </div>
-    );
-
-    return (
-      <div className="builder-page-collapse-panel-title">
-        {tourStep === '3' ? (
-          <>
-            <Popover
-              content={content}
-              title="What this lens does"
-              visible={isOpenThen}
-              trigger="click"
-              placement="leftTop"
-              getPopupContainer={() => tooltipContainer?.current}
-            >
-              When
-            </Popover>
-            <div
-              className="tooltip-container popover-container"
-              ref={tooltipContainer}
-              style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-            />
-          </>
-        ) : (
-          'Then'
-        )}
-      </div>
-    );
-  };
-
-  const MetaTourTitle = () => {
-    const [isOpenMeta, setIsOpenMeta] = useState<boolean>(tourStep === '4');
-    const tooltipContainer = useRef(null);
-
-    const handleCloseMetaPopover = () => {
-      setIsOpenMeta(false);
-      setTourStep('5');
-      SidebarLoader.tourStep = '5';
-    };
-
-    const content = (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
-        <span>From here you can rename your lens, disable it temporarily or share it.</span>
-        <Button block type="link" onClick={handleCloseMetaPopover}>
-          Ok
-        </Button>
-      </div>
-    );
-
-    return (
-      <div className="builder-page-collapse-panel-title">
-        {tourStep === '4' ? (
-          <>
-            <Popover
-              content={content}
-              title="Metadata"
-              visible={isOpenMeta}
-              trigger="click"
-              placement="leftTop"
-              getPopupContainer={() => tooltipContainer?.current}
-            >
-              When
-            </Popover>
-            <div
-              className="tooltip-container popover-container"
-              ref={tooltipContainer}
-              style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}
-            />
-          </>
-        ) : (
-          'About'
-        )}
-      </div>
-    );
-  };
-
-  useEffect(() => {
-    setTourStep(SidebarLoader.tourStep);
-  }, [SidebarLoader.tourStep]);
 
   return (
     <div id="builder-page" className="sidebar-page">
       <header className="sidebar-page-header">
         <Button type="link" onClick={handleClose} className="left-button">
-          Cancel
+          {HEADER_LEFT_BUTTON}
         </Button>
-        <span className="page-title">{`${!isAdding ? 'Edit' : 'Add'} Local Lens`}</span>
+        <span className="page-title">{!isAdding ? HEADER_EDIT_TITLE : HEADER_ADD_TITLE}</span>
         <Button
           type="link"
           onClick={handleSave}
           className={`right-button ${tourStep === '5' ? 'insight-tour-shake' : ''}`}
           disabled={isDisabled}
         >
-          {!isAdding ? 'Save' : 'Add'}
+          {!isAdding ? HEADER_EDIT_RIGHT_BUTTON : HEADER_ADD_RIGHT_BUTTON}
         </Button>
       </header>
       <div className="sidebar-page-wrapper">
-        <Collapse defaultActiveKey={!!tourStep ? [] : ['2', '3']}>
-          <Panel className="builder-page-collapse-panel" header={<WhenTourTitle />} key="1">
+        <Collapse defaultActiveKey={tourStep ? [] : ['2', '3']}>
+          <Panel
+            className="builder-page-collapse-panel"
+            header={
+              <SectionHeader
+                title={WHEN_HEADER_TEXT}
+                tourTitle={WHEN_TOUR_POPUP_TITLE}
+                tourText={WHEN_TOUR_POPUP_CONTENT}
+              />
+            }
+            key="1"
+          >
             <EditAugmentationConditions
               conditions={conditions}
               setConditions={setConditions}
@@ -319,7 +275,17 @@ export const EditAugmentationPage: EditAugmentationPage = ({
               onSave={handleSaveCondition}
             />
           </Panel>
-          <Panel className="builder-page-collapse-panel" header={<ThenTourTitle />} key="2">
+          <Panel
+            className="builder-page-collapse-panel"
+            header={
+              <SectionHeader
+                title={THEN_HEADER_TEXT}
+                tourTitle={THEN_TOUR_POPUP_TITLE}
+                tourText={THEN_TOUR_POPUP_TEXT}
+              />
+            }
+            key="2"
+          >
             <EditAugmentationActions
               actions={actions}
               onAdd={handleAddAction}
@@ -327,7 +293,17 @@ export const EditAugmentationPage: EditAugmentationPage = ({
               onDelete={handleDeleteAction}
             />
           </Panel>
-          <Panel className="builder-page-collapse-panel" header={<MetaTourTitle />} key="3">
+          <Panel
+            className="builder-page-collapse-panel"
+            header={
+              <SectionHeader
+                title={META_HEADER_TEXT}
+                tourTitle={META_TOUR_POPUP_TITLE}
+                tourText={META_TOUR_POPUP_TEXT}
+              />
+            }
+            key="3"
+          >
             <EditAugmentationMeta
               augmentation={augmentation}
               name={name}

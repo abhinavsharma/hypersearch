@@ -43,43 +43,48 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
   const [showPage, setShowPage] = useState<OPEN_BUILDER_PAGE>(OPEN_BUILDER_PAGE.ACTIVE);
   const [pageData, setPageData] = useState<Record<string, any>>();
 
-  const handleLog = useCallback(async (msg) => {
-    if (msg.frame.parentFrameId === -1) {
-      SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
-        query: SidebarLoader.query,
-        url: msg.url,
-        position_in_serp:
-          SidebarLoader.tabDomains['original'].indexOf(extractUrlProperties(msg.url).full) + 1,
-      });
-    } else {
-      const sourceTab = tabs.find(
-        (i) => unescape(i.url.href) === msg.frame.url.replace('www.', ''),
-      );
-      if (!sourceTab) return null;
-      const statId = `${USE_COUNT_PREFIX}-${sourceTab.id}`;
-      const existingStat =
-        (await new Promise((resolve) => chrome.storage.sync.get(statId, resolve)).then(
-          (value) => value?.[statId],
-        )) ?? 0;
-      const newStat = Number(existingStat) + 1;
-      chrome.storage.sync.set({ [statId]: newStat });
-      SidebarLoader.augmentationStats[sourceTab.id] = newStat;
-      setTimeout(
-        () =>
-          SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
-            query: SidebarLoader.query,
-            url: msg.url,
-            filter_name: sourceTab.title,
-            position_in_serp:
-              SidebarLoader.tabDomains[sourceTab.id][sourceTab.url].indexOf(
-                extractUrlProperties(msg.url).hostname,
-              ) + 1,
-          }),
-        250,
-      );
-      chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
-    }
-  }, []);
+  const handleLog = useCallback(
+    async (msg) => {
+      if (msg.frame.parentFrameId === -1) {
+        SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
+          query: SidebarLoader.query,
+          url: msg.url,
+          position_in_serp:
+            SidebarLoader.publicationSlices['original'].indexOf(
+              extractUrlProperties(msg.url).full,
+            ) + 1,
+        });
+      } else {
+        const sourceTab = tabs.find(
+          (i) => unescape(i.url.href) === msg.frame.url.replace('www.', ''),
+        );
+        if (!sourceTab) return null;
+        const statId = `${USE_COUNT_PREFIX}-${sourceTab.id}`;
+        const existingStat =
+          (await new Promise<Record<string, number>>((resolve) =>
+            chrome.storage.sync.get(statId, resolve),
+          ).then((value) => value?.[statId])) ?? 0;
+        const newStat = Number(existingStat) + 1;
+        chrome.storage.sync.set({ [statId]: newStat });
+        SidebarLoader.augmentationStats[sourceTab.id] = newStat;
+        setTimeout(
+          () =>
+            SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
+              query: SidebarLoader.query,
+              url: msg.url,
+              filter_name: sourceTab.title,
+              position_in_serp:
+                SidebarLoader.publicationSlices[sourceTab.id][sourceTab.url.href].indexOf(
+                  extractUrlProperties(msg.url).hostname,
+                ) + 1,
+            }),
+          250,
+        );
+        chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      }
+    },
+    [tabs],
+  );
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -119,7 +124,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           break;
       }
     });
-  }, [tabs]);
+  }, [tabs, handleLog, setActiveKey]);
 
   useEffect(() => {
     SidebarLoader.currentTab = activeKey;

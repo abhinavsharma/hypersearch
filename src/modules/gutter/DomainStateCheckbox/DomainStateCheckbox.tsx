@@ -1,30 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import {
+  ACTION_KEYS,
+  ACTION_LABELS,
+  ACTION_TYPES,
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
-  SEARCH_DOMAINS_ACTION,
 } from 'utils';
 import 'antd/lib/checkbox/style/index.css';
 
+/** MAGICS **/
+const TRUSTED_CHECKBOX_TEXT = 'Trusted';
+const BLOCKED_CHECKBOX_TEXT = 'Blocked';
+
 export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
+  const augmentations = useMemo(
+    () => [...SidebarLoader.installedAugmentations, ...SidebarLoader.otherAugmentations],
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations],
+  );
+
+  const trustList = useMemo(() => augmentations.find(({ id }) => id === MY_TRUSTLIST_ID), [
+    augmentations,
+  ]);
+
+  const blockList = useMemo(() => augmentations.find(({ id }) => id === MY_BLOCKLIST_ID), [
+    augmentations,
+  ]);
+
   const [isBlocked, setIsBlocked] = useState<boolean>(
-    !!SidebarLoader.installedAugmentations
-      .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_BLOCKLIST_ID)
-      .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
-      .length,
+    !!blockList.actions?.action_list?.filter(
+      (action) => !!action.value.find((value) => value === domain),
+    ).length,
   );
 
   const [isTrusted, setIsTrusted] = useState<boolean>(
-    !!SidebarLoader.installedAugmentations
-      .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_TRUSTLIST_ID)
-      .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
-      .length,
+    !!trustList.actions?.action_list?.filter(
+      (action) => !!action.value.find((value) => value === domain),
+    ).length,
   );
 
   const handleToggleBlocked = async (e: CheckboxChangeEvent) => {
@@ -34,36 +52,36 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
     setIsBlocked(e.target.checked);
   };
 
-  const handleAddTrusted = async () => {
-    const trustList = SidebarLoader.installedAugmentations
-      .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_TRUSTLIST_ID);
-    const newActions = trustList.actions.action_list.map((action, actionIndex) =>
+  const handleAddTrusted = () => {
+    if (!trustList.actions.action_list.length) {
+      trustList.actions.action_list.push({
+        key: ACTION_KEYS.SEARCH_DOMAINS,
+        label: ACTION_LABELS.SEARCH_DOMAINS,
+        type: ACTION_TYPES.LIST,
+        value: [],
+      });
+    }
+
+    const actions = trustList.actions.action_list.map((action, actionIndex) =>
       actionIndex === 0 ? { ...action, value: [...action.value, domain] } : action,
     );
-    AugmentationManager.addOrEditAugmentation(trustList, {
-      actions: newActions,
-    });
+
+    AugmentationManager.addOrEditAugmentation(trustList, { actions });
   };
 
-  const handleRemoveTrusted = async () => {
-    const trustList = SidebarLoader.installedAugmentations
-      .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_TRUSTLIST_ID);
-    const newData: Record<string, any> = {
-      actions: trustList.actions.action_list.map((action) => {
-        const { key, value } = action;
-        return key === SEARCH_DOMAINS_ACTION
-          ? { ...action, value: value.filter((valueDomain) => valueDomain !== domain) }
-          : action;
-      }),
-    };
+  const handleRemoveTrusted = () => {
+    const actions = trustList.actions.action_list.map((action) => {
+      const { key, value } = action;
+      return key === ACTION_KEYS.SEARCH_DOMAINS
+        ? { ...action, value: value.filter((valueDomain) => valueDomain !== domain) }
+        : action;
+    });
 
     window.postMessage(
       {
+        domain,
         name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
         remove: trustList.id,
-        domain,
         selector: {
           link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
           featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
@@ -73,30 +91,29 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
       '*',
     );
 
-    AugmentationManager.addOrEditAugmentation(trustList, newData);
+    AugmentationManager.addOrEditAugmentation(trustList, { actions });
   };
 
-  const handleToggleTrusted = async (e: CheckboxChangeEvent) => {
+  const handleToggleTrusted = (e: CheckboxChangeEvent) => {
     e.target.checked ? handleAddTrusted() : handleRemoveTrusted();
     setIsTrusted(e.target.checked);
   };
 
   useEffect(() => {
     setIsBlocked(
-      !!SidebarLoader.installedAugmentations
-        .concat(SidebarLoader.otherAugmentations)
+      !!augmentations
         .find(({ id }) => id === MY_BLOCKLIST_ID)
         .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
+
     setIsTrusted(
-      !!SidebarLoader.installedAugmentations
-        .concat(SidebarLoader.otherAugmentations)
+      !!augmentations
         .find(({ id }) => id === MY_TRUSTLIST_ID)
         .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
-  }, [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations]);
+  }, [domain, augmentations]);
 
   return (
     <div className="domain-state-checkbox-container">
@@ -105,14 +122,14 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
         checked={isTrusted}
         onChange={handleToggleTrusted}
       >
-        Trusted
+        {TRUSTED_CHECKBOX_TEXT}
       </Checkbox>
       <Checkbox
         className="domain-state-checkbox"
         checked={isBlocked}
         onChange={handleToggleBlocked}
       >
-        Muted
+        {BLOCKED_CHECKBOX_TEXT}
       </Checkbox>
     </div>
   );

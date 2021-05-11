@@ -42,8 +42,8 @@ import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIc
  * @param serpResult - The node where the overlay will be inserted
  * @param blockingAugmentations - The list of augmentations that are blocking the node. When its not set, or
  *  the list is empty, the function will handle the overlay as ad blocker and use the values from `block.ts`.
- *  Blocked advertisments has no gutter icon buttons and only render the overlay itself with its tesct content.
- * @param deatils - `Record<text|header|selectorString>` - The text content and class of the overlay
+ *  Blocked advertisements has no gutter icon buttons and only render the overlay itself with its text content.
+ * @param details - `Record<text|header|selectorString>` - The text content and class of the overlay
  * @example
  * ```js
  * createOverlay(element, [{id: "my-block-id", ...}], {
@@ -63,7 +63,7 @@ const createOverlay = (
   serpResult: HTMLElement,
   blockingAugmentations: AugmentationObject[] = [],
   details: Record<'text' | 'header' | 'selectorString', string>,
-) => {
+): void => {
   if (!(serpResult instanceof HTMLElement)) return null;
 
   if (serpResult.getAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR) === 'true') {
@@ -71,7 +71,7 @@ const createOverlay = (
     existingOverlay && existingOverlay.parentElement.removeChild(existingOverlay);
   }
 
-  // Assume the result is an advertisment when there is no blocking augmentations
+  // Assume the result is an advertisement when there is no blocking augmentations
   if (!blockingAugmentations.length) {
     serpResult.setAttribute('insight-ad-block', 'true');
   }
@@ -142,7 +142,7 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (typeof publication !== 'string' && typeof augmentations !== 'string') continue;
 
-    let blockers = [];
+    let blockers: AugmentationObject[] = [];
 
     const isSubtab = createdUrls.findIndex((url) =>
       escape(removeProtocol(url)).match(escape(removeProtocol(resultLink).split('#')[0])),
@@ -211,7 +211,9 @@ export const processSerpResults: ProcessSerpResults = (
           url={resultLink}
           publication={publication}
           container={containerSelector}
-          searchingAugmentations={augmentations.search[publication]}
+          searchingAugmentations={
+            (augmentations.search as Record<string, AugmentationObject[]>)[publication]
+          }
           blockingAugmentations={blockers}
         />,
         buttonRoot,

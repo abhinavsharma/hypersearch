@@ -18,6 +18,14 @@ declare module './EditAugmentationPage' {
     id: string;
   };
 
+  type SectionHeaderProps = {
+    title: string;
+    tourTitle: string;
+    tourText: string;
+  };
+
+  type SectionHeader = FunctionComponent<SectionHeaderProps>;
+
   type EditAugmentationPage = FunctionComponent<EditAugmentationPageProps>;
 
   type Header = FunctionComponent<EditAugmentationPageProps>;
