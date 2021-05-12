@@ -175,7 +175,13 @@ export const GOOGLE_SERP_RESULT_CONTAINER = '[data-hveid]';
 export const GOOGLE_SERP_RESULT_A_SELECTOR = '.KJDcUb a.BmP5tf';
 export const GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL = '.mnr-c.xpd .KJDcUb a.BmP5tf';
 export const BANNED_DOMAINS = ['duckduckgo.com/y.js'];
-export const KP_SELECTORS = ['.kp-wholepage', '#imso-root', '.b_ans', '.module--about'];
+export const KP_SELECTORS = [
+  '.kp-wholepage',
+  '#imso-root',
+  '.b_ans',
+  '.module--about',
+  '.knowledge-panel',
+];
 
 /**
  * ! REGEX
