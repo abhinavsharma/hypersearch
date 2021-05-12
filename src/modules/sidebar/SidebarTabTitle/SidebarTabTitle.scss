@@ -35,6 +35,8 @@
   .insight-tab-title {
     color: $color_text_medium;
     padding: $sidebar_space_small $sidebar_space_medium;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 
     &.hidden {
       display: none;

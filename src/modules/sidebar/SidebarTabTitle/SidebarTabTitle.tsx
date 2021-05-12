@@ -8,7 +8,6 @@ import {
   EXTENSION_SERP_SUBTAB_CLICKED,
   EXTENSION_SUBTAB_SCROLL,
   extractUrlProperties,
-  removeEmoji,
   removeProtocol,
   TRIGGER_FRAME_SCROLL_LOG_MESSAGE,
   TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
@@ -92,11 +91,11 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       >
         {!tab.augmentation?.installed ? (
           <Tooltip title={SUGGESTED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(tab.title)}
+            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.title}
           </Tooltip>
         ) : (
           <Tooltip title={INSTALLED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(tab.title)}
+            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.title}
           </Tooltip>
         )}
       </span>
