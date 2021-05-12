@@ -212,7 +212,6 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
   };
 
   try {
-    window.top.addEventListener('message', handler);
     window.addEventListener('message', handler);
   } catch (err) {
     debug('results listener - error', err);
