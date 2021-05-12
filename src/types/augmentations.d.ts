@@ -10,7 +10,7 @@ declare type Action = {
 
 declare type ActionObject = {
   label: import('utils/constants').ACTION_LABELS;
-  key: import('utils/constants').ACTION_KEYS | import('utils/constants').LEGACY_KEYS;
+  key: import('utils/constants').ACTION_KEYS;
   type: import('utils/constants').ACTION_TYPES;
   value: string[];
 };

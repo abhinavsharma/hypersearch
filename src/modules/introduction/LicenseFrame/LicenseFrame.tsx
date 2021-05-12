@@ -31,7 +31,7 @@ export const LicenseFrame = () => {
   };
 
   const handleFreeTier = () => {
-    stepContext.setLicense({ isActivated: false, key: null });
+    stepContext.setLicense({ isActivated: false, key: undefined });
     handleNext();
   };
 

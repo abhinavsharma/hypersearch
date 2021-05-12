@@ -31,9 +31,7 @@ import {
 const isFirefox = typeof InstallTrigger !== 'undefined';
 // ! HEADER MODIFICATIONS
 // Firefox does not allow the `extraHeaders` property on the `webRequest` object.
-const extraSpec = ['blocking', 'responseHeaders', isFirefox ? null : 'extraHeaders'].filter(
-  (i) => i,
-);
+const extraSpec = ['blocking', 'responseHeaders', isFirefox ? '' : 'extraHeaders'].filter((i) => i);
 
 const processCookieString = (header: string) => {
   if (header.search(/__sso\.key/g) > -1) {
@@ -67,18 +65,23 @@ chrome.webRequest.onHeadersReceived.addListener(
 
     banCookies && strippedHeaders.push('set-cookie');
 
-    const responseHeaders = details.responseHeaders.filter(
-      (responseHeader) => !strippedHeaders.includes(responseHeader.name.toLowerCase()),
-    );
+    const responseHeaders =
+      details.responseHeaders?.filter(
+        (responseHeader) => !strippedHeaders.includes(responseHeader.name.toLowerCase()),
+      ) ?? [];
 
     const result = {
       responseHeaders: [
         ...responseHeaders.map((header) => {
           if (header.name.toLowerCase() === 'set-cookie') {
-            header.value = processCookieString(header.value);
+            header.value = processCookieString(header.value ?? '');
           }
           if (header.name.toLowerCase() === 'location') {
-            header.value = new URL(header.value.replace(/^https?:\/\//, 'https://')).href;
+            try {
+              header.value = new URL(header.value?.replace(/^https?:\/\//, 'https://') ?? '').href;
+            } catch (e) {
+              debug('onHeadersReceived - error', e);
+            }
           }
           return header;
         }),
@@ -108,7 +111,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     if (details.url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1) {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         for (let i = 0; i < tabs.length; ++i) {
-          chrome.tabs.sendMessage(tabs[i].id, {
+          chrome.tabs.sendMessage(tabs[i].id ?? -1, {
             type: EXTENSION_SHORT_URL_RECEIVED,
             shortUrl: details.url,
           });
@@ -133,9 +136,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
       }
     });
 
-    const requestHeaders = details.requestHeaders.map((requestHeader) => {
+    const requestHeaders = details.requestHeaders?.map((requestHeader) => {
       if (requestHeader.name.toLowerCase() === 'cookie') {
-        requestHeader.value = processCookieString(requestHeader.value);
+        requestHeader.value = processCookieString(requestHeader.value ?? '');
       }
       const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
       const urlMatchesSearchPattern = specialUrl;
@@ -164,11 +167,12 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 const trackData: Record<string, number> = Object.create(null);
 // Calculate how much time the user spent on a publication and store it's value in the storage.
 // After the value is stored, we fire an update message which will update the gutter unit.
-const stopTrackingTimer = async (skippedPublication: string = null) => {
+const stopTrackingTimer = async (skippedPublication = '') => {
   const stored =
-    (await new Promise<Record<string, number>>((resolve) =>
+    (await new Promise<Record<string, Record<string, number>>>((resolve) =>
       chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
     ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
+
   Object.entries(trackData).forEach(([publication, startTime]) => {
     if (trackData[publication] && publication !== skippedPublication) {
       const storedTime = stored[sanitizeUrl(publication)] ?? 0;
@@ -183,7 +187,7 @@ const stopTrackingTimer = async (skippedPublication: string = null) => {
       });
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         tabs.forEach((tab) => {
-          chrome.tabs.sendMessage(tab.id, {
+          chrome.tabs.sendMessage(tab.id ?? -1, {
             currentTime,
             domain: publication,
             type: TRIGGER_PUBLICATION_TIMER_MESSAGE,
@@ -201,15 +205,15 @@ const stopTrackingTimer = async (skippedPublication: string = null) => {
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.query({}, async (tabs) => {
     const currentTab = tabs.find(({ id }) => id == tabId);
-    const publication = getPublicationUrl(currentTab?.url);
-    await stopTrackingTimer(publication);
+    const publication = getPublicationUrl(currentTab?.url ?? '');
+    await stopTrackingTimer(publication ?? '');
     if (publication && !trackData[publication]) {
       debug('publicationTracking - start - ', publication, trackData);
       trackData[publication] = Date.now();
       tabs.forEach((tab) =>
-        chrome.tabs.sendMessage(tab.id, {
+        chrome.tabs.sendMessage(tab.id ?? -1, {
           type: TRIGGER_START_TRACK_TIMER_MESSAGE,
-          url: currentTab.url,
+          url: currentTab?.url ?? '',
         }),
       );
     }
@@ -260,7 +264,7 @@ chrome.webNavigation.onCreatedNavigationTarget.addListener(async (details) => {
 chrome.browserAction.onClicked.addListener(({ id, url }) => {
   !url
     ? chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') })
-    : chrome.tabs.sendMessage(id, {
+    : chrome.tabs.sendMessage(id ?? -1, {
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
         page: OPEN_BUILDER_PAGE.ACTIVE,
       });
@@ -317,7 +321,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
       }
       break;
     default:
-      chrome.tabs.sendMessage(sender.tab.id, msg);
+      chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg);
       break;
   }
 });
@@ -331,7 +335,7 @@ const HEADERS_TO_STRIP_LOWERCASE = ['content-security-policy', 'x-frame-options'
 
 chrome.webRequest.onHeadersReceived.addListener(
   (details) => ({
-    responseHeaders: details.responseHeaders.filter(
+    responseHeaders: details.responseHeaders?.filter(
       (header) => !HEADERS_TO_STRIP_LOWERCASE.includes(header.name.toLowerCase()),
     ),
   }),

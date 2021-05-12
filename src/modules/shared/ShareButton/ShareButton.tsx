@@ -54,8 +54,8 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
 
   const [url, setUrl] = useState<string>(EXTENSION_SHARE_URL + encoded);
   const [shared, setShared] = useState<boolean>(false);
-  const [visible, setVisible] = useState<boolean>(undefined);
-  const tooltipContainer = useRef(null);
+  const [visible, setVisible] = useState<boolean | undefined>(undefined);
+  const tooltipContainer = useRef<HTMLDivElement>(null);
 
   const handleShare = async () => {
     setVisible(undefined);
@@ -126,7 +126,7 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
 
   const popoverWidth = { width: POPOVER_WIDTH };
   const keepParent = { keepParent: false };
-  const getPopupContainer = () => tooltipContainer.current;
+  const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
   const containerStyle: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
   return (

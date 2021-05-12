@@ -35,7 +35,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       });
     },
     1000,
-    null,
+    undefined,
     [],
   );
 

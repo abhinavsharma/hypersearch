@@ -4,7 +4,12 @@ import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
 import { CONDITION_KEYS, CONDITION_LABELS, LEGACY_KEYS, LEGACY_EVALUATION } from 'utils';
-import { MultiValueInput,NewConditionDropdown, SearchEngineDropdown, SearchIntentDropdown } from 'modules/builder';
+import {
+  MultiValueInput,
+  NewConditionDropdown,
+  SearchEngineDropdown,
+  SearchIntentDropdown,
+} from 'modules/builder';
 import 'antd/lib/select/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';

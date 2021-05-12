@@ -137,8 +137,8 @@ export const removeProtocol = (urlLike: string) => {
     return urlLike.replace(/^https?:\/\//, '').replace('www.', '');
   } catch (err) {
     debug('removeProtocol - error', err);
+    return urlLike;
   }
-  return;
 };
 
 /**
@@ -299,8 +299,8 @@ export const makeEllipsis = (stringLike: string, limit: number) =>
  */
 export const shouldPreventEventBubble = (event: KeyboardEvent) => {
   return (
-    !!event.target.constructor.toString().match('HTMLInputElement') ||
-    !!event.target.constructor.toString().match('HTMLTextAreaElement') ||
+    !!event.target?.constructor.toString().match('HTMLInputElement') ||
+    !!event.target?.constructor.toString().match('HTMLTextAreaElement') ||
     (event.target as HTMLElement).getAttribute('contenteditable') === 'true'
   );
 };
@@ -359,7 +359,7 @@ const swapUrlsForDebuggingInJsonResponse = <T>(json: T): T => {
 export const getAPI = async <T>(
   api: string,
   params: Record<string, any> = Object.create(null),
-): Promise<T> => {
+): Promise<T | null> => {
   try {
     const url: URL = new URL(LUMOS_API_URL + api);
     Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
@@ -394,7 +394,7 @@ export const postAPI = async <T>(
   api: string,
   params: Record<string, any> = Object.create(null),
   body: Record<string, any> = Object.create(null),
-): Promise<T> => {
+): Promise<T | null> => {
   try {
     const url: URL = new URL(LUMOS_API_URL + api);
     Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
@@ -431,18 +431,18 @@ export const isSafari = () => {
 };
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
-  if (a.augmentation.id === MY_TRUSTLIST_ID) return 1;
-  if (b.augmentation.id === MY_TRUSTLIST_ID) return -1;
+  if (a.augmentation?.id === MY_TRUSTLIST_ID) return 1;
+  if (b.augmentation?.id === MY_TRUSTLIST_ID) return -1;
 
   const aConditions = Array.from(
-    new Set(a.augmentation.conditions.condition_list.map(({ key }) => key)),
+    new Set(a.augmentation?.conditions.condition_list.map(({ key }) => key)),
   );
   const bConditions = Array.from(
-    new Set(b.augmentation.conditions.condition_list.map(({ key }) => key)),
+    new Set(b.augmentation?.conditions.condition_list.map(({ key }) => key)),
   );
 
-  const aSuggested = !a.augmentation.installed;
-  const bSuggested = !b.augmentation.installed;
+  const aSuggested = !a.augmentation?.installed;
+  const bSuggested = !b.augmentation?.installed;
   const bothSuggested = aSuggested && bSuggested;
 
   const aIsAny =
@@ -456,8 +456,8 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
 
   // Trivial cases that can be handled by checking tab types:
   // Pinned > Installed > Suggested > Any URL
-  if (a.augmentation.pinned && !b.augmentation.pinned) return -1;
-  if (!a.augmentation.pinned && b.augmentation.pinned) return 1;
+  if (a.augmentation?.pinned && !b.augmentation?.pinned) return -1;
+  if (!a.augmentation?.pinned && b.augmentation?.pinned) return 1;
   if (aSuggested && !bSuggested && !aIsAny && bIsAny) return -1;
   if (aSuggested && !bSuggested && aIsAny && !bIsAny) return 1;
   if (!aSuggested && bSuggested && !aIsAny && bIsAny) return -1;
@@ -497,27 +497,31 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     });
   };
 
-  if (a.matchingDomainsCondition.length && !b.matchingDomainsCondition.length) return 1;
-  if (!a.matchingDomainsCondition.length && b.matchingDomainsCondition.length) return -1;
-  if (a.matchingDomainsCondition.length && b.matchingDomainsCondition.length) {
-    getTabDomainRatings(aLowestSearchDomains.domains, bLowestSearchDomains.domains);
+  if (a.matchingDomainsCondition?.length && !b.matchingDomainsCondition?.length) return 1;
+  if (!a.matchingDomainsCondition?.length && b.matchingDomainsCondition?.length) return -1;
+  if (a.matchingDomainsCondition?.length && b.matchingDomainsCondition?.length) {
+    getTabDomainRatings(aLowestSearchDomains.domains ?? [], bLowestSearchDomains.domains ?? []);
     if (aLowestSearchDomains.rate === bLowestSearchDomains.rate) {
       getTabDomainRatings(
-        aLowestSearchDomains.domains.filter((i) => i !== bLowestSearchDomains.name),
-        aLowestSearchDomains.domains.filter((i) => i !== bLowestSearchDomains.name),
+        aLowestSearchDomains.domains?.filter((i) => i !== aLowestSearchDomains.name) ?? [],
+        bLowestSearchDomains.domains?.filter((i) => i !== bLowestSearchDomains.name) ?? [],
       );
     }
     return aLowestSearchDomains.rate > bLowestSearchDomains.rate ? 1 : -1;
   }
 
-  if (a.matchingIntent.length && !b.matchingIntent.length) return 1;
-  if (b.matchingIntent.length && b.matchingIntent.length) return -1;
-  if (a.matchingIntent.length && b.matchingIntent.length) {
-    getTabDomainRatings(aLowestIntentDomains.domains, aLowestIntentDomains.domains);
+  if (a.matchingIntent?.length && !b.matchingIntent?.length) return 1;
+  if (b.matchingIntent?.length && b.matchingIntent?.length) return -1;
+  if (a.matchingIntent?.length && b.matchingIntent?.length) {
+    const aIntentDomains = (aLowestIntentDomains.domains?.filter((i) => typeof i === 'string') ??
+      []) as string[];
+    const bIntentDomains = (bLowestIntentDomains.domains?.filter((i) => typeof i === 'string') ??
+      []) as string[];
+    getTabDomainRatings(aIntentDomains, bIntentDomains);
     if (aLowestIntentDomains.rate === aLowestIntentDomains.rate) {
       getTabDomainRatings(
-        aLowestIntentDomains.domains.filter((i) => i !== aLowestIntentDomains.name),
-        aLowestIntentDomains.domains.filter((i) => i !== aLowestIntentDomains.name),
+        aIntentDomains.filter((i) => String(i) !== aLowestIntentDomains.name) ?? [],
+        bIntentDomains.filter((i) => i !== bLowestIntentDomains.name) ?? [],
       );
     }
     return aLowestIntentDomains.rate > bLowestIntentDomains.rate ? 1 : -1;

@@ -31,11 +31,11 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       }
     });
 
-    frame?.contentWindow.addEventListener('keydown', handleKeyDown);
-    frame?.contentWindow.addEventListener('keyup', handleKeyUp);
+    frame?.contentWindow?.addEventListener('keydown', handleKeyDown);
+    frame?.contentWindow?.addEventListener('keyup', handleKeyUp);
     return () => {
-      frame?.contentWindow.removeEventListener('keydown', handleKeyDown);
-      frame?.contentWindow.removeEventListener('keyup', handleKeyUp);
+      frame?.contentWindow?.removeEventListener('keydown', handleKeyDown);
+      frame?.contentWindow?.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
 

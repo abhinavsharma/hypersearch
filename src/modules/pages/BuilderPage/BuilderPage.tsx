@@ -57,19 +57,23 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
 
   const [name, setName] = useState<string>(
+    /* eslint-disable */
     tourStep
       ? TOUR_AUGMENTATION.name
       : !augmentation.installed && !!augmentation.name?.length
         ? `${augmentation.name}${FORKED_AUGMENTATION_APPENDAGE}`
         : augmentation.name || NEW_AUGMENTATION_TITLE,
+    /* eslint-enable */
   );
 
   const [description, setDescription] = useState<string>(
+    /* eslint-disable */
     tourStep
       ? TOUR_AUGMENTATION.description
       : !augmentation.installed
         ? ''
         : augmentation.description,
+    /* eslint-enable */
   );
   const [isActive, setIsActive] = useState<boolean>(
     augmentation.enabled || !augmentation.installed,
@@ -82,31 +86,31 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
   const [conditions, setConditions] = useState<CustomCondition[]>(
     isAdding
       ? [
-        {
-          ...(tourStep === '2'
-            ? TOUR_AUGMENTATION.conditions.condition_list[0]
-            : ANY_URL_CONDITION_TEMPLATE),
-          id: uuid(),
-        },
-      ]
+          {
+            ...(tourStep === '2'
+              ? TOUR_AUGMENTATION.conditions.condition_list[0]
+              : ANY_URL_CONDITION_TEMPLATE),
+            id: uuid(),
+          },
+        ]
       : augmentation.conditions.condition_list.map((condition) => ({
-        ...condition,
-        id: uuid(),
-      })),
+          ...condition,
+          id: uuid(),
+        })),
   );
 
   const [actions, setActions] = useState<CustomAction[]>(
     tourStep
       ? [
-        {
-          id: uuid(),
-          ...TOUR_AUGMENTATION.actions.action_list[0],
-        },
-      ]
+          {
+            id: uuid(),
+            ...TOUR_AUGMENTATION.actions.action_list[0],
+          },
+        ]
       : augmentation.actions.action_list.map((action) => ({
-        id: uuid(),
-        ...action,
-      })),
+          id: uuid(),
+          ...action,
+        })),
   );
 
   const handleClose = () => {
@@ -117,7 +121,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
   };
 
   const handleSave = (): void => {
-    if (isDisabled) return null;
+    if (isDisabled) return;
     if (tourStep) {
       setTourStep('6');
       SidebarLoader.tourStep = '6';
@@ -168,9 +172,9 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
   useEffect(() => {
     setIsDisabled(
       !name ||
-      !actions.length ||
-      !conditions.length ||
-      !!actions?.filter((action) => !action.key).length,
+        !actions.length ||
+        !conditions.length ||
+        !!actions?.filter((action) => !action.key).length,
     );
   }, [name, actions, conditions.length]);
 
@@ -183,7 +187,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
 
   const SectionHeader: SectionHeader = ({ title, tourTitle, tourText }) => {
     const [isVisible, setIsVisible] = useState<boolean>(tourStep === '2');
-    const tooltipContainer = useRef(null);
+    const tooltipContainer = useRef<HTMLDivElement>(null);
 
     const handleCloseWhenPopover = () => {
       setIsVisible(false);
@@ -200,7 +204,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
       </div>
     );
 
-    const getPopupContainer = () => tooltipContainer.current;
+    const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
     return (
       <div className="builder-page-collapse-panel-title">

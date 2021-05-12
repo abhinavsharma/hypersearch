@@ -51,7 +51,7 @@ export const ActivePage: ActivePage = () => {
         );
         isBlockingDomain && augmentations.push(augmentation);
         return augmentations;
-      }, []),
+      }, [] as AugmentationObject[]),
   );
 
   const handleOpenSettings = () => {
@@ -60,8 +60,8 @@ export const ActivePage: ActivePage = () => {
 
   const handleClose = () => {
     if (tourStep) {
-      setTourStep(null);
-      SidebarLoader.tourStep = null;
+      setTourStep('');
+      SidebarLoader.tourStep = '';
     }
     if (getFirstValidTabIndex(SidebarLoader.sidebarTabs) === '0') {
       flipSidebar(window.top.document, 'hide', 0, true);
@@ -77,8 +77,8 @@ export const ActivePage: ActivePage = () => {
     if (!a.installed && b.installed) return 1;
     return (
       // sorts by name ignoring emojis
-      a.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0) -
-      b.name.match(/[\w]/)[0].toLowerCase().charCodeAt(0)
+      (a.name.match(/[\w]/)?.[0].toLowerCase().charCodeAt(0) ?? 0) -
+      (b.name.match(/[\w]/)?.[0].toLowerCase().charCodeAt(0) ?? 0)
     );
   };
 
@@ -165,7 +165,7 @@ export const ActivePage: ActivePage = () => {
           );
           isBlockingDomain && augmentations.push(augmentation);
           return augmentations;
-        }, []),
+        }, [] as AugmentationObject[]),
     );
     // Singleton instance not reinitialized on rerender.
     // ! Be careful when updating the dependency list!

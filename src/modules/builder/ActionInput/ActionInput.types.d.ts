@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { CustomAction } from 'modules/builder';
+import { CustomAction } from 'modules/pages';
 
 declare module './ActionInput' {
   type ActionInputProps = {

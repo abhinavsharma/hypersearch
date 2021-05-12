@@ -2,7 +2,9 @@ import { SIDEBAR_Z_INDEX } from 'utils/constants';
 
 export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preventOverlay) => {
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
-  const document = innerDocument?.contentWindow.document;
+  const document = innerDocument?.contentWindow?.document;
+
+  if (!document) return;
 
   const sidebarContainer = document.getElementById('insight-sidebar-container');
 
@@ -44,7 +46,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     // We need the timeout to ensure the proper animation
     setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
-      outerDocument.getElementById('sidebar-root').setAttribute(
+      outerDocument.getElementById('sidebar-root')?.setAttribute(
         'style',
         `
         height: 0;
@@ -58,7 +60,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
         width: ${tabsLength === 0 ? '200px' : '150px'} !important;
       `,
       );
-      outerDocument.getElementById('sidebar-root-iframe').setAttribute(
+      outerDocument.getElementById('sidebar-root-iframe')?.setAttribute(
         'style',
         `
         position: fixed;
@@ -89,7 +91,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     showButton.style.visibility = 'hidden';
     sidebarContainer.style.width = '450px';
     tabsContainer.style.visibility = 'visible';
-    outerDocument.getElementById('sidebar-root').setAttribute(
+    outerDocument.getElementById('sidebar-root')?.setAttribute(
       'style',
       `
       display: block;
@@ -99,7 +101,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
   `,
     );
-    outerDocument.getElementById('sidebar-root-iframe').setAttribute(
+    outerDocument.getElementById('sidebar-root-iframe')?.setAttribute(
       'style',
       `
       position: fixed;

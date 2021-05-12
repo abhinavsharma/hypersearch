@@ -1,11 +1,11 @@
 declare type SidebarTab = {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   url: URL;
-  augmentation?: AugmentationObject;
+  augmentation: AugmentationObject;
   isCse?: boolean;
-  matchingIntent?: string[];
+  matchingIntent?: Array<string | Element>;
   matchingDomainsAction?: string[];
   matchingDomainsCondition?: string[];
   readable?: string;

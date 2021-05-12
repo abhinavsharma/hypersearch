@@ -83,7 +83,7 @@ declare type OpenBuilderMessage = {
 };
 
 declare type ExtractedURLProperties = {
-  hostname: string | undefined;
-  params: string[] | undefined;
-  full: string | undefined;
+  hostname: string;
+  params: string[];
+  full: string;
 };

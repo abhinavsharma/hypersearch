@@ -14,8 +14,12 @@ export const SearchIntentDropdown: SearchIntentDropdown = ({ newValue, handleSel
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleFilter = (inputValue: string, { key }: OptionProps) => {
-    return String(key).toLowerCase().search(inputValue.toLowerCase()) > -1;
+  const handleFilter = (inputValue: string, options?: Omit<OptionProps, 'children'>) => {
+    return (
+      String(options?.key ?? '')
+        .toLowerCase()
+        .search(inputValue.toLowerCase()) > -1
+    );
   };
 
   useEffect(() => {
@@ -24,6 +28,8 @@ export const SearchIntentDropdown: SearchIntentDropdown = ({ newValue, handleSel
     // ! Be careful when updating the dependency list!
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SearchEngineManager.intents]);
+
+  const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
 
   return (
     <>
@@ -35,7 +41,7 @@ export const SearchIntentDropdown: SearchIntentDropdown = ({ newValue, handleSel
         onChange={handleSelect}
         className="insight-select-full-width"
         dropdownClassName="insight-select-full-width-dropdown"
-        getPopupContainer={() => dropdownRef.current}
+        getPopupContainer={getPopupContainer}
       >
         {intents?.map(({ name, intent_id }) => (
           <Option key={name} value={intent_id} style={{ zIndex: SIDEBAR_Z_INDEX + 1 }}>

@@ -15,7 +15,7 @@ const FINISHED_SECTION_TITLE = 'Done';
 
 const { Step } = Steps;
 
-export const StepContext = React.createContext<IntroStepContext>(null);
+export const StepContext = React.createContext<IntroStepContext>(Object.create(null));
 
 export const IntroductionPage = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);

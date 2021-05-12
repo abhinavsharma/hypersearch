@@ -53,12 +53,13 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const filteredTabs = tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL);
 
   // Calculate the relative height of the nub by using the tab's title length
-  const tabHeight = filteredTabs.length ? tabs.slice(0, MAX_TAB_LENGTH + 1).reduce((a, tab) => {
-    const titleLength = tab.title.length * 8 < 50 ? 50 : tab.title.length * 8; // 1 ch is approximately 8 px
-    const titleSpace = 50; // space for one line
-    return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line
-  }, 0) : 0;
-
+  const tabHeight = filteredTabs.length
+    ? tabs.slice(0, MAX_TAB_LENGTH + 1).reduce((a, tab) => {
+        const titleLength = tab.title.length * 8 < 50 ? 50 : tab.title.length * 8; // 1 ch is approximately 8 px
+        const titleSpace = 50; // space for one line
+        return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line
+      }, 0)
+    : 0;
 
   const dataSource =
     tabs.length > 3
@@ -66,6 +67,8 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
           {
             id: '0',
             url: new URL('https://example.com'),
+            description: '',
+            augmentation: Object.create(null),
             title: MORE_TABS_TEXT.replace(
               '<placeholder>',
               String(filteredTabs.length - MAX_TAB_LENGTH),

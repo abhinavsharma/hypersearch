@@ -73,6 +73,9 @@ class SearchEngineManager {
       SYNC_FINISHED_KEY,
       SYNC_PUBLICATION_TIME_TRACK_KEY,
     ];
+    this.engines = Object.create(null);
+    this.intents = Object.create(null);
+    this.remoteBlob = Object.create(null);
     this.throttled = false;
     this.getIntents();
     this.getEngines();
@@ -118,7 +121,7 @@ class SearchEngineManager {
     debug('getCustomSearchEngine - call\n');
     let storedValue: Record<string, CustomSearchEngine>;
     const { hostname, params } = extractUrlProperties(url);
-    if (!hostname) return null;
+    if (!hostname) return EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
     const localized =
       hostname.search(/google\.[\w]*/) > -1 ? hostname.replace(/\.[\w.]*$/, '.com') : hostname;
     const storageKey = localized.replace(/\./g, '_');
@@ -129,12 +132,12 @@ class SearchEngineManager {
       const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES, { cache: 'no-cache' });
       const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
       Object.values(results).forEach((customSearchEngine) => {
-        const hasAllMatchinParams = !customSearchEngine.search_engine_json.required_params.filter(
+        const hasAllMatchingParams = !customSearchEngine.search_engine_json.required_params.filter(
           (i) => !params.includes(i),
         ).length;
         const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
           ?.length;
-        if (hasAllMatchinParams && hasRequiredPrefix)
+        if (hasAllMatchingParams && hasRequiredPrefix)
           Object.assign(result, { ...customSearchEngine });
       });
       chrome.storage.sync.set({ [storageKey]: result });
@@ -155,7 +158,7 @@ class SearchEngineManager {
   public async sync(): Promise<void> {
     if (this.throttled) {
       debug('SearchEngineManager - sync - throttle execution');
-      return null;
+      return;
     }
     this.throttled = true;
     if (!this.remoteBlob) {
@@ -191,13 +194,9 @@ class SearchEngineManager {
             await this.deleteItem(key, 'Property mismatch in local item');
           }
           // Remove item if required params are not matching
-          const paramsMismatch =
-            storedItem?.search_engine_json?.required_params
-              .reduce((a, c) => {
-                a.push(remoteItem?.search_engine_json?.required_params.includes(c));
-                return a;
-              }, [])
-              .indexOf(false) > -1;
+          const paramsMismatch = storedItem?.search_engine_json?.required_params.every((c) =>
+            remoteItem?.search_engine_json?.required_params.includes(c),
+          );
 
           if (paramsMismatch) {
             await this.deleteItem(key, 'Required params mismatch');

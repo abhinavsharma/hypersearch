@@ -3,7 +3,7 @@ import { FunctionComponent, ReactElement, MouseEvent, Dispatch, SetStateAction }
 declare module './SidebarTabs' {
   type SidebarTabsProps = {
     tabs: SidebarTab[];
-    activeKey: string | null;
+    activeKey: string;
     setActiveKey: Dispatch<SetStateAction<string>>;
   };
 
@@ -23,6 +23,6 @@ declare module './SidebarTabs' {
 
   type TabBar = (
     props: _TabsProps,
-    DefaultTabBar: (props: _TabsProps) => ReactElement,
-  ) => ReactElement;
+    DefaultTabBar: any,
+  ) => ReactElement<any, string | JSXElementConstructor<any>>;
 }

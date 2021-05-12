@@ -56,7 +56,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
       e.preventDefault();
     };
     if (el?.href) {
-      el.href = el.getAttribute('href');
+      el.href = el.getAttribute('href') ?? '';
       if (el.href.indexOf('?') === -1) el.href = el.href + '?';
     }
     el.removeAttribute('jscontroller');
@@ -85,7 +85,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
 
   const removeElement = (el: ALLOWED_ELEMENT) => {
     clearElement(el);
-    el.parentNode.removeChild(el);
+    el.parentNode?.removeChild(el);
   };
 
   const getElements = (selector: string) =>
@@ -111,19 +111,20 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     getElements('a').forEach((el) => {
       clearElement(el);
       const href = el.getAttribute('href');
-      if (href?.search(/amp(\.|-)reddit(\.|-)com/gi) > -1) {
-        const redditLink = href.match(/reddit\.com[\w/?=%_-]*/gi)[0];
+      if (href?.search(/amp(\.|-)reddit(\.|-)com/gi) ?? -1 > -1) {
+        const redditLink = href?.match(/reddit\.com[\w/?=%_-]*/gi)?.[0];
         el.setAttribute('href', `https://www.${redditLink}`);
       }
-      if (el.innerHTML?.search('amp.reddit') > -1 || href?.search('amp.reddit') > -1) {
+      if (el.innerHTML?.search('amp.reddit') > -1 || (href?.search('amp.reddit') ?? -1) > -1) {
         el.innerHTML = el.innerHTML.replace('amp.reddit', 'www.reddit');
-        el.setAttribute('href', el.getAttribute('href').replace('amp.reddit', 'www.reddit'));
+        el.setAttribute('href', el.getAttribute('href')?.replace('amp.reddit', 'www.reddit') ?? '');
         el.setAttribute('rel', 'noopener noreferrer');
       }
       el.onclick = (e: MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
-        window.open(el.getAttribute('href'));
+        const href = el.getAttribute('href');
+        href && window.open(href);
       };
       const target = el.getAttribute('target');
       if (target !== '_blank') el.setAttribute('target', '_blank');
@@ -139,7 +140,8 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
         el.onclick = (e: MouseEvent) => {
           e.stopPropagation();
           e.preventDefault();
-          window.open(el.getAttribute('href'));
+          const href = el.getAttribute('href');
+          href && window.open(href);
         };
         const target = el.getAttribute('target');
         if (target !== '_blank') el.setAttribute('target', '_blank');

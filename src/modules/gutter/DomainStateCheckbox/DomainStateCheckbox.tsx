@@ -34,13 +34,13 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   ]);
 
   const [isBlocked, setIsBlocked] = useState<boolean>(
-    !!blockList.actions?.action_list?.filter(
+    !!blockList?.actions?.action_list?.filter(
       (action) => !!action.value.find((value) => value === domain),
     ).length,
   );
 
   const [isTrusted, setIsTrusted] = useState<boolean>(
-    !!trustList.actions?.action_list?.filter(
+    !!trustList?.actions?.action_list?.filter(
       (action) => !!action.value.find((value) => value === domain),
     ).length,
   );
@@ -53,8 +53,8 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   };
 
   const handleAddTrusted = () => {
-    if (!trustList.actions.action_list.length) {
-      trustList.actions.action_list.push({
+    if (!trustList?.actions.action_list.length) {
+      trustList?.actions.action_list.push({
         key: ACTION_KEYS.SEARCH_DOMAINS,
         label: ACTION_LABELS.SEARCH_DOMAINS,
         type: ACTION_TYPES.LIST,
@@ -62,15 +62,15 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
       });
     }
 
-    const actions = trustList.actions.action_list.map((action, actionIndex) =>
+    const actions = trustList?.actions.action_list.map((action, actionIndex) =>
       actionIndex === 0 ? { ...action, value: [...action.value, domain] } : action,
     );
 
-    AugmentationManager.addOrEditAugmentation(trustList, { actions });
+    trustList && AugmentationManager.addOrEditAugmentation(trustList, { actions });
   };
 
   const handleRemoveTrusted = () => {
-    const actions = trustList.actions.action_list.map((action) => {
+    const actions = trustList?.actions.action_list.map((action) => {
       const { key, value } = action;
       return key === ACTION_KEYS.SEARCH_DOMAINS
         ? { ...action, value: value.filter((valueDomain) => valueDomain !== domain) }
@@ -81,7 +81,7 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
       {
         domain,
         name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
-        remove: trustList.id,
+        remove: trustList?.id ?? '',
         selector: {
           link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
           featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
@@ -91,7 +91,7 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
       '*',
     );
 
-    AugmentationManager.addOrEditAugmentation(trustList, { actions });
+    trustList && AugmentationManager.addOrEditAugmentation(trustList, { actions });
   };
 
   const handleToggleTrusted = (e: CheckboxChangeEvent) => {
@@ -103,14 +103,14 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
     setIsBlocked(
       !!augmentations
         .find(({ id }) => id === MY_BLOCKLIST_ID)
-        .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
+        ?.actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
 
     setIsTrusted(
       !!augmentations
         .find(({ id }) => id === MY_TRUSTLIST_ID)
-        .actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
+        ?.actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
   }, [domain, augmentations]);

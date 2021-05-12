@@ -64,11 +64,11 @@ const createOverlay = (
   blockingAugmentations: AugmentationObject[] = [],
   details: Record<'text' | 'header' | 'selectorString', string>,
 ): void => {
-  if (!(serpResult instanceof HTMLElement)) return null;
+  if (!(serpResult instanceof HTMLElement)) return;
 
   if (serpResult.getAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR) === 'true') {
     const existingOverlay = serpResult.querySelector('.insight-hidden-domain-overlay');
-    existingOverlay && existingOverlay.parentElement.removeChild(existingOverlay);
+    existingOverlay && existingOverlay.parentElement?.removeChild(existingOverlay);
   }
 
   // Assume the result is an advertisement when there is no blocking augmentations
@@ -102,8 +102,12 @@ const createOverlay = (
       if (serpResult.getAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`) !== 'true') {
         e.preventDefault();
         const ol = (e.target as Element)?.closest('.insight-hidden');
-        ol.parentElement.style.overflow = 'none';
-        ol.parentNode.removeChild(ol);
+        if (ol?.parentElement) {
+          ol.parentElement.style.overflow = 'none';
+        }
+        if (ol?.parentNode) {
+          ol.parentNode.removeChild(ol);
+        }
         serpResult.setAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`, 'true');
       }
     });
@@ -137,6 +141,8 @@ export const processSerpResults: ProcessSerpResults = (
             ?.closest('a')
             ?.getAttribute('href') ?? // featured snippet
           node?.textContent; // guessing
+
+    if (!resultLink?.startsWith('http')) continue;
 
     const publication = extractPublication(resultLink);
 
@@ -198,12 +204,12 @@ export const processSerpResults: ProcessSerpResults = (
           ? serpResult.parentElement
           : serpResult;
 
-      const existingRoot = root.querySelector('.insight-gutter-button-root');
+      const existingRoot = root?.querySelector('.insight-gutter-button-root');
       if (existingRoot) {
-        existingRoot.parentElement.replaceChild(buttonRoot, existingRoot);
+        existingRoot.parentElement?.replaceChild(buttonRoot, existingRoot);
       }
       buttonRoot.classList.add(`insight-gutter-button-root`);
-      root.appendChild(buttonRoot);
+      root?.appendChild(buttonRoot);
 
       render(
         <InlineGutterIcon

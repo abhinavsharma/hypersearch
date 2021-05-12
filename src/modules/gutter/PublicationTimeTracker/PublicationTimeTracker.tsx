@@ -14,7 +14,7 @@ const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX +
 
 export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
   const [currentTime, setCurrentTime] = useState<string>('');
-  const tooltipContainer = useRef(null);
+  const tooltipContainer = useRef<HTMLDivElement>(null);
 
   const getDisplayTime = (time: number) => {
     if (!time || typeof time !== 'number') {
@@ -27,7 +27,7 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
 
   const getCurrentTimeStamp = useCallback(async () => {
     const stored =
-      (await new Promise<Record<string, string>>((resolve) =>
+      (await new Promise<Record<string, Record<string, number>>>((resolve) =>
         chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
       ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
     setCurrentTime(getDisplayTime(stored[sanitizeUrl(domain)]));
@@ -44,7 +44,7 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
 
   const timeString = currentTime.replace('h', ' hours').replace('m', ' minutes');
   const keepParent = { keepParent: false };
-  const getPopupContainer = () => tooltipContainer.current;
+  const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
   return (
     <div className="publication-time-tracker">

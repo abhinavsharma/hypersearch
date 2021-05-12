@@ -69,7 +69,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
             target="_blank"
             href={AIRTABLE_IMPROVE_SEARCH_LINK.replace(
               '<query>',
-              new URLSearchParams(window.location.search).get('q'),
+              new URLSearchParams(window.location.search ?? '').get('q') ?? '',
             )}
             rel="noreferrer"
           >

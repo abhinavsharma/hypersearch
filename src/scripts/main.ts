@@ -32,8 +32,8 @@ import {
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('keyup', handleKeyUp, true);
-  const url = replaceLocation(location);
   await import('./results');
+  const url = replaceLocation(location) ?? new URL(location.href);
   await SidebarLoader.loadOrUpdateSidebar(document, url);
   chrome.runtime.onMessage.addListener(async (msg) => {
     switch (msg.type) {

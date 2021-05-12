@@ -40,7 +40,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     domain: string,
     result?: HTMLElement,
   ): void => {
-    if (!augmentation || !domain) return null;
+    if (!augmentation || !domain) return;
     if (!searchingAugmentations[domain]) searchingAugmentations[domain] = [];
     if (!blockingAugmentations[domain]) blockingAugmentations[domain] = [];
     augmentation.actions?.action_list.forEach(({ value, key }) => {
@@ -71,7 +71,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
       return Array.from(document.querySelectorAll(selector)).map((el) => {
         // Set default container selector explicitly on the news link's container to ensure
         // news links are handled separately. Otherwise, the whole section would be selected.
-        el.closest(selector.split(' ')[0]).setAttribute(
+        el.closest(selector.split(' ')[0])?.setAttribute(
           data.selector.container.replace(/[^\w-]/gi, ''), // eg.: [data-hveid] -> data-hveid
           'true',
         );
@@ -89,11 +89,11 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
     ) as HTMLElement[];
 
     const featured = data.selector.featured?.reduce((a, selector) => {
-      const link = document.querySelector(selector);
-      const container = link?.closest(selector.split(' ')[0]);
+      const link = document.querySelector(selector) as HTMLElement;
+      const container = link?.closest(selector.split(' ')[0]) as HTMLElement;
       link && container && a.push({ link, container });
       return a;
-    }, []);
+    }, [] as Array<Record<'link' | 'container', HTMLElement>>);
 
     [...featured, ...results].forEach((element) => {
       const result = element instanceof HTMLElement ? element : element.link;
@@ -101,7 +101,9 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
       const resultLink =
         result instanceof HTMLLinkElement
           ? result.getAttribute('href')
-          : result?.closest('a').getAttribute('href');
+          : result?.closest('a')?.getAttribute('href');
+
+      if (!resultLink) return;
 
       const resultDomain = extractPublication(resultLink);
 
@@ -137,8 +139,8 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
       [...searchedResults, ...getResults(data)],
       data.selector.container,
       {
-        header: null,
-        text: null,
+        header: '',
+        text: '',
         selectorString: 'hidden-domain',
       },
       { block: blockingAugmentations, search: searchingAugmentations },
@@ -162,11 +164,12 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
           );
           searchedElements.forEach((element) => {
             const idList = element
-              .getAttribute(INSIGHT_SEARCH_BY_SELECTOR)
-              .replace(data.remove, '');
+              ?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)
+              ?.replace(data.remove, '');
             if (element.getAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR) !== data.domain) {
               return null;
             }
+            if (!idList) return;
             element.setAttribute(INSIGHT_SEARCH_BY_SELECTOR, idList);
             element.setAttribute(
               INSIGHT_SEARCHED_RESULT_SELECTOR,
@@ -189,16 +192,17 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
             document.querySelectorAll(`[${INSIGHT_BLOCKED_BY_SELECTOR}]`),
           );
           blockedElements.forEach((element) => {
-            const ids = element.getAttribute(INSIGHT_BLOCKED_BY_SELECTOR).replace(data.remove, '');
+            const ids = element.getAttribute(INSIGHT_BLOCKED_BY_SELECTOR)?.replace(data.remove, '');
             if (element.getAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR) !== data.domain) {
               return null;
             }
+            if (!ids) return;
             element.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
             element.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
             element.setAttribute(INSIGHT_BLOCKED_BY_SELECTOR, ids);
             const overlay = element.querySelector('.insight-hidden-domain-overlay');
             !ids.split(' ')?.filter((i) => !!i).length &&
-              overlay?.parentElement.removeChild(overlay);
+              overlay?.parentElement?.removeChild(overlay);
           });
           processResults(data);
         }

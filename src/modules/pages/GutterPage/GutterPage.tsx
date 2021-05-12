@@ -80,7 +80,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
         }
         return actions;
       },
-      [],
+      [] as Array<ActionObject & { index: number }>,
     );
     if (!Array.isArray(a[domain])) a[domain] = [];
     if (!PROTECTED_AUGMENTATIONS.includes(augmentation.id)) {
@@ -279,7 +279,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
                 {subtitle && augmentations?.length > 0 && <h3 className="sub-title">{subtitle}</h3>}
                 {augmentations.map((augmentation) => {
                   const handleAddToLocal = () =>
-                    handleAddSearchDomainToLocal(augmentation, augmentation.actionIndex);
+                    handleAddSearchDomainToLocal(augmentation, augmentation.actionIndex ?? -1);
                   const handleEdit = () => handleEditInstalled(augmentation);
                   const handleDelete = () => handleDeleteInstalled(augmentation, type);
                   const handleDisable = () => handleDisableSuggested(augmentation, type);
@@ -350,7 +350,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
                             <span className="insight-augmentation-row-extra">
                               {(() => {
                                 const action =
-                                  augmentation.actions.action_list[augmentation.actionIndex];
+                                  augmentation.actions.action_list[augmentation.actionIndex ?? -1];
                                 return action?.key === ACTION_KEYS.SEARCH_DOMAINS
                                   ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
                                     ? ADD_TO_TRUSTLIST_BUTTON_SUBTITLE

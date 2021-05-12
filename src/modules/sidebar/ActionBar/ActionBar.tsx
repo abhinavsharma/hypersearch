@@ -29,7 +29,7 @@ const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const ICON_UNSELECTED_COLOR = '#999';
 
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
-  const tooltipContainer = useRef(null);
+  const tooltipContainer = useRef<HTMLDivElement>(null);
 
   const handleOpenAugmentationBuilder = (isEdit?: boolean) => {
     AugmentationManager.preparedLogMessage =
@@ -80,8 +80,8 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const handleEditSuggested = () => handleOpenAugmentationBuilder(false);
 
   const keepParent = { keepParent: false };
-  const getPopupContainer = () => tooltipContainer.current;
   const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
+  const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
   return (
     <div id="actionbar">

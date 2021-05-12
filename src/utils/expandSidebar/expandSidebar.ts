@@ -3,7 +3,10 @@ import { flipSidebar } from 'utils';
 export const expandSidebar = (tabsNum: number) => {
   const sidebarRoot = document.getElementById('sidebar-root') as HTMLDivElement;
   const sidebarRootIframe = document.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
-  const frameDocument = sidebarRootIframe?.contentWindow.document;
+  const frameDocument = sidebarRootIframe?.contentWindow?.document;
+
+  if (!frameDocument) return;
+
   const sidebarContainer = frameDocument.getElementById(
     'insight-sidebar-container',
   ) as HTMLDivElement;

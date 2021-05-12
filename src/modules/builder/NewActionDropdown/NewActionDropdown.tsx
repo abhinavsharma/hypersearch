@@ -25,7 +25,7 @@ export const NewActionDropdown: NewActionDropdown = ({ handleSaveLabel }) => {
     handleSaveLabel(label, ACTIONS[label]);
   };
 
-  const getPopupContainer = () => dropdownRef.current;
+  const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
 
   return (
     <>
