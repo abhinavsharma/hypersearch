@@ -18,7 +18,7 @@ const DeleteOutlined = React.lazy(
 
 export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentation, disabled }) => {
   const handleDelete = (): void => {
-    if (disabled || augmentation.id === MY_BLOCKLIST_ID) return null;
+    if (disabled || augmentation.id === MY_BLOCKLIST_ID) return;
     AugmentationManager.removeInstalledAugmentation(augmentation);
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,

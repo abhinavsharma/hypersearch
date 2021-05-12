@@ -47,17 +47,20 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   useEffect(() => {
     setCurrentStat(SidebarLoader.augmentationStats[tab.id] ?? 0);
     setDomains(SidebarLoader.publicationSlices[tab.id][tab.url.href]);
+  }, [
     // Singleton instance not reinitialized on rerender.
     // ! Be careful when updating the dependency list!
+    tab.id,
+    tab.url.href,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
     SidebarLoader.augmentationStats[tab.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     SidebarLoader.publicationSlices[tab.id][tab.url.href],
   ]);
 
   const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
 
-  const showMeta = currentStat > 0 || !!tab.description.length || !!domains?.length;
+  const showMeta = currentStat > 0 || !!tab.description?.length || !!domains?.length;
 
   const keepParent = { keepParent: false };
 

@@ -28,12 +28,9 @@ export const ConditionsSection: ConditionsSection = ({
 }) => {
   const newCondition: TCustomCondition = {
     id: uuid(),
-    key: null,
-    unique_key: null,
     type: CONDITION_TYPES.LIST,
-    label: null,
     value: [],
-  };
+  } as any;
 
   const handleMatchAnyPage = () =>
     setConditions([

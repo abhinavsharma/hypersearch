@@ -52,6 +52,7 @@ import {
   FORCE_FALLBACK_CSE,
   URL_PARAM_TAB_TITLE_KEY,
   URL_PARAM_NO_COOKIE_KEY,
+  CACHED_SUBTABS_KEY,
 } from 'utils';
 
 /**
@@ -68,7 +69,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public url: URL;
+  public url!: URL;
 
   /**
    * The current SERP query.
@@ -77,7 +78,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public query: string;
+  public query!: string;
 
   /**
    * True if the current page is a SERP.
@@ -86,7 +87,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public isSerp: boolean;
+  public isSerp!: boolean;
 
   /**
    * The list of current SERP result domains.
@@ -114,7 +115,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public document: Document;
+  public document!: Document;
 
   /**
    * The list of available sidebar tabs.
@@ -218,7 +219,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public strongPrivacy: boolean;
+  public strongPrivacy!: boolean;
 
   /**
    * True when the sidebar is in the expanded state.
@@ -227,7 +228,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public isExpanded: boolean;
+  public isExpanded!: boolean;
 
   /**
    * The index of the currently visible sidebar tab.
@@ -236,7 +237,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public currentTab: string;
+  public currentTab!: string;
 
   /**
    * If true, prevent the sidebar from auto-expanding, even when
@@ -261,7 +262,7 @@ class SidebarLoader {
 
   public hideDomains: string[];
 
-  public tourStep: string;
+  public tourStep!: string;
 
   public userData: Record<'license' | 'id', string>;
 
@@ -318,10 +319,10 @@ class SidebarLoader {
       .map((i) =>
         removeProtocol(
           isBing
-            ? i.textContent
+            ? i.textContent ?? ''
             : i instanceof HTMLLinkElement
-            ? i.getAttribute('href')
-            : i?.closest('a').getAttribute('href'),
+            ? i.getAttribute('href') ?? ''
+            : i?.closest('a')?.getAttribute('href') ?? '',
         ),
       )
       .filter((domain) => !BANNED_DOMAINS.includes(extractUrlProperties(domain).full));
@@ -374,11 +375,8 @@ class SidebarLoader {
                 extractUrlProperties(url.href)?.hostname,
               );
             }
-            if(action.key === ACTION_KEYS.NO_COOKIE){
-              url.searchParams.append(
-                URL_PARAM_NO_COOKIE_KEY,
-                "true",
-              );
+            if (action.key === ACTION_KEYS.NO_COOKIE) {
+              url.searchParams.append(URL_PARAM_NO_COOKIE_KEY, 'true');
             }
             urls.push(url);
           });
@@ -416,13 +414,17 @@ class SidebarLoader {
             try {
               const elements = this.document.querySelectorAll(action.value[0]);
               elements.forEach((element) => {
-                const url = new URL(element.getAttribute('href'));
-                url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-                url.searchParams.append(
-                  URL_PARAM_TAB_TITLE_KEY,
-                  extractUrlProperties(url.href)?.hostname,
-                );
-                urls.push(url);
+                try {
+                  const url = new URL(element.getAttribute('href') ?? '');
+                  url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
+                  url.searchParams.append(
+                    URL_PARAM_TAB_TITLE_KEY,
+                    extractUrlProperties(url.href)?.hostname,
+                  );
+                  urls.push(url);
+                } catch (e) {
+                  debug('getTabUrls - error', e);
+                }
               });
             } catch (e) {
               debug('getTabUrls - error\n---\n\tFailed to create URL', e, '\n---');
@@ -536,7 +538,7 @@ class SidebarLoader {
               if (key === ACTION_KEYS.SEARCH_DOMAINS) a = a.concat(value);
               return a;
             },
-            [],
+            [] as string[],
           );
 
           if (augmentation.installed) {
@@ -623,7 +625,7 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  public async loadOrUpdateSidebar(document: Document, url: URL | null) {
+  public async loadOrUpdateSidebar(document: Document, url: URL) {
     debug('loadOrUpdateSidebar - call\n');
     this.document = document;
     this.url = url;
@@ -649,10 +651,11 @@ class SidebarLoader {
     ).then((value) => !value[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
-    this.query = new URLSearchParams(this.document.location.search).get(
-      this.customSearchEngine.search_engine_json?.required_params[0],
-    );
-    this.tourStep = new URLSearchParams(this.document.location.href).get('insight-tour');
+    this.query =
+      new URLSearchParams(this.document.location.search).get(
+        this.customSearchEngine.search_engine_json?.required_params[0],
+      ) ?? '';
+    this.tourStep = new URLSearchParams(this.document.location.href).get('insight-tour') ?? '';
     const prepareDocument = async () => {
       this.document.documentElement.style.setProperty('color-scheme', 'none');
       this.domains = this.getDomains(document) ?? [];
@@ -711,18 +714,18 @@ class SidebarLoader {
     const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
     el.addEventListener('keydown', handleKeyDown, true);
     el.addEventListener('keyup', handleKeyUp);
-    iframe.contentWindow.document.addEventListener('keydown', handleKeyDown, true);
-    iframe.contentWindow.document.addEventListener('keyup', handleKeyUp, true);
+    iframe.contentWindow?.document.addEventListener('keydown', handleKeyDown, true);
+    iframe.contentWindow?.document.addEventListener('keyup', handleKeyUp, true);
     const injector = () => {
-      const doc = iframe.contentWindow.document.documentElement;
+      const doc = iframe.contentWindow?.document.documentElement;
       // Webpack merges all SCSS files into a single <style> element. We initialize
       // the IFrame document object with this merged stylesheet.
-      doc.getElementsByTagName('head')[0].appendChild(link);
-      doc.getElementsByTagName('head')[0].appendChild(this.styleEl);
-      doc.setAttribute('style', 'overflow: hidden;');
+      doc?.getElementsByTagName('head')[0].appendChild(link);
+      doc?.getElementsByTagName('head')[0].appendChild(this.styleEl);
+      doc?.setAttribute('style', 'overflow: hidden;');
       const div = document.createElement('div');
-      const root = doc.getElementsByTagName('body')[0].appendChild(div);
-      render(reactEl, root);
+      const root = doc?.getElementsByTagName('body')[0].appendChild(div);
+      root && render(reactEl, root);
       debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');
     };
     // Firefox is a special case, we need to set IFrame source to make it work.
@@ -873,12 +876,12 @@ class SidebarLoader {
    */
   private async handleSubtabApiResponse(response: SubtabsResponse): Promise<void> {
     debug('handleSubtabApiResponse - call');
-    if (!(this.url && response)) return null;
+    if (!(this.url && response)) return;
     await this.getLocalAugmentations();
     this.getTabsAndAugmentations([
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
-      ...response.suggested_augmentations.reduce((a, augmentation) => {
+      ...(response.suggested_augmentations ?? []).reduce((a, augmentation) => {
         if (!this.pinnedAugmentations.find(({ id }) => id === augmentation.id)) {
           a.push({
             ...augmentation,
@@ -889,7 +892,7 @@ class SidebarLoader {
           });
         }
         return a;
-      }, []),
+      }, [] as AugmentationObject[]),
     ]);
     /*
     !DEV DISABLED BY DEV-45[https://bit.ly/3x8tMaD]
@@ -936,9 +939,9 @@ class SidebarLoader {
     let response: SubtabsResponse = Object.create(null);
     debug('\n---\n\tIs strong privacy enabled --- ', this.strongPrivacy ? 'Yes' : 'No', '\n---');
     if (this.strongPrivacy) {
-      const cache = await new Promise((resolve) =>
-        chrome.storage.local.get('cachedSubtabs', resolve),
-      ).then(({ cachedSubtabs }) => cachedSubtabs);
+      const cache = await new Promise<Record<string, { data: SubtabsResponse; expire: number }>>(
+        (resolve) => chrome.storage.local.get('cachedSubtabs', resolve),
+      ).then((value) => value[CACHED_SUBTABS_KEY]);
       if (cache && cache.expire > Date.now()) {
         debug(
           '\n---\n\tValid cache data found',
@@ -956,13 +959,13 @@ class SidebarLoader {
         );
 
         const suggested_augmentations = defaultResponse
-          .concat(amazonResponse)
+          ?.concat(amazonResponse ?? [])
           .reduce((result, suggestion) => {
             if (!result.find(({ id }) => id === suggestion.id)) {
               result.push(suggestion);
             }
             return result;
-          }, []);
+          }, [] as AugmentationObject[]);
 
         response = {
           subtabs: [],
@@ -1005,7 +1008,7 @@ class SidebarLoader {
     this.document.head.appendChild(link);
     const existing = this.document.getElementById('sidebar-root');
     if (existing) {
-      existing.parentElement.removeChild(existing);
+      existing.parentElement?.removeChild(existing);
     }
     const wrapper = this.document.createElement('div');
     wrapper.id = 'sidebar-root';

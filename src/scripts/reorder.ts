@@ -48,8 +48,10 @@ const MAXIMUM_MOVES = 3;
   results.forEach((node, index) => {
     const linkElement = node.querySelector(GOOGLE_SERP_RESULT_A_SELECTOR);
 
+    if (!linkElement) return;
+
     const domain = extractUrlProperties(
-      linkElement.getAttribute('href').replace(/.*https?:\/\//, 'https://'),
+      linkElement.getAttribute('href')?.replace(/.*https?:\/\//, 'https://') ?? '',
     ).hostname;
 
     const isMoved = !!movedDomains.find(

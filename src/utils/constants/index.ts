@@ -13,6 +13,7 @@ export const SYNC_PRIVACY_KEY = 'useServerSuggestions';
 export const SYNC_FINISHED_KEY = 'hasFinishedIntro';
 export const SYNC_DISTINCT_KEY = 'distinctId';
 export const SYNC_PUBLICATION_TIME_TRACK_KEY = 'publicationTimeTrack';
+export const CACHED_SUBTABS_KEY = 'cachedSubtabs';
 export const USE_COUNT_PREFIX = 'augmentationUseCount';
 export const IGNORED_PREFIX = 'ignored';
 export const INSTALLED_PREFIX = 'cse-custom';

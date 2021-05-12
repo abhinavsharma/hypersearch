@@ -75,6 +75,8 @@ export const NewConditionDropdown: NewConditionDropdown = ({
     }
   };
 
+  const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
+
   return (
     <>
       <Select
@@ -82,7 +84,7 @@ export const NewConditionDropdown: NewConditionDropdown = ({
         onChange={handleLabelChange}
         className="insight-select-full-width"
         dropdownClassName="insight-select-full-width-dropdown"
-        getPopupContainer={() => dropdownRef.current}
+        getPopupContainer={getPopupContainer}
       >
         <OptGroup label={SEARCH_DROPDOWN_GROUP_TITLE}>
           {Object.keys(SEARCH_CONDITIONS).map((key) => (

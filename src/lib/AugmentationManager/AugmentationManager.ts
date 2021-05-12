@@ -37,6 +37,7 @@ class AugmentationManager {
 
   constructor() {
     debug('AugmentationManager - initialize\n---\n\tSingleton Instance', this, '\n---');
+    this.preparedLogMessage = Object.create(null);
   }
 
   public isAugmentationEnabled(augmentation: AugmentationObject) {
@@ -46,9 +47,11 @@ class AugmentationManager {
     ];
 
     return operations.every(
-      (operation) =>
+      (operation: ConditionObject | ActionObject) =>
         ((operation as ConditionObject).unique_key !== undefined &&
-          ENABLED_AUGMENTATION_TYPES.includes((operation as ConditionObject).unique_key)) ||
+          ENABLED_AUGMENTATION_TYPES.includes(
+            (operation as ConditionObject).unique_key as CONDITION_KEYS,
+          )) ||
         ENABLED_AUGMENTATION_TYPES.includes(operation.key),
     );
   }
@@ -64,7 +67,7 @@ class AugmentationManager {
   public async updateBlockList(domain: string) {
     const blockList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_BLOCKLIST_ID);
+      .find(({ id }) => id === MY_BLOCKLIST_ID) as AugmentationObject;
     const isNewBlock = !blockList.actions.action_list.find(({ value }) => value[0] === domain);
     const newActionList = [
       ...blockList.actions.action_list.filter(
@@ -99,7 +102,7 @@ class AugmentationManager {
   public async deleteFromBlockList(domain: string) {
     const blockList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_BLOCKLIST_ID);
+      .find(({ id }) => id === MY_BLOCKLIST_ID) as AugmentationObject;
     const newActionList = [
       ...blockList.actions.action_list.filter(({ key, value }) =>
         key === ACTION_KEYS.SEARCH_HIDE_DOMAIN ? value[0] !== domain : true,
@@ -137,7 +140,7 @@ class AugmentationManager {
   public async toggleTrustlist(domain: string) {
     const trustList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_TRUSTLIST_ID);
+      .find(({ id }) => id === MY_TRUSTLIST_ID) as AugmentationObject;
     const existingDomain = !!trustList.actions.action_list[0].value.includes(domain);
     const newActionValue = existingDomain
       ? trustList.actions.action_list[0].value.filter((value) => value !== domain)
@@ -365,7 +368,7 @@ class AugmentationManager {
     hasPreventAutoexpand: boolean;
     domainsToLookAction: string[];
     domainsToLookCondition: string[];
-    matchingIntent: string[];
+    matchingIntent: Array<string | Element>;
     matchingDomainsAction: string[];
     matchingDomainsCondition: string[];
   } & NullPrototype<any> {
@@ -393,14 +396,14 @@ class AugmentationManager {
           unique_key === CONDITION_KEYS.SEARCH_CONTAINS || key === CONDITION_KEYS.SEARCH_CONTAINS
             ? conditions.concat(value)
             : conditions,
-        [],
+        [] as string[],
       ) ?? [];
 
     const domainsToLookAction =
       augmentation.actions?.action_list.reduce(
         (actions, { key, value }) =>
           key === ACTION_KEYS.SEARCH_DOMAINS ? actions.concat(value) : actions,
-        [],
+        [] as string[],
       ) ?? [];
 
     const matchingDomainsCondition =
@@ -451,7 +454,7 @@ class AugmentationManager {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
           );
-          if (matchingIntent.stay_collapsed) {
+          if (matchingIntent?.stay_collapsed) {
             hasPreventAutoexpand = true;
           }
           if (matchingIntent) {
@@ -470,7 +473,7 @@ class AugmentationManager {
           }
         }
         return intents;
-      }, [])
+      }, [] as Array<string | Element>)
       .filter((isMatch) => !!isMatch);
 
     // ! SEARCH ENGINE
@@ -508,10 +511,13 @@ class AugmentationManager {
       CONDITION_KEYS.URL_MATCHES,
       CONDITION_KEYS.DOMAIN_EQUALS,
       CONDITION_KEYS.DOMAIN_MATCHES,
-      CONDITION_KEYS.DOMAIN_CONTAINS
+      CONDITION_KEYS.DOMAIN_CONTAINS,
     ];
     const matchingUrl = augmentation.conditions.condition_list.reduce((matches, condition) => {
       const { unique_key: key, value } = condition;
+      if (!key) {
+        return [];
+      }
       if (regexConditions.includes(key)) {
         numRegexConditions += 1;
       }
@@ -536,11 +542,11 @@ class AugmentationManager {
       if (
         key === CONDITION_KEYS.DOMAIN_CONTAINS &&
         value.includes(extractUrlProperties(SidebarLoader.url.href).hostname)
-      ){
+      ) {
         matches.push(true);
       }
-        return matches;
-    }, []);
+      return matches;
+    }, [] as boolean[]);
 
     const evaluationMatch =
       augmentation.conditions.evaluate_with === 'AND'
@@ -568,7 +574,7 @@ class AugmentationManager {
         : true;
 
     return {
-      isHidden: augmentation.installed && !augmentation.enabled,
+      isHidden: !!augmentation.installed && !augmentation.enabled,
       isRelevant:
         (augmentation.enabled || !augmentation.installed) &&
         (augmentation.pinned ||
@@ -630,7 +636,7 @@ class AugmentationManager {
     }: AugmentationData,
   ) {
     const customId = `${INSTALLED_PREFIX}-${
-      augmentation.id !== '' ? augmentation.id : name.replace(/[\s]/g, '_').toLowerCase()
+      augmentation.id !== '' ? augmentation.id : name?.replace(/[\s]/g, '_').toLowerCase()
     }-${uuid()}`;
     const id =
       augmentation.id.startsWith(`${INSTALLED_PREFIX}-`) && !isPinning ? augmentation.id : customId;

@@ -148,15 +148,15 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                 case OPEN_BUILDER_PAGE.BUILDER:
                   return (
                     <BuilderPage
-                      augmentation={pageData.augmentation}
-                      isAdding={pageData.isAdding}
+                      augmentation={pageData?.augmentation}
+                      isAdding={pageData?.isAdding}
                     />
                   );
                 case OPEN_BUILDER_PAGE.GUTTER:
                   return (
                     <GutterPage
-                      hidingAugmentations={pageData.augmentations}
-                      domain={pageData.publication}
+                      hidingAugmentations={pageData?.augmentations}
+                      domain={pageData?.publication}
                     />
                   );
                 default:

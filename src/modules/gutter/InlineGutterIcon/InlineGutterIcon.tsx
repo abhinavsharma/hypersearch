@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, MoreHorizontal } from 'react-feather';
@@ -41,11 +41,11 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 }) => {
   const isBlocked = !!blockingAugmentations.length;
   const isSearched = !!searchingAugmentations.length;
-  const iconRef = useRef<HTMLDivElement>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const resultRef = useRef<HTMLDivElement>(null);
-  const tooltipContainer = useRef(null);
-  const timeoutRef = useRef(null);
+  const iconRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
+  const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
+  const resultRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
+  const tooltipContainer = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<any>(null);
 
   const handleOpenBuilder = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
@@ -80,12 +80,19 @@ export const InlineGutterIcon: InlineGutterIcon = ({
       timeoutRef.current = setTimeout(() => {
         chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
         chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, url });
-        resultRef.current.style.cursor = 'default';
+        if (resultRef.current) {
+          resultRef.current.style.cursor = 'default';
+        }
       }, SWITCH_TO_TAB_DELAY);
     }
 
-    iconRef.current.style.opacity = '1';
-    rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
+    if (iconRef.current) {
+      iconRef.current.style.opacity = '1';
+    }
+
+    if (rootRef.current) {
+      rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
+    }
   }, [url]);
 
   const handleMouseLeave = useCallback((): any => {
@@ -103,8 +110,13 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     }
 
     if (isSearched || isBlocked) return null;
-    iconRef.current.style.opacity = '0';
-    rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
+    if (iconRef.current) {
+      iconRef.current.style.opacity = '0';
+    }
+
+    if (rootRef.current) {
+      rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
+    }
   }, [isSearched, isBlocked]);
 
   useEffect(() => {
@@ -115,10 +127,14 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
       rootRef.current = rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root');
 
-      resultRef.current =
+      const newResult =
         resultRef.current ?? window.location.href.search(/duckduckgo\.com/gi) > -1
           ? (rootRef.current?.parentElement as HTMLDivElement)
-          : rootRef.current?.closest(container);
+          : (rootRef.current?.closest(container) as HTMLDivElement);
+
+      if (newResult) {
+        resultRef.current = newResult;
+      }
 
       rootRef.current?.setAttribute(
         'style',
@@ -153,7 +169,9 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
   const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
 
-  const getPopupContainer = () => tooltipContainer.current;
+  const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
+
+  const keepParent = { keepParent: false };
 
   return (
     <div className="gutter-icon-container" ref={iconRef}>
@@ -171,7 +189,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             ? REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
             : ADD_TO_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
         }`}
-        destroyTooltipOnHide={{ keepParent: false }}
+        destroyTooltipOnHide={keepParent}
         getPopupContainer={getPopupContainer}
         placement="right"
         overlayClassName="gutter-tooltip"
@@ -200,8 +218,8 @@ export const InlineGutterIcon: InlineGutterIcon = ({
             ? REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
             : ADD_TO_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
         }`}
-        destroyTooltipOnHide={{ keepParent: false }}
-        getPopupContainer={() => tooltipContainer.current}
+        destroyTooltipOnHide={keepParent}
+        getPopupContainer={getPopupContainer}
         placement="right"
         overlayClassName="gutter-tooltip"
       >

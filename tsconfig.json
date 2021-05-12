@@ -3,26 +3,29 @@
         "baseUrl": "./src",
         "module": "commonjs",
         "target": "es6",
-        "noImplicitAny": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "esModuleInterop": true,
         "sourceMap": false,
         "moduleResolution": "node",
         "jsx": "react",
+        "skipLibCheck": true,
         "lib": [
             "esnext",
             "dom",
-        ],
-        "noEmitOnError": true,
-        "typeRoots": [
-            "types",
-            "node_modules/@types"
         ],
         "plugins": [
             {
                 "name": "typescript-plugin-css-modules"
             }
-        ]
+        ],
+        "alwaysStrict": true,
+        "noEmitOnError": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "esModuleInterop": true,
+        "strictBindCallApply": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictPropertyInitialization": true
     }
 }

@@ -8,11 +8,9 @@ import { ACTION_TYPES } from 'utils';
 export const ActionsSection: ActionsSection = ({ actions, onAdd, onSave, onDelete }) => {
   const newAction: TCustomAction = {
     id: uuid(),
-    key: null,
-    label: null,
     type: ACTION_TYPES.LIST,
     value: [''],
-  };
+  } as any;
   return (
     <>
       {actions.map((action) => (

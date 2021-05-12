@@ -18,8 +18,12 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleFilter = (inputValue: string, { key }: OptionProps) => {
-    return String(key).toLowerCase().search(inputValue.toLowerCase()) > -1;
+  const handleFilter = (inputValue: string, option?: Omit<OptionProps, 'children'>) => {
+    return (
+      String(option?.key ?? '')
+        .toLowerCase()
+        .search(inputValue.toLowerCase()) > -1
+    );
   };
 
   useEffect(() => {
@@ -29,7 +33,7 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SearchEngineManager.engines]);
 
-  const getPopupContainer = () => dropdownRef.current;
+  const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
 
   return (
     <>

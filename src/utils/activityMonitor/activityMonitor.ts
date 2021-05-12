@@ -1,5 +1,3 @@
-// !source: https://thisinterestsme.com/javascript-detect-user-activity/
-// TODO: rework our own version of this base script
 import {
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   TRIGGER_STOP_TRACK_TIMER_MESSAGE,
@@ -10,7 +8,7 @@ const MAX_INACTIVE_SECONDS = 10;
 
 export const activityMonitor = (document: Document): void => {
   if (!getPublicationUrl(window.location.href)) {
-    return null;
+    return;
   }
   let cancelled = false;
   let secondsSinceLastActivity = 0;
