@@ -160,17 +160,17 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 const trackData: Record<string, number> = Object.create(null);
 // Calculate how much time the user spent on a publication and store it's value in the storage.
 // After the value is stored, we fire an update message which will update the gutter unit.
-const stopTrackingTimer = async () => {
+const stopTrackingTimer = async (skippedPublication: string = null) => {
   const stored =
     (await new Promise<Record<string, number>>((resolve) =>
       chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
     ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
   Object.entries(trackData).forEach(([publication, startTime]) => {
-    if (trackData[publication]) {
+    if (trackData[publication] && publication !== skippedPublication) {
       const storedTime = stored[sanitizeUrl(publication)] ?? 0;
       const currentTime = storedTime + Math.trunc((Date.now() - startTime) / 1000 / 60);
       trackData[publication] = 0;
-      debug('publicationTracking - end - ', publication, currentTime);
+      debug('publicationTracking - end - ', publication, `${currentTime} minutes`);
       chrome.storage.sync.set({
         [SYNC_PUBLICATION_TIME_TRACK_KEY]: {
           ...(stored ?? Object.create(null)),
@@ -198,6 +198,7 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
   chrome.tabs.query({}, async (tabs) => {
     const currentTab = tabs.find(({ id }) => id == tabId);
     const publication = getPublicationUrl(currentTab?.url);
+    await stopTrackingTimer(publication);
     if (publication && !trackData[publication]) {
       debug('publicationTracking - start - ', publication, trackData);
       trackData[publication] = Date.now();
@@ -207,8 +208,6 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
           url: currentTab.url,
         }),
       );
-    } else {
-      await stopTrackingTimer();
     }
   });
 });
@@ -268,7 +267,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
   switch (msg.type) {
     case TRIGGER_STOP_TRACK_TIMER_MESSAGE: {
       const publication = getPublicationUrl(msg.url ?? '');
-      if (publication && !trackData[publication]) {
+      if (publication && trackData[publication]) {
         (async () => await stopTrackingTimer())();
       }
       break;
@@ -276,7 +275,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
     case TRIGGER_START_TRACK_TIMER_MESSAGE: {
       const publication = getPublicationUrl(msg.url ?? '');
       if (publication && !trackData[publication]) {
-        debug('publicationTracking - start - ', publication, trackData);
+        debug('publicationTracking - start - ', publication);
         trackData[publication] = Date.now();
       }
       break;

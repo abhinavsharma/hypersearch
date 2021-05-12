@@ -18,7 +18,10 @@ export const activityMonitor = (document: Document): void => {
   const handleMonitor = () => {
     secondsSinceLastActivity++;
     if (secondsSinceLastActivity > MAX_INACTIVE_SECONDS) {
-      chrome.runtime.sendMessage({ type: TRIGGER_STOP_TRACK_TIMER_MESSAGE });
+      chrome.runtime.sendMessage({
+        type: TRIGGER_STOP_TRACK_TIMER_MESSAGE,
+        url: window.location.href,
+      });
       cancelled = true;
       clearInterval(monitor);
     }
