@@ -51,6 +51,7 @@ import {
   DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX,
   FORCE_FALLBACK_CSE,
   URL_PARAM_TAB_TITLE_KEY,
+  URL_PARAM_NO_COOKIE_KEY,
 } from 'utils';
 
 /**
@@ -361,6 +362,7 @@ class SidebarLoader {
           this.hideDomains.push(action.value[0]);
           break;
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
+        case ACTION_KEYS.NO_COOKIE:
         case ACTION_KEYS.OPEN_URL:
           action.value.forEach((value) => {
             const url = AugmentationManager.processOpenPageActionString(value);
@@ -370,6 +372,12 @@ class SidebarLoader {
               url.searchParams.append(
                 URL_PARAM_TAB_TITLE_KEY,
                 extractUrlProperties(url.href)?.hostname,
+              );
+            }
+            if(action.key === ACTION_KEYS.NO_COOKIE){
+              url.searchParams.append(
+                URL_PARAM_NO_COOKIE_KEY,
+                "true",
               );
             }
             urls.push(url);

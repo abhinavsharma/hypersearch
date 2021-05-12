@@ -47,6 +47,7 @@ export const IN_DEBUG_MODE = IS_DEBUG_SWITCH || window.INSIGHT_FORCE_DEBUG;
 export const LUMOS_API_URL = IS_DEBUG_SWITCH ? LUMOS_API_URL_PROD : LUMOS_API_URL_PROD;
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
+export const URL_PARAM_NO_COOKIE_KEY = 'insight-no-cookie';
 export const EXTERNAL_PDF_RENDERER_URL =
   'https://docs.google.com/viewer?url=<placeholder>&embedded=true';
 export const SIDEBAR_Z_INDEX = 9999;
@@ -100,6 +101,7 @@ export const ENABLED_AUGMENTATION_TYPES = [
   ACTION_KEYS.SEARCH_HIDE_DOMAIN,
   ACTION_KEYS.SEARCH_APPEND,
   ACTION_KEYS.SEARCH_ALSO,
+  ACTION_KEYS.NO_COOKIE,
   LEGACY_KEYS.DOMAIN,
   LEGACY_KEYS.URL,
 ];
