@@ -74,7 +74,7 @@ class SearchEngineManager {
       SYNC_PUBLICATION_TIME_TRACK_KEY,
     ];
     this.engines = Object.create(null);
-    this.intents = Object.create(null);
+    this.intents = [];
     this.remoteBlob = Object.create(null);
     this.throttled = false;
     this.getIntents();
