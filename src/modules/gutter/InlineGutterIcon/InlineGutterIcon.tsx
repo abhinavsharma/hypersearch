@@ -127,13 +127,17 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
       rootRef.current = rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root');
 
+      /* eslint-disable */
       const newResult =
         resultRef.current ?? window.location.href.search(/duckduckgo\.com/gi) > -1
           ? (rootRef.current?.parentElement as HTMLDivElement)
-          : (rootRef.current?.closest(container) as HTMLDivElement);
+          : container
+            ? (rootRef.current?.closest(container) as HTMLDivElement)
+            : rootRef.current?.parentElement;
+      /* eslint-enable */
 
       if (newResult) {
-        resultRef.current = newResult;
+        resultRef.current = newResult as HTMLDivElement;
       }
 
       rootRef.current?.setAttribute(
@@ -173,8 +177,12 @@ export const InlineGutterIcon: InlineGutterIcon = ({
 
   const keepParent = { keepParent: false };
 
+  const containerStyle = container
+    ? Object.create(null)
+    : { display: 'none', visibility: 'hidden' };
+
   return (
-    <div className="gutter-icon-container" ref={iconRef}>
+    <div className="gutter-icon-container" ref={iconRef} style={containerStyle}>
       <PublicationTimeTracker key={publication} domain={publication} />
       <Tooltip
         title={`${

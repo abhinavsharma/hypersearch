@@ -63,6 +63,10 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
   };
 
   const getResults = (data: ResultMessageData) => {
+    if (!data.selector.link) {
+      return [];
+    }
+
     const processed: HTMLElement[] = [];
 
     searchedResults.length = 0; // empty search results
@@ -145,6 +149,7 @@ const blockingAugmentations: Record<string, AugmentationObject[]> = Object.creat
       },
       { block: blockingAugmentations, search: searchingAugmentations },
       data.createdUrls,
+      !!data.customLink,
     );
   };
 

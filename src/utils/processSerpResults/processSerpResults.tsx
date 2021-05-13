@@ -124,27 +124,30 @@ export const processSerpResults: ProcessSerpResults = (
   details,
   augmentations,
   createdUrls = [],
+  processAsOpenPage?: boolean,
 ) => {
   for (const node of results) {
     if (!(node instanceof HTMLElement)) continue;
 
-    const serpResult = node.closest(containerSelector);
+    let serpResult = node;
 
-    if (!(serpResult instanceof HTMLElement)) continue;
+    if (containerSelector) {
+      serpResult = node.closest(containerSelector) as HTMLElement;
+      if (!(serpResult instanceof HTMLElement)) continue;
+    }
 
-    const resultLink =
-      node instanceof HTMLLinkElement
-        ? node.getAttribute('href') // default <a>
-        : node?.closest('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // <a> > <cite>
-          node
-            ?.querySelector('div:not(div[data-attrid=image]) > a cite')
-            ?.closest('a')
-            ?.getAttribute('href') ?? // featured snippet
-          node?.textContent; // guessing
+    const resultLink = node.hasAttribute('href')
+      ? node.getAttribute('href') // default <a>
+      : node?.closest('div:not(div[data-attrid=image]) > a')?.getAttribute('href') ?? // <a> > <cite>
+        node
+          ?.querySelector('div:not(div[data-attrid=image]) > a cite')
+          ?.closest('a')
+          ?.getAttribute('href') ?? // featured snippet
+        node?.textContent; // guessing
 
     if (!resultLink?.startsWith('http')) continue;
 
-    const publication = extractPublication(resultLink);
+    const publication = processAsOpenPage ? resultLink : extractPublication(resultLink);
 
     if (typeof publication !== 'string' && typeof augmentations !== 'string') continue;
 

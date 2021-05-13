@@ -29,6 +29,7 @@ declare type ProcessSerpOverlayMessage = MessageEvent<{
     featured: string[];
     container: string;
   };
+  customLink?: boolean;
 }>;
 
 declare type RemoveSearchedDomainMessage = MessageEvent<{

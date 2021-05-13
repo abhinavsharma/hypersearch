@@ -684,7 +684,15 @@ class SidebarLoader {
         });
       await this.handleSubtabApiResponse(response);
       this.createSidebar();
-      triggerSerpProcessing(this);
+      const openCssLinks = this.sidebarTabs
+        .reduce((selectors, tab) => {
+          tab.augmentation.actions.action_list
+            .filter(({ key }) => key === ACTION_KEYS.OPEN_LINK_CSS)
+            .forEach(({ value }) => selectors.push(value[0]));
+          return selectors;
+        }, [] as string[])
+        .join(', ');
+      triggerSerpProcessing(this, false, openCssLinks);
     };
     response && runFunctionWhenDocumentReady(this.document, prepareDocument);
   }

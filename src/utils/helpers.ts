@@ -85,7 +85,11 @@ export const getRankedDomains = (domains: string[]) =>
     .sort((a, b) => b[1] - a[1])
     .map(([key]) => key);
 
-export const triggerSerpProcessing = (loader: TSidebarLoader, subtabsOnly = false) => {
+export const triggerSerpProcessing = (
+  loader: TSidebarLoader,
+  subtabsOnly = false,
+  customLink?: string,
+) => {
   const augmentation = loader.sidebarTabs.map(({ augmentation }) => augmentation);
   const createdUrls = loader.sidebarTabs.map(({ url }) => url.href);
   !subtabsOnly &&
@@ -95,10 +99,13 @@ export const triggerSerpProcessing = (loader: TSidebarLoader, subtabsOnly = fals
         createdUrls,
         hideDomains: loader.hideDomains,
         name: PROCESS_SERP_OVERLAY_MESSAGE,
+        customLink,
         selector: {
-          link: loader.customSearchEngine.querySelector?.['desktop'],
+          link: customLink ?? loader.customSearchEngine.querySelector?.['desktop'],
           featured: loader.customSearchEngine.querySelector?.featured ?? Array(0),
-          container: loader.customSearchEngine.querySelector?.result_container_selector,
+          container: customLink
+            ? null
+            : loader.customSearchEngine.querySelector?.result_container_selector,
         },
       },
       '*',

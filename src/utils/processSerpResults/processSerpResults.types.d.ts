@@ -5,6 +5,7 @@ declare module './processSerpResults' {
     details: Record<'text' | 'header' | 'selectorString', string>,
     augmentations: Record<'block' | 'search', Record<string, AugmentationObject[]>> | string,
     createdUrls?: string[],
+    processAsOpenPage?: boolean,
   ) => void;
 }
 
