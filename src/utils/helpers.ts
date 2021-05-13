@@ -101,7 +101,7 @@ export const triggerSerpProcessing = (
         name: PROCESS_SERP_OVERLAY_MESSAGE,
         customLink,
         selector: {
-          link: customLink ?? loader.customSearchEngine.querySelector?.['desktop'],
+          link: customLink || loader.customSearchEngine.querySelector?.['desktop'],
           featured: loader.customSearchEngine.querySelector?.featured ?? Array(0),
           container: customLink
             ? null
