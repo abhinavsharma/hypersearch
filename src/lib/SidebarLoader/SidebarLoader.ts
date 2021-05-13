@@ -591,7 +591,7 @@ class SidebarLoader {
               title: augmentation.name,
               description: augmentation.description,
             };
-            newTabs.push(tab);
+            newTabs.unshift(tab);
 
             /** DEV START **/
             IN_DEBUG_MODE && logTabs.push('\n\t', { [tab.title]: tab }, '\n');
@@ -962,7 +962,7 @@ class SidebarLoader {
     debug('\n---\n\tIs strong privacy enabled --- ', this.strongPrivacy ? 'Yes' : 'No', '\n---');
     if (this.strongPrivacy) {
       const cache = await new Promise<Record<string, { data: SubtabsResponse; expire: number }>>(
-        (resolve) => chrome.storage.local.get('cachedSubtabs', resolve),
+        (resolve) => chrome.storage.local.get(CACHED_SUBTABS_KEY, resolve),
       ).then((value) => value[CACHED_SUBTABS_KEY]);
       if (cache && cache.expire > Date.now()) {
         debug(
@@ -997,7 +997,7 @@ class SidebarLoader {
         await new Promise((resolve) =>
           chrome.storage.local.set(
             {
-              cachedSubtabs: {
+              [CACHED_SUBTABS_KEY]: {
                 data: response,
                 expire: Date.now() + SUBTABS_CACHE_EXPIRE_MIN * 60 * 1000,
               },
