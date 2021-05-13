@@ -30,14 +30,14 @@ export const MultiValueInput: MultiValueInput = ({ values, handleAdd }) => {
 
   const handleSaveNewValue = () => handleSaveValue(newValue, values.length);
 
-  const valueStyle = { display: "flex", alignItems: "center",}
+  const valueStyle = { display: 'flex', alignItems: 'center' };
 
   return (
     <div className="insight-list">
       {values.map((value, i) => {
         const handleDelete = () => handleValueDelete(value);
         return (
-          <div key={value + i} style={valueStyle} >
+          <div key={value + i} style={valueStyle}>
             <Button onClick={handleDelete} danger type="link">
               <Suspense fallback={null}>
                 <MinusCircleOutlined />
