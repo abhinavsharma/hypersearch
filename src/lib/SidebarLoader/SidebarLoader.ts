@@ -662,7 +662,7 @@ class SidebarLoader {
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
     this.strongPrivacy = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
-    ).then((value) => !value[SYNC_PRIVACY_KEY]);
+    ).then((value) => !value?.[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     this.query =
@@ -773,12 +773,10 @@ class SidebarLoader {
     const logOther: any[] = [];
     const logIgnored: any[] = [];
     const logPinned: any[] = [];
-    const locals: Record<string, AugmentationObject & number> = await new Promise((resolve) =>
-      chrome.storage.local.get(resolve),
-    );
-    const syncs: Record<string, AugmentationObject & number> = await new Promise((resolve) =>
-      chrome.storage.sync.get(resolve),
-    );
+    const locals: Record<string, AugmentationObject & number> =
+      (await new Promise((resolve) => chrome.storage.local.get(resolve))) ?? Object.create(null);
+    const syncs: Record<string, AugmentationObject & number> =
+      (await new Promise((resolve) => chrome.storage.sync.get(resolve))) ?? Object.create(null);
     [...Object.entries(locals), ...Object.entries(syncs)].forEach(([key, value]) => {
       const { isRelevant, isHidden } = AugmentationManager.getAugmentationRelevancy(value);
       const flag = key.split('-')[0];
@@ -1050,7 +1048,7 @@ class SidebarLoader {
     const storedId = await new Promise<Record<string, string>>((resolve) =>
       chrome.storage.sync.get(SYNC_DISTINCT_KEY, resolve),
     );
-    let userId = storedId[SYNC_DISTINCT_KEY];
+    let userId = storedId?.[SYNC_DISTINCT_KEY];
     if (!userId) {
       userId = uuid();
       chrome.storage.sync.set({ [SYNC_DISTINCT_KEY]: userId });

@@ -171,7 +171,7 @@ const stopTrackingTimer = async (skippedPublication = '') => {
   const stored =
     (await new Promise<Record<string, Record<string, number>>>((resolve) =>
       chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
-    ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
+    ).then((value) => value?.[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
 
   Object.entries(trackData).forEach(([publication, startTime]) => {
     if (trackData[publication] && publication !== skippedPublication) {

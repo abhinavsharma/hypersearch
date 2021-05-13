@@ -25,7 +25,7 @@ export const IntroductionPage = () => {
   const checkFinished = useCallback(async () => {
     const stored = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_FINISHED_KEY, resolve),
-    ).then((result) => !!result[SYNC_FINISHED_KEY]);
+    ).then((result) => !!result?.[SYNC_FINISHED_KEY]);
     setFinished(stored);
     if (stored) {
       setCurrentStep(3);
@@ -35,7 +35,7 @@ export const IntroductionPage = () => {
   const getStoredLicense = useCallback(async () => {
     const stored = await new Promise<Record<string, string>>((resolve) =>
       chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
-    ).then((result) => result[SYNC_LICENSE_KEY] as string);
+    ).then((result) => result?.[SYNC_LICENSE_KEY] as string);
     if (stored) {
       setLicense({ isActivated: true, key: stored });
     }
