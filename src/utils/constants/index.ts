@@ -1,4 +1,4 @@
-import { ACTION_KEYS, CONDITION_KEYS, LEGACY_KEYS } from './augmentations';
+import { ACTION_KEYS, CONDITION_KEYS } from './augmentations';
 
 // ! DO NOT CHANGE START
 // * This value is referenced in the release script and should not be changed
@@ -103,8 +103,6 @@ export const ENABLED_AUGMENTATION_TYPES = [
   ACTION_KEYS.SEARCH_APPEND,
   ACTION_KEYS.SEARCH_ALSO,
   ACTION_KEYS.NO_COOKIE,
-  LEGACY_KEYS.DOMAIN,
-  LEGACY_KEYS.URL,
 ];
 
 export const PROTECTED_AUGMENTATIONS = [MY_BLOCKLIST_ID, MY_TRUSTLIST_ID];
