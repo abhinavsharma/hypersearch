@@ -46,14 +46,11 @@ class AugmentationManager {
       ...augmentation.actions.action_list,
     ];
 
-    return operations.every(
-      (operation: ConditionObject | ActionObject) =>
-        ((operation as ConditionObject).unique_key !== undefined &&
-          ENABLED_AUGMENTATION_TYPES.includes(
-            (operation as ConditionObject).unique_key as CONDITION_KEYS,
-          )) ||
-        ENABLED_AUGMENTATION_TYPES.includes(operation.key),
-    );
+    return operations.every((operation: ConditionObject | ActionObject) => {
+      const key = (operation as ConditionObject).unique_key ?? operation.key;
+      const hasValidKey = ENABLED_AUGMENTATION_TYPES.includes(key as CONDITION_KEYS | ACTION_KEYS);
+      return hasValidKey;
+    });
   }
 
   /**

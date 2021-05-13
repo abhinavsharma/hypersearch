@@ -6,8 +6,10 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
+import message from 'antd/lib/message';
 import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { ActivePage, BuilderPage, GutterPage } from 'modules/pages';
 import {
   ActionBar,
@@ -31,9 +33,9 @@ import {
   removeProtocol,
   PRERENDER_TABS,
 } from 'utils';
+import 'antd/lib/message/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
-import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabs.scss';
 
 const { TabPane } = Tabs;
@@ -91,6 +93,15 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         // Set up listener for expanding sidebar with the augmentation builder page,
         // when the extension toolbar icon is clicked by the user.
         case OPEN_AUGMENTATION_BUILDER_MESSAGE:
+          if (msg.augmentation && !AugmentationManager.isAugmentationEnabled(msg.augmentation)) {
+            message.error({
+              top: 30,
+              content: 'This extension is not supported!',
+              maxCount: 3,
+            });
+            setTimeout(() => message.destroy(), 2500);
+            break;
+          }
           flipSidebar(document, 'show', tabs?.length, true);
           setActiveKey('0');
           if (msg.page === OPEN_BUILDER_PAGE.GUTTER && msg.augmentations) {
