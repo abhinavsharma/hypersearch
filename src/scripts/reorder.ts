@@ -18,10 +18,10 @@ import {
 } from 'utils/constants';
 import { debug, extractUrlProperties } from 'utils/helpers';
 
-// First X results to replace with unique results.
-const MAXIMUM_MOVES = 3;
-
 ((document, window) => {
+  // First X results to replace with unique results.
+  const MAXIMUM_MOVES = 3;
+
   // Currently we support only Google SERP reordering.
   if (window.location.href.search(/google\.[\w]*]/gi) === -1) return;
 
