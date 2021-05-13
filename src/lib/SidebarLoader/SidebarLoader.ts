@@ -53,6 +53,7 @@ import {
   URL_PARAM_TAB_TITLE_KEY,
   URL_PARAM_NO_COOKIE_KEY,
   CACHED_SUBTABS_KEY,
+  CONDITION_KEYS,
 } from 'utils';
 
 /**
@@ -366,7 +367,20 @@ class SidebarLoader {
         case ACTION_KEYS.NO_COOKIE:
         case ACTION_KEYS.OPEN_URL:
           action.value.forEach((value) => {
-            const url = AugmentationManager.processOpenPageActionString(value);
+            const regexGroups = augmentation.conditions.condition_list.reduce(
+              (groups, condition) => {
+                if (
+                  condition.unique_key === CONDITION_KEYS.DOMAIN_MATCHES ||
+                  condition.unique_key === CONDITION_KEYS.URL_MATCHES
+                ) {
+                  const matches = new RegExp(condition.value[0]).exec(this.url.href) ?? [];
+                  return groups.concat(matches.slice(1));
+                }
+                return groups;
+              },
+              [] as string[],
+            );
+            const url = AugmentationManager.processOpenPageActionString(value, regexGroups);
             if (url.hostname === 'undefined') return;
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             if (augmentation.actions.action_list.length > 1) {

@@ -189,7 +189,7 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public processOpenPageActionString(value: string) {
+  public processOpenPageActionString(value: string, regexGroups: string[] = []) {
     let url = `https://${removeProtocol(value)}`;
     if (value.search(/%s[^r]+|%s$/gi) > -1) {
       url = url.replace('%s', encodeSpace(SidebarLoader.query));
@@ -203,6 +203,13 @@ class AugmentationManager {
           `%sr${index}`,
           SidebarLoader.publicationSlices['original']?.[Number(index) - 1],
         );
+      });
+    }
+    if (value.search(/%m[\d]{1,}/gi) > -1) {
+      const domainIndices = url.match(/%m[\d]*/gi) ?? [];
+      domainIndices.forEach((value) => {
+        const index = value.split('%m')[1];
+        url = url.replaceAll(`%m${index}`, regexGroups[Number(index) - 1]);
       });
     }
     return new URL(url);
