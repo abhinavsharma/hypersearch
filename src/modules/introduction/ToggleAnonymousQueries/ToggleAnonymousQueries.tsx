@@ -74,7 +74,7 @@ export const ToggleAnonymousQueries = () => {
   const getStorageValue = useCallback(async () => {
     const isAnonymous = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
-    ).then((result) => result[SYNC_PRIVACY_KEY]);
+    ).then((result) => result?.[SYNC_PRIVACY_KEY]);
     if (isAnonymous === undefined && stepContext.license.isActivated) {
       chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: true });
       setChecked(true);

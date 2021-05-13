@@ -3,39 +3,39 @@ import { extractUrlProperties } from 'utils/helpers';
 import { getLCP, ReportHandler } from 'web-vitals';
 import './results';
 
-const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
-  google: ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
-  duckduckgo: ['.result', '.result__body', '.result__snippet'],
-};
-
-const REMOVE_ADS: Record<string, string[]> = {
-  google: ['[aria-label=Ads]'],
-  'bing.com': ['.b_ad'],
-  'duckduckgo.com': ['#ads', '.results--ads'],
-};
-
-const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
-  google: [
-    '#appbar.appbar',
-    '.I7zR5',
-    'header.Fh5muf',
-    '.mnr-c.cUnQKe',
-    '.mnr-c.AuVD',
-    '[data-has-queries]',
-    '.commercial-unit-mobile-top',
-  ],
-  bing: ['header#b_header'],
-  ecosia: ['.search-header', '.navbar-row'],
-};
-
-const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
-  google: ['span[aria-label="AMP logo"]'],
-  duckduckgo: ['div#header_wrapper', '.search-filters-wrap'],
-};
-
-type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
-
 ((document, window) => {
+  const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {
+    google: ['a.amp_r', '.jGGQ5e', '.U3THc', '.QzoJOb', '[jsname]', '[data-ved]'],
+    duckduckgo: ['.result', '.result__body', '.result__snippet'],
+  };
+
+  const REMOVE_ADS: Record<string, string[]> = {
+    google: ['[aria-label=Ads]'],
+    'bing.com': ['.b_ad'],
+    'duckduckgo.com': ['#ads', '.results--ads'],
+  };
+
+  const REMOVE_ELEMENTS_FROM: Record<string, string[]> = {
+    google: [
+      '#appbar.appbar',
+      '.I7zR5',
+      'header.Fh5muf',
+      '.mnr-c.cUnQKe',
+      '.mnr-c.AuVD',
+      '[data-has-queries]',
+      '.commercial-unit-mobile-top',
+    ],
+    bing: ['header#b_header'],
+    ecosia: ['.search-header', '.navbar-row'],
+  };
+
+  const HIDE_ELEMENTS_FROM: Record<string, string[]> = {
+    google: ['span[aria-label="AMP logo"]'],
+    duckduckgo: ['div#header_wrapper', '.search-filters-wrap'],
+  };
+
+  type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
+
   const LOCAL_HOSTNAME = extractUrlProperties(window.location.href)?.hostname.replace(
     /\.[\w.]*$/,
     '',

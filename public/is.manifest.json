@@ -3,6 +3,11 @@
     "name": "Insight",
     "description": "Insight supercharges search with fast previews, trusted sources, muting and lenses that offer unique and useful perspectives.",
     "version": "0.0.85",
+    "applications": {
+        "gecko": {
+            "id": "hi@insightbrowser.com"
+        }
+    },
     "web_accessible_resources": [
         "*.png",
         "*.svg",
@@ -59,15 +64,6 @@
             "all_frames": true,
             "css": [
                 "overwrite.css"
-            ]
-        },
-        {
-            "matches": [
-                "https://cse.google.com/*"
-            ],
-            "all_frames": true,
-            "css": [
-                "google_cse.css"
             ]
         }
     ],

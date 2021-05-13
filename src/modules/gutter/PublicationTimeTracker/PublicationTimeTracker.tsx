@@ -29,7 +29,7 @@ export const PublicationTimeTracker: PublicationTimeTracker = ({ domain }) => {
     const stored =
       (await new Promise<Record<string, Record<string, number>>>((resolve) =>
         chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
-      ).then((value) => value[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
+      ).then((value) => value?.[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
     setCurrentTime(getDisplayTime(stored[sanitizeUrl(domain)]));
   }, [domain]);
 

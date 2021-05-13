@@ -30,11 +30,11 @@ import {
 import { debug, extractPublication, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
-const searchedResults: HTMLElement[] = [];
-const searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
-const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
-
 ((document, window) => {
+  const searchedResults: HTMLElement[] = [];
+  const searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
+  const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
+
   const processAugmentation = (
     augmentation: AugmentationObject,
     domain: string,
