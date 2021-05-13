@@ -111,7 +111,7 @@ type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
     getElements('a').forEach((el) => {
       clearElement(el);
       const href = el.getAttribute('href');
-      if (href?.search(/amp(\.|-)reddit(\.|-)com/gi) ?? -1 > -1) {
+      if ((href?.search(/amp(\.|-)reddit(\.|-)com/gi) ?? -1) > -1) {
         const redditLink = href?.match(/reddit\.com[\w/?=%_-]*/gi)?.[0];
         el.setAttribute('href', `https://www.${redditLink}`);
       }
