@@ -280,6 +280,7 @@ export const sanitizeUrl = (urlLike: string) => {
  */
 export const debug = (...args: any[]) => {
   if (args && Symbol.iterator in Object(args) && IN_DEBUG_MODE) {
+    /* eslint-disable-next-line no-console */
     console.log('INSIGHT DEBUG: ', ...args);
   }
 };
