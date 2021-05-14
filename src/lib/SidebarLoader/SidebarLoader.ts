@@ -392,7 +392,7 @@ class SidebarLoader {
             if (action.key === ACTION_KEYS.NO_COOKIE) {
               url.searchParams.append(URL_PARAM_NO_COOKIE_KEY, 'true');
             }
-            urls.push(url);
+            urls.unshift(url);
           });
           break;
         // A new sidebar tab url will be composed by each SEARCH_DOMAINS_ACTION values, by appending
@@ -420,7 +420,7 @@ class SidebarLoader {
               (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
             );
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-            urls.push(url);
+            urls.unshift(url);
           }
           break;
         case ACTION_KEYS.OPEN_LINK_CSS:
@@ -435,7 +435,7 @@ class SidebarLoader {
                     URL_PARAM_TAB_TITLE_KEY,
                     extractUrlProperties(url.href)?.hostname,
                   );
-                  urls.push(url);
+                  urls.unshift(url);
                 } catch (e) {
                   debug('getTabUrls - error', e);
                 }
