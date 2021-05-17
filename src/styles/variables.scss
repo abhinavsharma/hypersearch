@@ -8,6 +8,7 @@ $sidebar_z_index: 9999;
  */
 $sidebar_header_height: 50px;
 $sidebar_max_width: 480px;
+$sidebar_stretched_max_width: 900px;
 $sidebar_max_page_width: 900px;
 $sidebar_toggle_width: 200px;
 
@@ -98,3 +99,19 @@ $intro_color_text_link: rgba(255, 255, 255, 0.85);
 $intro_color_text_hover: rgba(255, 255, 255, 1);
 $intro_color_border_opaque: rgba(255, 255, 255, 0.85);
 $intro_color_background: rgba(2, 19, 52, 1);
+
+/// Remove the unit of a length
+/// @param {Number} $number - Number to remove unit from
+/// @return {Number} - Unitless number
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+
+  @return $number;
+}
+
+:export {
+  sidebarMaxWidth: strip-unit($sidebar_max_width);
+  sidebarStretchedMaxWidth: strip-unit($sidebar_stretched_max_width);
+}

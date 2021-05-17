@@ -3,6 +3,7 @@ declare module './flipSidebar' {
     document: Document,
     force: 'hide' | 'show',
     tabsLength: number,
+    maxAvailableWidth: number,
     preventOverlay?: boolean,
   ) => void;
 }

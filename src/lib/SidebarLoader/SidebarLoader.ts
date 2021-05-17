@@ -288,6 +288,21 @@ class SidebarLoader {
     this.userData = Object.create(null);
   }
 
+  public get maxAvailableSpace() {
+    const resultWidth = (this.document
+      ?.querySelector(this.customSearchEngine.querySelector?.desktop)
+      ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement)
+      ?.offsetWidth;
+
+    const maxWidth = window.innerWidth - 300;
+
+    if (resultWidth < maxWidth) {
+      return maxWidth - resultWidth;
+    }
+
+    return -Infinity;
+  }
+
   /**
    * Get domain names from the list of SERP results in the passed document.
    * Values extracted using the matching custom search engine selector.
@@ -691,13 +706,15 @@ class SidebarLoader {
 
       this.isSerp = checkRequiredPrefix() && checkRequiredParams();
       this.preventAutoExpand = this.preventAutoExpand || !this.isSerp;
-      this.isSerp &&
+      if (this.isSerp) {
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
           url: this.url,
         });
+      }
       await this.handleSubtabApiResponse(response);
       this.createSidebar();
+
       const openCssLinks = this.sidebarTabs
         .reduce((selectors, tab) => {
           tab.augmentation.actions.action_list

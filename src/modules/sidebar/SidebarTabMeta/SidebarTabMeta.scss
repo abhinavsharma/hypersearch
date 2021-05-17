@@ -13,6 +13,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
+    width: 100%;
     padding: $sidebar_space_medium 0;
 
     #domain-title-container {
@@ -48,7 +49,7 @@
       color: $color_text_dark;
       margin: 0;
       padding: 0;
-      width: 340px;
+      max-width: calc(100% - 60px);
 
       &.expanded {
         display: contents;
