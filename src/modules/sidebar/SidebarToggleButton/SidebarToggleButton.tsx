@@ -23,6 +23,7 @@ import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarToggleButton.scss';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 /** MAGICS **/
 const TOOLTIP_TEXT = `Preview lenses ("${EXPAND_KEY.KEY}" key)`;
@@ -39,7 +40,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         augmentation: EMPTY_AUGMENTATION,
       } as OpenBuilderMessage);
     }
-    flipSidebar(document, 'show', tabs?.length);
+    flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace);
   };
 
   const ListItem = (item: SidebarTab) => (

@@ -52,7 +52,15 @@ module.exports = (env) => {
                 injectType: 'singletonStyleTag',
               },
             },
-            'css-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+                modules: {
+                  compileType: 'icss',
+                },
+              },
+            },
             {
               loader: 'postcss-loader',
               options: {

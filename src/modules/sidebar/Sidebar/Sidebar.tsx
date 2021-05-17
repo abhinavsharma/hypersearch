@@ -21,6 +21,7 @@ import {
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'utils/constants';
 import './Sidebar.scss';
+import { useDebouncedFn } from 'beautiful-react-hooks';
 
 const Sidebar: Sidebar = () => {
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
@@ -28,27 +29,30 @@ const Sidebar: Sidebar = () => {
     getFirstValidTabIndex(SidebarLoader.sidebarTabs),
   );
 
-  useEffect(() => {
-    const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
-    const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
-    const isTabsLength = firstValidTab !== '0';
-    const isSearchTabs = SidebarLoader.sidebarTabs?.find(({ isCse }) => isCse);
-    const isKpPage = isKnowledgePage(document);
-    const validTabsLength = SidebarLoader.sidebarTabs.filter(
-      ({ url }) => url.href !== HIDE_TAB_FAKE_URL,
-    ).length;
+  const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
+  const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
+  const isTabsLength = firstValidTab !== '0';
+  const isSearchTabs = SidebarLoader.sidebarTabs?.find(({ isCse }) => isCse);
+  const isKpPage = isKnowledgePage(document);
+  const validTabsLength = SidebarLoader.sidebarTabs.filter(
+    ({ url }) => url.href !== HIDE_TAB_FAKE_URL,
+  ).length;
 
-    const shouldPreventExpand =
-      !SidebarLoader.tourStep &&
-      (isSmallWidth ||
-        !isTabsLength ||
-        !isSearchTabs ||
-        isKpPage ||
-        SidebarLoader.preventAutoExpand);
+  const shouldPreventExpand =
+    !SidebarLoader.tourStep &&
+    (isSmallWidth || !isTabsLength || !isSearchTabs || isKpPage || SidebarLoader.preventAutoExpand);
+
+  const handleResize = useDebouncedFn(() => {
+    !shouldPreventExpand &&
+      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+  }, 300);
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
 
     shouldPreventExpand
-      ? flipSidebar(document, 'hide', validTabsLength, true)
-      : flipSidebar(document, 'show', validTabsLength);
+      ? flipSidebar(document, 'hide', validTabsLength, SidebarLoader.maxAvailableSpace, true)
+      : flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
 
     SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {
       url: SidebarLoader.url.href,
@@ -65,6 +69,10 @@ const Sidebar: Sidebar = () => {
         screenWidth: `${window.innerWidth}px`,
       },
     });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   useEffect(() => {

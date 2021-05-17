@@ -1,6 +1,24 @@
 import { SIDEBAR_Z_INDEX } from 'utils/constants';
+import variables from 'styles/variables.scss';
 
-export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preventOverlay) => {
+export const flipSidebar: FlipSidebar = (
+  outerDocument,
+  force,
+  tabsLength,
+  maxAvailableWidth,
+  preventOverlay,
+) => {
+  const availableWidth = Number(
+    maxAvailableWidth > Number(variables.sidebarMaxWidth)
+      ? maxAvailableWidth
+      : variables.sidebarMaxWidth,
+  );
+  const actualWidth = Number(
+    availableWidth > Number(variables.sidebarStretchedMaxWidth)
+      ? variables.sidebarStretchedMaxWidth
+      : availableWidth,
+  );
+
   const innerDocument = outerDocument.getElementById('sidebar-root-iframe') as HTMLIFrameElement;
   const document = innerDocument?.contentWindow?.document;
 
@@ -89,13 +107,15 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
     sidebarContainer.style.visibility = 'visible';
     showButton.style.display = 'none';
     showButton.style.visibility = 'hidden';
-    sidebarContainer.style.width = '450px';
+    sidebarContainer.style.width = `${actualWidth - 30}px`;
+    sidebarContainer.style.maxWidth = `${variables.sidebarStretchedMaxWidth}px`;
     tabsContainer.style.visibility = 'visible';
     outerDocument.getElementById('sidebar-root')?.setAttribute(
       'style',
       `
       display: block;
-      width: 480px;
+      width: ${actualWidth}px;
+      max-width: ${variables.sidebarStretchedMaxWidth}px;
       transition-property: width;
       transition-duration: 0.5s;
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
@@ -109,7 +129,8 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, tabsLength, preve
       right: 0;
       top: 0;
       bottom: 0;
-      width: 480px;
+      width: ${actualWidth}px;
+      max-width: ${variables.sidebarStretchedMaxWidth}px;
       min-height: 200px;
       height: 100%;
       background: transparent;

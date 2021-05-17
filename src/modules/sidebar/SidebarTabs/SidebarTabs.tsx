@@ -102,7 +102,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             setTimeout(() => message.destroy(), 2500);
             break;
           }
-          flipSidebar(document, 'show', tabs?.length, true);
+          flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace, true);
           setActiveKey('0');
           if (msg.page === OPEN_BUILDER_PAGE.GUTTER && msg.augmentations) {
             setPageData({ augmentations: msg.augmentations, publication: msg.publication });
@@ -125,7 +125,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               escape(removeProtocol(url.href)).match(escape(removeProtocol(msg.url).split('#')[0])),
             );
             if (index !== -1) {
-              flipSidebar(document, 'show', tabs.length, true);
+              flipSidebar(document, 'show', tabs.length, SidebarLoader.maxAvailableSpace, true);
               setActiveKey(String(index + 1));
             }
           }
