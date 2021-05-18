@@ -30,6 +30,7 @@ import {
   CONDITION_TYPES,
   CONDITION_KEYS,
   ACTION_LABELS,
+  MY_TRUSTLIST_TEMPLATE,
 } from 'utils';
 
 class AugmentationManager {
@@ -138,14 +139,14 @@ class AugmentationManager {
     const trustList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
       .find(({ id }) => id === MY_TRUSTLIST_ID) as AugmentationObject;
-    const existingDomain = !!trustList.actions.action_list[0].value.includes(domain);
+    const existingDomain = !!(trustList.actions.action_list[0]?.value ?? []).includes(domain);
     const newActionValue = existingDomain
-      ? trustList.actions.action_list[0].value.filter((value) => value !== domain)
-      : trustList.actions.action_list[0].value.concat(domain);
+      ? (trustList.actions.action_list[0]?.value ?? []).filter((value) => value !== domain)
+      : (trustList.actions.action_list[0]?.value ?? []).concat(domain);
     this.addOrEditAugmentation(trustList, {
       actions: [
         {
-          ...trustList.actions.action_list[0],
+          ...(trustList.actions.action_list[0] ?? MY_TRUSTLIST_TEMPLATE.actions.action_list[0]),
           value: newActionValue,
         },
       ],
