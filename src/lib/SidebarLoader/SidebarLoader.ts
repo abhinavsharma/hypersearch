@@ -224,12 +224,23 @@ class SidebarLoader {
 
   /**
    * True when the sidebar is in the expanded state.
+   * TODO: extract to LayoutManager
    *
    * @public
    * @property
    * @memberof SidebarLoader
    */
   public isExpanded!: boolean;
+
+  /**
+   * True when the sidebar is in preview state.
+   * TODO: extract to LayoutManager
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public isPreview!: boolean;
 
   /**
    * The index of the currently visible sidebar tab.
@@ -243,6 +254,7 @@ class SidebarLoader {
   /**
    * If true, prevent the sidebar from auto-expanding, even when
    * other expand conditions are true.
+   * TODO: extract to LayoutManager
    *
    * @public
    * @property
@@ -265,6 +277,7 @@ class SidebarLoader {
 
   public tourStep!: string;
 
+  // TODO: extract to UserManager
   public userData: Record<'license' | 'id', string>;
 
   constructor() {

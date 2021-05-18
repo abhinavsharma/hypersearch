@@ -43,16 +43,19 @@ const Sidebar: Sidebar = () => {
     (isSmallWidth || !isTabsLength || !isSearchTabs || isKpPage || SidebarLoader.preventAutoExpand);
 
   const handleResize = useDebouncedFn(() => {
-    !shouldPreventExpand &&
-      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+    SidebarLoader.isPreview || !shouldPreventExpand;
+    flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
   }, 300);
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
 
-    shouldPreventExpand
-      ? flipSidebar(document, 'hide', validTabsLength, SidebarLoader.maxAvailableSpace, true)
-      : flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+    if (shouldPreventExpand && !SidebarLoader.isPreview) {
+      flipSidebar(document, 'hide', validTabsLength, SidebarLoader.maxAvailableSpace, true);
+    } else {
+      SidebarLoader.isPreview = true;
+      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+    }
 
     SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {
       url: SidebarLoader.url.href,
