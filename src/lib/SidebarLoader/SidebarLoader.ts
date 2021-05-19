@@ -7,7 +7,6 @@
 import React, { ReactElement } from 'react';
 import md5 from 'md5';
 import { render } from 'react-dom';
-import { v4 as uuid } from 'uuid';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { Sidebar } from 'modules/sidebar';
@@ -32,9 +31,7 @@ import {
   CSE_PREFIX,
   PINNED_PREFIX,
   keyUpHandler,
-  SYNC_LICENSE_KEY,
   USE_COUNT_PREFIX,
-  SYNC_PRIVACY_KEY,
   GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
   BANNED_EXTENSION_IDS,
   INSTALLED_PREFIX,
@@ -44,7 +41,6 @@ import {
   triggerSerpProcessing,
   MY_BLOCKLIST_ID,
   MY_BLOCKLIST_TEMPLATE,
-  SYNC_DISTINCT_KEY,
   SPECIAL_URL_JUNK_STRING,
   SAFARI_FALLBACK_URL,
   ACTION_KEYS,
@@ -56,8 +52,8 @@ import {
   CONDITION_KEYS,
   DEDICATED_SERP_REGEX,
   URL_PARAM_POSSIBLE_SERP_RESULT,
-  SYNC_ALTERNATE_HOVER_ACTION,
 } from 'utils';
+import UserManager from 'lib/UserManager';
 
 /**
  * ! In order of priority
@@ -204,17 +200,6 @@ class SidebarLoader {
   public matchingDisabledInstalledAugmentations: AugmentationObject[];
 
   /**
-   * When user enables strong privacy mode, logging are disabled and subtabs response
-   * is cached for a specified time (not firing on all query). Also in the Insight case
-   * subtabs does not work  outside of search result pages.
-   *
-   * @public
-   * @property
-   * @memberof SidebarLoader
-   */
-  public strongPrivacy!: boolean;
-
-  /**
    * True when the sidebar is in the expanded state.
    * TODO: extract to LayoutManager
    *
@@ -270,10 +255,6 @@ class SidebarLoader {
 
   public tourStep!: string;
 
-  // TODO: extract to UserManager
-
-  public userData: Record<'license' | 'id', string> & Record<'altHover', boolean>;
-
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.augmentationStats = Object.create(null);
@@ -292,7 +273,6 @@ class SidebarLoader {
     this.featureDomains = [];
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
-    this.userData = Object.create(null);
   }
 
   public get maxAvailableSpace() {
@@ -308,11 +288,6 @@ class SidebarLoader {
     }
 
     return -Infinity;
-  }
-
-  public alternateHoverAction(value: boolean) {
-    this.userData.altHover = value;
-    chrome.storage.sync.set({ [SYNC_ALTERNATE_HOVER_ACTION]: value });
   }
 
   /**
@@ -675,6 +650,7 @@ class SidebarLoader {
    */
   public async loadOrUpdateSidebar(document: Document, url: URL) {
     debug('loadOrUpdateSidebar - call\n');
+    UserManager.initialize();
     this.document = document;
     this.url = url;
     if (
@@ -690,9 +666,6 @@ class SidebarLoader {
     const existing = this.document.getElementById('sidebar-root');
     existing && this.document.body.removeChild(existing);
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
-    this.strongPrivacy = await new Promise<Record<string, boolean>>((resolve) =>
-      chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
-    ).then((value) => !value?.[SYNC_PRIVACY_KEY]);
     const response = await this.fetchSubtabs();
     this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
     this.query =
@@ -980,22 +953,25 @@ class SidebarLoader {
    */
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
-    await this.getUserData();
     const getSubtabs = async (url = this.url.href) => {
-      debug('\n---\n\tRequest API', url, '\n\tLicense', this.userData.license, '\n---');
+      debug('\n---\n\tRequest API', url, '\n\tLicense', UserManager.user.license, '\n---');
       return (await postAPI(
         'subtabs',
         { url },
         {
           client: 'desktop',
-          license_keys: this.userData.license ? [this.userData.license] : [],
-          uuid: this.userData.id,
+          license_keys: UserManager.user.license ? [UserManager.user.license] : [],
+          uuid: UserManager.user.id,
         },
       )) as SubtabsResponse;
     };
     let response: SubtabsResponse = Object.create(null);
-    debug('\n---\n\tIs strong privacy enabled --- ', this.strongPrivacy ? 'Yes' : 'No', '\n---');
-    if (this.strongPrivacy) {
+    debug(
+      '\n---\n\tIs strong privacy enabled --- ',
+      UserManager.user.privacy ? 'Yes' : 'No',
+      '\n---',
+    );
+    if (UserManager.user.privacy) {
       const cache = await new Promise<Record<string, { data: SubtabsResponse; expire: number }>>(
         (resolve) => chrome.storage.local.get(CACHED_SUBTABS_KEY, resolve),
       ).then((value) => value[CACHED_SUBTABS_KEY]);
@@ -1069,31 +1045,6 @@ class SidebarLoader {
     debug('createSidebar - processed');
   }
 
-  private async getUserData() {
-    // We use this for the logging. This ID will be assigned to the instance, throughout the application
-    // lifetime. This way we can follow the exact user actions identifying them by their ID. Also, we can
-    // keep user's privacy intact and provide anonymous usage data to the Freshpaint log.
-    const storedId = await new Promise<Record<string, string>>((resolve) =>
-      chrome.storage.sync.get(SYNC_DISTINCT_KEY, resolve),
-    );
-    let userId = storedId?.[SYNC_DISTINCT_KEY];
-    if (!userId) {
-      userId = uuid();
-      chrome.storage.sync.set({ [SYNC_DISTINCT_KEY]: userId });
-    }
-    const storedLicense =
-      (await new Promise<Record<string, string>>((resolve) =>
-        chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
-      ).then((mod) => mod[SYNC_LICENSE_KEY])) ?? null;
-    const altHoverAction =
-      (await new Promise<Record<string, boolean>>((resolve) =>
-        chrome.storage.sync.get(SYNC_ALTERNATE_HOVER_ACTION, resolve),
-      ).then((mod) => mod[SYNC_ALTERNATE_HOVER_ACTION])) ?? false;
-    this.userData.id = userId;
-    this.userData.license = storedLicense;
-    this.userData.altHover = altHoverAction;
-  }
-
   /**
    * Send a trigger to background page, to send Freshpaint logging.
    *
@@ -1104,13 +1055,13 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public sendLogMessage(event: string, properties: Record<string, any>) {
-    if (this.strongPrivacy) {
+    if (UserManager.user.privacy) {
       const { url, query } = properties;
       if (url) properties.url = md5(url);
       if (query) properties.query = md5(query);
     }
 
-    properties.userIsAnon = this.strongPrivacy;
+    properties.userIsAnon = UserManager.user.privacy;
 
     debug(
       'sendLogMessage - call\n---\n\tEvent',
@@ -1118,15 +1069,15 @@ class SidebarLoader {
       '\n\tProperties',
       properties,
       '\n\tStrong privacy',
-      this.strongPrivacy ? 'Yes' : 'No',
+      UserManager.user.privacy ? 'Yes' : 'No',
       '\n---',
     );
 
-    if (!IN_DEBUG_MODE && this.userData.license) {
+    if (!IN_DEBUG_MODE && UserManager.user.license) {
       chrome.runtime.sendMessage({
         event,
         properties,
-        userId: this.userData.id,
+        userId: UserManager.user.id,
         type: SEND_LOG_MESSAGE,
       });
     }

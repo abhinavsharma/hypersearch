@@ -31,6 +31,7 @@ import {
   MY_TRUSTLIST_TEMPLATE,
   DEDICATED_SERP_REGEX,
 } from 'utils';
+import UserManager from 'lib/UserManager';
 
 class AugmentationManager {
   public preparedLogMessage: Record<'augmentation', AugmentationObject> | null;
@@ -79,7 +80,7 @@ class AugmentationManager {
     ] as AugmentationObject['actions']['action_list'];
     blockList.actions.action_list = newActionList;
     isNewBlock &&
-      !SidebarLoader.strongPrivacy &&
+      !UserManager.user.privacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_ADD_DOMAIN, {
         domain,
       });
@@ -108,9 +109,9 @@ class AugmentationManager {
     blockList.actions.action_list = newActionList;
     this.addOrEditAugmentation(blockList, {
       actions: newActionList,
-    });
-    SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
-    !SidebarLoader.strongPrivacy &&
+    }),
+      (SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain));
+    !UserManager.user.privacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
         domain,
       });
@@ -620,7 +621,7 @@ class AugmentationManager {
       }
     }
     this.preparedLogMessage &&
-      !SidebarLoader.strongPrivacy &&
+      !UserManager.user.privacy &&
       SidebarLoader.sendLogMessage(EXTENSION_AUGMENTATION_SAVE, {
         augmentation: this.preparedLogMessage.augmentation,
       });

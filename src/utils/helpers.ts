@@ -96,6 +96,8 @@ export const triggerSerpProcessing = (
     window.top.postMessage(
       {
         createdUrls,
+        hideDomains: loader.hideDomains,
+        name: PROCESS_SERP_OVERLAY_MESSAGE,
         customLink,
         augmentation,
         name: PROCESS_SERP_OVERLAY_MESSAGE,

@@ -22,6 +22,7 @@ import {
 } from 'utils/constants';
 import './Sidebar.scss';
 import { useDebouncedFn } from 'beautiful-react-hooks';
+import UserManager from 'lib/UserManager';
 
 const Sidebar: Sidebar = () => {
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
@@ -66,7 +67,7 @@ const Sidebar: Sidebar = () => {
 
     SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {
       url: SidebarLoader.url.href,
-      subtabs: SidebarLoader.strongPrivacy
+      subtabs: UserManager.user.privacy
         ? SidebarLoader.sidebarTabs.map(({ url }) => md5(url.href))
         : SidebarLoader.sidebarTabs.map(({ title }) => title),
       details: {
