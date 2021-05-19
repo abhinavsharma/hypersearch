@@ -54,6 +54,7 @@ import {
   URL_PARAM_NO_COOKIE_KEY,
   CACHED_SUBTABS_KEY,
   CONDITION_KEYS,
+  DEDICATED_SERP_REGEX,
 } from 'utils';
 
 /**
@@ -701,7 +702,10 @@ class SidebarLoader {
         !!this.customSearchEngine?.search_engine_json?.required_prefix &&
         hostname.search(this.customSearchEngine?.search_engine_json?.required_prefix) > -1;
 
-      this.isSerp = checkRequiredPrefix() && checkRequiredParams();
+      this.isSerp =
+        checkRequiredPrefix() &&
+        checkRequiredParams() &&
+        !!this.url.href.match(DEDICATED_SERP_REGEX)?.length;
       this.preventAutoExpand = this.preventAutoExpand || !this.isSerp;
       if (this.isSerp) {
         this.sendLogMessage(EXTENSION_SERP_LOADED, {

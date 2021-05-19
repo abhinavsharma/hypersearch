@@ -56,6 +56,21 @@
   }
 }
 
+@mixin modal {
+  .ant-fade-leave,
+  .ant-fade-leave + .ant-modal-wrap {
+    opacity: 0;
+    z-index: -1;
+  }
+
+  .ant-fade-appear,
+  .ant-fade-appear + .ant-modal-wrap {
+    pointer-events: auto !important;
+    opacity: 1;
+    z-index: math.abs($sidebar_z_index + 100);
+  }
+}
+
 @mixin fullWidthDropdown {
   @include dropdown(100%);
 }

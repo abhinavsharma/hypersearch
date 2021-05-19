@@ -9,13 +9,9 @@ import {
   CUSTOM_SEARCH_ENGINES,
   extractUrlProperties,
   INTENTS_BLOB_URL,
-  SYNC_LICENSE_KEY,
-  SYNC_FINISHED_KEY,
-  SYNC_PRIVACY_KEY,
-  SYNC_DISTINCT_KEY,
-  USE_COUNT_PREFIX,
   EMPTY_CUSTOM_SEARCH_ENGINE_BLOB,
-  SYNC_PUBLICATION_TIME_TRACK_KEY,
+  ARBITRARY_ENGINE_PREFIX,
+  DEDICATED_ENGINE_PREFIX,
 } from 'utils';
 
 class SearchEngineManager {
@@ -47,15 +43,6 @@ class SearchEngineManager {
   private throttled: boolean;
 
   /**
-   * The list of storage keys, which will be ignored by the cleanup while sync.
-   *
-   * @private
-   * @property
-   * @memberof SearchEngineManager
-   */
-  private safeElements: string[];
-
-  /**
    * Stored copy of the remote CSE data for efficient sync processing.
    *
    * @private
@@ -66,13 +53,6 @@ class SearchEngineManager {
 
   constructor() {
     debug('SearchEngineManager - initialize\n---\n\tSingleton Instance', this, '\n---');
-    this.safeElements = [
-      SYNC_DISTINCT_KEY,
-      SYNC_LICENSE_KEY,
-      SYNC_PRIVACY_KEY,
-      SYNC_FINISHED_KEY,
-      SYNC_PUBLICATION_TIME_TRACK_KEY,
-    ];
     this.engines = Object.create(null);
     this.intents = [];
     this.remoteBlob = Object.create(null);
@@ -83,7 +63,7 @@ class SearchEngineManager {
 
   /**
    * Get remotely stored search intents blob and store them in the public `intents` property.
-   * This method will be called at instaciation time and available when the sidebar loads.
+   * This method will be called at instantiation time and available when the sidebar loads.
    *
    * @public
    * @method
@@ -96,7 +76,7 @@ class SearchEngineManager {
 
   /**
    * Get remotely stored search intents blob and store them in the public `intents` property.
-   * This method will be called at instaciation time and available when the sidebar loads.
+   * This method will be called at instantiation time and available when the sidebar loads.
    *
    * @public
    * @method
@@ -104,12 +84,33 @@ class SearchEngineManager {
    */
   private async getEngines() {
     const raw = await fetch(CUSTOM_SEARCH_ENGINES, { mode: 'cors' });
-    this.engines = await raw.json();
+    const remote = await raw.json();
+    const local = await new Promise<Record<string, any>>((resolve) =>
+      chrome.storage.sync.get(null, resolve),
+    ).then((items) =>
+      Object.entries(items).reduce((acc, [key, value]) => {
+        if (key.startsWith(ARBITRARY_ENGINE_PREFIX) || key.startsWith(DEDICATED_ENGINE_PREFIX)) {
+          Object.assign(acc, {
+            [key
+              .replace(ARBITRARY_ENGINE_PREFIX, '')
+              .replace(DEDICATED_ENGINE_PREFIX, '')
+              .substr(1)]: value,
+          });
+        }
+        return acc;
+      }, Object.create(null) as Record<string, CustomSearchEngine>),
+    );
+    this.engines = Object.assign(remote, local);
+  }
+
+  public async createArbitraryEngine(name: string, engine: CustomSearchEngine) {
+    chrome.storage.sync.set({ [`${ARBITRARY_ENGINE_PREFIX}-${name}`]: engine });
+    Object.assign(this.engines, { [name]: engine });
   }
 
   /**
    * Check the local storage for a stored custom search engine object. If it is not found,
-   * the method will fetch avaliable CSEs from remote host and store the matching value.
+   * the method will fetch available CSEs from remote host and store the matching value.
    *
    * TODO: refactor related code to let this be a private method
    *
@@ -119,33 +120,51 @@ class SearchEngineManager {
    */
   public async getCustomSearchEngine(url: string) {
     debug('getCustomSearchEngine - call\n');
-    let storedValue: Record<string, CustomSearchEngine>;
     const { hostname, params } = extractUrlProperties(url);
+
     if (!hostname) return EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
-    const localized =
-      hostname.search(/google\.[\w]*/) > -1 ? hostname.replace(/\.[\w.]*$/, '.com') : hostname;
-    const storageKey = localized.replace(/\./g, '_');
-    storedValue = await new Promise((resolve) => chrome.storage.sync.get(storageKey, resolve));
-    if (!storedValue?.[storageKey]) {
+
+    const localized = hostname.replace(/\.[\w.]*$/, '');
+    const dedicatedKey = `${DEDICATED_ENGINE_PREFIX}-${localized}`;
+    const arbitraryKey = `${ARBITRARY_ENGINE_PREFIX}-${localized}`;
+
+    const storedValue: Record<string, CustomSearchEngine> =
+      (await new Promise((res) => chrome.storage.sync.get(dedicatedKey, res))) ??
+      (await new Promise((res) => chrome.storage.sync.get(arbitraryKey, res)));
+
+    let validEntry: CustomSearchEngine | null =
+      (storedValue[dedicatedKey] || storedValue[arbitraryKey]) ?? null;
+
+    const validateEntry = (customSearchEngine: CustomSearchEngine) => {
+      const hasAllMatchingParams = !customSearchEngine.search_engine_json?.required_params.filter(
+        (i) => !params.includes(i),
+      ).length;
+      const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
+        ?.length;
+      if (hasAllMatchingParams && hasRequiredPrefix) {
+        validEntry = Object.assign(EMPTY_CUSTOM_SEARCH_ENGINE_BLOB, customSearchEngine);
+      }
+    };
+
+    if (!validEntry) {
+      debug('getCustomSearchEngine - check locals\n');
+      Object.values(this.engines).forEach(validateEntry);
+    }
+
+    if (!validEntry) {
       debug('getCustomSearchEngine - fetch from remote\n');
-      const result: CustomSearchEngine = EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
       const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES, { cache: 'no-cache' });
       const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
-      Object.values(results).forEach((customSearchEngine) => {
-        const hasAllMatchingParams = !customSearchEngine.search_engine_json.required_params.filter(
-          (i) => !params.includes(i),
-        ).length;
-        const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
-          ?.length;
-        if (hasAllMatchingParams && hasRequiredPrefix)
-          Object.assign(result, { ...customSearchEngine });
-      });
-      chrome.storage.sync.set({ [storageKey]: result });
-      storedValue = { [storageKey]: result };
+      Object.values(results).forEach(validateEntry);
+      validEntry && chrome.storage.sync.set({ [dedicatedKey]: validEntry });
     }
-    const result = storedValue[storageKey] ?? EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
-    debug('getCustomSearchEngine - processed\n---\n\tCustom Search Engine JSON', result, '\n---');
-    return result;
+
+    debug(
+      'getCustomSearchEngine - processed\n---\n\tCustom Search Engine JSON',
+      validEntry ?? 'not found, fallback value used',
+      '\n---',
+    );
+    return validEntry ?? EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
   }
 
   /**
@@ -160,19 +179,25 @@ class SearchEngineManager {
       debug('SearchEngineManager - sync - throttle execution');
       return;
     }
+
     this.throttled = true;
-    if (!this.remoteBlob) {
+
+    if (!Object.entries(this.remoteBlob).length) {
       debug('SearchEngineManager - sync - fetching remote');
-      const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES);
+      const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES, { cache: 'no-cache' });
       this.remoteBlob = await customSearchEngines.json();
       debug('SearchEngineManager - sync\n---\n\tRemote', this.remoteBlob, '\n---');
     }
+
     await new Promise((resolve) =>
       chrome.storage.sync.get(async (items) => {
         debug('SearchEngineManager - sync\n---\n\tItems', items, '\n---');
         Object.entries(items ?? Object.create(null)).forEach(
           async ([key, storedItem]: [string, CustomSearchEngine]) => {
-            if (this.safeElements.includes(key) || key.startsWith(USE_COUNT_PREFIX)) return null;
+            if (!key.startsWith(DEDICATED_ENGINE_PREFIX)) {
+              return null;
+            }
+
             if (!(storedItem.querySelector && storedItem.search_engine_json)) {
               // Check if stored value has the required structure
               await this.deleteItem(key);
@@ -195,7 +220,7 @@ class SearchEngineManager {
               await this.deleteItem(key, 'Property mismatch in local item');
             }
             // Remove item if required params are not matching
-            const paramsMismatch = storedItem?.search_engine_json?.required_params.every((c) =>
+            const paramsMismatch = !storedItem?.search_engine_json?.required_params.every((c) =>
               remoteItem?.search_engine_json?.required_params.includes(c),
             );
 

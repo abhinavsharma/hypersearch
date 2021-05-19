@@ -101,4 +101,8 @@ body#insight-sidebar {
       }
     }
   }
+
+  .insight-modal-root {
+    @include modal;
+  }
 }

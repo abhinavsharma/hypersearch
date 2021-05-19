@@ -31,6 +31,7 @@ import {
   CONDITION_KEYS,
   ACTION_LABELS,
   MY_TRUSTLIST_TEMPLATE,
+  DEDICATED_SERP_REGEX,
 } from 'utils';
 
 class AugmentationManager {
@@ -386,10 +387,10 @@ class AugmentationManager {
       ({ key, unique_key }) =>
         (key === CONDITION_KEYS.ANY_SEARCH_ENGINE &&
           SidebarLoader.isSerp &&
-          !SidebarLoader.url.href.match(/amazon\.com/gi)) ||
+          SidebarLoader.url.href.match(DEDICATED_SERP_REGEX)) ||
         (unique_key === CONDITION_KEYS.ANY_SEARCH_ENGINE &&
           SidebarLoader.isSerp &&
-          !SidebarLoader.url.href.match(/amazon\.com/gi)) ||
+          SidebarLoader.url.href.match(DEDICATED_SERP_REGEX)) ||
         key === CONDITION_KEYS.ANY_URL ||
         unique_key === CONDITION_KEYS.ANY_URL,
     ).length;
@@ -488,22 +489,13 @@ class AugmentationManager {
           key === CONDITION_KEYS.SEARCH_ENGINE_IS ||
           unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
         ) {
-          return (
-            Object.entries(
-              SidebarLoader.customSearchEngine.search_engine_json ?? Object.create(null),
-            )
-              .map(([entryKey, entryValue]) => {
-                return Array.isArray(entryValue)
-                  ? !!entryValue.find((subValue) => {
-                      return (
-                        Array.isArray(value[0][Number(entryKey)]) &&
-                        value[0][Number(entryKey)].includes(subValue)
-                      );
-                    })
-                  : entryValue === value[0][Number(entryKey)];
-              })
-              .indexOf(false) === -1
+          const cse = (value[0] as unknown) as CustomSearchEngine;
+          const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params.every(
+            (param) => !!SidebarLoader.url.searchParams.get(param),
           );
+          const hasRequiredPrefix =
+            SidebarLoader.url.href.search((cse.search_engine_json ?? cse)?.required_prefix) > -1;
+          return hasAllMatchingParams && hasRequiredPrefix;
         }
         return null;
       },
