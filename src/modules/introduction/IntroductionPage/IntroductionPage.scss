@@ -1,6 +1,6 @@
 @use 'styles/variables' as *;
 
-body {
+body#insight-introduction-page {
   font-family: $font_sans !important;
   background-color: $intro_color_background !important;
 

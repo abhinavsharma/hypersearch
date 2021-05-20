@@ -19,10 +19,24 @@
     font-weight: normal;
   }
 
-  .ant-list-items {
-    list-style-type: none;
-    padding: 0;
-    margin-left: $sidebar_space_medium;
+  .ant-list {
+    width: 100%;
+
+    .ant-list-items {
+      list-style-type: none;
+      width: 100%;
+      padding: 0;
+      margin-left: $sidebar_space_medium;
+
+      .ant-list-item {
+        padding: 0;
+        border-bottom: 0;
+
+        .ant-list-item-meta-title {
+          margin: $sidebar_space_medium;
+        }
+      }
+    }
   }
 
   .insight-sidebar-toggle-appname {

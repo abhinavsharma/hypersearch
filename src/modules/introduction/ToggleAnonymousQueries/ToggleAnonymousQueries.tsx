@@ -1,7 +1,10 @@
 import React, { Suspense, useCallback, useContext, useEffect, useState } from 'react';
-import { Switch, Typography } from 'antd';
+import Switch from 'antd/lib/switch';
+import Typography from 'antd/lib/typography';
 import { SYNC_PRIVACY_KEY } from 'utils';
 import { StepContext } from 'modules/introduction';
+import 'antd/lib/switch/style/index.css';
+import 'antd/lib/typography/style/index.css';
 import './ToggleAnonymousQueries.scss';
 
 /** MAGICS **/

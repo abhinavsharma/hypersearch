@@ -1,5 +1,6 @@
 @use 'styles/variables' as *;
-@import 'styles/generics', 'styles/animations';
+@use 'styles/generics' as *;
+@use 'styles/animations' as *;
 
 .insight-gutter-button-root {
   position: absolute;
