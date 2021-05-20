@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Steps } from 'antd';
+import Steps from 'antd/lib/steps';
 import { LicenseFrame, WelcomeFrame, PrivacyFrame, QueriesFrame } from 'modules/introduction';
 import { IntroStepContext, StoredLicense } from 'types/introduction';
 import { APP_NAME, SYNC_FINISHED_KEY, SYNC_LICENSE_KEY } from 'utils';
+import 'antd/lib/steps/style/index.css';
 import './IntroductionPage.scss';
 
 /** MAGICS **/

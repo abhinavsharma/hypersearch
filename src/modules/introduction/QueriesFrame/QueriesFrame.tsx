@@ -1,8 +1,15 @@
 import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Button, Collapse, List, Typography } from 'antd';
+import Button from 'antd/lib/button';
+import Collapse from 'antd/lib/collapse';
+import List from 'antd/lib/list';
+import Typography from 'antd/lib/typography';
 import { StepContext } from 'modules/introduction';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'utils';
+import 'antd/lib/button/style/index.css';
+import 'antd/lib/collapse/style/index.css';
+import 'antd/lib/list/style/index.css';
+import 'antd/lib/typography/style/index.css';
 import './QueriesFrame.scss';
 
 type QueryListItem = Record<'text', string>;

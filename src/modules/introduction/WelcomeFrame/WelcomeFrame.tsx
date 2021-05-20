@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { Typography, Button } from 'antd';
+import Typography from 'antd/lib/typography';
+import Button from 'antd/lib/button';
 import { Helmet } from 'react-helmet';
 import Typist from 'react-typist';
 import { StepContext } from 'modules/introduction';
 import { APP_NAME } from 'utils';
-import 'antd/dist/antd.dark.min.css';
+import 'antd/lib/typography/style/index.css';
+import 'antd/lib/button/style/index.css';
 import './WelcomeFrame.scss';
 
 /** MAGICS **/

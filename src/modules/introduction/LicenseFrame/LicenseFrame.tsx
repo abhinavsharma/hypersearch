@@ -1,8 +1,13 @@
 import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
-import { Input, Button, Typography } from 'antd';
+import Input from 'antd/lib/input';
+import Button from 'antd/lib/button';
+import Typography from 'antd/lib/typography';
 import { StepContext } from 'modules/introduction';
 import { APP_NAME, SYNC_LICENSE_KEY } from 'utils';
+import 'antd/lib/input/style/index.css';
+import 'antd/lib/button/style/index.css';
+import 'antd/lib/typography/style/index.css';
 import './LicenseFrame.scss';
 
 /** MAGICS **/

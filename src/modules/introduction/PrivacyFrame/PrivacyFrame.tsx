@@ -1,8 +1,11 @@
 import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
-import { Button, Typography } from 'antd';
+import Button from 'antd/lib/button';
+import Typography from 'antd/lib/typography';
 import { StepContext, ToggleAnonymousQueries } from 'modules/introduction';
 import { APP_NAME } from 'utils';
+import 'antd/lib/button/style/index.css';
+import 'antd/lib/typography/style/index.css';
 import './PrivacyFrame.scss';
 
 /** MAGICS **/
@@ -40,15 +43,17 @@ export const PrivacyFrame = () => {
             <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
           </>
         )}
-        <Button
-          type="ghost"
-          shape="round"
-          size="large"
-          className="step-button"
-          onClick={handleNext}
-        >
-          {NEXT_BUTTON_TEXT}
-        </Button>
+        <div>
+          <Button
+            type="ghost"
+            shape="round"
+            size="large"
+            className="step-button"
+            onClick={handleNext}
+          >
+            {NEXT_BUTTON_TEXT}
+          </Button>
+        </div>
       </div>
     </>
   );

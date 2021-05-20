@@ -22,6 +22,7 @@ import {
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
+import 'antd/lib/list/style/index.css';
 import './SidebarToggleButton.scss';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 

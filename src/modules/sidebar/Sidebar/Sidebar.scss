@@ -1,14 +1,15 @@
 @use 'styles/variables' as *;
 @use 'styles/mixins' as *;
 @use 'styles/animations' as *;
+@use 'styles/generics' as *;
+@use 'styles/overwrites' as *;
 @use 'sass:math';
-@import 'styles/generics';
-@import 'styles/overwrites';
 
-body {
+body#insight-sidebar {
   @include reset;
   font-family: $font_sans;
   font-size: $sidebar_font_medium;
+  color: $color_text_black;
 
   #insight-sidebar-container {
     @include slideAnimation;

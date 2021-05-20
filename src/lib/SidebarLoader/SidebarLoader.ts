@@ -201,17 +201,6 @@ class SidebarLoader {
   public matchingDisabledInstalledAugmentations: AugmentationObject[];
 
   /**
-   * The merged stylesheet to inject into the sidebar. Initially this element
-   * will be injected in the parent document, then moved to the sidebar and
-   * removed from parent document to prevent style pollution.
-   *
-   * @private
-   * @property
-   * @memberof SidebarLoader
-   */
-  private styleEl: HTMLStyleElement;
-
-  /**
    * When user enables strong privacy mode, logging are disabled and subtabs response
    * is cached for a specified time (not firing on all query). Also in the Insight case
    * subtabs does not work  outside of search result pages.
@@ -285,7 +274,6 @@ class SidebarLoader {
     this.augmentationStats = Object.create(null);
     this.preventAutoExpand = false;
     this.domains = [];
-    this.styleEl = window.top.document.documentElement.getElementsByTagName('style')[0];
     this.publicationSlices = Object.create(null);
     this.sidebarTabs = [];
     this.domainsToSearch = Object.create(null);
@@ -683,10 +671,6 @@ class SidebarLoader {
     }
     const existing = this.document.getElementById('sidebar-root');
     existing && this.document.body.removeChild(existing);
-    // The first `<style>` element is injected by webpack. We have to remove this if its not
-    // getting cleaned up by the host site itself. Otherwise style collisions can happen.
-    const firstChild = this.document.documentElement.getElementsByTagName('style')[0];
-    if (this.styleEl === firstChild) this.document.documentElement.removeChild(firstChild);
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
     this.strongPrivacy = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
@@ -752,12 +736,7 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  private reactInjector(
-    el: HTMLElement,
-    reactEl: ReactElement,
-    frameId: string,
-    link: HTMLLinkElement,
-  ) {
+  private reactInjector(el: HTMLElement, reactEl: ReactElement, frameId: string) {
     debug('reactInjector - call');
     const iframe = document.createElement('iframe');
     iframe.id = frameId;
@@ -769,15 +748,21 @@ class SidebarLoader {
     iframe.contentWindow?.document.addEventListener('keydown', handleKeyDown, true);
     iframe.contentWindow?.document.addEventListener('keyup', handleKeyUp, true);
     const injector = () => {
-      const doc = iframe.contentWindow?.document.documentElement;
-      // Webpack merges all SCSS files into a single <style> element. We initialize
-      // the IFrame document object with this merged stylesheet.
-      doc?.getElementsByTagName('head')[0].appendChild(link);
-      doc?.getElementsByTagName('head')[0].appendChild(this.styleEl);
-      doc?.setAttribute('style', 'overflow: hidden;');
+      const doc = iframe.contentWindow?.document;
+      if (!doc) {
+        debug('reactInjector - error - Frame document unaccessible');
+        return null;
+      }
+      const link = doc.createElement('link');
+      link.setAttribute('type', 'text/css');
+      link.setAttribute('rel', 'stylesheet');
+      link.setAttribute('href', chrome.runtime.getURL('bundle.css'));
+      doc.head.appendChild(link);
+      doc.body.id = 'insight-sidebar';
+      doc.documentElement.setAttribute('style', 'overflow: hidden;');
       const div = document.createElement('div');
-      const root = doc?.getElementsByTagName('body')[0].appendChild(div);
-      root && render(reactEl, root);
+      const root = doc.body.appendChild(div);
+      render(reactEl, root);
       debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');
     };
     // Firefox is a special case, we need to set IFrame source to make it work.
@@ -1051,15 +1036,6 @@ class SidebarLoader {
    */
   private createSidebar() {
     debug('createSidebar - call\n');
-    const link = this.document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = chrome.extension.getURL('./index.css');
-    link.type = 'text/css';
-    this.document.head.appendChild(link);
-    const existing = this.document.getElementById('sidebar-root');
-    if (existing) {
-      existing.parentElement?.removeChild(existing);
-    }
     const wrapper = this.document.createElement('div');
     wrapper.id = 'sidebar-root';
     wrapper.style.display = 'none';
@@ -1067,7 +1043,7 @@ class SidebarLoader {
     const nonCseTabs = this.sidebarTabs.filter((tab) => !tab.isCse);
     this.sidebarTabs.concat(nonCseTabs);
     const sidebarInit = React.createElement(Sidebar);
-    this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe', link);
+    this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe');
     debug('createSidebar - processed');
   }
 
