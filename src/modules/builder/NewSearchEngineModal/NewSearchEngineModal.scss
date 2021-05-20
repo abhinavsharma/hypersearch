@@ -1,0 +1,24 @@
+@use 'styles/variables' as *;
+
+#new-cse-modal {
+  .ant-modal-mask,
+  .ant-modal-wrap {
+    left: 30px;
+  }
+
+  .ant-modal {
+    position: absolute;
+    width: calc(100% - 60px) !important;
+    left: 30px;
+    right: 30px;
+  }
+
+  .modal-content-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    input {
+      margin-top: $sidebar_space_medium;
+    }
+  }
+}

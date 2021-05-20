@@ -8,6 +8,7 @@ const IS_DEBUG_SWITCH = true;
 /**
  * ! STORAGE
  */
+export const ARBITRARY_ENGINE_PREFIX = 'arbitrary-cse';
 export const SYNC_LICENSE_KEY = 'licenseActivated';
 export const SYNC_PRIVACY_KEY = 'useServerSuggestions';
 export const SYNC_FINISHED_KEY = 'hasFinishedIntro';
@@ -19,6 +20,7 @@ export const IGNORED_PREFIX = 'ignored';
 export const INSTALLED_PREFIX = 'cse-custom';
 export const CSE_PREFIX = 'cse';
 export const PINNED_PREFIX = 'pinned';
+export const DEDICATED_ENGINE_PREFIX = 'dedicated-serp';
 
 /**
  * ! CUSTOM AUGMENTATIONS
@@ -187,6 +189,9 @@ export const KP_SELECTORS = [
 /**
  * ! REGEX
  */
+export const DEDICATED_SERP_REGEX = new RegExp(
+  /google\.com|ecosia\.org|duckduckgo\.com|bing\.com/gi,
+);
 export const FORCE_FALLBACK_CSE = new RegExp(/amazon\.com/gi);
 export const IMAGE_URL_PARAM = new RegExp(/(ia[\w]?=images|tbm=isch)/gi);
 export const DOMAINS_TO_RELEVANT_SLICE: Record<string, RegExp> = {
