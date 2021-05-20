@@ -27,7 +27,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
   const currentTabIndex = Number(loader.currentTab);
   const handleToggle = () => {
     loader.isExpanded = !loader.isExpanded;
-    expandSidebar(loader.sidebarTabs.length);
+    expandSidebar(loader.sidebarTabs.length, loader.maxAvailableSpace);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
@@ -43,12 +43,12 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
       break;
     case EXPAND_KEY.CODE:
       loader.isExpanded && handleToggle();
-      flipSidebar(document, 'show', loader.sidebarTabs.length);
+      flipSidebar(document, 'show', loader.sidebarTabs.length, loader.maxAvailableSpace);
       buffer = [];
       break;
     case SHRINK_KEY.CODE:
       loader.isExpanded && handleToggle();
-      flipSidebar(document, 'hide', loader.sidebarTabs.length);
+      flipSidebar(document, 'hide', loader.sidebarTabs.length, loader.maxAvailableSpace);
       buffer = [];
       break;
     case SWITCH_RIGHT_TAB.CODE:

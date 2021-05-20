@@ -35,7 +35,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
 
   const handleClose = () => {
     isExpanded && handleExpand();
-    flipSidebar(document, 'hide', tabs.length);
+    flipSidebar(document, 'hide', tabs.length, SidebarLoader.maxAvailableSpace);
   };
 
   const handleOpenBuilder = () => {
@@ -51,7 +51,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
     setIsExpanded(SidebarLoader.isExpanded);
-    expandSidebar(SidebarLoader.sidebarTabs.length);
+    expandSidebar(SidebarLoader.sidebarTabs.length, SidebarLoader.maxAvailableSpace);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 

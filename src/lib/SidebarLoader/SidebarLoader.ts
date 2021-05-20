@@ -224,12 +224,23 @@ class SidebarLoader {
 
   /**
    * True when the sidebar is in the expanded state.
+   * TODO: extract to LayoutManager
    *
    * @public
    * @property
    * @memberof SidebarLoader
    */
   public isExpanded!: boolean;
+
+  /**
+   * True when the sidebar is in preview state.
+   * TODO: extract to LayoutManager
+   *
+   * @public
+   * @property
+   * @memberof SidebarLoader
+   */
+  public isPreview!: boolean;
 
   /**
    * The index of the currently visible sidebar tab.
@@ -243,6 +254,7 @@ class SidebarLoader {
   /**
    * If true, prevent the sidebar from auto-expanding, even when
    * other expand conditions are true.
+   * TODO: extract to LayoutManager
    *
    * @public
    * @property
@@ -265,6 +277,7 @@ class SidebarLoader {
 
   public tourStep!: string;
 
+  // TODO: extract to UserManager
   public userData: Record<'license' | 'id', string>;
 
   constructor() {
@@ -286,6 +299,21 @@ class SidebarLoader {
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
     this.userData = Object.create(null);
+  }
+
+  public get maxAvailableSpace() {
+    const resultWidth = (this.document
+      ?.querySelector(this.customSearchEngine.querySelector?.desktop)
+      ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement)
+      ?.offsetWidth;
+
+    const maxWidth = window.innerWidth - 300;
+
+    if (resultWidth < maxWidth) {
+      return maxWidth - resultWidth;
+    }
+
+    return -Infinity;
   }
 
   /**
@@ -691,13 +719,15 @@ class SidebarLoader {
 
       this.isSerp = checkRequiredPrefix() && checkRequiredParams();
       this.preventAutoExpand = this.preventAutoExpand || !this.isSerp;
-      this.isSerp &&
+      if (this.isSerp) {
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
           url: this.url,
         });
+      }
       await this.handleSubtabApiResponse(response);
       this.createSidebar();
+
       const openCssLinks = this.sidebarTabs
         .reduce((selectors, tab) => {
           tab.augmentation.actions.action_list
