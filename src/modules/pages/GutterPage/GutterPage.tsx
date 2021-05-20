@@ -388,7 +388,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
               <Suspense fallback={null}>
                 <PlusOutlined />
               </Suspense>
-              {`\u0a00${CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT}`}
+              {`\u00a0${CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT}`}
             </Button>
           </>
         ) : (

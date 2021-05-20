@@ -115,7 +115,7 @@ class AugmentationManager {
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
         domain,
       });
-    window.postMessage(
+    window.top.postMessage(
       {
         name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
         remove: blockList.id,
