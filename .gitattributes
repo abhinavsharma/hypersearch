@@ -1,0 +1,7 @@
+.vscode/* linguist-documentation
+.github/* linguist-documentation
+.husky/* linguist-documentation
+public/* linguist-documentation
+releases/* linguist-documentation
+docs/* linguist-documentation
+Insight Extension/* linguist-documentation
