@@ -35,6 +35,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
 
   const handleClose = () => {
     isExpanded && handleExpand();
+    SidebarLoader.isPreview = false;
     flipSidebar(document, 'hide', tabs.length, SidebarLoader.maxAvailableSpace);
   };
 

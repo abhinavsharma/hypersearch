@@ -43,8 +43,9 @@ const Sidebar: Sidebar = () => {
     (isSmallWidth || !isTabsLength || !isSearchTabs || isKpPage || SidebarLoader.preventAutoExpand);
 
   const handleResize = useDebouncedFn(() => {
-    SidebarLoader.isPreview || !shouldPreventExpand;
-    flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+    if (SidebarLoader.isPreview || !shouldPreventExpand) {
+      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+    }
   }, 300);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const Sidebar: Sidebar = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength]);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {

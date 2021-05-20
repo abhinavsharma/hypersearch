@@ -201,7 +201,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
             if (element.getAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR) !== data.domain) {
               return null;
             }
-            if (!ids) return;
+            if (ids !== '' && !ids) return;
             element.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
             element.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
             element.setAttribute(INSIGHT_BLOCKED_BY_SELECTOR, ids);

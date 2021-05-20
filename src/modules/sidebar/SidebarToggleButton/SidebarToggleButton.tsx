@@ -41,6 +41,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         augmentation: EMPTY_AUGMENTATION,
       } as OpenBuilderMessage);
     }
+    SidebarLoader.isPreview = true;
     flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace);
   };
 

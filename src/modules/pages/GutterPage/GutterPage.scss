@@ -3,10 +3,9 @@
 #gutter-page.sidebar-page {
   &.inline-gutter-page-embedded {
     position: relative;
-    height: 100%;
 
     .sidebar-page-wrapper {
-      position: unset;
+      position: unset !important;
     }
   }
 
