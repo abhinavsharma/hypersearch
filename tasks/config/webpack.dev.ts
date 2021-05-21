@@ -1,9 +1,8 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+import { Configuration } from 'webpack';
+import { merge } from 'webpack-merge';
+import common from './webpack.common';
 
-module.exports = (env) =>
+export default (env: { mode: string; PROJECT: 'is' | 'sc' }) =>
   merge(common(env), {
     mode: 'development',
     watch: true,
@@ -16,4 +15,4 @@ module.exports = (env) =>
       stats: 'errors-only',
     },
     devtool: 'cheap-module-source-map',
-  });
+  } as Configuration);

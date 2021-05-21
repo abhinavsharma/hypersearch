@@ -1,5 +1,4 @@
-/* eslint-disable no-undef */
-exports.default = {
+export default {
   src: '../../src',
   build: '../../build',
   dist: '../../dist',

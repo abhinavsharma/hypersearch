@@ -3,6 +3,8 @@ setup:
 	npm install
 dev:
 	npm run watch
+prod:
+	npm run build
 ship:
 	json-bump public/manifest.json --patch
 	sed -i '' -e "s/IS_DEBUG_SWITCH = true/IS_DEBUG_SWITCH = false/g" ./src/utils/constants/index.ts
