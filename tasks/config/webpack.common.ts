@@ -1,13 +1,11 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { DefinePlugin } = require('webpack');
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssAutoprefixer = require('autoprefixer');
-const PATHS = require('../lib/path').default;
+import { Configuration, DefinePlugin, Module } from 'webpack';
+import path from 'path';
+import CopyPlugin from 'copy-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssAutoprefixer from 'autoprefixer';
+import PATHS from '../lib/path';
 
-module.exports = (env) => {
+export default (env: { mode?: string; PROJECT: 'is' | 'sc' }): Configuration => {
   return {
     entry: {
       insight_background: path.join(__dirname, PATHS.src + '/scripts/background.ts'),
@@ -27,7 +25,7 @@ module.exports = (env) => {
         cacheGroups: {
           styles: {
             name: 'bundle',
-            test: (m) => m.constructor.name === 'CssModule',
+            test: (m: Module) => m.constructor.name === 'CssModule',
             chunks: 'all',
             reuseExistingChunk: true,
             enforce: true,
