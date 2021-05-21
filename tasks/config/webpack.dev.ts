@@ -2,7 +2,7 @@ import { Configuration } from 'webpack';
 import { merge } from 'webpack-merge';
 import common from './webpack.common';
 
-export default (env: { mode?: string; PROJECT: 'is' | 'sc' }) =>
+export default (env: { mode: string; PROJECT: 'is' | 'sc' }) =>
   merge(common(env), {
     mode: 'development',
     watch: true,

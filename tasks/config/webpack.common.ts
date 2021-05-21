@@ -5,7 +5,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssAutoprefixer from 'autoprefixer';
 import PATHS from '../lib/path';
 
-export default (env: { mode?: string; PROJECT: 'is' | 'sc' }): Configuration => {
+export default (env: { mode: string; PROJECT: 'is' | 'sc' }): Configuration => {
   return {
     entry: {
       insight_background: path.join(__dirname, PATHS.src + '/scripts/background.ts'),

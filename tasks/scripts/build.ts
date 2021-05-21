@@ -42,6 +42,9 @@ import config from '../config/webpack.prod';
           if (error.loc && error.moduleName) {
             processed[error.moduleName] ??= [];
             processed[error.moduleName].push(error.message);
+          } else {
+            processed['unexpected'] ??= [];
+            processed['unexpected'].push(error.message);
           }
           return processed;
         }, Object.create(null) as Record<string, string[]>),

@@ -6,7 +6,7 @@ import config from '../config/webpack.dev';
 (async () => {
   let built = false;
   const project = 'is';
-  webpack(config({ PROJECT: project }), (err, stats) => {
+  webpack(config({ mode: 'development', PROJECT: project }), (err, stats) => {
     if (err?.message) {
       console.log(chalk.redBright('Unexpected error:', err));
       process.exit(1);
@@ -46,6 +46,9 @@ import config from '../config/webpack.dev';
           if (error.loc && error.moduleName) {
             processed[error.moduleName] ??= [];
             processed[error.moduleName].push(error.message);
+          } else {
+            processed['unexpected'] ??= [];
+            processed['unexpected'].push(error.message);
           }
           return processed;
         }, Object.create(null) as Record<string, string[]>),
