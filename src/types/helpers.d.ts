@@ -23,6 +23,7 @@ declare type ProcessSerpOverlayMessage = MessageEvent<{
   name: string;
   tab?: string;
   hideDomains: string[];
+  hoverAltered: boolean;
   createdUrls: string[];
   selector: {
     link: string;

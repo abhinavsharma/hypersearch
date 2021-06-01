@@ -37,7 +37,12 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
         processSerpResults(
           blockedResults,
           adElementSelector,
-          { header: 'Ad', text: 'Click to show likely ad.', selectorString: 'blocked-ad' },
+          {
+            header: 'Ad',
+            text: 'Click to show likely ad.',
+            selectorString: 'blocked-ad',
+            hoverAltered: false,
+          },
           'adblock',
         );
       });

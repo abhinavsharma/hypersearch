@@ -99,6 +99,7 @@ export const triggerSerpProcessing = (
         createdUrls,
         hideDomains: loader.hideDomains,
         name: PROCESS_SERP_OVERLAY_MESSAGE,
+        hoverAltered: loader.userData.altHover,
         customLink,
         selector: {
           link: customLink || loader.customSearchEngine.querySelector?.['desktop'],
@@ -116,6 +117,7 @@ export const triggerSerpProcessing = (
       createdUrls,
       hideDomains: loader.hideDomains,
       name: PROCESS_SERP_OVERLAY_MESSAGE,
+      hoverAltered: loader.userData.altHover,
       selector: {
         link: loader.customSearchEngine.querySelector?.['phone'],
         featured: loader.customSearchEngine.querySelector?.featured,
@@ -334,6 +336,11 @@ export const b64EncodeUnicode = (stringLike: string) => {
   const escapedString = encodeURIComponent(stringLike);
   const replacerFunction = (_: string, p1: string) => String.fromCharCode(parseInt(p1, 16));
   return btoa(escapedString.replace(/%([0-9A-F]{2})/g, replacerFunction));
+};
+
+export const validateEmail = (email: string) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 };
 
 // TODO #1: extract to API manager class

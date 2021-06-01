@@ -1,13 +1,12 @@
 import { FunctionComponent } from 'react';
 
-declare module './InlineGutterIcon' {
-  type InlineGutterIconProps = {
+declare module './LeftActionBar' {
+  type LeftActionBarProps = {
     publication: string;
-    url: string;
     container: string;
     searchingAugmentations: AugmentationObject[];
     blockingAugmentations: AugmentationObject[];
   };
 
-  type InlineGutterIcon = FunctionComponent<InlineGutterIconProps>;
+  type LeftActionBar = FunctionComponent<LeftActionBarProps>;
 }

@@ -9,11 +9,13 @@ const IS_DEBUG_SWITCH = true;
  * ! STORAGE
  */
 export const ARBITRARY_ENGINE_PREFIX = 'arbitrary-cse';
+export const SYNC_EMAIL_KEY = 'userEmail';
 export const SYNC_LICENSE_KEY = 'licenseActivated';
 export const SYNC_PRIVACY_KEY = 'useServerSuggestions';
 export const SYNC_FINISHED_KEY = 'hasFinishedIntro';
 export const SYNC_DISTINCT_KEY = 'distinctId';
 export const SYNC_PUBLICATION_TIME_TRACK_KEY = 'publicationTimeTrack';
+export const SYNC_ALTERNATE_HOVER_ACTION = 'altHoverAction';
 export const CACHED_SUBTABS_KEY = 'cachedSubtabs';
 export const USE_COUNT_PREFIX = 'augmentationUseCount';
 export const IGNORED_PREFIX = 'ignored';
@@ -49,6 +51,7 @@ export const LUMOS_API_URL_DEBUG = 'https://nwwcsdsuw2.execute-api.us-east-2.ama
 export const IN_DEBUG_MODE = IS_DEBUG_SWITCH || window.INSIGHT_FORCE_DEBUG;
 export const LUMOS_API_URL = IS_DEBUG_SWITCH ? LUMOS_API_URL_PROD : LUMOS_API_URL_PROD;
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
+export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
 export const URL_PARAM_NO_COOKIE_KEY = 'insight-no-cookie';
 export const EXTERNAL_PDF_RENDERER_URL =
@@ -82,6 +85,11 @@ export const FRESHPAINT_API_TOKEN = 'ee065c1d-6cfa-4f63-8844-36c638543e2d';
 // Minimum inner width of the tab to expand sidebar by default.
 export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
 export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
+// Mailchimp Configuration
+export const MAILCHIMP_SERVER_PREFIX = 'us6';
+export const MAILCHIMP_LIST_ID = '4df884a9d6';
+export const MAILCHIMP_API_KEY = '1779b85b6ac29f101e1b9d119c9e9b80';
+export const MAILCHIMP_URL = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/<placeholder>`;
 
 /**
  * ! FLAGS

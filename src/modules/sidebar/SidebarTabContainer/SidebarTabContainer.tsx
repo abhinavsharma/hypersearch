@@ -11,6 +11,7 @@ import {
   HIDE_FRAME_OVERLAY_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXTERNAL_PDF_RENDERER_URL,
+  URL_PARAM_POSSIBLE_SERP_RESULT,
 } from 'utils';
 import 'antd/lib/skeleton/style/index.css';
 
@@ -68,7 +69,9 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
             ? EXTERNAL_PDF_RENDERER_URL.replace('<placeholder>', decodeSpace(tab.url.href))
             : decodeSpace(tab.url.href)
         }
-        className="insight-tab-iframe"
+        className={`insight-tab-iframe ${
+          tab.url.searchParams.get(URL_PARAM_POSSIBLE_SERP_RESULT) ? 'has-footer' : ''
+        }`}
         onError={handleError}
         onLoad={handleLoad}
       />

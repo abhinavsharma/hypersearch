@@ -32,7 +32,9 @@ import {
   OPEN_BUILDER_PAGE,
   removeProtocol,
   PRERENDER_TABS,
+  //URL_PARAM_POSSIBLE_SERP_RESULT,
 } from 'utils';
+//import { SidebarFooter } from '../SidebarFooter/SidebarFooter';
 import 'antd/lib/message/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
@@ -121,10 +123,17 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             setActiveKey(msg.index);
           }
           if (msg.url) {
+            if (
+              msg.event?.isResultHover /* && SidebarLoader.userData.altHover */ &&
+              !msg.event.shift
+            ) {
+              break;
+            }
             const index = tabs.findIndex(({ url }) =>
               escape(removeProtocol(url.href)).match(escape(removeProtocol(msg.url).split('#')[0])),
             );
             if (index !== -1) {
+              SidebarLoader.isPreview = true;
               flipSidebar(document, 'show', tabs.length, SidebarLoader.maxAvailableSpace, true);
               setActiveKey(String(index + 1));
             }
@@ -202,6 +211,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               )}
               {tab.readable && <SidebarTabReadable readable={tab.readable} />}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
+              {/* tab.url.searchParams.get(URL_PARAM_POSSIBLE_SERP_RESULT) && <SidebarFooter /> */}
             </TabPane>
           );
         })}

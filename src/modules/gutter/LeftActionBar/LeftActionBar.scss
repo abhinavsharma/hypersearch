@@ -1,0 +1,52 @@
+@use 'styles/variables' as *;
+@use 'styles/generics' as *;
+@use 'styles/animations' as *;
+@use 'sass:math';
+
+.insight-gutter-button-root-left {
+  position: absolute;
+  display: block;
+  margin-left: -100px;
+  width: 100px;
+  height: 150px;
+
+  .gutter-icon-container {
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    transition: 100ms all ease-in-out;
+
+    .tooltip-container {
+      position: absolute;
+      left: -100px;
+      right: -100px;
+
+      .gutter-tooltip {
+        width: 100%;
+        z-index: math.abs($sidebar_z-index + 100) !important;
+
+        .ant-tooltip-inner {
+          min-height: 0;
+        }
+      }
+    }
+
+    .publication-time-tracker {
+      padding: $sidebar_space_small;
+      color: $color_text_medium;
+    }
+
+    .gutter-icon {
+      width: 100px;
+      height: 150px;
+      font-size: $icon_larger;
+      border: 0px;
+      border-bottom: 0;
+      box-shadow: none;
+      pointer-events: all !important;
+    }
+  }
+}

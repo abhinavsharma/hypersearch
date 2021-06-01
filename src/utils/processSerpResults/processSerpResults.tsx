@@ -25,7 +25,8 @@ import {
 } from 'utils/constants';
 import { v4 as uuid } from 'uuid';
 import { extractPublication, removeProtocol } from 'utils/helpers';
-import { InlineGutterIcon } from 'modules/gutter/InlineGutterIcon/InlineGutterIcon';
+import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
+import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
 
 /**
  * Create an overlay above the specified element, containing the provided text content and creating
@@ -113,7 +114,10 @@ const createOverlay = (
     });
 
     serpResult.style.position = 'relative';
+    serpResult.style.height = '125px';
     serpResult.style.overflow = 'hidden';
+    serpResult.style.paddingTop = '20px';
+    serpResult.style.marginTop = '-20px';
     serpResult.insertBefore(overlay, serpResult.firstChild);
   }
 };
@@ -199,24 +203,21 @@ export const processSerpResults: ProcessSerpResults = (
       window.location === window.parent.location &&
       serpResult.getAttribute('insight-ad-block') !== 'true'
     ) {
-      const buttonRoot = document.createElement('div');
-
       const root =
         window.location.href.search(/duckduckgo\.com/gi) > -1
           ? serpResult.parentElement
           : serpResult;
 
-      const existingRoot = root?.querySelector('.insight-gutter-button-root');
-      if (existingRoot) {
-        existingRoot.parentElement?.replaceChild(buttonRoot, existingRoot);
+      const buttonRootLeft = document.createElement('div');
+      const existingRootLeft = root?.querySelector('.insight-gutter-button-root-left');
+      if (existingRootLeft) {
+        existingRootLeft.parentElement?.replaceChild(buttonRootLeft, existingRootLeft);
       }
-      buttonRoot.classList.add(`insight-gutter-button-root`);
-      root?.appendChild(buttonRoot);
-
+      buttonRootLeft.classList.add(`insight-gutter-button-root-left`);
+      root?.appendChild(buttonRootLeft);
       render(
-        <InlineGutterIcon
+        <LeftActionBar
           key={uuid()}
-          url={resultLink}
           publication={publication}
           container={containerSelector}
           searchingAugmentations={
@@ -224,7 +225,27 @@ export const processSerpResults: ProcessSerpResults = (
           }
           blockingAugmentations={blockers}
         />,
-        buttonRoot,
+        buttonRootLeft,
+      );
+
+      const buttonRootRight = document.createElement('div');
+      const existingRootRight = root?.querySelector('.insight-gutter-button-root-right');
+      if (existingRootRight) {
+        existingRootRight.parentElement?.replaceChild(buttonRootRight, existingRootRight);
+      }
+      buttonRootRight.classList.add(`insight-gutter-button-root-right`);
+      root?.appendChild(buttonRootRight);
+      render(
+        <RightActionBar
+          key={uuid()}
+          url={resultLink}
+          container={containerSelector}
+          searchingAugmentations={
+            (augmentations.search as Record<string, AugmentationObject[]>)[publication]
+          }
+          blockingAugmentations={blockers}
+        />,
+        buttonRootRight,
       );
     }
   }

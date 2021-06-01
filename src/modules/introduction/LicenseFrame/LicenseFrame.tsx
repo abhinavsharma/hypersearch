@@ -25,7 +25,7 @@ const { Title } = Typography;
 export const LicenseFrame = () => {
   const stepContext = useContext(StepContext);
 
-  const handleNext = () => stepContext.setCurrentStep(2);
+  const handleNext = () => stepContext.setCurrentStep(3);
 
   const handleLicenseSubmit = async () => {
     stepContext.setLicense((prev) => ({ ...prev, isActivated: true }));

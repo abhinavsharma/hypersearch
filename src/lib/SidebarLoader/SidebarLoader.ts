@@ -55,6 +55,9 @@ import {
   CACHED_SUBTABS_KEY,
   CONDITION_KEYS,
   DEDICATED_SERP_REGEX,
+  SYNC_EMAIL_KEY,
+  URL_PARAM_POSSIBLE_SERP_RESULT,
+  SYNC_ALTERNATE_HOVER_ACTION,
 } from 'utils';
 
 /**
@@ -268,7 +271,8 @@ class SidebarLoader {
   public tourStep!: string;
 
   // TODO: extract to UserManager
-  public userData: Record<'license' | 'id', string>;
+
+  public userData: Record<'license' | 'id' | 'email', string> & Record<'altHover', boolean>;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -303,6 +307,11 @@ class SidebarLoader {
     }
 
     return -Infinity;
+  }
+
+  public alternateHoverAction(value: boolean) {
+    this.userData.altHover = value;
+    chrome.storage.sync.set({ [SYNC_ALTERNATE_HOVER_ACTION]: value });
   }
 
   /**
@@ -399,6 +408,7 @@ class SidebarLoader {
             );
             const url = AugmentationManager.processOpenPageActionString(value, regexGroups);
             if (url.hostname === 'undefined') return;
+            url.searchParams.append(URL_PARAM_POSSIBLE_SERP_RESULT, URL_PARAM_POSSIBLE_SERP_RESULT);
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             if (augmentation.actions.action_list.length > 1) {
               url.searchParams.append(
@@ -1067,8 +1077,17 @@ class SidebarLoader {
       (await new Promise<Record<string, string>>((resolve) =>
         chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
       ).then((mod) => mod[SYNC_LICENSE_KEY])) ?? null;
+    const storedEmail = await new Promise<Record<string, string>>((resolve) =>
+      chrome.storage.sync.get(SYNC_EMAIL_KEY, resolve),
+    ).then((mod) => mod?.[SYNC_EMAIL_KEY]);
+    const altHoverAction =
+      (await new Promise<Record<string, boolean>>((resolve) =>
+        chrome.storage.sync.get(SYNC_ALTERNATE_HOVER_ACTION, resolve),
+      ).then((mod) => mod[SYNC_ALTERNATE_HOVER_ACTION])) ?? false;
     this.userData.id = userId;
+    this.userData.email = storedEmail;
     this.userData.license = storedLicense;
+    this.userData.altHover = altHoverAction;
   }
 
   /**

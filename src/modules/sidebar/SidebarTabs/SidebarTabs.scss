@@ -31,6 +31,10 @@
       border: none;
       padding: 0 0 $sidebar_space_largest 0;
 
+      &.has-footer {
+        margin-bottom: 95px;
+      }
+
       &.insight-expanded {
         width: 100% !important;
         max-width: $sidebar_max_page_width !important;

@@ -1,31 +1,34 @@
 @use 'styles/variables' as *;
 @use 'styles/generics' as *;
 @use 'styles/animations' as *;
+@use 'sass:math';
 
-.insight-gutter-button-root {
+.insight-gutter-button-root-right {
   position: absolute;
   display: block;
-  margin-left: -100px;
-  width: 100px;
-  height: 100px;
+  right: 0;
+  margin-right: -10px;
+  width: 60px;
 
   .gutter-icon-container {
     opacity: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     height: 100%;
+    background-color: $color_background_lightest;
     transition: 100ms all ease-in-out;
 
     .tooltip-container {
       position: absolute;
-      left: -100px;
-      right: -100px;
+      left: -60px;
+      right: -60px;
 
       .gutter-tooltip {
-        z-index: $sidebar_z-index !important;
+        width: 100%;
+        z-index: math.abs($sidebar_z-index + 100) !important;
 
         .ant-tooltip-inner {
           min-height: 0;
@@ -40,7 +43,7 @@
 
     .gutter-icon {
       width: 100px;
-      height: 100px;
+      height: 150px;
       font-size: $icon_larger;
       border: 0px;
       border-bottom: 0;

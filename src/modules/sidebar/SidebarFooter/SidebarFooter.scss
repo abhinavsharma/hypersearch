@@ -1,0 +1,16 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+#sidebar-footer {
+  @include centerBox;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  height: $sidebar_footer_height;
+  width: 100%;
+  max-width: $sidebar_max_page_width;
+  border-top: 1px solid $color_border_medium;
+  background: $color_background_lightest;
+}

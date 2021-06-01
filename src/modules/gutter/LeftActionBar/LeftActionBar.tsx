@@ -11,14 +11,12 @@ import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   SIDEBAR_Z_INDEX,
-  SWITCH_TO_TAB,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
-  TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
 } from 'utils/constants';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
-import './InlineGutterIcon.scss';
+import './LeftActionBar.scss';
 
 /** MAGICS **/
 const ADD_TO_TRUSTLIST_TOOLTIP_TITLE = 'Add <placeholder> to my trusted sites.';
@@ -29,11 +27,9 @@ const BLOCKER_AUGMENTATION_LIST_TEXT = 'Domain hidden by <placeholder>.';
 const SEARCHING_AUGMENTATION_LIST_TEXT = `Domain featured in <placeholder>.`;
 const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
-const SWITCH_TO_TAB_DELAY = 300; //ms
 const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
-export const InlineGutterIcon: InlineGutterIcon = ({
-  url,
+export const LeftActionBar: LeftActionBar = ({
   publication,
   container,
   blockingAugmentations = [],
@@ -71,30 +67,6 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     handleOpenBuilder(e);
   };
 
-  const handleMouseEnter = useCallback((): any => {
-    if (
-      window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
-      resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
-    ) {
-      resultRef.current.style.cursor = 'wait';
-      timeoutRef.current = setTimeout(() => {
-        chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
-        chrome.runtime.sendMessage({ type: SWITCH_TO_TAB, url });
-        if (resultRef.current) {
-          resultRef.current.style.cursor = 'default';
-        }
-      }, SWITCH_TO_TAB_DELAY);
-    }
-
-    if (iconRef.current) {
-      iconRef.current.style.opacity = '1';
-    }
-
-    if (rootRef.current) {
-      rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
-    }
-  }, [url]);
-
   const handleMouseLeave = useCallback((): any => {
     if (
       window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
@@ -120,12 +92,23 @@ export const InlineGutterIcon: InlineGutterIcon = ({
   }, [isSearched, isBlocked]);
 
   useEffect(() => {
+    const handleMouseEnter = () => {
+      if (iconRef.current) {
+        iconRef.current.style.opacity = '1';
+      }
+
+      if (rootRef.current) {
+        rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
+      }
+    };
+
     if (iconRef.current) {
       if (isSearched || isBlocked) {
         iconRef.current.style.opacity = '1';
       }
 
-      rootRef.current = rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root');
+      rootRef.current =
+        rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root-left');
 
       /* eslint-disable */
       const newResult =
@@ -144,7 +127,10 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         'style',
         `
         z-index: ${SIDEBAR_Z_INDEX - 2};
-        margin-top: -${resultRef.current?.offsetHeight - 10}px;
+        margin-top: -${
+          isBlocked ? resultRef.current?.offsetHeight - 40 : resultRef.current?.offsetHeight
+        }px;
+        min-height: 150px;
         `,
       );
 
@@ -161,7 +147,7 @@ export const InlineGutterIcon: InlineGutterIcon = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [container, handleMouseEnter, handleMouseLeave, isSearched, isBlocked]);
+  }, [container, handleMouseLeave, isSearched, isBlocked]);
 
   const onlyBlockedByBlocklist =
     blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
@@ -182,67 +168,69 @@ export const InlineGutterIcon: InlineGutterIcon = ({
     : { display: 'none', visibility: 'hidden' };
 
   return (
-    <div className="gutter-icon-container" ref={iconRef} style={containerStyle}>
-      <PublicationTimeTracker key={publication} domain={publication} />
-      <Tooltip
-        title={`${
-          !!searchingAugmentations.length && !onlySearchedByTrustlist
-            ? SEARCHING_AUGMENTATION_LIST_TEXT.replace(
-                '<placeholder>',
-                searchingAugmentations.map(({ name }) => name).join(', '),
-              )
-            : ''
-        } ${
-          inTrustlist
-            ? REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
-            : ADD_TO_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
-        }`}
-        destroyTooltipOnHide={keepParent}
-        getPopupContainer={getPopupContainer}
-        placement="right"
-        overlayClassName="gutter-tooltip"
-      >
+    <>
+      <div className="gutter-icon-container" ref={iconRef} style={containerStyle}>
+        <PublicationTimeTracker key={publication} domain={publication} />
+        <Tooltip
+          title={`${
+            !!searchingAugmentations.length && !onlySearchedByTrustlist
+              ? SEARCHING_AUGMENTATION_LIST_TEXT.replace(
+                  '<placeholder>',
+                  searchingAugmentations.map(({ name }) => name).join(', '),
+                )
+              : ''
+          } ${
+            inTrustlist
+              ? REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
+              : ADD_TO_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
+          }`}
+          destroyTooltipOnHide={keepParent}
+          getPopupContainer={getPopupContainer}
+          placement="right"
+          overlayClassName="gutter-tooltip"
+        >
+          <Button
+            onClick={handleToggleTrusted}
+            icon={
+              <Star
+                stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
+                fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
+              />
+            }
+            type="text"
+          />
+        </Tooltip>
+        <Tooltip
+          title={`${
+            !!blockingAugmentations.length && !onlyBlockedByBlocklist
+              ? BLOCKER_AUGMENTATION_LIST_TEXT.replace(
+                  '<placeholder>',
+                  blockingAugmentations.map(({ name }) => name).join(', '),
+                )
+              : ''
+          } ${
+            inBlocklist
+              ? REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
+              : ADD_TO_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
+          }`}
+          destroyTooltipOnHide={keepParent}
+          getPopupContainer={getPopupContainer}
+          placement="right"
+          overlayClassName="gutter-tooltip"
+        >
+          <Button
+            onClick={handleToggleBlocked}
+            icon={<EyeOff stroke={isBlocked ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} />}
+            type="text"
+          />
+        </Tooltip>
         <Button
-          onClick={handleToggleTrusted}
-          icon={
-            <Star
-              stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
-              fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
-            />
-          }
+          onClick={handleOpenBuilder}
+          icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
           type="text"
         />
-      </Tooltip>
-      <Tooltip
-        title={`${
-          !!blockingAugmentations.length && !onlyBlockedByBlocklist
-            ? BLOCKER_AUGMENTATION_LIST_TEXT.replace(
-                '<placeholder>',
-                blockingAugmentations.map(({ name }) => name).join(', '),
-              )
-            : ''
-        } ${
-          inBlocklist
-            ? REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
-            : ADD_TO_BLOCKLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
-        }`}
-        destroyTooltipOnHide={keepParent}
-        getPopupContainer={getPopupContainer}
-        placement="right"
-        overlayClassName="gutter-tooltip"
-      >
-        <Button
-          onClick={handleToggleBlocked}
-          icon={<EyeOff stroke={isBlocked ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR} />}
-          type="text"
-        />
-      </Tooltip>
-      <Button
-        onClick={handleOpenBuilder}
-        icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
-        type="text"
-      />
-      <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />
-    </div>
+        <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />
+      </div>
+    </>
   );
 };

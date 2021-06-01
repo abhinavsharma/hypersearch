@@ -146,6 +146,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
         header: '',
         text: '',
         selectorString: 'hidden-domain',
+        hoverAltered: data.hoverAltered,
       },
       { block: blockingAugmentations, search: searchingAugmentations },
       data.createdUrls,
