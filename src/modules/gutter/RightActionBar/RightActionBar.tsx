@@ -21,6 +21,7 @@ const HOVER_ACTION_TOOLTIP_TITLE = (
 );
 const ICON_UNSELECTED_COLOR = '#999';
 const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
+const SWITCH_TO_TAB_DELAY = 300; //ms
 
 export const RightActionBar: RightActionBar = ({
   url,
@@ -36,22 +37,30 @@ export const RightActionBar: RightActionBar = ({
   const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const resultRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const tooltipContainer = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<any>(null);
 
   const handleMouseEnter = useCallback(
-    (e: MouseEvent): any => {
+    (e: MouseEvent) => {
       if (
         window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
-        resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
+        resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true' &&
+        e.shiftKey
       ) {
-        chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
-        chrome.runtime.sendMessage({
-          type: SWITCH_TO_TAB,
-          url,
-          event: {
-            shift: e.shiftKey,
-            isResultHover: true,
-          },
-        });
+        resultRef.current.style.cursor = 'wait';
+        timeoutRef.current = setTimeout(() => {
+          chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
+          chrome.runtime.sendMessage({
+            type: SWITCH_TO_TAB,
+            url,
+            event: {
+              shift: e.shiftKey,
+              isResultHover: true,
+            },
+          });
+          if (resultRef.current) {
+            resultRef.current.style.cursor = 'default';
+          }
+        }, SWITCH_TO_TAB_DELAY);
       }
 
       if (iconRef.current) {
@@ -74,14 +83,27 @@ export const RightActionBar: RightActionBar = ({
     if (rootRef.current) {
       rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
     }
+    clearTimeout(timeoutRef.current);
   }, [isSearched, isBlocked]);
 
   useEffect(() => {
     const handleAlterOpen = () => {
-      chrome.runtime.sendMessage({
-        type: SWITCH_TO_TAB,
-        url,
-      });
+      if (
+        window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
+        resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
+      ) {
+        rootRef.current.style.cursor = 'wait';
+        timeoutRef.current = setTimeout(() => {
+          chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
+          chrome.runtime.sendMessage({
+            type: SWITCH_TO_TAB,
+            url,
+          });
+          if (rootRef.current) {
+            rootRef.current.style.cursor = 'default';
+          }
+        }, SWITCH_TO_TAB_DELAY);
+      }
     };
 
     if (iconRef.current) {
