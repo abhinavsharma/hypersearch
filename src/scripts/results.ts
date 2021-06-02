@@ -20,17 +20,21 @@ import {
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
   INSIGHT_HIDDEN_RESULT_SELECTOR,
+  INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
   INSIGHT_SEARCHED_RESULT_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
+  MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
+  SWITCH_TO_TAB,
 } from 'utils/constants';
 import { debug, extractPublication, runFunctionWhenDocumentReady } from 'utils/helpers';
 import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
 
 ((document, window) => {
+  let openedAlready = false;
   const searchedResults: HTMLElement[] = [];
   const searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
   const blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
@@ -216,6 +220,25 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
       case PROCESS_SERP_OVERLAY_MESSAGE:
         runFunctionWhenDocumentReady(document, function processResultsMessage() {
           processResults(data);
+          if (!openedAlready) {
+            openedAlready = true;
+            const firstSearchedResult = (Array.from(
+              document.querySelectorAll(`[${INSIGHT_SEARCH_BY_SELECTOR}]`),
+            ) as HTMLDivElement[]).find(
+              (result: HTMLElement) =>
+                result
+                  ?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)
+                  ?.split(' ')
+                  .filter((val) => val !== MY_TRUSTLIST_ID).length,
+            );
+            firstSearchedResult?.getAttribute(INSIGHT_RESULT_URL_SELECTOR);
+            if (firstSearchedResult) {
+              chrome.runtime.sendMessage({
+                type: SWITCH_TO_TAB,
+                url: firstSearchedResult.getAttribute(INSIGHT_RESULT_URL_SELECTOR),
+              });
+            }
+          }
         });
         break;
     }

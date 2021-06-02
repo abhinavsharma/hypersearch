@@ -18,6 +18,7 @@ import {
   INSIGHT_BLOCKED_DOMAIN_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_HIDDEN_RESULT_SELECTOR,
+  INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
   INSIGHT_SEARCHED_RESULT_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
@@ -161,6 +162,8 @@ export const processSerpResults: ProcessSerpResults = (
       createdUrls.findIndex((url) =>
         escape(removeProtocol(url)).match(escape(removeProtocol(resultLink).split('#')[0])),
       ) > -1;
+
+    serpResult.setAttribute(INSIGHT_RESULT_URL_SELECTOR, resultLink);
 
     serpResult.setAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, String(isSubtab));
 
