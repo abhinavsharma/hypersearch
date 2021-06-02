@@ -158,14 +158,13 @@ export const processSerpResults: ProcessSerpResults = (
 
     let blockers: AugmentationObject[] = [];
 
-    const isSubtab =
-      createdUrls.findIndex((url) =>
-        escape(removeProtocol(url)).match(escape(removeProtocol(resultLink).split('#')[0])),
-      ) > -1;
+    const isSubtab = createdUrls.findIndex((url) =>
+      escape(removeProtocol(url)).includes(escape(removeProtocol(resultLink).split('#')[0])),
+    );
 
     serpResult.setAttribute(INSIGHT_RESULT_URL_SELECTOR, resultLink);
 
-    serpResult.setAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, String(isSubtab));
+    serpResult.setAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, String(isSubtab > -1));
 
     serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, publication);
     if (typeof augmentations === 'string' || augmentations.block[publication]?.length) {

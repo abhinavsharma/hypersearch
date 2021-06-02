@@ -166,6 +166,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
       case REMOVE_SEARCHED_DOMAIN_MESSAGE:
         {
           if (!data.domain || !data.remove) break;
+
           searchingAugmentations[data.domain] = (searchingAugmentations[data.domain] ?? []).filter(
             ({ id }) => id !== data.remove,
           );

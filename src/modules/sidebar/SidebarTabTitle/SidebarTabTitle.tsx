@@ -56,9 +56,9 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       const matching =
         msg.url &&
         (escape(removeProtocol(decodeSpace(tab.url.href))) === escape(removeProtocol(msg.url)) ||
-          escape(removeProtocol(decodeSpace(tab.url.href))).search(
+          escape(removeProtocol(decodeSpace(tab.url.href))).includes(
             escape(removeProtocol(msg.url)),
-          ) > -1);
+          ));
       if (msg.type === TRIGGER_FRAME_SCROLL_LOG_MESSAGE && matching) {
         SidebarLoader.sendLogMessage(EXTENSION_SUBTAB_SCROLL, {
           originalUrl: SidebarLoader.strongPrivacy

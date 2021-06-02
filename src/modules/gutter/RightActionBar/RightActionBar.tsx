@@ -100,11 +100,13 @@ export const RightActionBar: RightActionBar = ({
             url,
           });
           if (rootRef.current) {
-            rootRef.current.style.cursor = 'default';
+            rootRef.current.style.cursor = 'pointer';
           }
         }, SWITCH_TO_TAB_DELAY);
       }
     };
+
+    const handleClick = () => window.open(url, '_blank');
 
     if (iconRef.current) {
       if (isSearched || isBlocked) {
@@ -144,11 +146,13 @@ export const RightActionBar: RightActionBar = ({
         resultRef.current.style.paddingRight = '100px';
       }
 
+      rootRef.current?.addEventListener('click', handleClick);
       rootRef.current?.addEventListener('mouseenter', handleAlterOpen);
       resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
       resultRef.current?.addEventListener('mouseleave', handleMouseLeave);
 
       return () => {
+        rootRef.current?.removeEventListener('click', handleClick);
         rootRef.current?.removeEventListener('mouseenter', handleAlterOpen);
         resultRef.current?.removeEventListener('mouseenter', handleMouseEnter);
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);

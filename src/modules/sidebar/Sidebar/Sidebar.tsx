@@ -54,8 +54,14 @@ const Sidebar: Sidebar = () => {
     if (shouldPreventExpand && !SidebarLoader.isPreview) {
       flipSidebar(document, 'hide', validTabsLength, SidebarLoader.maxAvailableSpace, true);
     } else {
-      SidebarLoader.isPreview = true;
-      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace, true);
+      flipSidebar(
+        document,
+        'show',
+        validTabsLength,
+        SidebarLoader.maxAvailableSpace,
+        SidebarLoader.isPreview,
+      );
+      SidebarLoader.isPreview ??= true;
     }
 
     SidebarLoader.sendLogMessage(EXTENSION_AUTO_EXPAND, {

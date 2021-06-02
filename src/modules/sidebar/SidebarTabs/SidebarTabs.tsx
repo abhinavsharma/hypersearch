@@ -130,11 +130,19 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               break;
             }
             const index = tabs.findIndex(({ url }) =>
-              escape(removeProtocol(url.href)).match(escape(removeProtocol(msg.url).split('#')[0])),
+              escape(removeProtocol(url.href)).includes(
+                escape(removeProtocol(msg.url).split('#')[0]),
+              ),
             );
             if (index !== -1) {
-              SidebarLoader.isPreview = true;
-              flipSidebar(document, 'show', tabs.length, SidebarLoader.maxAvailableSpace, true);
+              flipSidebar(
+                document,
+                'show',
+                tabs.length,
+                SidebarLoader.maxAvailableSpace,
+                SidebarLoader.isPreview,
+              );
+              SidebarLoader.isPreview ??= true;
               setActiveKey(String(index + 1));
             }
           }
