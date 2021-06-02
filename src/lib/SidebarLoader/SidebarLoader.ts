@@ -55,7 +55,6 @@ import {
   CACHED_SUBTABS_KEY,
   CONDITION_KEYS,
   DEDICATED_SERP_REGEX,
-  SYNC_EMAIL_KEY,
   URL_PARAM_POSSIBLE_SERP_RESULT,
   SYNC_ALTERNATE_HOVER_ACTION,
 } from 'utils';
@@ -272,7 +271,7 @@ class SidebarLoader {
 
   // TODO: extract to UserManager
 
-  public userData: Record<'license' | 'id' | 'email', string> & Record<'altHover', boolean>;
+  public userData: Record<'license' | 'id', string> & Record<'altHover', boolean>;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -1077,15 +1076,11 @@ class SidebarLoader {
       (await new Promise<Record<string, string>>((resolve) =>
         chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
       ).then((mod) => mod[SYNC_LICENSE_KEY])) ?? null;
-    const storedEmail = await new Promise<Record<string, string>>((resolve) =>
-      chrome.storage.sync.get(SYNC_EMAIL_KEY, resolve),
-    ).then((mod) => mod?.[SYNC_EMAIL_KEY]);
     const altHoverAction =
       (await new Promise<Record<string, boolean>>((resolve) =>
         chrome.storage.sync.get(SYNC_ALTERNATE_HOVER_ACTION, resolve),
       ).then((mod) => mod[SYNC_ALTERNATE_HOVER_ACTION])) ?? false;
     this.userData.id = userId;
-    this.userData.email = storedEmail;
     this.userData.license = storedLicense;
     this.userData.altHover = altHoverAction;
   }

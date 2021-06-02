@@ -24,7 +24,7 @@ const { Title } = Typography;
 
 export const PrivacyFrame = () => {
   const stepContext = useContext(StepContext);
-  const handleNext = () => stepContext.setCurrentStep(4);
+  const handleNext = () => stepContext.setCurrentStep(3);
 
   return (
     <>

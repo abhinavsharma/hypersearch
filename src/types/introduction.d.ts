@@ -5,8 +5,6 @@ declare type StoredLicense = Partial<Record<'key', string> & Record<'isActivated
 declare type IntroStepContext = {
   currentStep: number;
   setCurrentStep: Dispatch<SetStateAction<number>>;
-  email: string;
-  setEmail: Dispatch<SetStateAction<string>>;
   license: StoredLicense;
   setLicense: Dispatch<SetStateAction<StoredLicense>>;
   finished: boolean;
