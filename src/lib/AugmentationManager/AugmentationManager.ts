@@ -48,7 +48,7 @@ class AugmentationManager {
       ...augmentation.actions.action_list,
     ];
 
-    return operations.every((operation: ConditionObject | ActionObject) => {
+    return operations?.every((operation: ConditionObject | ActionObject) => {
       const key = (operation as ConditionObject).unique_key ?? operation.key;
       const hasValidKey = ENABLED_AUGMENTATION_TYPES.includes(key as CONDITION_KEYS | ACTION_KEYS);
       return hasValidKey;
@@ -490,7 +490,7 @@ class AugmentationManager {
           unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
         ) {
           const cse = (value[0] as unknown) as CustomSearchEngine;
-          const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params.every(
+          const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params?.every(
             (param) => !!SidebarLoader.url.searchParams.get(param),
           );
           const hasRequiredPrefix =
@@ -547,7 +547,7 @@ class AugmentationManager {
 
     const evaluationMatch =
       augmentation.conditions.evaluate_with === 'AND'
-        ? augmentation.conditions.condition_list.every(({ key, unique_key }) => {
+        ? augmentation.conditions.condition_list?.every(({ key, unique_key }) => {
             const actualKey = unique_key ?? key;
             switch (actualKey) {
               case CONDITION_KEYS.SEARCH_CONTAINS:
