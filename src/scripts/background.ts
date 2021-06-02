@@ -192,7 +192,7 @@ import {
           },
         });
         chrome.tabs.query({ currentWindow: true }, (tabs) => {
-          tabs.forEach((tab) => {
+          tabs?.forEach((tab) => {
             chrome.tabs.sendMessage(tab.id ?? -1, {
               currentTime,
               domain: publication,
@@ -210,13 +210,13 @@ import {
   // the start time from the current time (timestamps in milliseconds converted to minutes).
   chrome.tabs.onActivated.addListener(({ tabId }) => {
     chrome.tabs.query({}, async (tabs) => {
-      const currentTab = tabs.find(({ id }) => id == tabId);
+      const currentTab = tabs?.find(({ id }) => id == tabId);
       const publication = getPublicationUrl(currentTab?.url ?? '');
       await stopTrackingTimer(publication ?? '');
       if (publication && !trackData[publication]) {
         debug('publicationTracking - start - ', publication, trackData);
         trackData[publication] = Date.now();
-        tabs.forEach((tab) =>
+        tabs?.forEach((tab) =>
           chrome.tabs.sendMessage(tab.id ?? -1, {
             type: TRIGGER_START_TRACK_TIMER_MESSAGE,
             url: currentTab?.url ?? '',

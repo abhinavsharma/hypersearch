@@ -220,7 +220,7 @@ class SearchEngineManager {
               await this.deleteItem(key, 'Property mismatch in local item');
             }
             // Remove item if required params are not matching
-            const paramsMismatch = !storedItem?.search_engine_json?.required_params.every((c) =>
+            const paramsMismatch = !storedItem?.search_engine_json?.required_params?.every((c) =>
               remoteItem?.search_engine_json?.required_params.includes(c),
             );
 
