@@ -39,7 +39,7 @@
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap::before,
 .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap::before {
   left: -10px !important;
-  content: ' ＜' !important;
+  content: ' ‹' !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,7 +50,7 @@
 
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap::after,
 .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap::after {
-  content: '＞ ' !important;
+  content: '› ' !important;
   display: flex;
   align-items: center;
   justify-content: center;
