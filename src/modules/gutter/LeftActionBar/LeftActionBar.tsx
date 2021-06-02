@@ -25,6 +25,7 @@ const ADD_TO_BLOCKLIST_TOOLTIP_TITLE = 'Add <placeholder> to my muted sites.';
 const REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE = 'Remove <placeholder> from my muted sites.';
 const BLOCKER_AUGMENTATION_LIST_TEXT = 'Domain hidden by <placeholder>.';
 const SEARCHING_AUGMENTATION_LIST_TEXT = `Domain featured in <placeholder>.`;
+const NOT_SEARCHED_BUTTON_TOOLTIP_TEXT = 'Show publication details';
 const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
@@ -36,7 +37,11 @@ export const LeftActionBar: LeftActionBar = ({
   searchingAugmentations = [],
 }) => {
   const isBlocked = !!blockingAugmentations.length;
-  const isSearched = !!searchingAugmentations.length;
+  const isSearched = !!searchingAugmentations.filter(({ id }) => id !== MY_TRUSTLIST_ID).length;
+  const onlyBlockedByBlocklist =
+    blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
+  const inBlocklist = !!blockingAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
+  const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
   const iconRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const resultRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
@@ -81,7 +86,7 @@ export const LeftActionBar: LeftActionBar = ({
       clearTimeout(timeoutRef.current);
     }
 
-    if (isSearched || isBlocked) return null;
+    if (isSearched || inTrustlist || isBlocked) return null;
     if (iconRef.current) {
       iconRef.current.style.opacity = '0';
     }
@@ -89,7 +94,7 @@ export const LeftActionBar: LeftActionBar = ({
     if (rootRef.current) {
       rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
     }
-  }, [isSearched, isBlocked]);
+  }, [isSearched, inTrustlist, isBlocked]);
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -103,7 +108,7 @@ export const LeftActionBar: LeftActionBar = ({
     };
 
     if (iconRef.current) {
-      if (isSearched || isBlocked) {
+      if (isSearched || inTrustlist || isBlocked) {
         iconRef.current.style.opacity = '1';
       }
 
@@ -147,17 +152,7 @@ export const LeftActionBar: LeftActionBar = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [container, handleMouseLeave, isSearched, isBlocked]);
-
-  const onlyBlockedByBlocklist =
-    blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
-
-  const onlySearchedByTrustlist =
-    searchingAugmentations.length === 1 && searchingAugmentations[0].id === MY_TRUSTLIST_ID;
-
-  const inBlocklist = !!blockingAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
-
-  const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+  }, [container, handleMouseLeave, isSearched, inTrustlist, isBlocked]);
 
   const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
@@ -173,13 +168,6 @@ export const LeftActionBar: LeftActionBar = ({
         <PublicationTimeTracker key={publication} domain={publication} />
         <Tooltip
           title={`${
-            !!searchingAugmentations.length && !onlySearchedByTrustlist
-              ? SEARCHING_AUGMENTATION_LIST_TEXT.replace(
-                  '<placeholder>',
-                  searchingAugmentations.map(({ name }) => name).join(', '),
-                )
-              : ''
-          } ${
             inTrustlist
               ? REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
               : ADD_TO_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
@@ -193,8 +181,8 @@ export const LeftActionBar: LeftActionBar = ({
             onClick={handleToggleTrusted}
             icon={
               <Star
-                stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
-                fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
+                stroke={inTrustlist ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
+                fill={inTrustlist ? ICON_SELECTED_COLOR : 'transparent'}
               />
             }
             type="text"
@@ -224,11 +212,34 @@ export const LeftActionBar: LeftActionBar = ({
             type="text"
           />
         </Tooltip>
-        <Button
-          onClick={handleOpenBuilder}
-          icon={<MoreHorizontal stroke={ICON_UNSELECTED_COLOR} />}
-          type="text"
-        />
+        <Tooltip
+          title={`${
+            isSearched
+              ? SEARCHING_AUGMENTATION_LIST_TEXT.replace(
+                  '<placeholder>',
+                  searchingAugmentations
+                    .filter(({ id }) => id !== MY_TRUSTLIST_ID)
+                    .map(({ name }) => name)
+                    .join(', '),
+                )
+              : NOT_SEARCHED_BUTTON_TOOLTIP_TEXT
+          }`}
+          destroyTooltipOnHide={keepParent}
+          getPopupContainer={getPopupContainer}
+          placement="right"
+          overlayClassName="gutter-tooltip"
+        >
+          <Button
+            onClick={handleOpenBuilder}
+            icon={
+              <MoreHorizontal
+                stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
+                fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
+              />
+            }
+            type="text"
+          />
+        </Tooltip>
         <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />
       </div>
     </>

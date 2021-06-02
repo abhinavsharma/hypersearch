@@ -181,6 +181,7 @@ export const INSIGHT_BLOCKED_DOMAIN_SELECTOR = 'insight-blocked-domain';
 export const INSIGHT_HIDDEN_RESULT_SELECTOR = 'insight-hidden-result';
 export const INSIGHT_ALLOWED_RESULT_SELECTOR = 'insight-allowed-result';
 export const INSIGHT_HAS_CREATED_SUBTAB_SELECTOR = 'insight-has-created-subtab';
+export const INSIGHT_RESULT_URL_SELECTOR = 'insight-result-url';
 export const GOOGLE_SERP_RESULT_DIV_SELECTOR = '.mnr-c.xpd .KJDcUb';
 export const GOOGLE_SERP_RESULT_CONTAINER = '[data-hveid]';
 export const GOOGLE_SERP_RESULT_A_SELECTOR = '.KJDcUb a.BmP5tf';
