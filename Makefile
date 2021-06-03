@@ -9,7 +9,7 @@ ship:
 	json-bump public/manifest.json --patch
 	sed -i '' -e "s/IS_DEBUG_SWITCH = true/IS_DEBUG_SWITCH = false/g" ./src/utils/constants/index.ts
 	npm run build
-	zip -r `date +'INSIGHT-%Y-%m-%d-%H-%M'.zip` dist_is/
+	zip -r `date +'INSIGHT-%Y-%m-%d-%H-%M'.zip` dist/
 	mv `date +'INSIGHT-%Y-%m-%d-%H-%M'.zip` releases/
 	sed -i '' -e "s/IS_DEBUG_SWITCH = false/IS_DEBUG_SWITCH = true/g" ./src/utils/constants/index.ts
 	git add releases/*
