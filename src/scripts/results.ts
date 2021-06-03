@@ -24,7 +24,6 @@ import {
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
   INSIGHT_SEARCHED_RESULT_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
-  MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
   REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   REMOVE_SEARCHED_DOMAIN_MESSAGE,
@@ -227,10 +226,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
               document.querySelectorAll(`[${INSIGHT_SEARCH_BY_SELECTOR}]`),
             ) as HTMLDivElement[]).find(
               (result: HTMLElement) =>
-                result
-                  ?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)
-                  ?.split(' ')
-                  .filter((val) => val !== MY_TRUSTLIST_ID).length,
+                result?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)?.split(' ').length,
             );
             firstSearchedResult?.getAttribute(INSIGHT_RESULT_URL_SELECTOR);
             if (firstSearchedResult) {
