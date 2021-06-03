@@ -184,7 +184,7 @@ export const RightActionBar: RightActionBar = ({
           title={HOVER_ACTION_TOOLTIP_TITLE}
           destroyTooltipOnHide={keepParent}
           getPopupContainer={getPopupContainer}
-          placement="left"
+          placement="right"
           overlayClassName="gutter-tooltip"
         >
           <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />

@@ -99,16 +99,19 @@ export const ActivePage: ActivePage = () => {
       title: INSTALLED_SECTION_TITLE,
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),
       button: (
-        <Button
-          className={tourStep === '2' ? 'insight-tour-shake' : ''}
-          type="text"
-          onClick={handleCreate}
-        >
-          <Suspense fallback={null}>
-            <ZoomInOutlined />
-          </Suspense>
-          {`\u00a0${CREATE_LENS_BUTTON_TEXT}`}
-        </Button>
+        <div className={'insight-create-lens'}>
+          <Button
+            className={tourStep === '2' ? 'insight-tour-shake' : ''}
+            type="primary"
+            block
+            onClick={handleCreate}
+          >
+            <Suspense fallback={null}>
+              <ZoomInOutlined />
+            </Suspense>
+            {`\u00a0${CREATE_LENS_BUTTON_TEXT}`}
+          </Button>
+        </div>
       ),
     },
     {
