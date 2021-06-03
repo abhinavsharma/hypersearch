@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Insight",
     "description": "Insight supercharges search with fast previews, trusted sources, muting and lenses that offer unique and useful perspectives.",
-    "version": "0.0.88",
+    "version": "0.0.89",
     "applications": {
         "gecko": {
             "id": "hi@insightbrowser.com"
