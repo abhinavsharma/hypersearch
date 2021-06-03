@@ -18,8 +18,11 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: $color_background_lightest;
     transition: 100ms all ease-in-out;
+
+    &.has-overlay {
+      background-color: $color_background_lightest;
+    }
 
     .tooltip-container {
       position: absolute;

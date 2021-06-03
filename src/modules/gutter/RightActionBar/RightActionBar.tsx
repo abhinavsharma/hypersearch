@@ -174,7 +174,11 @@ export const RightActionBar: RightActionBar = ({
     : { display: 'none', visibility: 'hidden' };
 
   return (
-    <div className="gutter-icon-container" ref={iconRef} style={containerStyle}>
+    <div
+      className={`gutter-icon-container ${hasTab ? 'has-overlay' : ''}`}
+      ref={iconRef}
+      style={containerStyle}
+    >
       {hasTab && (
         <Tooltip
           title={HOVER_ACTION_TOOLTIP_TITLE}
