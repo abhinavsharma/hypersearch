@@ -1,4 +1,4 @@
-import { Configuration } from 'webpack';
+import { Configuration } from 'wegit pack';
 import { merge } from 'webpack-merge';
 import common from './webpack.common';
 
