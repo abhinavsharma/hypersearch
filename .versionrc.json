@@ -1,0 +1,23 @@
+{
+  "preMajor": true,
+  "bumpFiles": [
+    {
+      "filename": "public/manifest.json",
+      "type": "json"
+    },
+    {
+      "filename": "package.json",
+      "type": "json"
+    }
+  ],
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "chore", "hidden": true },
+    { "type": "docs", "hidden": true },
+    { "type": "style", "hidden": true },
+    { "type": "refactor", "hidden": true },
+    { "type": "perf", "hidden": true },
+    { "type": "test", "hidden": true }
+  ]
+}

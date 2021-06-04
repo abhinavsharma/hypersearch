@@ -84,6 +84,7 @@ export default (env: { mode: string; PROJECT: 'is' | 'sc' }): Configuration => {
         ],
       }),
       new DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(env.mode),
         'process.env.PROJECT': JSON.stringify(env.PROJECT),
       }),
     ],

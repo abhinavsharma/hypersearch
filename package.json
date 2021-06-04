@@ -1,11 +1,12 @@
 {
   "name": "@insight/browser-extension",
-  "version": "1.0.0",
+  "version": "0.0.90",
   "description": "Insight supercharges Google search with results from expert and community trusted sources for any field.",
   "main": "index.js",
   "scripts": {
     "watch": "rimraf ./build && TS_NODE_PROJECT=\"./tasks/tsconfig.json\" ts-node tasks/scripts/watch.ts",
     "build": "rimraf ./dist && TS_NODE_PROJECT=\"./tasks/tsconfig.json\" ts-node tasks/scripts/build.ts",
+    "release": "standard-version && npm run build && cd dist && web-ext build && cd .. && ts-node tasks/scripts/post_release.ts",
     "test": "npx jest"
   },
   "contributors": [
@@ -17,16 +18,20 @@
     "url": "https://github.com/lumosbrowser/lumos-extension.git"
   },
   "dependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
     "@types/chrome": "^0.0.137",
     "@types/copy-webpack-plugin": "^8.0.0",
     "@types/jest": "^26.0.20",
     "@types/md5": "^2.3.0",
     "@types/mini-css-extract-plugin": "^1.4.3",
+    "@types/mv": "^2.1.1",
     "@types/node": "^15.3.1",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "@types/react-helmet": "^6.1.0",
     "@types/react-typist": "^2.0.1",
+    "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.3.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-merge": "^5.0.0",
@@ -51,6 +56,7 @@
     "lint-staged": "^11.0.0",
     "md5": "^2.3.0",
     "mini-css-extract-plugin": "^1.6.0",
+    "mv": "^2.1.1",
     "postcss-loader": "^5.2.0",
     "prettier": "^2.2.1",
     "prompts": "^2.4.0",
@@ -63,6 +69,7 @@
     "route-lite": "^0.3.0",
     "sass": "^1.32.8",
     "sass-loader": "^11.0.1",
+    "standard-version": "^9.3.0",
     "style-loader": "^2.0.0",
     "ts-jest": "^26.5.1",
     "ts-loader": "^9.1.2",
@@ -70,6 +77,7 @@
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.1.5 ",
     "typescript-plugin-css-modules": "^3.2.0",
+    "web-ext": "^6.1.0",
     "web-vitals": "^1.1.2",
     "webpack": "^5.23.0",
     "webpack-cli": "^4.5.0",

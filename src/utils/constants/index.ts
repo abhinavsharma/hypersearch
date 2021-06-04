@@ -1,10 +1,5 @@
 import { ACTION_KEYS, CONDITION_KEYS } from './augmentations';
 
-// ! DO NOT CHANGE START
-// * This value is referenced in the release script and should not be changed
-const IS_DEBUG_SWITCH = true;
-// ! DO NOT CHANGE END
-
 /**
  * ! STORAGE
  */
@@ -48,8 +43,8 @@ export const LUMOS_APP_BASE_URL_DEBUG = 'https://localhost:3000';
 export const LUMOS_APP_BASE_URL_PROD = 'https://app.insight.space';
 export const LUMOS_API_URL_PROD = 'https://zy6kcqa01a.execute-api.us-east-2.amazonaws.com/prod/';
 export const LUMOS_API_URL_DEBUG = 'https://nwwcsdsuw2.execute-api.us-east-2.amazonaws.com/dev/';
-export const IN_DEBUG_MODE = IS_DEBUG_SWITCH || window.INSIGHT_FORCE_DEBUG;
-export const LUMOS_API_URL = IS_DEBUG_SWITCH ? LUMOS_API_URL_PROD : LUMOS_API_URL_PROD;
+export const IN_DEBUG_MODE = process.env.NODE_ENV || window.INSIGHT_FORCE_DEBUG;
+export const LUMOS_API_URL = process.env.NODE_ENV ? LUMOS_API_URL_PROD : LUMOS_API_URL_PROD;
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
 export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
