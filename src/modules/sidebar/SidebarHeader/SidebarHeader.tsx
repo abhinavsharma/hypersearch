@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import { Maximize, Minimize, Menu } from 'react-feather';
+import { Maximize, Minimize, Sliders } from 'react-feather';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { CustomSidebarIcon } from 'modules/shared';
 import {
@@ -25,7 +25,7 @@ import './SidebarHeader.scss';
 const ICON_COLOR = '#999999';
 const SHRINK_TOOLTIP_TEXT = `Back to Search Engine ("${FULLSCREEN_KEY.KEY}" key)`;
 const EXPAND_TOOLTIP_TEXT = `Fullscreen ("${FULLSCREEN_KEY.KEY}" key)`;
-const MENU_TOOLTIP_TEXT = 'Lenses Menu';
+const MENU_TOOLTIP_TEXT = 'Configure';
 const HIDE_TOOLTIP_TEXT = `Hide ("${SHRINK_KEY.KEY}" key)`;
 
 const { Title } = Typography;
@@ -103,7 +103,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
                 ? 'insight-tour-shake'
                 : ''
             }
-            icon={<Menu size={20} stroke={ICON_COLOR} />}
+            icon={<Sliders size={20} stroke={ICON_COLOR} />}
             type="text"
           />
         </Tooltip>

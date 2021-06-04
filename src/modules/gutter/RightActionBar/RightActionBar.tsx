@@ -16,7 +16,7 @@ import './RightActionBar.scss';
 const HOVER_ACTION_TOOLTIP_TITLE = (
   <span>
     {/* &#8288; === word-joiner U+2060 See: https://unicode-table.com/en/2060/ */}
-    Hover over this or press ⬆<code>&#8288;Shift</code> while hovering over a result to preview
+    Hovering here will preview this page in the Insight sidebar if your screen is wider than 1200px.
   </span>
 );
 const ICON_UNSELECTED_COLOR = '#999';
@@ -180,15 +180,20 @@ export const RightActionBar: RightActionBar = ({
       style={containerStyle}
     >
       {hasTab && (
-        <Tooltip
-          title={HOVER_ACTION_TOOLTIP_TITLE}
-          destroyTooltipOnHide={keepParent}
-          getPopupContainer={getPopupContainer}
-          placement="right"
-          overlayClassName="gutter-tooltip"
-        >
-          <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />
-        </Tooltip>
+        <>
+          {(window.innerWidth < HOVER_EXPAND_REQUIRED_MIN_WIDTH) ? 
+            <Tooltip
+              title={HOVER_ACTION_TOOLTIP_TITLE}
+              destroyTooltipOnHide={keepParent}
+              getPopupContainer={getPopupContainer}
+              placement="right"
+              overlayClassName="gutter-tooltip"
+            >
+              <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />
+            </Tooltip> 
+            : 
+            <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />}
+        </>
       )}
       <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />
     </div>

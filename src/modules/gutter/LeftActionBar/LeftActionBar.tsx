@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import { EyeOff, Star, MoreHorizontal } from 'react-feather';
+import { EyeOff, Star, Menu } from 'react-feather';
 import { PublicationTimeTracker } from '../PublicationTimeTracker/PublicationTimeTracker';
 import {
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
@@ -19,7 +19,7 @@ import 'antd/lib/tooltip/style/index.css';
 import './LeftActionBar.scss';
 
 /** MAGICS **/
-const ADD_TO_TRUSTLIST_TOOLTIP_TITLE = 'Add <placeholder> to my trusted sites.';
+const ADD_TO_TRUSTLIST_TOOLTIP_TITLE = 'Add <placeholder> to my trusted sites.\nAutomatically previews results from this site.';
 const REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE = `Remove <placeholder> from my trusted sites.`;
 const ADD_TO_BLOCKLIST_TOOLTIP_TITLE = 'Add <placeholder> to my muted sites.';
 const REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE = 'Remove <placeholder> from my muted sites.';
@@ -232,7 +232,7 @@ export const LeftActionBar: LeftActionBar = ({
           <Button
             onClick={handleOpenBuilder}
             icon={
-              <MoreHorizontal
+              <Menu
                 stroke={isSearched ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
                 fill={isSearched ? ICON_SELECTED_COLOR : 'transparent'}
               />
