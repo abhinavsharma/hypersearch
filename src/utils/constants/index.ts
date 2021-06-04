@@ -84,7 +84,7 @@ export const FRESHPAINT_API_ENDPOINT = 'https://api.perfalytics.com/track';
 export const FRESHPAINT_API_TOKEN = 'ee065c1d-6cfa-4f63-8844-36c638543e2d';
 // Minimum inner width of the tab to expand sidebar by default.
 export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
-export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
+export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1200;
 // Mailchimp Configuration
 export const MAILCHIMP_SERVER_PREFIX = 'us6';
 export const MAILCHIMP_LIST_ID = '4df884a9d6';
