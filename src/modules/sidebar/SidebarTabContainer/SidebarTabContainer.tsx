@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import UserManager from 'lib/UserManager';
 import Skeleton from 'antd/lib/skeleton';
 import {
   EXTENSION_SERP_FILTER_LOADED,

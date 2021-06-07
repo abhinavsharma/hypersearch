@@ -82,8 +82,8 @@ export const NewConditionDropdown: NewConditionDropdown = ({
       <Select
         placeholder={NEW_ACTION_PLACEHOLDER}
         onChange={handleLabelChange}
-        className="insight-select-full-width"
-        dropdownClassName="insight-select-full-width-dropdown"
+        className="insight-full-width"
+        dropdownClassName="insight-full-width-dropdown"
         getPopupContainer={getPopupContainer}
       >
         <OptGroup label={SEARCH_DROPDOWN_GROUP_TITLE}>

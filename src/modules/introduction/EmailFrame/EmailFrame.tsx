@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
+import md5 from 'md5';
 import { Helmet } from 'react-helmet';
 import { Input, Button, Typography } from 'antd';
 import { StepContext } from 'modules/introduction';
 import { APP_NAME, MAILCHIMP_API_KEY, MAILCHIMP_URL, SYNC_EMAIL_KEY, validateEmail } from 'utils';
 import './EmailFrame.scss';
-import md5 from 'md5';
 
 /** MAGICS **/
 const TAB_TITLE = `${APP_NAME} - Email Address`;

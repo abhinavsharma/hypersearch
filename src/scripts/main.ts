@@ -1,3 +1,4 @@
+import UserManager from 'lib/UserManager';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import {
   activityMonitor,
@@ -19,6 +20,7 @@ import {
     process.env.PROJECT === 'is' ? 'Insight' : 'SearchClub',
     '\n---',
   );
+  await UserManager.initialize();
   window.addEventListener('message', ({ data }) => {
     if (data.name === 'ADD_EXTERNAL_AUGMENTATION') {
       chrome.runtime.sendMessage({

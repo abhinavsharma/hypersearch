@@ -276,10 +276,11 @@ class SidebarLoader {
   }
 
   public get maxAvailableSpace() {
-    const resultWidth = (this.document
-      ?.querySelector(this.customSearchEngine.querySelector?.desktop)
-      ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement)
-      ?.offsetWidth;
+    const resultWidth = (
+      this.document
+        ?.querySelector(this.customSearchEngine.querySelector?.desktop)
+        ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement
+    )?.offsetWidth;
 
     const maxWidth = window.innerWidth - 300;
 
@@ -426,7 +427,7 @@ class SidebarLoader {
         case ACTION_KEYS.SEARCH_ALSO:
           {
             const url = AugmentationManager.processSearchAlsoActionString(
-              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
+              action.value[0] as unknown as CustomSearchEngine['search_engine_json'],
             );
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             urls.unshift(url);
@@ -463,9 +464,9 @@ class SidebarLoader {
       switch (action.key) {
         case ACTION_KEYS.SEARCH_DOMAINS:
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          this.publicationSlices[augmentation.id][
-            customSearchUrl.href
-          ] = action.value.map((value) => removeProtocol(value));
+          this.publicationSlices[augmentation.id][customSearchUrl.href] = action.value.map(
+            (value) => removeProtocol(value),
+          );
           urls.push(customSearchUrl);
           break;
         case ACTION_KEYS.SEARCH_APPEND:
@@ -650,7 +651,6 @@ class SidebarLoader {
    */
   public async loadOrUpdateSidebar(document: Document, url: URL) {
     debug('loadOrUpdateSidebar - call\n');
-    UserManager.initialize();
     this.document = document;
     this.url = url;
     if (

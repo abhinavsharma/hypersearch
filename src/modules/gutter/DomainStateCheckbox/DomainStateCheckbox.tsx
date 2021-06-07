@@ -18,13 +18,15 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
     [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations],
   );
 
-  const trustList = useMemo(() => augmentations.find(({ id }) => id === MY_TRUSTLIST_ID), [
-    augmentations,
-  ]);
+  const trustList = useMemo(
+    () => augmentations.find(({ id }) => id === MY_TRUSTLIST_ID),
+    [augmentations],
+  );
 
-  const blockList = useMemo(() => augmentations.find(({ id }) => id === MY_BLOCKLIST_ID), [
-    augmentations,
-  ]);
+  const blockList = useMemo(
+    () => augmentations.find(({ id }) => id === MY_BLOCKLIST_ID),
+    [augmentations],
+  );
 
   const [isBlocked, setIsBlocked] = useState<boolean>(
     !!blockList?.actions?.action_list?.filter(

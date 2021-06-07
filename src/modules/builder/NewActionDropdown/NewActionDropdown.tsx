@@ -31,8 +31,8 @@ export const NewActionDropdown: NewActionDropdown = ({ handleSaveLabel }) => {
   return (
     <>
       <Select
-        className="insight-select-full-width"
-        dropdownClassName="insight-select-full-width-dropdown"
+        className="insight-full-width"
+        dropdownClassName="insight-full-width-dropdown"
         placeholder={NEW_ACTION_PLACEHOLDER}
         onChange={handleLabelChange}
         getPopupContainer={getPopupContainer}

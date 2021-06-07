@@ -75,8 +75,8 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
         placeholder={placeholder}
         filterOption={handleFilter}
         onChange={handleSelect}
-        className="insight-select-full-width"
-        dropdownClassName="insight-select-full-width-dropdown"
+        className="insight-full-width"
+        dropdownClassName="insight-full-width-dropdown"
         getPopupContainer={getPopupContainer}
       >
         {Object.entries(engines).map(([key, cse]) =>

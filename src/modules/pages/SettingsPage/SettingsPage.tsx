@@ -4,19 +4,14 @@ import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
 import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
+import UserManager from 'lib/UserManager';
+import { LoginForm } from 'modules/settings';
 import {
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
-  SYNC_EMAIL_KEY,
-  SYNC_LICENSE_KEY,
   SYNC_PRIVACY_KEY,
 } from 'utils';
-import 'antd/lib/switch/style/index.css';
-import 'antd/lib/typography/style/index.css';
-import 'antd/lib/button/style/index.css';
-import './SettingsPage.scss';
-import { LoginForm } from 'modules/settings';
 import {
   ACTIVE_LICENSE_MAIN_HEADER,
   CHECKED_PRIVACY_EXPLAINER_CONTENT,
@@ -26,6 +21,10 @@ import {
   UNCHECKED_PRIVACY_EXPLAINER_CONTENT,
   UNCHECKED_SWITCH_TEXT,
 } from 'modules/introduction';
+import 'antd/lib/switch/style/index.css';
+import 'antd/lib/typography/style/index.css';
+import 'antd/lib/button/style/index.css';
+import './SettingsPage.scss';
 
 const { Title } = Typography;
 
@@ -40,11 +39,9 @@ const BOOKMARKS_SYNC_BUTTON_TEXT = 'Sync Bookmarks';
 export const SettingsContext = React.createContext<TSettingsContext>(Object.create(null));
 
 export const SettingsPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [hasEmail, setHasEmail] = useState<boolean>(false);
-  const [emailValue, setEmailValue] = useState<string>('');
+  const [storedEmail, setStoredEmail] = useState<string>(UserManager.user.email ?? '');
+  const [storedToken, setStoredToken] = useState<TAccessToken | undefined>(UserManager.user.token);
   const [useServerSuggestions, setUseServerSuggestions] = useState<boolean | undefined>(false);
-  const [activationCode, setActivationCode] = useState<string>('');
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
@@ -68,43 +65,33 @@ export const SettingsPage = () => {
     setUseServerSuggestions(isServerSuggestionsEnabled);
   }, []);
 
-  const getActivationDetails = useCallback(async () => {
-    const storedEmail = await new Promise<Record<string, string>>((resolve) =>
-      chrome.storage.sync.get(SYNC_EMAIL_KEY, resolve),
-    ).then((result) => result?.[SYNC_EMAIL_KEY] as string);
-
-    if (storedEmail) {
-      setHasEmail(true);
-      setEmailValue(storedEmail);
-    }
-
-    const storedLicense = await new Promise<Record<string, string>>((resolve) =>
-      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
-    ).then((result) => result?.[SYNC_LICENSE_KEY] as string);
-    setIsLoggedIn(!!(storedLicense && storedEmail));
-  }, []);
-
-  useEffect(() => {
-    getActivationDetails();
-  }, [getActivationDetails]);
-
   useEffect(() => {
     getPrivacy();
   }, [getPrivacy]);
 
-  const CONTEXT_VALUE = {
-    setEmailValue,
-    setActivationCode,
-    setIsLoggedIn,
-    setHasEmail,
-    isLoggedIn,
-    hasEmail,
-    emailValue,
-    activationCode,
+  useEffect(() => {
+    setStoredEmail(UserManager.user.email ?? '');
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserManager.user.email]);
+
+  useEffect(() => {
+    setStoredToken(UserManager.user.token);
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserManager.user.token]);
+
+  const context = {
+    storedEmail,
+    storedToken,
+    setStoredEmail,
+    setStoredToken,
   };
 
   return (
-    <SettingsContext.Provider value={CONTEXT_VALUE}>
+    <SettingsContext.Provider value={context}>
       <div id="settings-page" className="sidebar-page">
         <header className="sidebar-page-header">
           <Button type="link" className="left-button" onClick={handleClose}>
@@ -118,11 +105,11 @@ export const SettingsPage = () => {
             <h2 className="title">
               {
                 // prettier-ignore
-                isLoggedIn
-              ? LOGOUT_SECTION_TITLE
-              : hasEmail
-                ? ACTIVATION_SECTION_TITLE
-                : LOGIN_SECTION_TITLE
+                storedEmail && storedToken
+                ? LOGOUT_SECTION_TITLE
+                : storedEmail
+                  ? ACTIVATION_SECTION_TITLE
+                  : LOGIN_SECTION_TITLE
               }
             </h2>
             <div className="settings-section-content insight-row">
@@ -132,9 +119,9 @@ export const SettingsPage = () => {
           </section>
           {/* change privacy */}
           <section>
-            {isLoggedIn && <h2 className="title">{ACTIVE_LICENSE_MAIN_HEADER}</h2>}
+            {storedToken && <h2 className="title">{ACTIVE_LICENSE_MAIN_HEADER}</h2>}
             <div className="settings-section-content">
-              {isLoggedIn && (
+              {storedToken && (
                 <>
                   <Switch
                     className="privacy-toggle-button"
@@ -145,7 +132,7 @@ export const SettingsPage = () => {
               )}
               {
                 //prettier-ignore
-                !isLoggedIn && useServerSuggestions === undefined ? (
+                !storedToken && useServerSuggestions === undefined ? (
                   <>
                     <Title level={2}>{INACTIVE_LICENSE_MAIN_HEADER}</Title>
                     <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
