@@ -21,6 +21,7 @@ export enum ACTION_KEYS {
   SEARCH_ALSO = 'search_also',
   OPEN_LINK_CSS = 'open_links_css',
   NO_COOKIE = 'no_cookie',
+  SEARCH_FEATURE = 'search_feature',
 }
 
 export enum CONDITION_LABELS {
@@ -47,6 +48,7 @@ export enum ACTION_LABELS {
   SEARCH_HIDE_DOMAIN = 'Hide results from domain',
   SEARCH_APPEND = 'Search with string appended',
   SEARCH_ALSO = 'Search also',
+  SEARCH_FEATURE = 'Highlight results from domain',
   // ! URL ACTION
   OPEN_URL = 'Open page',
   OPEN_LINK_CSS = 'Open links matching CSS selector',

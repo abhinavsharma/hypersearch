@@ -2,8 +2,11 @@ declare module './processSerpResults' {
   type ProcessSerpResults = (
     nodes: HTMLElement[],
     selector: string,
-    details: Record<'text' | 'header' | 'selectorString', string> & Record<'hoverAltered', boolean>,
-    augmentations: Record<'block' | 'search', Record<string, AugmentationObject[]>> | string,
+    details: Record<'text' | 'header' | 'selectorString', string>,
+    augmentations: Record<
+      'block' | 'search' | 'feature',
+      Record<string, AugmentationObject[]>
+    > | null,
     createdUrls?: string[],
     processAsOpenPage?: boolean,
   ) => void;

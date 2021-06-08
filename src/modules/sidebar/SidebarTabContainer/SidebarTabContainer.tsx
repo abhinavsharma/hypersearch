@@ -3,7 +3,7 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import Skeleton from 'antd/lib/skeleton';
 import {
   EXTENSION_SERP_FILTER_LOADED,
-  HIDE_TAB_FAKE_URL,
+  SIDEBAR_TAB_FAKE_URL,
   keyboardHandler,
   keyUpHandler,
   decodeSpace,
@@ -57,7 +57,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       : '100%',
   };
 
-  return tab.url.href !== HIDE_TAB_FAKE_URL ? (
+  return tab.url.href !== SIDEBAR_TAB_FAKE_URL ? (
     <div ref={containerRef} className="insight-tab-iframe-container">
       <iframe
         key={decodeSpace(tab.url.href)}

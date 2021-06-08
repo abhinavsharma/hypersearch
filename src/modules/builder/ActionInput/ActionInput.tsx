@@ -50,6 +50,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
 
   const DEFAULT_INPUTS = [
     ACTION_KEYS.OPEN_URL,
+    ACTION_KEYS.SEARCH_FEATURE,
     ACTION_KEYS.SEARCH_APPEND,
     ACTION_KEYS.SEARCH_HIDE_DOMAIN,
     ACTION_KEYS.OPEN_LINK_CSS,

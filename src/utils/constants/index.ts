@@ -52,7 +52,7 @@ export const URL_PARAM_NO_COOKIE_KEY = 'insight-no-cookie';
 export const EXTERNAL_PDF_RENDERER_URL =
   'https://docs.google.com/viewer?url=<placeholder>&embedded=true';
 export const SIDEBAR_Z_INDEX = 9999;
-export const HIDE_TAB_FAKE_URL = 'hide';
+export const SIDEBAR_TAB_FAKE_URL = 'sidebar-fake-tab';
 export const AIRTABLE_PUBLIC_LENSES_CREATE =
   'https://airtable.com/shrUAvfbGQqwlW7lI?prefill_base64=<base64>&prefill_name=<name>&prefill_description=<description>';
 export const AIRTABLE_IMPROVE_SEARCH_LINK =
@@ -103,6 +103,7 @@ export const ENABLED_AUGMENTATION_TYPES = [
   CONDITION_KEYS.SEARCH_ENGINE_IS,
   ACTION_KEYS.OPEN_URL,
   ACTION_KEYS.OPEN_LINK_CSS,
+  ACTION_KEYS.SEARCH_FEATURE,
   ACTION_KEYS.SEARCH_DOMAINS,
   ACTION_KEYS.SEARCH_HIDE_DOMAIN,
   ACTION_KEYS.SEARCH_APPEND,
@@ -137,6 +138,7 @@ export const SET_TAB_DOMAINS_MESSAGE = 'SET_TAB_DOMAINS_MESSAGE';
 export const PROCESS_SERP_OVERLAY_MESSAGE = 'PROCESS_SERP_OVERLAY_MESSAGE';
 export const REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE = 'REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE';
 export const REMOVE_SEARCHED_DOMAIN_MESSAGE = 'REMOVE_SEARCHED_DOMAIN_MESSAGE';
+export const REMOVE_FEATURED_DOMAIN_MESSAGE = 'REMOVE_FEATURED_DOMAIN_MESSAGE';
 export const OPEN_NEW_TAB_MESSAGE = 'OPEN_NEW_TAB_MESSAGE';
 export const SWITCH_TO_TAB = 'SWITCH_TO_TAB';
 export const UPDATE_MY_BLOCK_LIST = 'UPDATE_MY_BLOCK_LIST';
@@ -175,6 +177,7 @@ export const INSIGHT_BLOCKED_BY_SELECTOR = 'insight-blocked-by';
 export const INSIGHT_BLOCKED_DOMAIN_SELECTOR = 'insight-blocked-domain';
 export const INSIGHT_HIDDEN_RESULT_SELECTOR = 'insight-hidden-result';
 export const INSIGHT_ALLOWED_RESULT_SELECTOR = 'insight-allowed-result';
+export const INSIGHT_FEATURED_BY_SELECTOR = 'insight-featured-by-selector';
 export const INSIGHT_HAS_CREATED_SUBTAB_SELECTOR = 'insight-has-created-subtab';
 export const INSIGHT_RESULT_URL_SELECTOR = 'insight-result-url';
 export const GOOGLE_SERP_RESULT_DIV_SELECTOR = '.mnr-c.xpd .KJDcUb';

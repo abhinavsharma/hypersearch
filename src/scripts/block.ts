@@ -41,9 +41,8 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
             header: 'Ad',
             text: 'Click to show likely ad.',
             selectorString: 'blocked-ad',
-            hoverAltered: false,
           },
-          'adblock',
+          null,
         );
       });
     }, 500);

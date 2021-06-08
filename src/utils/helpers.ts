@@ -1,7 +1,7 @@
 import {
   KP_SELECTORS,
   IN_DEBUG_MODE,
-  HIDE_TAB_FAKE_URL,
+  SIDEBAR_TAB_FAKE_URL,
   MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
   DOMAINS_TO_RELEVANT_SLICE,
@@ -95,12 +95,10 @@ export const triggerSerpProcessing = (
   !subtabsOnly &&
     window.top.postMessage(
       {
-        augmentation,
         createdUrls,
-        hideDomains: loader.hideDomains,
-        name: PROCESS_SERP_OVERLAY_MESSAGE,
-        hoverAltered: loader.userData.altHover,
         customLink,
+        augmentation,
+        name: PROCESS_SERP_OVERLAY_MESSAGE,
         selector: {
           link: customLink || loader.customSearchEngine.querySelector?.['desktop'],
           featured: loader.customSearchEngine.querySelector?.featured ?? Array(0),
@@ -113,11 +111,9 @@ export const triggerSerpProcessing = (
     );
   window.top.postMessage(
     {
-      augmentation,
       createdUrls,
-      hideDomains: loader.hideDomains,
+      augmentation,
       name: PROCESS_SERP_OVERLAY_MESSAGE,
-      hoverAltered: loader.userData.altHover,
       selector: {
         link: loader.customSearchEngine.querySelector?.['phone'],
         featured: loader.customSearchEngine.querySelector?.featured,
@@ -339,7 +335,8 @@ export const b64EncodeUnicode = (stringLike: string) => {
 };
 
 export const validateEmail = (email: string) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
 
@@ -552,11 +549,11 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
  * @returns {string} The first valid tab index
  */
 export const getFirstValidTabIndex = (tabs: SidebarTab[]) => {
-  return (tabs.findIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+  return (tabs.findIndex(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL) + 1).toString();
 };
 
 export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
-  return (tabs.findLastIndex(({ url }) => url?.href !== HIDE_TAB_FAKE_URL) + 1).toString();
+  return (tabs.findLastIndex(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL) + 1).toString();
 };
 
 // TODO #2 END

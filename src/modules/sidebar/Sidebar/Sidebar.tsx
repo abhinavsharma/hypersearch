@@ -14,7 +14,7 @@ import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
   EXTENSION_AUTO_EXPAND,
-  HIDE_TAB_FAKE_URL,
+  SIDEBAR_TAB_FAKE_URL,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
@@ -35,7 +35,7 @@ const Sidebar: Sidebar = () => {
   const isSearchTabs = SidebarLoader.sidebarTabs?.find(({ isCse }) => isCse);
   const isKpPage = isKnowledgePage(document);
   const validTabsLength = SidebarLoader.sidebarTabs.filter(
-    ({ url }) => url.href !== HIDE_TAB_FAKE_URL,
+    ({ url }) => url.href !== SIDEBAR_TAB_FAKE_URL,
   ).length;
 
   const shouldPreventExpand =
@@ -111,7 +111,7 @@ const Sidebar: Sidebar = () => {
     });
   }, []);
 
-  const tabsLength = !!sidebarTabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL).length;
+  const tabsLength = !!sidebarTabs.filter(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL).length;
 
   return (
     <>

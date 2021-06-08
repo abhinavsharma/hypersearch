@@ -1,3 +1,5 @@
+@use "sass:math";
+
 /**
  * LAYERS
  */
@@ -106,7 +108,7 @@ $intro_color_background: rgba(2, 19, 52, 1);
 /// @return {Number} - Unitless number
 @function strip-unit($number) {
   @if type-of($number) == 'number' and not unitless($number) {
-    @return $number / ($number * 0 + 1);
+    @return math.div($number, $number * 0 + 1);
   }
 
   @return $number;
