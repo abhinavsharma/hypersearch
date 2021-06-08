@@ -14,7 +14,6 @@ import {
   getFirstValidTabIndex,
   flipSidebar,
   SWITCH_TO_TAB,
-  OPEN_SETTINGS_PAGE_MESSAGE,
   extractUrlProperties,
   ACTION_KEYS,
 } from 'utils';
@@ -54,9 +53,12 @@ export const ActivePage: ActivePage = () => {
       }, [] as AugmentationObject[]),
   );
 
-  const handleOpenSettings = () => {
-    chrome.runtime.sendMessage({ type: OPEN_SETTINGS_PAGE_MESSAGE });
-  };
+  const handleOpenSettings = () =>
+    chrome.runtime.sendMessage({
+      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+      page: OPEN_BUILDER_PAGE.SETTINGS,
+      create: true,
+    });
 
   const handleClose = () => {
     if (tourStep) {

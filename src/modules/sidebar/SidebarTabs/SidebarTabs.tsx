@@ -9,7 +9,7 @@ import Tabs from 'antd/lib/tabs';
 import message from 'antd/lib/message';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { ActivePage, BuilderPage, GutterPage } from 'modules/pages';
+import { ActivePage, BuilderPage, GutterPage, SettingsPage } from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -187,6 +187,8 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                     domain={pageData?.publication}
                   />
                 );
+              case OPEN_BUILDER_PAGE.SETTINGS:
+                return <SettingsPage />;
               default:
                 return null;
             }

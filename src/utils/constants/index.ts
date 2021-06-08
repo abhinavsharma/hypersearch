@@ -123,6 +123,7 @@ export enum OPEN_BUILDER_PAGE {
   ACTIVE = 'active',
   GUTTER = 'gutter',
   BUILDER = 'builder',
+  SETTINGS = 'settings',
 }
 
 // ! INTERNAL MESSAGES
