@@ -13,15 +13,13 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
-  INSIGHT_ALLOWED_RESULT_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
-  INSIGHT_BLOCKED_DOMAIN_SELECTOR,
+  INSIGHT_FEATURED_BY_SELECTOR,
+  INSIGHT_SEARCH_BY_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_HIDDEN_RESULT_SELECTOR,
   INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
-  INSIGHT_SEARCHED_RESULT_SELECTOR,
-  INSIGHT_SEARCH_BY_SELECTOR,
   SIDEBAR_Z_INDEX,
 } from 'utils/constants';
 import { v4 as uuid } from 'uuid';
@@ -115,10 +113,10 @@ const createOverlay = (
     });
 
     serpResult.style.position = 'relative';
-    serpResult.style.height = '125px';
+    serpResult.style.maxHeight = '125px';
     serpResult.style.overflow = 'hidden';
-    serpResult.style.paddingTop = '20px';
-    serpResult.style.marginTop = '-20px';
+    //serpResult.style.paddingTop = '20px';
+    //serpResult.style.marginTop = '-20px';
     serpResult.insertBefore(overlay, serpResult.firstChild);
   }
 };
@@ -154,7 +152,7 @@ export const processSerpResults: ProcessSerpResults = (
 
     const publication = processAsOpenPage ? resultLink : extractPublication(resultLink);
 
-    if (typeof publication !== 'string' && typeof augmentations !== 'string') continue;
+    if (typeof publication !== 'string' && augmentations) continue;
 
     let blockers: AugmentationObject[] = [];
 
@@ -162,44 +160,44 @@ export const processSerpResults: ProcessSerpResults = (
       escape(removeProtocol(url)).includes(escape(removeProtocol(resultLink).split('#')[0])),
     );
 
+    if (!serpResult.getAttribute('insight-ad-block')) {
+      const overlay = serpResult.querySelector('.insight-hidden-domain-overlay');
+      overlay?.parentElement?.removeChild(overlay);
+    }
+
     serpResult.setAttribute(INSIGHT_RESULT_URL_SELECTOR, resultLink);
 
     serpResult.setAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, String(isSubtab > -1));
 
     serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, publication);
-    if (typeof augmentations === 'string' || augmentations.block[publication]?.length) {
-      serpResult.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'false');
-      // DuckDuckGo result container are bound to click event and open the page, even if it's blocked.
-      // To prevent this behavior, we disable all `pointerEvents` on the container element.
-      // See: https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
-      if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
-        serpResult.style.pointerEvents = 'none';
-      }
 
-      blockers = typeof augmentations === 'string' ? [] : augmentations.block[publication];
-
-      createOverlay(serpResult, blockers, details);
-
-      const blockingAugmentationIds = Array.from(new Set(blockers.map(({ id }) => id))).join(' ');
-
-      serpResult.setAttribute(INSIGHT_BLOCKED_BY_SELECTOR, blockingAugmentationIds);
-      serpResult.setAttribute(INSIGHT_BLOCKED_DOMAIN_SELECTOR, publication);
-    } else {
-      serpResult.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'false');
-
-      // There is two type of allowed results:
-      // 1.) Searched by an augmentation's action -> Fill the star icon
-      // 2.) Not blocked or searched any augmentation -> Show default gutter unit
-      if (augmentations.search[publication]?.length) {
-        serpResult.setAttribute(INSIGHT_SEARCHED_RESULT_SELECTOR, 'true');
-        serpResult.setAttribute(
-          INSIGHT_SEARCH_BY_SELECTOR,
-          augmentations.search[publication].map(({ id }) => id).join(' '),
-        );
-      } else {
-        serpResult.setAttribute(INSIGHT_ALLOWED_RESULT_SELECTOR, 'true');
-      }
+    // DuckDuckGo result container are bound to click event and open the page, even if it's blocked.
+    // To prevent this behavior, we disable all `pointerEvents` on the container element.
+    // See: https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
+    if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
+      serpResult.style.pointerEvents = 'none';
     }
+
+    blockers = augmentations?.block[publication] ?? [];
+
+    if (augmentations?.block[publication]?.length || !augmentations) {
+      createOverlay(serpResult, blockers, details);
+    }
+
+    serpResult.setAttribute(
+      INSIGHT_BLOCKED_BY_SELECTOR,
+      augmentations?.block[publication].map(({ id }) => id).join(' ') ?? '',
+    );
+
+    serpResult.setAttribute(
+      INSIGHT_SEARCH_BY_SELECTOR,
+      augmentations?.search[publication].map(({ id }) => id).join(' ') ?? '',
+    );
+
+    serpResult.setAttribute(
+      INSIGHT_FEATURED_BY_SELECTOR,
+      augmentations?.feature[publication].map(({ id }) => id).join(' ') ?? '',
+    );
 
     if (
       window.location === window.parent.location &&
@@ -222,10 +220,9 @@ export const processSerpResults: ProcessSerpResults = (
           key={uuid()}
           publication={publication}
           container={containerSelector}
-          searchingAugmentations={
-            (augmentations.search as Record<string, AugmentationObject[]>)[publication]
-          }
+          searchingAugmentations={augmentations?.search[publication] ?? []}
           blockingAugmentations={blockers}
+          featuringAugmentations={augmentations?.feature[publication] ?? []}
         />,
         buttonRootLeft,
       );
@@ -242,9 +239,8 @@ export const processSerpResults: ProcessSerpResults = (
           key={uuid()}
           url={resultLink}
           container={containerSelector}
-          searchingAugmentations={
-            (augmentations.search as Record<string, AugmentationObject[]>)[publication]
-          }
+          searchingAugmentations={augmentations?.search[publication] ?? []}
+          featuringAugmentations={augmentations?.feature[publication] ?? []}
           blockingAugmentations={blockers}
         />,
         buttonRootRight,

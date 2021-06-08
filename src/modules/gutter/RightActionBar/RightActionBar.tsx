@@ -26,12 +26,12 @@ const SWITCH_TO_TAB_DELAY = 300; //ms
 export const RightActionBar: RightActionBar = ({
   url,
   container,
-  blockingAugmentations = [],
   searchingAugmentations = [],
+  featuringAugmentations = [],
 }) => {
   const [hasTab, setHasTab] = useState(false);
 
-  const isBlocked = !!blockingAugmentations.length;
+  const isFeatured = !!featuringAugmentations.length;
   const isSearched = !!searchingAugmentations.length;
   const iconRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
@@ -75,7 +75,7 @@ export const RightActionBar: RightActionBar = ({
   );
 
   const handleMouseLeave = useCallback((): any => {
-    if (isSearched || isBlocked) return null;
+    if (isSearched || isFeatured) return null;
     if (iconRef.current) {
       iconRef.current.style.opacity = '0';
     }
@@ -84,7 +84,7 @@ export const RightActionBar: RightActionBar = ({
       rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
     }
     clearTimeout(timeoutRef.current);
-  }, [isSearched, isBlocked]);
+  }, [isSearched, isFeatured]);
 
   useEffect(() => {
     const handleAlterOpen = () => {
@@ -109,7 +109,7 @@ export const RightActionBar: RightActionBar = ({
     const handleClick = () => window.open(url, '_blank');
 
     if (iconRef.current) {
-      if (isSearched || isBlocked) {
+      if (isSearched || isFeatured) {
         iconRef.current.style.opacity = '1';
       }
 
@@ -133,9 +133,7 @@ export const RightActionBar: RightActionBar = ({
         'style',
         `
         z-index: ${SIDEBAR_Z_INDEX - 2};
-        margin-top: -${
-          isBlocked ? resultRef.current?.offsetHeight : resultRef.current?.offsetHeight
-        }px;
+        margin-top: -${resultRef.current?.offsetHeight}px;
         height: ${resultRef.current?.offsetHeight}px;
         cursor: pointer;
         `,
@@ -158,7 +156,7 @@ export const RightActionBar: RightActionBar = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [container, handleMouseEnter, handleMouseLeave, isSearched, isBlocked, url]);
+  }, [container, handleMouseEnter, handleMouseLeave, isSearched, isFeatured, url]);
 
   useEffect(() => {
     const { current } = resultRef;
@@ -181,7 +179,7 @@ export const RightActionBar: RightActionBar = ({
     >
       {hasTab && (
         <>
-          {(window.innerWidth < HOVER_EXPAND_REQUIRED_MIN_WIDTH) ? 
+          {window.innerWidth < HOVER_EXPAND_REQUIRED_MIN_WIDTH ? (
             <Tooltip
               title={HOVER_ACTION_TOOLTIP_TITLE}
               destroyTooltipOnHide={keepParent}
@@ -190,9 +188,10 @@ export const RightActionBar: RightActionBar = ({
               overlayClassName="gutter-tooltip"
             >
               <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />
-            </Tooltip> 
-            : 
-            <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />}
+            </Tooltip>
+          ) : (
+            <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />
+          )}
         </>
       )}
       <div className="tooltip-container" ref={tooltipContainer} style={TOOLTIP_CONTAINER_STYLE} />

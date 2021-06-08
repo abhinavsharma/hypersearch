@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, Menu } from 'react-feather';
@@ -19,10 +19,12 @@ import 'antd/lib/tooltip/style/index.css';
 import './LeftActionBar.scss';
 
 /** MAGICS **/
-const ADD_TO_TRUSTLIST_TOOLTIP_TITLE = 'Add <placeholder> to my trusted sites.\nAutomatically previews results from this site.';
+const ADD_TO_TRUSTLIST_TOOLTIP_TITLE =
+  'Add <placeholder> to my trusted sites.\nAutomatically previews results from this site.';
 const REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE = `Remove <placeholder> from my trusted sites.`;
 const ADD_TO_BLOCKLIST_TOOLTIP_TITLE = 'Add <placeholder> to my muted sites.';
 const REMOVE_FROM_BLOCKLIST_TOOLTIP_TITLE = 'Remove <placeholder> from my muted sites.';
+const IN_FEATURED_TOOLTIP_TEXT = '<placeholder_1> is highlighted by <placeholder_2>.';
 const BLOCKER_AUGMENTATION_LIST_TEXT = 'Domain hidden by <placeholder>.';
 const SEARCHING_AUGMENTATION_LIST_TEXT = `Domain featured in <placeholder>.`;
 const NOT_SEARCHED_BUTTON_TOOLTIP_TEXT = 'Show publication details';
@@ -35,13 +37,22 @@ export const LeftActionBar: LeftActionBar = ({
   container,
   blockingAugmentations = [],
   searchingAugmentations = [],
+  featuringAugmentations = [],
 }) => {
-  const isBlocked = !!blockingAugmentations.length;
-  const isSearched = !!searchingAugmentations.filter(({ id }) => id !== MY_TRUSTLIST_ID).length;
+  const [isBlocked, setIsBlocked] = useState<boolean>(!!blockingAugmentations.length);
+  const [isTrusted, setIsTrusted] = useState<boolean>(
+    !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID),
+  );
+  const [isSearched, _setIsSearched] = useState<boolean>(
+    searchingAugmentations.some(({ id }) => id !== MY_TRUSTLIST_ID),
+  );
+
   const onlyBlockedByBlocklist =
     blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
+
+  const isFeatured = !!featuringAugmentations.length;
   const inBlocklist = !!blockingAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
-  const inTrustlist = !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID);
+
   const iconRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const resultRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
@@ -61,6 +72,7 @@ export const LeftActionBar: LeftActionBar = ({
   const handleToggleBlocked = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     (e.target as HTMLElement).classList.add('bounceIn');
+    setIsBlocked((prev) => !prev);
     chrome.runtime.sendMessage({ type: TOGGLE_BLOCKED_DOMAIN_MESSAGE, publication, isBlocked });
     handleOpenBuilder(e);
   };
@@ -68,6 +80,7 @@ export const LeftActionBar: LeftActionBar = ({
   const handleToggleTrusted = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     (e.target as HTMLElement).classList.add('bounceIn');
+    setIsTrusted((prev) => !prev);
     chrome.runtime.sendMessage({ type: TOGGLE_TRUSTED_DOMAIN_MESSAGE, publication });
     handleOpenBuilder(e);
   };
@@ -86,7 +99,7 @@ export const LeftActionBar: LeftActionBar = ({
       clearTimeout(timeoutRef.current);
     }
 
-    if (isSearched || inTrustlist || isBlocked) return null;
+    if (isSearched || isTrusted || isBlocked || isFeatured) return null;
     if (iconRef.current) {
       iconRef.current.style.opacity = '0';
     }
@@ -94,7 +107,7 @@ export const LeftActionBar: LeftActionBar = ({
     if (rootRef.current) {
       rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
     }
-  }, [isSearched, inTrustlist, isBlocked]);
+  }, [isSearched, isTrusted, isBlocked, isFeatured]);
 
   useEffect(() => {
     const handleMouseEnter = () => {
@@ -108,7 +121,7 @@ export const LeftActionBar: LeftActionBar = ({
     };
 
     if (iconRef.current) {
-      if (isSearched || inTrustlist || isBlocked) {
+      if (isSearched || isTrusted || isBlocked || isFeatured) {
         iconRef.current.style.opacity = '1';
       }
 
@@ -132,10 +145,8 @@ export const LeftActionBar: LeftActionBar = ({
         'style',
         `
         z-index: ${SIDEBAR_Z_INDEX - 2};
-        margin-top: -${
-          isBlocked ? resultRef.current?.offsetHeight - 40 : resultRef.current?.offsetHeight
-        }px;
-        min-height: 150px;
+        margin-top: -${resultRef.current?.offsetHeight}px;
+        height: ${resultRef.current?.offsetHeight};
         `,
       );
 
@@ -152,7 +163,7 @@ export const LeftActionBar: LeftActionBar = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [container, handleMouseLeave, isSearched, inTrustlist, isBlocked]);
+  }, [container, handleMouseLeave, isSearched, isTrusted, isBlocked, isFeatured]);
 
   const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
@@ -168,7 +179,15 @@ export const LeftActionBar: LeftActionBar = ({
         <PublicationTimeTracker key={publication} domain={publication} />
         <Tooltip
           title={`${
-            inTrustlist
+            featuringAugmentations.length
+              ? IN_FEATURED_TOOLTIP_TEXT.replace('<placeholder_1>', publication).replace(
+                  '<placeholder_2>',
+                  featuringAugmentations.map(({ name }) => name).join(', '),
+                )
+              : ''
+          }
+          ${
+            isTrusted
               ? REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
               : ADD_TO_TRUSTLIST_TOOLTIP_TITLE.replace('<placeholder>', publication)
           }`}
@@ -181,8 +200,8 @@ export const LeftActionBar: LeftActionBar = ({
             onClick={handleToggleTrusted}
             icon={
               <Star
-                stroke={inTrustlist ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
-                fill={inTrustlist ? ICON_SELECTED_COLOR : 'transparent'}
+                stroke={isTrusted || isFeatured ? ICON_SELECTED_COLOR : ICON_UNSELECTED_COLOR}
+                fill={isTrusted ? ICON_SELECTED_COLOR : 'transparent'}
               />
             }
             type="text"

@@ -87,7 +87,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
             <div id="publication-meta">
               <Text strong>{extractPublication(tab.url.href)}</Text>
-              <DomainStateCheckbox domain={titleFromDomain} />
+              <DomainStateCheckbox domain={extractPublication(tab.url.href)} />
             </div>
           </div>
         ) : (

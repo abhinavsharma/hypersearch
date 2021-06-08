@@ -2,14 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import {
-  ACTION_KEYS,
-  ACTION_LABELS,
-  ACTION_TYPES,
-  MY_BLOCKLIST_ID,
-  MY_TRUSTLIST_ID,
-  REMOVE_SEARCHED_DOMAIN_MESSAGE,
-} from 'utils';
+import { MY_BLOCKLIST_ID, MY_TRUSTLIST_ID } from 'utils';
 import 'antd/lib/checkbox/style/index.css';
 
 /** MAGICS **/
@@ -25,13 +18,15 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
     [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations],
   );
 
-  const trustList = useMemo(() => augmentations.find(({ id }) => id === MY_TRUSTLIST_ID), [
-    augmentations,
-  ]);
+  const trustList = useMemo(
+    () => augmentations.find(({ id }) => id === MY_TRUSTLIST_ID),
+    [augmentations],
+  );
 
-  const blockList = useMemo(() => augmentations.find(({ id }) => id === MY_BLOCKLIST_ID), [
-    augmentations,
-  ]);
+  const blockList = useMemo(
+    () => augmentations.find(({ id }) => id === MY_BLOCKLIST_ID),
+    [augmentations],
+  );
 
   const [isBlocked, setIsBlocked] = useState<boolean>(
     !!blockList?.actions?.action_list?.filter(
@@ -52,50 +47,8 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
     setIsBlocked(e.target.checked);
   };
 
-  const handleAddTrusted = () => {
-    if (!trustList?.actions.action_list.length) {
-      trustList?.actions.action_list.push({
-        key: ACTION_KEYS.SEARCH_DOMAINS,
-        label: ACTION_LABELS.SEARCH_DOMAINS,
-        type: ACTION_TYPES.LIST,
-        value: [],
-      });
-    }
-
-    const actions = trustList?.actions.action_list.map((action, actionIndex) =>
-      actionIndex === 0 ? { ...action, value: [...action.value, domain] } : action,
-    );
-
-    trustList && AugmentationManager.addOrEditAugmentation(trustList, { actions });
-  };
-
-  const handleRemoveTrusted = () => {
-    const actions = trustList?.actions.action_list.map((action) => {
-      const { key, value } = action;
-      return key === ACTION_KEYS.SEARCH_DOMAINS
-        ? { ...action, value: value.filter((valueDomain) => valueDomain !== domain) }
-        : action;
-    });
-
-    window.postMessage(
-      {
-        domain,
-        name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
-        remove: trustList?.id ?? '',
-        selector: {
-          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-        },
-      },
-      '*',
-    );
-
-    trustList && AugmentationManager.addOrEditAugmentation(trustList, { actions });
-  };
-
   const handleToggleTrusted = (e: CheckboxChangeEvent) => {
-    e.target.checked ? handleAddTrusted() : handleRemoveTrusted();
+    AugmentationManager.toggleTrustlist(domain);
     setIsTrusted(e.target.checked);
   };
 

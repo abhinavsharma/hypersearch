@@ -15,8 +15,6 @@ import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   PROTECTED_AUGMENTATIONS,
-  REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-  REMOVE_SEARCHED_DOMAIN_MESSAGE,
 } from 'utils';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -155,80 +153,19 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
           : action;
       }),
     };
-
-    if (type === 'search') {
-      window.postMessage(
-        {
-          name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
-          remove: augmentation.id,
-          domain,
-          selector: {
-            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-          },
-        },
-        '*',
-      );
-    }
-
-    AugmentationManager.addOrEditAugmentation(augmentation, newData);
-
     if (type === 'block') {
       setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
       SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
-      window.postMessage(
-        {
-          name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-          remove: augmentation.id,
-          domain,
-          selector: {
-            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-          },
-        },
-        '*',
-      );
     }
+    AugmentationManager.addOrEditAugmentation(augmentation, newData);
   };
 
   const handleDisableSuggested = (augmentation: AugmentationObject, type: Section['type']) => {
-    AugmentationManager.disableSuggestedAugmentation(augmentation);
-
-    if (type === 'search') {
-      window.postMessage(
-        {
-          name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
-          remove: augmentation.id,
-          domain,
-          selector: {
-            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-          },
-        },
-        '*',
-      );
-    }
-
     if (type === 'block') {
       setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
       SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
-      window.postMessage(
-        {
-          name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-          remove: augmentation.id,
-          domain,
-          selector: {
-            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-          },
-        },
-        '*',
-      );
     }
+    AugmentationManager.disableSuggestedAugmentation(augmentation);
   };
 
   const handleCreateAugmentation = () => {

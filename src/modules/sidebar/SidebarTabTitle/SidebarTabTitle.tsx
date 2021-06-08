@@ -9,6 +9,7 @@ import {
   EXTENSION_SUBTAB_SCROLL,
   extractUrlProperties,
   removeProtocol,
+  SIDEBAR_TAB_FAKE_URL,
   TRIGGER_FRAME_SCROLL_LOG_MESSAGE,
   TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
@@ -82,7 +83,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
   return (
     <div
       onClick={handleClick}
-      className={`insight-tab-pill ${tab.url?.href === 'hide' ? 'hidden' : ''}`}
+      className={`insight-tab-pill ${tab.url?.href === SIDEBAR_TAB_FAKE_URL ? 'hidden' : ''}`}
     >
       <span
         className={`insight-tab-title ${activeKey === (index + 1).toString() ? 'active' : ''} ${

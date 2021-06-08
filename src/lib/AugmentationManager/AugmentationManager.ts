@@ -14,7 +14,6 @@ import {
   extractUrlProperties,
   EXTENSION_SHARE_URL,
   NUM_DOMAINS_TO_EXCLUDE,
-  REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   IGNORED_PREFIX,
   INSTALLED_PREFIX,
@@ -23,7 +22,6 @@ import {
   EXTENSION_BLOCKLIST_ADD_DOMAIN,
   EXTENSION_BLOCKLIST_REMOVE_DOMAIN,
   EXTENSION_AUGMENTATION_SAVE,
-  REMOVE_SEARCHED_DOMAIN_MESSAGE,
   MY_TRUSTLIST_ID,
   ENABLED_AUGMENTATION_TYPES,
   ACTION_KEYS,
@@ -106,29 +104,16 @@ class AugmentationManager {
       ...blockList.actions.action_list.filter(({ key, value }) =>
         key === ACTION_KEYS.SEARCH_HIDE_DOMAIN ? value[0] !== domain : true,
       ),
-    ] as AugmentationObject['actions']['action_list'];
+    ];
     blockList.actions.action_list = newActionList;
     this.addOrEditAugmentation(blockList, {
       actions: newActionList,
-    }),
-      (SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain));
+    });
+    SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
     !SidebarLoader.strongPrivacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
         domain,
       });
-    window.top.postMessage(
-      {
-        name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-        remove: blockList.id,
-        domain,
-        selector: {
-          link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-          featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-          container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-        },
-      },
-      '*',
-    );
   }
 
   /**
@@ -152,20 +137,6 @@ class AugmentationManager {
         },
       ],
     });
-    existingDomain &&
-      window.postMessage(
-        {
-          name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
-          remove: MY_TRUSTLIST_ID,
-          domain,
-          selector: {
-            link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-            featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-            container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-          },
-        },
-        '*',
-      );
   }
 
   /**
@@ -308,49 +279,6 @@ class AugmentationManager {
       (i) => i.id !== augmentation.id,
     );
     chrome.storage.local.remove(augmentation.id);
-    const hasHideDomains = augmentation.actions.action_list.filter(
-      ({ key }) => key === ACTION_KEYS.SEARCH_HIDE_DOMAIN,
-    );
-    const hasSearchDomains = augmentation.actions.action_list.filter(
-      ({ key }) => key === ACTION_KEYS.SEARCH_DOMAINS,
-    );
-    if (hasSearchDomains) {
-      hasSearchDomains.forEach(({ value }) =>
-        window.postMessage(
-          {
-            name: REMOVE_SEARCHED_DOMAIN_MESSAGE,
-            remove: augmentation.id,
-            domain: value[0],
-            selector: {
-              link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-              featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-              container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-            },
-          },
-          '*',
-        ),
-      );
-    }
-    if (hasHideDomains) {
-      hasHideDomains.forEach((domain) => {
-        SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter(
-          (hidden) => hidden !== domain.value[0],
-        );
-        window.postMessage(
-          {
-            name: REMOVE_HIDE_DOMAIN_OVERLAY_MESSAGE,
-            remove: augmentation.id,
-            domain,
-            selector: {
-              link: SidebarLoader.customSearchEngine.querySelector?.['desktop'],
-              featured: SidebarLoader.customSearchEngine.querySelector?.featured ?? Array(0),
-              container: SidebarLoader.customSearchEngine.querySelector?.result_container_selector,
-            },
-          },
-          '*',
-        );
-      });
-    }
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
@@ -366,9 +294,7 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public getAugmentationRelevancy(
-    augmentation: AugmentationObject,
-  ): {
+  public getAugmentationRelevancy(augmentation: AugmentationObject): {
     isHidden: boolean;
     isRelevant: boolean;
     hasPreventAutoexpand: boolean;
@@ -489,7 +415,7 @@ class AugmentationManager {
           key === CONDITION_KEYS.SEARCH_ENGINE_IS ||
           unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
         ) {
-          const cse = (value[0] as unknown) as CustomSearchEngine;
+          const cse = value[0] as unknown as CustomSearchEngine;
           const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params?.every(
             (param) => !!SidebarLoader.url.searchParams.get(param),
           );

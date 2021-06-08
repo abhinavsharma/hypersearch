@@ -6,6 +6,7 @@ declare module './RightActionBar' {
     container: string;
     searchingAugmentations: AugmentationObject[];
     blockingAugmentations: AugmentationObject[];
+    featuringAugmentations: AugmentationObject[];
   };
 
   type RightActionBar = FunctionComponent<RightActionBarProps>;

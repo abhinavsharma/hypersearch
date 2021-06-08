@@ -26,7 +26,7 @@ import {
   DUMMY_SUBTABS_URL,
   SUBTABS_CACHE_EXPIRE_MIN,
   BANNED_DOMAINS,
-  HIDE_TAB_FAKE_URL,
+  SIDEBAR_TAB_FAKE_URL,
   keyboardHandler,
   IGNORED_PREFIX,
   CSE_PREFIX,
@@ -265,6 +265,7 @@ class SidebarLoader {
 
   public enabledOtherAugmentations: AugmentationObject[];
 
+  public featureDomains: string[];
   public hideDomains: string[];
 
   public tourStep!: string;
@@ -288,16 +289,18 @@ class SidebarLoader {
     this.otherAugmentations = [];
     this.enabledOtherAugmentations = [];
     this.ignoredAugmentations = [];
+    this.featureDomains = [];
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
     this.userData = Object.create(null);
   }
 
   public get maxAvailableSpace() {
-    const resultWidth = (this.document
-      ?.querySelector(this.customSearchEngine.querySelector?.desktop)
-      ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement)
-      ?.offsetWidth;
+    const resultWidth = (
+      this.document
+        ?.querySelector(this.customSearchEngine.querySelector?.desktop)
+        ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement
+    )?.offsetWidth;
 
     const maxWidth = window.innerWidth - 300;
 
@@ -375,9 +378,12 @@ class SidebarLoader {
     const emptyUrl = () => new URL(isSafari() ? SAFARI_FALLBACK_URL : `https://${defaultUrl}`);
     let fakeTab = false;
     augmentation.actions.action_list.forEach((action) => {
-      if (!fakeTab && action.key === ACTION_KEYS.SEARCH_HIDE_DOMAIN) {
+      if (
+        !fakeTab &&
+        (action.key === ACTION_KEYS.SEARCH_HIDE_DOMAIN || action.key === ACTION_KEYS.SEARCH_FEATURE)
+      ) {
         const fakeUrl = emptyUrl();
-        fakeUrl.href = HIDE_TAB_FAKE_URL;
+        fakeUrl.href = SIDEBAR_TAB_FAKE_URL;
         urls.push(fakeUrl);
         fakeTab = true;
       }
@@ -387,6 +393,9 @@ class SidebarLoader {
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case ACTION_KEYS.SEARCH_HIDE_DOMAIN:
           this.hideDomains.push(action.value[0]);
+          break;
+        case ACTION_KEYS.SEARCH_FEATURE:
+          this.featureDomains.push(action.value[0]);
           break;
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
         case ACTION_KEYS.NO_COOKIE:
@@ -428,7 +437,7 @@ class SidebarLoader {
           {
             const tabAppendages = action.value;
             if (!tabAppendages.length) {
-              customSearchUrl.href = HIDE_TAB_FAKE_URL;
+              customSearchUrl.href = SIDEBAR_TAB_FAKE_URL;
             }
             const append =
               tabAppendages.length === 1
@@ -443,7 +452,7 @@ class SidebarLoader {
         case ACTION_KEYS.SEARCH_ALSO:
           {
             const url = AugmentationManager.processSearchAlsoActionString(
-              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
+              action.value[0] as unknown as CustomSearchEngine['search_engine_json'],
             );
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             urls.unshift(url);
@@ -480,9 +489,9 @@ class SidebarLoader {
       switch (action.key) {
         case ACTION_KEYS.SEARCH_DOMAINS:
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          this.publicationSlices[augmentation.id][
-            customSearchUrl.href
-          ] = action.value.map((value) => removeProtocol(value));
+          this.publicationSlices[augmentation.id][customSearchUrl.href] = action.value.map(
+            (value) => removeProtocol(value),
+          );
           urls.push(customSearchUrl);
           break;
         case ACTION_KEYS.SEARCH_APPEND:

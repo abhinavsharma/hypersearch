@@ -13,7 +13,7 @@ import {
   removeEmoji,
   APP_NAME,
   EMPTY_AUGMENTATION,
-  HIDE_TAB_FAKE_URL,
+  SIDEBAR_TAB_FAKE_URL,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   URL_PARAM_TAB_TITLE_KEY,
@@ -53,7 +53,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     </List.Item>
   );
 
-  const filteredTabs = tabs.filter(({ url }) => url?.href !== HIDE_TAB_FAKE_URL);
+  const filteredTabs = tabs.filter(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL);
 
   // Calculate the relative height of the nub by using the tab's title length
   const tabHeight = filteredTabs.length
