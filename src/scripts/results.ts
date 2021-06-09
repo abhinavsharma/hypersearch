@@ -16,6 +16,9 @@ const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
 import {
   ACTION_KEYS,
+  INSIGHT_BLOCKED_BY_SELECTOR,
+  INSIGHT_FEATURED_BY_SELECTOR,
+  INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
   MY_TRUSTLIST_ID,
@@ -151,11 +154,15 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
           if (!openedAlready) {
             openedAlready = true;
             const firstSearchedResult = (Array.from(
-              document.querySelectorAll(`[${INSIGHT_SEARCH_BY_SELECTOR}]`),
-            ) as HTMLDivElement[]).find((result: HTMLElement) =>
-              result?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)?.includes(MY_TRUSTLIST_ID),
+              document.querySelectorAll(`[${INSIGHT_HAS_CREATED_SUBTAB_SELECTOR}]`),
+            ) as HTMLDivElement[]).find(
+              (result: HTMLElement) =>
+                (result?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)?.includes(MY_TRUSTLIST_ID) ||
+                  result?.getAttribute(INSIGHT_FEATURED_BY_SELECTOR)?.length) &&
+                !result?.getAttribute(INSIGHT_BLOCKED_BY_SELECTOR),
             );
             firstSearchedResult?.getAttribute(INSIGHT_RESULT_URL_SELECTOR);
+
             if (firstSearchedResult) {
               chrome.runtime.sendMessage({
                 type: SWITCH_TO_TAB,
