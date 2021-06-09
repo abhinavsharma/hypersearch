@@ -9,11 +9,13 @@ import 'antd/lib/typography/style/index.css';
 import './PrivacyFrame.scss';
 
 /** MAGICS **/
+export const ACTIVE_LICENSE_MAIN_HEADER = 'Choose a Privacy Setting';
+export const INACTIVE_LICENSE_MAIN_HEADER = 'Maximum Privacy Enabled';
+
 const TAB_TITLE = `${APP_NAME} - Privacy Setting`;
-const ACTIVE_LICENSE_MAIN_HEADER = 'Choose a Privacy Setting';
-const INACTIVE_LICENSE_MAIN_HEADER = 'Maximum Privacy Enabled';
 const NEXT_BUTTON_TEXT = 'Next';
-const INACTIVE_LICENSE_TEXT_CONTENT = (
+
+export const INACTIVE_LICENSE_TEXT_CONTENT = (
   <>
     <p>Unlicensed usage never sends any information about the page you visit to our servers.</p>
     <p>However, the suggestions we can make are limited.</p>

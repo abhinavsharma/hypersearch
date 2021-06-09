@@ -6,10 +6,21 @@
       width: calc(100% - (2 * #{$sidebar_space_larger}));
       padding: $sidebar_space_larger;
 
+      h2 {
+        margin: $sidebar_space_medium 0;
+      }
+
       button {
         span {
           justify-content: center;
         }
+      }
+
+      .settings-logout-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
       }
     }
   }

@@ -11,6 +11,7 @@ export const SYNC_FINISHED_KEY = 'hasFinishedIntro';
 export const SYNC_DISTINCT_KEY = 'distinctId';
 export const SYNC_PUBLICATION_TIME_TRACK_KEY = 'publicationTimeTrack';
 export const SYNC_ALTERNATE_HOVER_ACTION = 'altHoverAction';
+export const USER_JWT_TOKEN = 'cognito_user_jwt';
 export const CACHED_SUBTABS_KEY = 'cachedSubtabs';
 export const USE_COUNT_PREFIX = 'augmentationUseCount';
 export const IGNORED_PREFIX = 'ignored';
@@ -85,6 +86,8 @@ export const MAILCHIMP_SERVER_PREFIX = 'us6';
 export const MAILCHIMP_LIST_ID = '4df884a9d6';
 export const MAILCHIMP_API_KEY = '1779b85b6ac29f101e1b9d119c9e9b80';
 export const MAILCHIMP_URL = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/<placeholder>`;
+export const AWS_COGNITO_POOL_ID = 'us-east-2_YuInMWEfg';
+export const AWS_COGNITO_CLIENT_ID = '7bou6gv1lk6hs35ptm0ciqja77';
 
 /**
  * ! FLAGS

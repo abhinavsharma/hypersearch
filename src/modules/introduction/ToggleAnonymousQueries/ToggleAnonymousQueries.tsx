@@ -9,8 +9,8 @@ import './ToggleAnonymousQueries.scss';
 
 /** MAGICS **/
 // * CHECKED STATE
-const CHECKED_SWITCH_TEXT = 'Use server suggestions';
-const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
+export const CHECKED_SWITCH_TEXT = 'Use server suggestions';
+export const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
   <>
     <p>Recommended for most people, even very privacy sensitive users.</p>
     <p>
@@ -37,8 +37,8 @@ const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
   </>
 );
 // * UNCHECKED STATE
-const UNCHECKED_SWITCH_TEXT = 'Do not use sever suggestions';
-const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
+export const UNCHECKED_SWITCH_TEXT = 'Do not use sever suggestions';
+export const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
   <>
     <p>Only recommended for local use.</p>
     <p>
