@@ -51,6 +51,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
           query: SidebarLoader.query,
           url: msg.url,
+          license_keys: [SidebarLoader.userData.license],
           position_in_serp:
             SidebarLoader.publicationSlices['original'].indexOf(
               extractUrlProperties(msg.url).full,
@@ -74,6 +75,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
               query: SidebarLoader.query,
               url: msg.url,
+              license_keys: [SidebarLoader.userData.license],
               filter_name: sourceTab.title,
               position_in_serp:
                 SidebarLoader.publicationSlices[sourceTab.id][sourceTab.url.href].indexOf(

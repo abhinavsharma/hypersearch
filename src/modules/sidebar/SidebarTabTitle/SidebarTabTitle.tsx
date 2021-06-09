@@ -29,6 +29,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_HOVEROPEN, {
         query: SidebarLoader.query,
         url: msg.url,
+        license_keys: [SidebarLoader.userData.license],
         position_in_serp:
           (SidebarLoader.publicationSlices as any)['original'].indexOf(
             extractUrlProperties(msg.url).full,
@@ -46,6 +47,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       originalUrl: SidebarLoader.strongPrivacy
         ? md5(SidebarLoader.url.href)
         : SidebarLoader.url.href,
+      license_keys: [SidebarLoader.userData.license],
       originalQuery: SidebarLoader.strongPrivacy ? md5(SidebarLoader.query) : SidebarLoader.query,
       subtabUrl: SidebarLoader.strongPrivacy ? md5(tab.url.href) : tab.url.href,
       subtabName: tab.title,
