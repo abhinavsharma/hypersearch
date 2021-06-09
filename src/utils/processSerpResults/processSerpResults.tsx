@@ -115,8 +115,6 @@ const createOverlay = (
     serpResult.style.position = 'relative';
     serpResult.style.maxHeight = '125px';
     serpResult.style.overflow = 'hidden';
-    //serpResult.style.paddingTop = '20px';
-    //serpResult.style.marginTop = '-20px';
     serpResult.insertBefore(overlay, serpResult.firstChild);
   }
 };

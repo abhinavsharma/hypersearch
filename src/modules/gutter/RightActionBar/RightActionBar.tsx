@@ -28,6 +28,7 @@ export const RightActionBar: RightActionBar = ({
   container,
   searchingAugmentations = [],
   featuringAugmentations = [],
+  blockingAugmentations = [],
 }) => {
   const [hasTab, setHasTab] = useState(false);
 
@@ -135,6 +136,7 @@ export const RightActionBar: RightActionBar = ({
         z-index: ${SIDEBAR_Z_INDEX - 2};
         margin-top: -${resultRef.current?.offsetHeight}px;
         height: ${resultRef.current?.offsetHeight}px;
+        right: ${blockingAugmentations.length ? '47px' : '0'};
         cursor: pointer;
         `,
       );
