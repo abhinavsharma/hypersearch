@@ -7,7 +7,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
 import message from 'antd/lib/message';
-import Router from 'route-lite';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { ActivePage, BuilderPage, GutterPage } from 'modules/pages';
@@ -168,30 +167,28 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
     <>
       <Tabs className="insight-tab-container" renderTabBar={TabBar} activeKey={activeKey}>
         <TabPane key="0" tab={null} className="sidebar-tab-panel" forceRender>
-          <Router>
-            {(() => {
-              switch (showPage) {
-                case OPEN_BUILDER_PAGE.ACTIVE:
-                  return <ActivePage />;
-                case OPEN_BUILDER_PAGE.BUILDER:
-                  return (
-                    <BuilderPage
-                      augmentation={pageData?.augmentation}
-                      isAdding={pageData?.isAdding}
-                    />
-                  );
-                case OPEN_BUILDER_PAGE.GUTTER:
-                  return (
-                    <GutterPage
-                      hidingAugmentations={pageData?.augmentations}
-                      domain={pageData?.publication}
-                    />
-                  );
-                default:
-                  return null;
-              }
-            })()}
-          </Router>
+          {(() => {
+            switch (showPage) {
+              case OPEN_BUILDER_PAGE.ACTIVE:
+                return <ActivePage />;
+              case OPEN_BUILDER_PAGE.BUILDER:
+                return (
+                  <BuilderPage
+                    augmentation={pageData?.augmentation}
+                    isAdding={pageData?.isAdding}
+                  />
+                );
+              case OPEN_BUILDER_PAGE.GUTTER:
+                return (
+                  <GutterPage
+                    hidingAugmentations={pageData?.augmentations}
+                    domain={pageData?.publication}
+                  />
+                );
+              default:
+                return null;
+            }
+          })()}
         </TabPane>
         {tabs?.map((tab, i) => {
           const tabTitle = (

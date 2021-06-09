@@ -150,11 +150,9 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
           processResults(data);
           if (!openedAlready) {
             openedAlready = true;
-            const firstSearchedResult = (
-              Array.from(
-                document.querySelectorAll(`[${INSIGHT_SEARCH_BY_SELECTOR}]`),
-              ) as HTMLDivElement[]
-            ).find((result: HTMLElement) =>
+            const firstSearchedResult = (Array.from(
+              document.querySelectorAll(`[${INSIGHT_SEARCH_BY_SELECTOR}]`),
+            ) as HTMLDivElement[]).find((result: HTMLElement) =>
               result?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)?.includes(MY_TRUSTLIST_ID),
             );
             firstSearchedResult?.getAttribute(INSIGHT_RESULT_URL_SELECTOR);

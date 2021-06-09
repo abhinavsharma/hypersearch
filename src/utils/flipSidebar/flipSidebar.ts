@@ -9,13 +9,13 @@ export const flipSidebar: FlipSidebar = (
   preventOverlay,
 ) => {
   const availableWidth = Number(
-    maxAvailableWidth > Number(variables.sidebarMaxWidth)
+    maxAvailableWidth > Number(variables.sidebarMaxWidth.slice(0, -2))
       ? maxAvailableWidth
-      : variables.sidebarMaxWidth,
+      : variables.sidebarMaxWidth.slice(0, -2),
   );
   const actualWidth = Number(
-    availableWidth > Number(variables.sidebarStretchedMaxWidth)
-      ? variables.sidebarStretchedMaxWidth
+    availableWidth > Number(variables.sidebarStretchedMaxWidth.slice(0, -2))
+      ? variables.sidebarStretchedMaxWidth.slice(0, -2)
       : availableWidth,
   );
 

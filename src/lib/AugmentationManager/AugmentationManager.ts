@@ -294,7 +294,9 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public getAugmentationRelevancy(augmentation: AugmentationObject): {
+  public getAugmentationRelevancy(
+    augmentation: AugmentationObject,
+  ): {
     isHidden: boolean;
     isRelevant: boolean;
     hasPreventAutoexpand: boolean;
@@ -415,7 +417,7 @@ class AugmentationManager {
           key === CONDITION_KEYS.SEARCH_ENGINE_IS ||
           unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
         ) {
-          const cse = value[0] as unknown as CustomSearchEngine;
+          const cse = (value[0] as unknown) as CustomSearchEngine;
           const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params?.every(
             (param) => !!SidebarLoader.url.searchParams.get(param),
           );
