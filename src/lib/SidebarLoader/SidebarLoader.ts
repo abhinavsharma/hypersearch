@@ -728,6 +728,7 @@ class SidebarLoader {
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
           url: this.url,
+          license_keys: [this.userData.license],
         });
       }
       await this.handleSubtabApiResponse(response);
