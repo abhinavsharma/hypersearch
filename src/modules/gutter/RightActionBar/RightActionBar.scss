@@ -10,6 +10,14 @@
   margin-right: -10px;
   width: 60px;
 
+  [insight-show-gutter-icon='true'] {
+    opacity: 1;
+
+    .gutter-icon-container {
+      opacity: 1;
+    }
+  }
+
   .gutter-icon-container {
     opacity: 0;
     display: flex;
