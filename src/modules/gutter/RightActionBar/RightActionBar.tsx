@@ -89,25 +89,31 @@ export const RightActionBar: RightActionBar = ({
 
   useEffect(() => {
     const handleAlterOpen = () => {
+      const element =
+        window.location.href.search(/duckduckgo\.com/gi) > -1
+          ? rootRef.current.parentElement?.querySelector(container)
+          : resultRef.current;
       if (
         window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
-        resultRef.current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
+        element?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
       ) {
-        rootRef.current.style.cursor = 'wait';
+        const element = rootRef.current as HTMLDivElement;
+        element.style.cursor = 'wait';
         timeoutRef.current = setTimeout(() => {
           chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
           chrome.runtime.sendMessage({
             type: SWITCH_TO_TAB,
             url,
           });
-          if (rootRef.current) {
-            rootRef.current.style.cursor = 'pointer';
-          }
+          element.style.cursor = 'pointer';
         }, SWITCH_TO_TAB_DELAY);
       }
     };
 
-    const handleClick = () => window.open(url, '_blank');
+    const handleClick = (e: MouseEvent) => {
+      e.stopPropagation();
+      window.open(url, '_blank');
+    };
 
     if (iconRef.current) {
       if (isSearched || isFeatured) {
@@ -117,14 +123,13 @@ export const RightActionBar: RightActionBar = ({
       rootRef.current =
         rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root-right');
 
-      /* eslint-disable */
+      // prettier-ignore
       const newResult =
         resultRef.current ?? window.location.href.search(/duckduckgo\.com/gi) > -1
           ? (rootRef.current?.parentElement as HTMLDivElement)
           : container
             ? (rootRef.current?.closest(container) as HTMLDivElement)
             : rootRef.current?.parentElement;
-      /* eslint-enable */
 
       if (newResult) {
         resultRef.current = newResult as HTMLDivElement;
@@ -136,12 +141,19 @@ export const RightActionBar: RightActionBar = ({
         z-index: ${SIDEBAR_Z_INDEX - 2};
         margin-top: -${resultRef.current?.offsetHeight}px;
         height: ${resultRef.current?.offsetHeight}px;
-        right: ${blockingAugmentations.length ? '47px' : '0'};
+        right: ${
+          // prettier-ignore
+          window.location.href.search(/duckduckgo\.com/gi) > -1
+            ? '-50px'
+            : blockingAugmentations.length
+              ? '47px'
+              : '0'
+        };
         cursor: pointer;
         `,
       );
 
-      if (resultRef.current) {
+      if (resultRef.current && window.location.href.search(/duckduckgo\.com/gi) === -1) {
         resultRef.current.style.marginRight = '-100px';
         resultRef.current.style.paddingRight = '100px';
       }
@@ -158,12 +170,24 @@ export const RightActionBar: RightActionBar = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [container, handleMouseEnter, handleMouseLeave, isSearched, isFeatured, url]);
+  }, [
+    container,
+    handleMouseEnter,
+    handleMouseLeave,
+    isSearched,
+    isFeatured,
+    url,
+    blockingAugmentations.length,
+  ]);
 
   useEffect(() => {
     const { current } = resultRef;
-    setHasTab(current?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true');
-  }, [resultRef]);
+    const element =
+      window.location.href.search(/duckduckgo\.com/gi) > -1
+        ? rootRef.current.parentElement?.querySelector(container)
+        : current;
+    setHasTab(element?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true');
+  }, [resultRef, container]);
 
   const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
