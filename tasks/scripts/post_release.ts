@@ -4,9 +4,10 @@ import mv from 'mv';
 import rimraf from 'rimraf';
 
 (() => {
+  const dateTime = new Date().toISOString().split('T');
   mv(
     'dist/web-ext-artifacts',
-    `releases/${new Date().toISOString().split('T')[0]}`,
+    `releases/${dateTime[0]}-${dateTime[1].split(':').slice(0, 2).join('-')}`,
     { mkdirp: true },
     (err) => {
       if (err) {
