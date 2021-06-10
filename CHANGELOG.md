@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.92](https://github.com/lumosbrowser/lumos-extension/compare/v0.0.91...v0.0.92) (2021-06-10)
+
+
+### Features
+
+* **featured action:** add ability to highlight featured results in the gutter unit ([9d004fc](https://github.com/lumosbrowser/lumos-extension/commit/9d004fc39164e8a8fce0bbdd2300ab94a9975eb6))
+* **logging:** send license key to serp log events ([9dc240d](https://github.com/lumosbrowser/lumos-extension/commit/9dc240d141ccac6f5a077932d6f66be0549866cc))
+
+
+### Bug Fixes
+
+* **gutter unit:** apply autoscroll to highlighted items and fix gutter alignment ([03b80d1](https://github.com/lumosbrowser/lumos-extension/commit/03b80d1c6d615ec15194c1a83c670cff6912633c))
+* sass math lib compatibility ([541a24d](https://github.com/lumosbrowser/lumos-extension/commit/541a24ddff829865316b0a6946649d804a13b88a))
+
 ### 0.0.91 (2021-06-08)
 
 
