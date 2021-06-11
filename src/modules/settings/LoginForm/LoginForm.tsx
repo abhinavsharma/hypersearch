@@ -18,10 +18,17 @@ const REACTIVATION_BUTTON_TEXT = 'Click here to get a new activation code';
 const SENT_REACTIVATION_BUTTON_TEXT = 'New activation code sent to <placeholder>';
 
 export const LoginForm = () => {
+  const {
+    storedEmail,
+    storedToken,
+    setStoredEmail,
+    setStoredToken,
+    useServerSuggestions,
+    handlePrivacyChange,
+  } = useContext(SettingsContext);
   const [emailValue, setEmailValue] = useState<string>('');
   const [activationCode, setActivationCode] = useState<string>('');
   const [sentReactivation, setSentReactivation] = useState<boolean>(false);
-  const { storedEmail, storedToken, setStoredEmail, setStoredToken } = useContext(SettingsContext);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmailValue(e.target.value);
@@ -37,68 +44,69 @@ export const LoginForm = () => {
   };
 
   const handleLogout = async () => {
+    // delete stored auth data
     await UserManager.logout();
     setStoredEmail('');
     setStoredToken(undefined);
     setEmailValue('');
     setActivationCode('');
+    handlePrivacyChange(undefined);
   };
 
   const handleActivation = async () => {
+    // set auth token in window.storage
     const token = await UserManager.activate(activationCode);
     setStoredToken(token);
+    if (useServerSuggestions === undefined) {
+      // enable server suggestions by default. see spec
+      handlePrivacyChange(true);
+    }
   };
 
   const handleReactivate = async () => {
+    // send activation code to given email
     await UserManager.login(UserManager.user.email as string);
     setSentReactivation(true);
     setActivationCode('');
   };
 
-  if (storedToken) {
-    return (
-      <div className="settings-logout-row">
-        <Text strong>{UserManager.user.email}</Text>
-        <Button type="primary" onClick={handleLogout}>
-          {LOGOUT_BUTTON_TEXT}
-        </Button>
-      </div>
-    );
-  } else {
-    return !storedEmail ? (
+  return storedToken ? (
+    <div className="settings-logout-row">
+      <Text strong>{UserManager.user.email}</Text>
+      <Button type="primary" onClick={handleLogout}>
+        {LOGOUT_BUTTON_TEXT}
+      </Button>
+    </div>
+  ) : !storedEmail ? (
+    <div className="insight-row insight-full-width">
+      <Input
+        type="text"
+        value={emailValue}
+        placeholder={EMAIL_INPUT_PLACEHOLDER}
+        onChange={handleEmailChange}
+      />
+      <Button type="primary" onClick={handleLogin}>
+        {LOGIN_BUTTON_TEXT}
+      </Button>
+    </div>
+  ) : (
+    <div className="insight-list insight-full-width">
       <div className="insight-row insight-full-width">
         <Input
           type="text"
-          value={emailValue}
-          placeholder={EMAIL_INPUT_PLACEHOLDER}
-          onChange={handleEmailChange}
+          value={activationCode}
+          placeholder={ACTIVATE_INPUT_PLACEHOLDER}
+          onChange={handleActivationCodeChange}
         />
-        <Button type="primary" onClick={handleLogin}>
-          {LOGIN_BUTTON_TEXT}
+        <Button type="primary" onClick={handleActivation}>
+          {ACTIVATE_BUTTON_TEXT}
         </Button>
       </div>
-    ) : (
-      <div className="insight-list insight-full-width">
-        <div className="insight-row insight-full-width">
-          <Input
-            type="text"
-            value={activationCode}
-            placeholder={ACTIVATE_INPUT_PLACEHOLDER}
-            onChange={handleActivationCodeChange}
-          />
-          <Button type="primary" onClick={handleActivation}>
-            {ACTIVATE_BUTTON_TEXT}
-          </Button>
-        </div>
-        <Button type="link" onClick={handleReactivate} disabled={sentReactivation}>
-          {sentReactivation
-            ? SENT_REACTIVATION_BUTTON_TEXT.replace(
-                '<placeholder>',
-                UserManager.user.email as string,
-              )
-            : REACTIVATION_BUTTON_TEXT}
-        </Button>
-      </div>
-    );
-  }
+      <Button type="link" onClick={handleReactivate} disabled={sentReactivation}>
+        {sentReactivation
+          ? SENT_REACTIVATION_BUTTON_TEXT.replace('<placeholder>', UserManager.user.email as string)
+          : REACTIVATION_BUTTON_TEXT}
+      </Button>
+    </div>
+  );
 };

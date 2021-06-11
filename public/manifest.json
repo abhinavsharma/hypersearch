@@ -58,12 +58,14 @@
     "default_title": "Insight"
   },
   "permissions": [
-    "bookmarks",
     "cookies",
     "storage",
     "<all_urls>",
     "webRequest",
     "webRequestBlocking",
     "webNavigation"
+  ],
+  "optional_permissions": [
+    "bookmarks"
   ]
 }

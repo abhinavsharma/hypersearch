@@ -46,7 +46,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
       query: SidebarLoader.query,
       filter_name: tab.title,
-      license_keys: [SidebarLoader.userData.license],
+      license_keys: [UserManager.user.license],
       domains_to_search: SidebarLoader.domainsToSearch[tab.id],
     });
   };

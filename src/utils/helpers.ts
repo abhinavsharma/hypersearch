@@ -95,10 +95,8 @@ export const triggerSerpProcessing = (
   !subtabsOnly &&
     window.top.postMessage(
       {
-        createdUrls,
-        hideDomains: loader.hideDomains,
-        name: PROCESS_SERP_OVERLAY_MESSAGE,
         customLink,
+        createdUrls,
         augmentation,
         name: PROCESS_SERP_OVERLAY_MESSAGE,
         selector: {
@@ -337,8 +335,7 @@ export const b64EncodeUnicode = (stringLike: string) => {
 };
 
 export const validateEmail = (email: string) => {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
 
@@ -443,6 +440,9 @@ export const isSafari = () => {
     ua.match(hasVersion) !== null && ua.match(hasSafari) !== null && ua.match(hasChrome) === null
   );
 };
+
+// See: https://stackoverflow.com/a/9851769/2826713
+export const isFirefox = () => typeof InstallTrigger !== 'undefined';
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
   if (a.augmentation?.id === MY_TRUSTLIST_ID) return 1;

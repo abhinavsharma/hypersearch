@@ -19,7 +19,7 @@
 
   p {
     margin-top: 0;
-    margin-bottom: math.div($intro_space_tiny, 2);
+    margin-bottom: div($intro_space_tiny, 2);
     font-size: $intro_font_smaller;
   }
 

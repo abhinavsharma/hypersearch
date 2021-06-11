@@ -10,6 +10,7 @@ import {
   CognitoUser,
   CognitoUserAttribute,
   AuthenticationDetails,
+  CognitoIdToken,
 } from 'amazon-cognito-identity-js';
 import { debug } from 'utils/helpers';
 import {
@@ -76,6 +77,30 @@ class UserManager {
     };
   }
 
+  /**
+   * Gets the most recent user token and updates cached property.
+   */
+  public getUserToken(): Promise<CognitoIdToken | null> {
+    return new Promise((resolve) => {
+      const user = this.getCognitoUser();
+      if (user) {
+        user.getSession((error: Error, session: TCognitoUserSession) => {
+          if (error) {
+            debug('AWS Cognito Authenticate Error', error);
+            return resolve(null);
+          }
+          debug('AWS Cognito Authenticate Success', session);
+          debug('AWS Cognito Token', session?.getIdToken());
+
+          this._token = session?.getIdToken();
+          resolve(this._token || null);
+        });
+      } else {
+        resolve(null);
+      }
+    });
+  }
+
   public signup(email: string) {
     const customAttributes = [
       new CognitoUserAttribute({
@@ -90,21 +115,23 @@ class UserManager {
   }
 
   public async activate(code: string) {
-    await new Promise((resolve) =>
+    return await new Promise<TAccessToken | undefined>((resolve) =>
       chrome.storage.sync.set(
         { [SYNC_LICENSE_KEY]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
-        () => resolve(null),
+        () =>
+          this.getCognitoUser()?.sendCustomChallengeAnswer(code, {
+            onSuccess: (session) => {
+              debug('AWS Cognito Custom Challenge Success', session);
+              this._token = session?.getAccessToken();
+              debug('AWS Cognito Token', this._token);
+              resolve(this._token);
+            },
+            onFailure: (error) => {
+              debug('AWS Cognito Custom Challenge Error', error), resolve(undefined);
+            },
+          }),
       ),
     );
-    this.getCognitoUser()?.sendCustomChallengeAnswer(code, {
-      onSuccess: (session) => {
-        debug('AWS Cognito Custom Challenge Success', session);
-        this._token = session?.getAccessToken();
-        debug('AWS Cognito Token', this._token);
-      },
-      onFailure: (error) => debug('AWS Cognito Custom Challenge Error', error),
-    });
-    return this._token;
   }
 
   public async login(email: string) {
@@ -133,19 +160,6 @@ class UserManager {
     });
     this._email = '';
     this._token = undefined;
-  }
-
-  public authenticate() {
-    this.getCognitoUser()?.getSession((error: Error, session: TCognitoUserSession) => {
-      if (error) {
-        debug('AWS Cognito Authenticate Error', error);
-        return null;
-      }
-      debug('AWS Cognito Authenticate Success', session);
-      this._token = session?.getAccessToken();
-      debug('AWS Cognito Token', this._token);
-      return session?.isValid();
-    });
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -180,7 +194,7 @@ class UserManager {
       );
     }
 
-    this.authenticate();
+    await this.getUserToken();
   }
 }
 

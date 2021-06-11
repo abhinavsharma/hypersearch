@@ -10,6 +10,8 @@ import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
+  ADD_EXTERNAL_AUGMENTATION_MESSAGE,
+  ACTIVATE_EMAIL_MESSAGE,
 } from 'utils';
 
 (async (document: Document, location: Location) => {
@@ -22,7 +24,7 @@ import {
   );
   await UserManager.initialize();
   window.addEventListener('message', ({ data }) => {
-    if (data.name === 'ADD_EXTERNAL_AUGMENTATION') {
+    if (data.name === ADD_EXTERNAL_AUGMENTATION_MESSAGE) {
       chrome.runtime.sendMessage({
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
         page: OPEN_BUILDER_PAGE.BUILDER,
@@ -39,6 +41,13 @@ import {
   await SidebarLoader.loadOrUpdateSidebar(document, url);
   chrome.runtime.onMessage.addListener(async (msg) => {
     switch (msg.type) {
+      case ACTIVATE_EMAIL_MESSAGE:
+        chrome.runtime.sendMessage({
+          type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+          page: OPEN_BUILDER_PAGE.SETTINGS,
+          email: decodeURIComponent(msg.email),
+        });
+        break;
       case URL_UPDATED_MESSAGE:
         await SidebarLoader.loadOrUpdateSidebar(document, url);
         break;

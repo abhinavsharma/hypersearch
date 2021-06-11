@@ -10,6 +10,8 @@ import {
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
+  SYNC_END_MESSAGE,
+  SYNC_START_MESSAGE,
   SYNC_PRIVACY_KEY,
 } from 'utils';
 import {
@@ -35,6 +37,8 @@ const LOGIN_SECTION_TITLE = 'Login to your account';
 const ACTIVATION_SECTION_TITLE = 'Activate your account';
 const LOGOUT_SECTION_TITLE = `You are successfully logged in to ${APP_NAME}`;
 const BOOKMARKS_SYNC_BUTTON_TEXT = 'Sync Bookmarks';
+const BOOKMARKS_SYNCING_BUTTON_TEXT = 'Syncing Bookmarks';
+const BOOKMARKS_SYNC_BUTTON_LOGIN_TEXT = 'Login to sync Bookmarks';
 
 export const SettingsContext = React.createContext<TSettingsContext>(Object.create(null));
 
@@ -42,6 +46,15 @@ export const SettingsPage = () => {
   const [storedEmail, setStoredEmail] = useState<string>(UserManager.user.email ?? '');
   const [storedToken, setStoredToken] = useState<TAccessToken | undefined>(UserManager.user.token);
   const [useServerSuggestions, setUseServerSuggestions] = useState<boolean | undefined>(false);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg.type === SYNC_END_MESSAGE) {
+        setIsSyncing(false);
+      }
+    });
+  }, []);
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
@@ -51,7 +64,15 @@ export const SettingsPage = () => {
     });
   };
 
-  const handlePrivacyChange = useCallback(async (value: boolean) => {
+  const handleForceSync = async () => {
+    setIsSyncing(true);
+    chrome.runtime.sendMessage({
+      type: SYNC_START_MESSAGE,
+      token: (await UserManager.getUserToken())?.getJwtToken(),
+    });
+  };
+
+  const handlePrivacyChange = useCallback(async (value: boolean | undefined) => {
     setUseServerSuggestions(value);
     await new Promise((resolve) =>
       chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: value }, () => resolve(true)),
@@ -83,11 +104,21 @@ export const SettingsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.token]);
 
+  const bookmarksStatus = () => {
+    if (isSyncing) {
+      return BOOKMARKS_SYNCING_BUTTON_TEXT;
+    }
+
+    return !storedToken ? BOOKMARKS_SYNC_BUTTON_LOGIN_TEXT : BOOKMARKS_SYNC_BUTTON_TEXT;
+  };
+
   const context = {
     storedEmail,
     storedToken,
+    useServerSuggestions,
     setStoredEmail,
     setStoredToken,
+    handlePrivacyChange,
   };
 
   return (
@@ -155,10 +186,15 @@ export const SettingsPage = () => {
           {/* force sync bookmarks */}
           <section>
             <div className="settings-section-content">
-              <Button type="primary" block onClick={handleClose}>
+              <Button
+                block
+                type="primary"
+                onClick={handleForceSync}
+                disabled={!storedToken || isSyncing}
+              >
                 <span className="insight-row">
-                  <RefreshCw />
-                  &nbsp;{BOOKMARKS_SYNC_BUTTON_TEXT}
+                  <RefreshCw className={isSyncing ? 'spin' : ''} />
+                  &nbsp;{bookmarksStatus()}
                 </span>
               </Button>
             </div>

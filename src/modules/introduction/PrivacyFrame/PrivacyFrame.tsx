@@ -7,6 +7,7 @@ import { APP_NAME } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './PrivacyFrame.scss';
+import UserManager from 'lib/UserManager';
 
 /** MAGICS **/
 export const ACTIVE_LICENSE_MAIN_HEADER = 'Choose a Privacy Setting';
@@ -26,7 +27,7 @@ const { Title } = Typography;
 
 export const PrivacyFrame = () => {
   const stepContext = useContext(StepContext);
-  const handleNext = () => stepContext.setCurrentStep(4);
+  const handleNext = () => stepContext.setCurrentStep(3);
 
   return (
     <>
@@ -34,7 +35,7 @@ export const PrivacyFrame = () => {
         <title>{TAB_TITLE}</title>
       </Helmet>
       <div id="privacy-frame-container">
-        {stepContext.license.isActivated ? (
+        {UserManager.user.token ? (
           <>
             <Title level={2}>{ACTIVE_LICENSE_MAIN_HEADER}</Title>
             <ToggleAnonymousQueries />

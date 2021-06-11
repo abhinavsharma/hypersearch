@@ -19,6 +19,11 @@ export const INSTALLED_PREFIX = 'cse-custom';
 export const CSE_PREFIX = 'cse';
 export const PINNED_PREFIX = 'pinned';
 export const DEDICATED_ENGINE_PREFIX = 'dedicated-serp';
+export const BOOKMARKS_LAST_FETCH = 'bookmarks_last_fetch';
+export const BOOKMARKS_TO_ADD = 'bookmarks_to_add';
+export const BOOKMARKS_TO_UPDATE = 'bookmarks_to_update';
+export const BOOKMARKS_TO_DELETE = 'bookmarks_to_delete';
+export const BOOKMARKS_REMOTE_TO_LOCAL_ID = 'bookmarks_remote_to_local_id';
 
 /**
  * ! CUSTOM AUGMENTATIONS
@@ -46,6 +51,8 @@ export const LUMOS_API_URL_PROD = 'https://zy6kcqa01a.execute-api.us-east-2.amaz
 export const LUMOS_API_URL_DEBUG = 'https://nwwcsdsuw2.execute-api.us-east-2.amazonaws.com/dev/';
 export const IN_DEBUG_MODE = process.env.NODE_ENV || window.INSIGHT_FORCE_DEBUG;
 export const LUMOS_API_URL = process.env.NODE_ENV ? LUMOS_API_URL_PROD : LUMOS_API_URL_PROD;
+export const BOOKMARKS_READ_ENDPOINT = 'sync/bookmarks/read';
+export const BOOKMARKS_SAVE_ENDPOINT = 'sync/bookmarks/save';
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
 export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
@@ -156,6 +163,10 @@ export const TRIGGER_STOP_TRACK_TIMER_MESSAGE = 'TRIGGER_STOP_TRACK_TIMER_MESSAG
 export const HIDE_FRAME_OVERLAY_MESSAGE = 'HIDE_FRAME_OVERLAY_MESSAGE;';
 export const TRIGGER_FRAME_SCROLL_LOG_MESSAGE = 'TRIGGER_FRAME_SCROLL_LOG_MESSAGE';
 export const TRIGGER_GUTTER_HOVEROPEN_MESSAGE = 'TRIGGER_GUTTER_HOVEROPEN_MESSAGE';
+export const SYNC_START_MESSAGE = 'SYNC_START_MESSAGE';
+export const SYNC_END_MESSAGE = 'SYNC_END_MESSAGE';
+export const ADD_EXTERNAL_AUGMENTATION_MESSAGE = 'ADD_EXTERNAL_AUGMENTATION_MESSAGE';
+export const ACTIVATE_EMAIL_MESSAGE = 'ACTIVATE_EMAIL_MESSAGE';
 
 // ! LOG MESSAGES
 export const SEND_LOG_MESSAGE = 'SEND_LOG_MESSAGE';
