@@ -1,9 +1,11 @@
 /**
- * @module SidebarLoader
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * lib:sidebar
+ * --------------------------------------
  * @version 1.0.0
+ * @see https://bit.ly/2T9OS97
+ * @license (C) Insight
  */
+
 import React, { ReactElement } from 'react';
 import md5 from 'md5';
 import { render } from 'react-dom';
@@ -43,13 +45,13 @@ import {
   MY_BLOCKLIST_TEMPLATE,
   SPECIAL_URL_JUNK_STRING,
   SAFARI_FALLBACK_URL,
-  ACTION_KEYS,
+  ACTION_KEY,
   DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX,
   FORCE_FALLBACK_CSE,
   URL_PARAM_TAB_TITLE_KEY,
   URL_PARAM_NO_COOKIE_KEY,
   CACHED_SUBTABS_KEY,
-  CONDITION_KEYS,
+  CONDITION_KEY,
   DEDICATED_SERP_REGEX,
   URL_PARAM_POSSIBLE_SERP_RESULT,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -146,7 +148,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public customSearchEngine: CustomSearchEngine;
+  public customSearchEngine: SearchEngineObject;
 
   /**
    * The list of locally installed augmentations.
@@ -155,7 +157,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public installedAugmentations: AugmentationObject[];
+  public installedAugmentations: Augmentation[];
 
   /**
    * The list of matching suggested augmentations from Subtabs API.
@@ -164,7 +166,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public suggestedAugmentations: AugmentationObject[];
+  public suggestedAugmentations: Augmentation[];
 
   /**
    * The list of ignored augmentations.
@@ -173,7 +175,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public ignoredAugmentations: AugmentationObject[];
+  public ignoredAugmentations: Augmentation[];
 
   /**
    * The list of augmentations which not matching to the current url by condition
@@ -182,7 +184,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public otherAugmentations: AugmentationObject[];
+  public otherAugmentations: Augmentation[];
 
   /**
    * The list of pinned augmentations.
@@ -191,7 +193,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public pinnedAugmentations: AugmentationObject[];
+  public pinnedAugmentations: Augmentation[];
 
   /**
    * The list of locally installed but disabled augmentations.
@@ -200,7 +202,7 @@ class SidebarLoader {
    * @property
    * @memberof SidebarLoader
    */
-  public matchingDisabledInstalledAugmentations: AugmentationObject[];
+  public matchingDisabledInstalledAugmentations: Augmentation[];
 
   /**
    * True when the sidebar is in the expanded state.
@@ -251,7 +253,7 @@ class SidebarLoader {
    */
   public augmentationStats: Record<string, number>;
 
-  public enabledOtherAugmentations: AugmentationObject[];
+  public enabledOtherAugmentations: Augmentation[];
 
   public featureDomains: string[];
   public hideDomains: string[];
@@ -279,10 +281,11 @@ class SidebarLoader {
   }
 
   public get maxAvailableSpace() {
-    const resultWidth = (this.document
-      ?.querySelector(this.customSearchEngine.querySelector?.desktop)
-      ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement)
-      ?.offsetWidth;
+    const resultWidth = (
+      this.document
+        ?.querySelector(this.customSearchEngine.querySelector?.desktop)
+        ?.closest(this.customSearchEngine.querySelector?.result_container_selector) as HTMLElement
+    )?.offsetWidth;
 
     const maxWidth = window.innerWidth - 300;
 
@@ -331,7 +334,7 @@ class SidebarLoader {
             : i?.closest('a')?.getAttribute('href') ?? '',
         ),
       )
-      .filter((domain) => !BANNED_DOMAINS.includes(extractUrlProperties(domain).full));
+      .filter((domain) => !BANNED_DOMAINS.includes(extractUrlProperties(domain).full ?? ''));
     return getAllFromPage ? result : result.slice(0, NUM_DOMAINS_TO_CONSIDER);
   }
 
@@ -344,7 +347,7 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  private getTabUrls(augmentation: AugmentationObject) {
+  private getTabUrls(augmentation: Augmentation) {
     const urls: URL[] = [];
     const defaultUrl =
       this.customSearchEngine.search_engine_json.required_prefix.search(FORCE_FALLBACK_CSE) === -1
@@ -357,7 +360,7 @@ class SidebarLoader {
     augmentation.actions.action_list.forEach((action) => {
       if (
         !fakeTab &&
-        (action.key === ACTION_KEYS.SEARCH_HIDE_DOMAIN || action.key === ACTION_KEYS.SEARCH_FEATURE)
+        (action.key === ACTION_KEY.SEARCH_HIDE_DOMAIN || action.key === ACTION_KEY.SEARCH_FEATURE)
       ) {
         const fakeUrl = emptyUrl();
         fakeUrl.href = SIDEBAR_TAB_FAKE_URL;
@@ -368,40 +371,44 @@ class SidebarLoader {
       switch (action.key) {
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
-        case ACTION_KEYS.SEARCH_HIDE_DOMAIN:
-          this.hideDomains.push(action.value[0]);
+        case ACTION_KEY.SEARCH_HIDE_DOMAIN:
+          this.hideDomains.push(action.value[0] as string);
           break;
-        case ACTION_KEYS.SEARCH_FEATURE:
-          this.featureDomains.push(action.value[0]);
+        case ACTION_KEY.SEARCH_FEATURE:
+          this.featureDomains.push(action.value[0] as string);
           break;
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
-        case ACTION_KEYS.NO_COOKIE:
-        case ACTION_KEYS.OPEN_URL:
+        case ACTION_KEY.NO_COOKIE:
+        case ACTION_KEY.OPEN_URL:
           action.value.forEach((value) => {
             const regexGroups = augmentation.conditions.condition_list.reduce(
               (groups, condition) => {
                 if (
-                  condition.unique_key === CONDITION_KEYS.DOMAIN_MATCHES ||
-                  condition.unique_key === CONDITION_KEYS.URL_MATCHES
+                  condition.unique_key === CONDITION_KEY.DOMAIN_MATCHES ||
+                  condition.unique_key === CONDITION_KEY.URL_MATCHES
                 ) {
-                  const matches = new RegExp(condition.value[0]).exec(this.url.href) ?? [];
+                  const matches =
+                    new RegExp(condition.value[0] as string).exec(this.url.href) ?? [];
                   return groups.concat(matches.slice(1));
                 }
                 return groups;
               },
               [] as string[],
             );
-            const url = AugmentationManager.processOpenPageActionString(value, regexGroups);
+            const url = AugmentationManager.processOpenPageActionString(
+              value as string,
+              regexGroups,
+            );
             if (url.hostname === 'undefined') return;
             url.searchParams.append(URL_PARAM_POSSIBLE_SERP_RESULT, URL_PARAM_POSSIBLE_SERP_RESULT);
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             if (augmentation.actions.action_list.length > 1) {
               url.searchParams.append(
                 URL_PARAM_TAB_TITLE_KEY,
-                extractUrlProperties(url.href)?.hostname,
+                extractUrlProperties(url.href)?.hostname ?? '',
               );
             }
-            if (action.key === ACTION_KEYS.NO_COOKIE) {
+            if (action.key === ACTION_KEY.NO_COOKIE) {
               url.searchParams.append(URL_PARAM_NO_COOKIE_KEY, 'true');
             }
             urls.unshift(url);
@@ -410,7 +417,7 @@ class SidebarLoader {
         // A new sidebar tab url will be composed by each SEARCH_DOMAINS_ACTION values, by appending
         // the current search query with *(site: <domain_'> OR <domain_2> ... )* to filter results. The
         // hostname and query parameters are coming from the local/remote search engine data.
-        case ACTION_KEYS.SEARCH_DOMAINS:
+        case ACTION_KEY.SEARCH_DOMAINS:
           {
             const tabAppendages = action.value;
             if (!tabAppendages.length) {
@@ -423,29 +430,29 @@ class SidebarLoader {
             customSearchUrl.searchParams.append('q', `${this.query} ${append}`);
           }
           break;
-        case ACTION_KEYS.SEARCH_APPEND:
+        case ACTION_KEY.SEARCH_APPEND:
           customSearchUrl.searchParams.append('q', `${this.query} ${action.value[0]}`);
           break;
-        case ACTION_KEYS.SEARCH_ALSO:
+        case ACTION_KEY.SEARCH_ALSO:
           {
             const url = AugmentationManager.processSearchAlsoActionString(
-              (action.value[0] as unknown) as CustomSearchEngine['search_engine_json'],
+              action.value[0] as unknown as SearchEngineSearchParams,
             );
             url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
             urls.unshift(url);
           }
           break;
-        case ACTION_KEYS.OPEN_LINK_CSS:
+        case ACTION_KEY.OPEN_LINK_CSS:
           {
             try {
-              const elements = this.document.querySelectorAll(action.value[0]);
+              const elements = this.document.querySelectorAll(action.value[0] as string);
               elements.forEach((element) => {
                 try {
                   const url = new URL(element.getAttribute('href') ?? '');
                   url.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
                   url.searchParams.append(
                     URL_PARAM_TAB_TITLE_KEY,
-                    extractUrlProperties(url.href)?.hostname,
+                    extractUrlProperties(url.href)?.hostname ?? '',
                   );
                   urls.unshift(url);
                 } catch (e) {
@@ -464,14 +471,14 @@ class SidebarLoader {
       }
 
       switch (action.key) {
-        case ACTION_KEYS.SEARCH_DOMAINS:
+        case ACTION_KEY.SEARCH_DOMAINS:
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
-          this.publicationSlices[augmentation.id][
-            customSearchUrl.href
-          ] = action.value.map((value) => removeProtocol(value));
+          this.publicationSlices[augmentation.id][customSearchUrl.href] = action.value.map(
+            (value) => removeProtocol(value as string),
+          );
           urls.push(customSearchUrl);
           break;
-        case ACTION_KEYS.SEARCH_APPEND:
+        case ACTION_KEY.SEARCH_APPEND:
           customSearchUrl.searchParams.append(SPECIAL_URL_JUNK_STRING, SPECIAL_URL_JUNK_STRING);
           urls.push(customSearchUrl);
           break;
@@ -493,7 +500,7 @@ class SidebarLoader {
    * @memberof SidebarLoader
    */
   public getTabsAndAugmentations(
-    augmentations: AugmentationObject[] = [
+    augmentations: Augmentation[] = [
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
       ...this.suggestedAugmentations,
@@ -515,11 +522,11 @@ class SidebarLoader {
     const logSuggested: any[] = [];
     const logTabs: any[] = [];
 
-    augmentations.forEach((augmentation: AugmentationObject) => {
+    augmentations.forEach((augmentation: Augmentation) => {
       augmentation.stats = this.augmentationStats[augmentation.id];
 
       const hasInjectJs = !!augmentation.actions.action_list.find(
-        ({ key }) => key === ACTION_KEYS.INJECT_JS,
+        ({ key }) => key === ACTION_KEY.INJECT_JS,
       );
 
       if (
@@ -561,7 +568,7 @@ class SidebarLoader {
           this.publicationSlices[augmentation.id] = Object.create(null);
           this.domainsToSearch[augmentation.id] = augmentation.actions.action_list.reduce(
             (a, { key, value }) => {
-              if (key === ACTION_KEYS.SEARCH_DOMAINS) a = a.concat(value);
+              if (key === ACTION_KEY.SEARCH_DOMAINS) a = a.concat(value as string[]);
               return a;
             },
             [] as string[],
@@ -598,15 +605,11 @@ class SidebarLoader {
               matchingIntent,
               matchingDomainsAction,
               matchingDomainsCondition,
-              id: augmentation.id,
-              isCse: true,
-              title: augmentation.name,
-              description: augmentation.description,
             };
             newTabs.unshift(tab);
 
             /** DEV START **/
-            IN_DEBUG_MODE && logTabs.push('\n\t', { [tab.title]: tab }, '\n');
+            IN_DEBUG_MODE && logTabs.push('\n\t', { [tab.augmentation.name]: tab }, '\n');
             /** DEV END **/
           });
         } else {
@@ -669,7 +672,7 @@ class SidebarLoader {
     existing && this.document.body.removeChild(existing);
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
     const response = await this.fetchSubtabs();
-    this.customSearchEngine = await SearchEngineManager.getCustomSearchEngine(this.url.href);
+    this.customSearchEngine = await SearchEngineManager.getSearchEngineObject(this.url.href);
     this.query =
       new URLSearchParams(this.document.location.search).get(
         this.customSearchEngine.search_engine_json?.required_params[0],
@@ -712,8 +715,8 @@ class SidebarLoader {
       const openCssLinks = this.sidebarTabs
         .reduce((selectors, tab) => {
           tab.augmentation.actions.action_list
-            .filter(({ key }) => key === ACTION_KEYS.OPEN_LINK_CSS)
-            .forEach(({ value }) => selectors.push(value[0]));
+            .filter(({ key }) => key === ACTION_KEY.OPEN_LINK_CSS)
+            .forEach(({ value }) => selectors.push(value[0] as string));
           return selectors;
         }, [] as string[])
         .join(', ');
@@ -794,9 +797,9 @@ class SidebarLoader {
     const logOther: any[] = [];
     const logIgnored: any[] = [];
     const logPinned: any[] = [];
-    const locals: Record<string, AugmentationObject & number> =
+    const locals: Record<string, Augmentation & number> =
       (await new Promise((resolve) => chrome.storage.local.get(resolve))) ?? Object.create(null);
-    const syncs: Record<string, AugmentationObject & number> =
+    const syncs: Record<string, Augmentation & number> =
       (await new Promise((resolve) => chrome.storage.sync.get(resolve))) ?? Object.create(null);
     [...Object.entries(locals), ...Object.entries(syncs)].forEach(([key, value]) => {
       const { isRelevant, isHidden } = AugmentationManager.getAugmentationRelevancy(value);
@@ -806,7 +809,7 @@ class SidebarLoader {
           if (!this.ignoredAugmentations.find(({ id }) => id === value.id)) {
             /** DEV START **/
             if (IN_DEBUG_MODE) {
-              logIgnored.push('\n\t', { [value.name]: { ...(value as AugmentationObject) } }, '\n');
+              logIgnored.push('\n\t', { [value.name]: { ...(value as Augmentation) } }, '\n');
             }
             /** DEV END  **/
             this.ignoredAugmentations.push(value);
@@ -816,7 +819,7 @@ class SidebarLoader {
           if (!this.pinnedAugmentations.find(({ id }) => id === value.id)) {
             /** DEV START **/
             if (IN_DEBUG_MODE) {
-              logPinned.push('\n\t', { [value.name]: { ...(value as AugmentationObject) } }, '\n');
+              logPinned.push('\n\t', { [value.name]: { ...(value as Augmentation) } }, '\n');
             }
             /** DEV END  **/
             this.pinnedAugmentations.push(value);
@@ -831,7 +834,7 @@ class SidebarLoader {
           ) {
             /** DEV START **/
             if (IN_DEBUG_MODE) {
-              logPinned.push('\n\t', { [value.name]: { ...(value as AugmentationObject) } }, '\n');
+              logPinned.push('\n\t', { [value.name]: { ...(value as Augmentation) } }, '\n');
             }
             /** DEV END  **/
             this.enabledOtherAugmentations.push(value);
@@ -846,11 +849,7 @@ class SidebarLoader {
             ) {
               /** DEV START **/
               if (IN_DEBUG_MODE) {
-                logInstalled.push(
-                  '\n\t',
-                  { [value.name]: { ...(value as AugmentationObject) } },
-                  '\n',
-                );
+                logInstalled.push('\n\t', { [value.name]: { ...(value as Augmentation) } }, '\n');
               }
               /** DEV END  **/
               this.installedAugmentations.push(value);
@@ -861,11 +860,7 @@ class SidebarLoader {
               if (!isHidden && !this.otherAugmentations.find(({ id }) => id === value.id)) {
                 /** DEV START **/
                 if (IN_DEBUG_MODE) {
-                  logOther.push(
-                    '\n\t',
-                    { [value.name]: { ...(value as AugmentationObject) } },
-                    '\n',
-                  );
+                  logOther.push('\n\t', { [value.name]: { ...(value as Augmentation) } }, '\n');
                 }
                 /** DEV END  **/
                 this.otherAugmentations.push(value);
@@ -933,7 +928,7 @@ class SidebarLoader {
           });
         }
         return a;
-      }, [] as AugmentationObject[]),
+      }, [] as Augmentation[]),
     ]);
     /*
     !DEV DISABLED BY DEV-45[https://bit.ly/3x8tMaD]
@@ -1009,7 +1004,7 @@ class SidebarLoader {
               result.push(suggestion);
             }
             return result;
-          }, [] as AugmentationObject[]);
+          }, [] as Augmentation[]);
 
         response = {
           subtabs: [],
@@ -1049,8 +1044,6 @@ class SidebarLoader {
     wrapper.id = 'sidebar-root';
     wrapper.style.display = 'none';
     this.document.body.appendChild(wrapper);
-    const nonCseTabs = this.sidebarTabs.filter((tab) => !tab.isCse);
-    this.sidebarTabs.concat(nonCseTabs);
     const sidebarInit = React.createElement(Sidebar);
     this.reactInjector(wrapper, sidebarInit, 'sidebar-root-iframe');
     debug('createSidebar - processed');

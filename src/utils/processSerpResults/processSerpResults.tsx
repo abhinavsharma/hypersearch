@@ -61,7 +61,7 @@ import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
  */
 const createOverlay = (
   serpResult: HTMLElement,
-  blockingAugmentations: AugmentationObject[] = [],
+  blockingAugmentations: Augmentation[] = [],
   details: Record<'text' | 'header' | 'selectorString', string>,
 ): void => {
   if (!(serpResult instanceof HTMLElement)) return;
@@ -152,7 +152,7 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (typeof publication !== 'string' && augmentations) continue;
 
-    let blockers: AugmentationObject[] = [];
+    let blockers: Augmentation[] = [];
 
     const isSubtab = createdUrls.findIndex((url) =>
       escape(removeProtocol(url)).includes(escape(removeProtocol(resultLink).split('#')[0])),

@@ -48,7 +48,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       originalUrl: UserManager.user.privacy ? md5(SidebarLoader.url.href) : SidebarLoader.url.href,
       originalQuery: UserManager.user.privacy ? md5(SidebarLoader.query) : SidebarLoader.query,
       subtabUrl: UserManager.user.privacy ? md5(tab.url.href) : tab.url.href,
-      subtabName: tab.title,
+      subtabName: tab.augmentation.name,
     });
   };
 
@@ -67,14 +67,14 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
             : SidebarLoader.url.href,
           originalQuery: UserManager.user.privacy ? md5(SidebarLoader.query) : SidebarLoader.query,
           subtabUrl: UserManager.user.privacy ? md5(tab.url.href) : tab.url.href,
-          subtabName: tab.title,
+          subtabName: tab.augmentation.name,
         });
       }
       if (msg.type === TRIGGER_GUTTER_HOVEROPEN_MESSAGE && matching) {
         handleHoverOpenLog(msg);
       }
     });
-  }, [tab.url.href, tab.title, handleHoverOpenLog]);
+  }, [tab.url.href, tab.augmentation.name, handleHoverOpenLog]);
 
   const keepParent = { keepParent: false };
 
@@ -90,11 +90,11 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       >
         {!tab.augmentation?.installed ? (
           <Tooltip title={SUGGESTED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.title}
+            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
           </Tooltip>
         ) : (
           <Tooltip title={INSTALLED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.title}
+            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
           </Tooltip>
         )}
       </span>

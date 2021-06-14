@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 
 declare module './AugmentationRow' {
   type AugmentationRowProps = {
-    augmentation: AugmentationObject;
+    augmentation: Augmentation;
     ignored?: boolean;
     other?: boolean;
     pinned?: boolean;

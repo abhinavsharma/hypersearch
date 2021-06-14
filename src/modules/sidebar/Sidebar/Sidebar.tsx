@@ -33,7 +33,6 @@ const Sidebar: Sidebar = () => {
   const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
   const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
   const isTabsLength = firstValidTab !== '0';
-  const isSearchTabs = SidebarLoader.sidebarTabs?.find(({ isCse }) => isCse);
   const isKpPage = isKnowledgePage(document);
   const validTabsLength = SidebarLoader.sidebarTabs.filter(
     ({ url }) => url.href !== SIDEBAR_TAB_FAKE_URL,
@@ -42,7 +41,7 @@ const Sidebar: Sidebar = () => {
   const shouldPreventExpand =
     !new URL(window.location.href).searchParams.get('auth_email') &&
     !SidebarLoader.tourStep &&
-    (isSmallWidth || !isTabsLength || !isSearchTabs || isKpPage || SidebarLoader.preventAutoExpand);
+    (isSmallWidth || !isTabsLength || isKpPage || SidebarLoader.preventAutoExpand);
 
   const handleResize = useDebouncedFn(() => {
     if (SidebarLoader.isPreview || !shouldPreventExpand) {
@@ -70,7 +69,7 @@ const Sidebar: Sidebar = () => {
       url: SidebarLoader.url.href,
       subtabs: UserManager.user.privacy
         ? SidebarLoader.sidebarTabs.map(({ url }) => md5(url.href))
-        : SidebarLoader.sidebarTabs.map(({ title }) => title),
+        : SidebarLoader.sidebarTabs.map(({ augmentation: { name } }) => name),
       details: {
         isKpPage,
         firstValidTabIndex: `${firstValidTab} / ${validTabsLength}`,

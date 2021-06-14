@@ -3,12 +3,7 @@ import { v4 as uuid } from 'uuid';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
-import {
-  CONDITION_KEYS,
-  CONDITION_LABELS,
-  CONDITION_LIST_EVALUATIONS,
-  CONDITION_TYPES,
-} from 'utils';
+import { CONDITION_KEY, CONDITION_LABEL, CONDITION_EVALUATION, LEGACY_CONDITION_TYPE } from 'utils';
 import { ConditionInput } from 'modules/builder';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -28,7 +23,7 @@ export const ConditionsSection: ConditionsSection = ({
 }) => {
   const newCondition: TCustomCondition = {
     id: uuid(),
-    type: CONDITION_TYPES.LIST,
+    type: LEGACY_CONDITION_TYPE.LIST,
     value: [],
   } as any;
 
@@ -36,10 +31,10 @@ export const ConditionsSection: ConditionsSection = ({
     setConditions([
       {
         id: '0',
-        key: CONDITION_KEYS.ANY_URL,
-        unique_key: CONDITION_KEYS.ANY_URL,
-        label: CONDITION_LABELS.ANY_URL,
-        type: CONDITION_TYPES.LIST,
+        key: CONDITION_KEY.ANY_URL,
+        unique_key: CONDITION_KEY.ANY_URL,
+        label: CONDITION_LABEL.ANY_URL,
+        type: LEGACY_CONDITION_TYPE.LIST,
         value: ['.*'],
       },
     ]);
@@ -48,10 +43,10 @@ export const ConditionsSection: ConditionsSection = ({
     setConditions([
       {
         id: '0',
-        key: CONDITION_KEYS.ANY_SEARCH_ENGINE,
-        unique_key: CONDITION_KEYS.ANY_SEARCH_ENGINE,
-        label: CONDITION_LABELS.ANY_SEARCH_ENGINE,
-        type: CONDITION_TYPES.LIST,
+        key: CONDITION_KEY.ANY_SEARCH_ENGINE,
+        unique_key: CONDITION_KEY.ANY_SEARCH_ENGINE,
+        label: CONDITION_LABEL.ANY_SEARCH_ENGINE,
+        type: LEGACY_CONDITION_TYPE.LIST,
         value: ['.*'],
       },
     ]);
@@ -65,15 +60,15 @@ export const ConditionsSection: ConditionsSection = ({
               type="link"
               onClick={() =>
                 setEvaluation((prev) =>
-                  prev == CONDITION_LIST_EVALUATIONS.AND
-                    ? CONDITION_LIST_EVALUATIONS.OR
-                    : CONDITION_LIST_EVALUATIONS.AND,
+                  prev == CONDITION_EVALUATION.AND
+                    ? CONDITION_EVALUATION.OR
+                    : CONDITION_EVALUATION.AND,
                 )
               }
               className="insight-inline-medium-text-button"
             >
               <strong>
-                {evaluation == CONDITION_LIST_EVALUATIONS.AND
+                {evaluation == CONDITION_EVALUATION.AND
                   ? AND_CONDITION_EVALUATION_TEXT
                   : OR_CONDITION_EVALUATION_TEXT}
               </strong>

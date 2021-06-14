@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Steps from 'antd/lib/steps';
 import { WelcomeFrame, PrivacyFrame, QueriesFrame } from 'modules/introduction';
-import { IntroStepContext } from 'types/introduction';
 import { EmailFrame } from '../EmailFrame/EmailFrame';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'utils';
 import 'antd/lib/steps/style/index.css';
@@ -17,7 +16,14 @@ const FINISHED_SECTION_TITLE = 'Done';
 
 const { Step } = Steps;
 
-export const StepContext = React.createContext<IntroStepContext>(Object.create(null));
+type TStepContext = {
+  currentStep: number;
+  setCurrentStep: React.Dispatch<SetStateAction<number>>;
+  finished: boolean;
+  setFinished: React.Dispatch<SetStateAction<boolean>>;
+};
+
+export const StepContext = React.createContext<TStepContext>(Object.create(null));
 
 export const IntroductionPage = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);

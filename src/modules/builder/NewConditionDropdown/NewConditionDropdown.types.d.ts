@@ -2,9 +2,14 @@ import { FunctionComponent } from 'react';
 
 declare module './NewConditionDropdown' {
   type NewConditionDropdownProps = {
-    newKey: any;
+    newKey: ConditionObjectKey;
     handleSaveAnyCondition: (type: 'search' | 'url') => void;
-    handleSaveNewLabel: (label: any, key: any, unique_key: any, evaluation: any) => void;
+    handleSaveNewLabel: (
+      label: ConditionObjectLabel,
+      key: ConditionObjectKey | ConditionObjectLegacyKey,
+      unique_key: ConditionObjectKey,
+      evaluation: ConditionObjectEvaluation | undefined,
+    ) => void;
   };
 
   type NewConditionDropdown = FunctionComponent<NewConditionDropdownProps>;

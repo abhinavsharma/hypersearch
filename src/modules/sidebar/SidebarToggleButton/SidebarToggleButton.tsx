@@ -8,6 +8,7 @@
 import React from 'react';
 import List from 'antd/lib/list';
 import Tooltip from 'antd/lib/tooltip';
+import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import {
   flipSidebar,
   removeEmoji,
@@ -24,7 +25,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import 'antd/lib/list/style/index.css';
 import './SidebarToggleButton.scss';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 
 /** MAGICS **/
 const TOOLTIP_TEXT = `Preview lenses ("${EXPAND_KEY.KEY}" key)`;
@@ -39,7 +39,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
         page: OPEN_BUILDER_PAGE.BUILDER,
         augmentation: EMPTY_AUGMENTATION,
-      } as OpenBuilderMessage);
+      });
     }
     SidebarLoader.isPreview = true;
     flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace);
@@ -48,7 +48,9 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const ListItem = (item: SidebarTab) => (
     <List.Item>
       <List.Item.Meta
-        title={item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.title)}
+        title={
+          item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.augmentation.name)
+        }
       />
     </List.Item>
   );
@@ -58,7 +60,8 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   // Calculate the relative height of the nub by using the tab's title length
   const tabHeight = filteredTabs.length
     ? tabs.slice(0, MAX_TAB_LENGTH + 1).reduce((a, tab) => {
-        const titleLength = tab.title.length * 8 < 50 ? 50 : tab.title.length * 8; // 1 ch is approximately 8 px
+        const titleLength =
+          tab.augmentation.name.length * 8 < 50 ? 50 : tab.augmentation.name.length * 8; // 1 ch is approximately 8 px
         const titleSpace = 50; // space for one line
         return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line
       }, 0)
@@ -68,14 +71,14 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     tabs.length > 3
       ? filteredTabs.slice(0, MAX_TAB_LENGTH).concat([
           {
-            id: '0',
             url: new URL('https://example.com'),
-            description: '',
-            augmentation: Object.create(null),
-            title: MORE_TABS_TEXT.replace(
-              '<placeholder>',
-              String(filteredTabs.length - MAX_TAB_LENGTH),
-            ),
+            augmentation: {
+              ...EMPTY_AUGMENTATION,
+              name: MORE_TABS_TEXT.replace(
+                '<placeholder>',
+                String(filteredTabs.length - MAX_TAB_LENGTH),
+              ),
+            },
           },
         ])
       : filteredTabs;

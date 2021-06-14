@@ -16,7 +16,6 @@ import {
   SidebarHeader,
   SidebarTabContainer,
   SidebarTabMeta,
-  SidebarTabReadable,
   SidebarTabTitle,
 } from 'modules/sidebar';
 import {
@@ -56,7 +55,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           license_keys: [UserManager.user.license],
           position_in_serp:
             SidebarLoader.publicationSlices['original'].indexOf(
-              extractUrlProperties(msg.url).full,
+              extractUrlProperties(msg.url).full ?? '',
             ) + 1,
         });
       } else {
@@ -64,25 +63,25 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           (i) => unescape(i.url.href) === msg.frame.url.replace('www.', ''),
         );
         if (!sourceTab) return null;
-        const statId = `${USE_COUNT_PREFIX}-${sourceTab.id}`;
+        const statId = `${USE_COUNT_PREFIX}-${sourceTab.augmentation.id}`;
         const existingStat =
           (await new Promise<Record<string, number>>((resolve) =>
             chrome.storage.sync.get(statId, resolve),
           ).then((value) => value?.[statId])) ?? 0;
         const newStat = Number(existingStat) + 1;
         chrome.storage.sync.set({ [statId]: newStat });
-        SidebarLoader.augmentationStats[sourceTab.id] = newStat;
+        SidebarLoader.augmentationStats[sourceTab.augmentation.id] = newStat;
         setTimeout(
           () =>
             SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
               query: SidebarLoader.query,
               url: msg.url,
               license_keys: [UserManager.user.license],
-              filter_name: sourceTab.title,
+              filter_name: sourceTab.augmentation.name,
               position_in_serp:
-                SidebarLoader.publicationSlices[sourceTab.id][sourceTab.url.href].indexOf(
-                  extractUrlProperties(msg.url).hostname,
-                ) + 1,
+                SidebarLoader.publicationSlices[sourceTab.augmentation.id][
+                  sourceTab.url.href
+                ].indexOf(extractUrlProperties(msg.url).hostname ?? '') + 1,
             }),
           250,
         );
@@ -225,7 +224,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   <SidebarTabMeta tab={tab} />
                 </>
               )}
-              {tab.readable && <SidebarTabReadable readable={tab.readable} />}
+              {/* {tab.readable && <SidebarTabReadable readable={tab.readable} />} */}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
               {/* tab.url.searchParams.get(URL_PARAM_POSSIBLE_SERP_RESULT) && <SidebarFooter /> */}
             </TabPane>

@@ -18,7 +18,7 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
   handleSelect,
   placeholder = SEARCH_ENGINE_DROPDOWN_LABEL,
 }) => {
-  const [engines, setEngines] = useState<Record<string, CustomSearchEngine>>(Object.create(null));
+  const [engines, setEngines] = useState<Record<string, SearchEngineObject>>(Object.create(null));
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal: React.MouseEventHandler = () => {
@@ -57,7 +57,7 @@ export const SearchEngineDropdown: SearchEngineDropdown = ({
         value={(() => {
           const [label, value] =
             Object.entries(engines)?.find(([, entry]) => {
-              const updatedValue: CustomSearchEngine['search_engine_json'] =
+              const updatedValue: SearchEngineObject['search_engine_json'] =
                 typeof newValue?.value === 'string' ? JSON.parse(newValue.value) : newValue;
               const hasAllParams = updatedValue?.required_params?.every((param) =>
                 entry.search_engine_json?.required_params?.includes(param),

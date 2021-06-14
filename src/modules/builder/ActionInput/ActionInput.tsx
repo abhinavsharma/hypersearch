@@ -3,7 +3,7 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
-import { ACTION_KEYS, ACTION_LABELS } from 'utils/constants';
+import { ACTION_KEY, ACTION_LABEL } from 'utils/constants';
 import { NewActionDropdown, MultiValueInput, SearchEngineDropdown } from 'modules/builder';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -16,8 +16,8 @@ const MinusCircleOutlined = React.lazy(
 );
 export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) => {
   const [newValue, setNewValue] = useState<any>(action?.value[0]);
-  const [newKey, setNewKey] = useState<Partial<ACTION_KEYS>>(action?.key);
-  const [newLabel, setNewLabel] = useState<ACTION_LABELS>(action?.label);
+  const [newKey, setNewKey] = useState<Partial<ActionKey>>(action?.key);
+  const [newLabel, setNewLabel] = useState<ActionLabel>(action?.label);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string[]) => {
@@ -29,7 +29,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
     });
   };
 
-  const handleSaveLabel = (label: ACTION_LABELS, key: ACTION_KEYS) => {
+  const handleSaveLabel = (label: ActionLabel, key: ActionKey) => {
     setNewLabel(label);
     setNewKey(key);
     saveAction({
@@ -48,27 +48,27 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
     handleChange([updated]);
   };
 
-  const DEFAULT_INPUTS = [
-    ACTION_KEYS.OPEN_URL,
-    ACTION_KEYS.SEARCH_FEATURE,
-    ACTION_KEYS.SEARCH_APPEND,
-    ACTION_KEYS.SEARCH_HIDE_DOMAIN,
-    ACTION_KEYS.OPEN_LINK_CSS,
-    ACTION_KEYS.NO_COOKIE,
+  const DEFAULT_INPUTS: string[] = [
+    ACTION_KEY.OPEN_URL,
+    ACTION_KEY.SEARCH_FEATURE,
+    ACTION_KEY.SEARCH_APPEND,
+    ACTION_KEY.SEARCH_HIDE_DOMAIN,
+    ACTION_KEY.OPEN_LINK_CSS,
+    ACTION_KEY.NO_COOKIE,
   ];
 
-  const INPUTS: Partial<Record<Partial<ACTION_KEYS | 'default'>, ReactElement>> = {
-    [ACTION_KEYS.SEARCH_DOMAINS]: (
-      <MultiValueInput values={action.value} handleAdd={handleChange} />
+  const INPUTS: KeyEventMap<Record<Partial<ActionKey | 'default'>, ReactElement>> = {
+    [ACTION_KEY.SEARCH_DOMAINS]: (
+      <MultiValueInput values={action.value as string[]} handleAdd={handleChange} />
     ),
-    [ACTION_KEYS.SEARCH_ALSO]: (
+    [ACTION_KEY.SEARCH_ALSO]: (
       <SearchEngineDropdown
         newValue={newValue}
         handleSelect={handleSelect}
-        placeholder={ACTION_LABELS.SEARCH_ALSO}
+        placeholder={ACTION_LABEL.SEARCH_ALSO}
       />
     ),
-    default: <Input key={action.id} value={action.value} onChange={handleChange} />,
+    default: <Input key={action.id} value={action.value as string[]} onChange={handleChange} />,
   };
 
   return (
@@ -88,7 +88,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
         )}
       </Col>
       <Col xs={12} className="insight-large-input-row-content insight-list">
-        {DEFAULT_INPUTS.includes(newKey) || INPUTS[newKey as ACTION_KEYS]
+        {DEFAULT_INPUTS.includes(newKey) || INPUTS[newKey]
           ? INPUTS[DEFAULT_INPUTS.includes(newKey) ? 'default' : newKey]
           : null}
       </Col>

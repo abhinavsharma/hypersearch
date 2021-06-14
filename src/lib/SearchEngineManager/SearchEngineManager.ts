@@ -31,7 +31,7 @@ class SearchEngineManager {
    * @property
    * @memberof SearchEngineManager
    */
-  public engines: Record<string, CustomSearchEngine>;
+  public engines: Record<string, SearchEngineObject>;
 
   /**
    * This value is used to decide whether to sync locally stored CSE data.
@@ -49,7 +49,7 @@ class SearchEngineManager {
    * @property
    * @memberof SearchEngineManager
    */
-  private remoteBlob: Record<string, CustomSearchEngine>;
+  private remoteBlob: Record<string, SearchEngineObject>;
 
   constructor() {
     debug('SearchEngineManager - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -98,12 +98,12 @@ class SearchEngineManager {
           });
         }
         return acc;
-      }, Object.create(null) as Record<string, CustomSearchEngine>),
+      }, Object.create(null) as Record<string, SearchEngineObject>),
     );
     this.engines = Object.assign(remote, local);
   }
 
-  public async createArbitraryEngine(name: string, engine: CustomSearchEngine) {
+  public async createArbitraryEngine(name: string, engine: SearchEngineObject) {
     chrome.storage.sync.set({ [`${ARBITRARY_ENGINE_PREFIX}-${name}`]: engine });
     Object.assign(this.engines, { [name]: engine });
   }
@@ -118,8 +118,8 @@ class SearchEngineManager {
    * @method
    * @memberof SidebarLoader
    */
-  public async getCustomSearchEngine(url: string) {
-    debug('getCustomSearchEngine - call\n');
+  public async getSearchEngineObject(url: string) {
+    debug('getSearchEngineObject - call\n');
     const { hostname, params } = extractUrlProperties(url);
 
     if (!hostname) return EMPTY_CUSTOM_SEARCH_ENGINE_BLOB;
@@ -128,16 +128,16 @@ class SearchEngineManager {
     const dedicatedKey = `${DEDICATED_ENGINE_PREFIX}-${localized}`;
     const arbitraryKey = `${ARBITRARY_ENGINE_PREFIX}-${localized}`;
 
-    const storedValue: Record<string, CustomSearchEngine> =
+    const storedValue: Record<string, SearchEngineObject> =
       (await new Promise((res) => chrome.storage.sync.get(dedicatedKey, res))) ??
       (await new Promise((res) => chrome.storage.sync.get(arbitraryKey, res)));
 
-    let validEntry: CustomSearchEngine | null =
+    let validEntry: SearchEngineObject | null =
       (storedValue[dedicatedKey] || storedValue[arbitraryKey]) ?? null;
 
-    const validateEntry = (customSearchEngine: CustomSearchEngine) => {
+    const validateEntry = (customSearchEngine: SearchEngineObject) => {
       const hasAllMatchingParams = !customSearchEngine.search_engine_json?.required_params.filter(
-        (i) => !params.includes(i),
+        (i) => !params?.includes(i),
       ).length;
       const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
         ?.length;
@@ -147,20 +147,20 @@ class SearchEngineManager {
     };
 
     if (!validEntry) {
-      debug('getCustomSearchEngine - check locals\n');
+      debug('getSearchEngineObject - check locals\n');
       Object.values(this.engines).forEach(validateEntry);
     }
 
     if (!validEntry) {
-      debug('getCustomSearchEngine - fetch from remote\n');
+      debug('getSearchEngineObject - fetch from remote\n');
       const customSearchEngines = await fetch(CUSTOM_SEARCH_ENGINES, { cache: 'no-cache' });
-      const results: Record<string, CustomSearchEngine> = await customSearchEngines.json();
+      const results: Record<string, SearchEngineObject> = await customSearchEngines.json();
       Object.values(results).forEach(validateEntry);
       validEntry && chrome.storage.sync.set({ [dedicatedKey]: validEntry });
     }
 
     debug(
-      'getCustomSearchEngine - processed\n---\n\tCustom Search Engine JSON',
+      'getSearchEngineObject - processed\n---\n\tCustom Search Engine JSON',
       validEntry ?? 'not found, fallback value used',
       '\n---',
     );
@@ -193,7 +193,7 @@ class SearchEngineManager {
       chrome.storage.sync.get(async (items) => {
         debug('SearchEngineManager - sync\n---\n\tItems', items, '\n---');
         Object.entries(items ?? Object.create(null)).forEach(
-          async ([key, storedItem]: [string, CustomSearchEngine]) => {
+          async ([key, storedItem]: [string, SearchEngineObject]) => {
             if (!key.startsWith(DEDICATED_ENGINE_PREFIX)) {
               return null;
             }

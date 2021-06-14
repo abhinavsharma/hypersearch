@@ -45,9 +45,9 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     triggerSerpProcessing(SidebarLoader, true);
     SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
       query: SidebarLoader.query,
-      filter_name: tab.title,
+      filter_name: tab.augmentation.name,
       license_keys: [UserManager.user.license],
-      domains_to_search: SidebarLoader.domainsToSearch[tab.id],
+      domains_to_search: SidebarLoader.domainsToSearch[tab.augmentation.id],
     });
   };
 

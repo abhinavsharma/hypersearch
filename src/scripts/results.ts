@@ -15,7 +15,7 @@ const GOOGLE_VERTICAL_NEWS_LINK_SELECTOR = '.EPLo7b a';
 const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
 import {
-  ACTION_KEYS,
+  ACTION_KEY,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_FEATURED_BY_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
@@ -30,11 +30,11 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
 
 ((document, window) => {
   let openedAlready = false;
-  let searchingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
-  let blockingAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
-  let featuringAugmentations: Record<string, AugmentationObject[]> = Object.create(null);
+  let searchingAugmentations: Record<string, Augmentation[]> = Object.create(null);
+  let blockingAugmentations: Record<string, Augmentation[]> = Object.create(null);
+  let featuringAugmentations: Record<string, Augmentation[]> = Object.create(null);
 
-  const processAugmentation = (augmentation: AugmentationObject, domain: string): void => {
+  const processAugmentation = (augmentation: Augmentation, domain: string): void => {
     if (!augmentation || !domain) return;
     if (!searchingAugmentations[domain]) searchingAugmentations[domain] = [];
     if (!blockingAugmentations[domain]) blockingAugmentations[domain] = [];
@@ -43,17 +43,17 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
     augmentation.actions?.action_list.forEach(({ value, key }) => {
       if (value.find((valueDomain) => domain === valueDomain)) {
         switch (key) {
-          case ACTION_KEYS.SEARCH_FEATURE:
+          case ACTION_KEY.SEARCH_FEATURE:
             if (!featuringAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               featuringAugmentations[domain].push(augmentation);
             }
             break;
-          case ACTION_KEYS.SEARCH_HIDE_DOMAIN:
+          case ACTION_KEY.SEARCH_HIDE_DOMAIN:
             if (!blockingAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               blockingAugmentations[domain].push(augmentation);
             }
             break;
-          case ACTION_KEYS.SEARCH_DOMAINS:
+          case ACTION_KEY.SEARCH_DOMAINS:
             if (!searchingAugmentations[domain].find(({ id }) => id === augmentation.id)) {
               searchingAugmentations[domain].push(augmentation);
             }
@@ -63,7 +63,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
     });
   };
 
-  const getResults = (data: ResultMessageData) => {
+  const getResults = (data: any) => {
     if (!data.selector.link) {
       return [];
     }
@@ -91,12 +91,15 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
         : [],
     ) as HTMLElement[];
 
-    const featuredSnippets = data.selector.featured?.reduce((a, selector) => {
-      const link = document.querySelector(selector) as HTMLElement;
-      const container = link?.closest(selector.split(' ')[0]) as HTMLElement;
-      link && container && a.push({ link, container });
-      return a;
-    }, [] as Array<Record<'link' | 'container', HTMLElement>>);
+    const featuredSnippets = data.selector.featured?.reduce(
+      (a: Array<Record<'link' | 'container', HTMLElement>>, selector: string) => {
+        const link = document.querySelector(selector) as HTMLElement;
+        const container = link?.closest(selector.split(' ')[0]) as HTMLElement;
+        link && container && a.push({ link, container });
+        return a;
+      },
+      [] as Array<Record<'link' | 'container', HTMLElement>>,
+    );
 
     [...featuredSnippets, ...results].forEach((element) => {
       const result = element instanceof HTMLElement ? element : element.link;
@@ -115,7 +118,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
       processed.push(container);
 
       if (Array.isArray(data.augmentation)) {
-        data.augmentation.forEach((augmentation) =>
+        data.augmentation.forEach((augmentation: Augmentation) =>
           processAugmentation(augmentation, resultDomain),
         );
       } else {
@@ -125,7 +128,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
     return processed;
   };
 
-  const processResults = (data: ResultMessageData) => {
+  const processResults = (data: any) => {
     processSerpResults(
       getResults(data),
       data.selector.container,
@@ -147,7 +150,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
     featuringAugmentations = Object.create(null);
   };
   try {
-    window.addEventListener('message', ({ data }: RemoveMessage) => {
+    window.addEventListener('message', ({ data }: any) => {
       if (data?.name === PROCESS_SERP_OVERLAY_MESSAGE) {
         runFunctionWhenDocumentReady(document, function processResultsMessage() {
           processResults(data);

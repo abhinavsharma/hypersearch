@@ -66,7 +66,7 @@ export const LeftActionBar: LeftActionBar = ({
       page: OPEN_BUILDER_PAGE.GUTTER,
       augmentations: blockingAugmentations,
       publication,
-    } as OpenGutterPageMessage);
+    });
   };
 
   const handleToggleBlocked = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {

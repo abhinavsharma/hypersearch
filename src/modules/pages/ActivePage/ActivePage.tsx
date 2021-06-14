@@ -15,7 +15,7 @@ import {
   flipSidebar,
   SWITCH_TO_TAB,
   extractUrlProperties,
-  ACTION_KEYS,
+  ACTION_KEY,
 } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
@@ -39,18 +39,18 @@ const ZoomInOutlined = React.lazy(
 );
 
 export const ActivePage: ActivePage = () => {
-  const domain = extractUrlProperties(SidebarLoader.url.href).hostname;
+  const domain = extractUrlProperties(SidebarLoader.url.href).hostname ?? '';
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
-  const [hidingAugmentations, setHidingAugmentations] = useState<AugmentationObject[]>(
+  const [hidingAugmentations, setHidingAugmentations] = useState<Augmentation[]>(
     SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
       .reduce((augmentations, augmentation) => {
         const isBlockingDomain = !!augmentation.actions.action_list.find(
-          ({ key, value }) => key === ACTION_KEYS.SEARCH_HIDE_DOMAIN && value.includes(domain),
+          ({ key, value }) => key === ACTION_KEY.SEARCH_HIDE_DOMAIN && value.includes(domain),
         );
         isBlockingDomain && augmentations.push(augmentation);
         return augmentations;
-      }, [] as AugmentationObject[]),
+      }, [] as Augmentation[]),
   );
 
   const handleOpenSettings = (e: React.MouseEvent) => {
@@ -82,7 +82,7 @@ export const ActivePage: ActivePage = () => {
     }
   };
 
-  const augmentationSorter = (a: AugmentationObject, b: AugmentationObject) => {
+  const augmentationSorter = (a: Augmentation, b: Augmentation) => {
     if (!a.installed && b.installed) return 1;
     return (
       // sorts by name ignoring emojis
@@ -97,7 +97,7 @@ export const ActivePage: ActivePage = () => {
       page: OPEN_BUILDER_PAGE.BUILDER,
       augmentation: EMPTY_AUGMENTATION,
       create: true,
-    } as OpenBuilderMessage);
+    });
 
   const sections = [
     {
@@ -173,11 +173,11 @@ export const ActivePage: ActivePage = () => {
         .concat(SidebarLoader.otherAugmentations)
         .reduce((augmentations, augmentation) => {
           const isBlockingDomain = !!augmentation.actions.action_list.find(
-            ({ key, value }) => key === ACTION_KEYS.SEARCH_HIDE_DOMAIN && value.includes(domain),
+            ({ key, value }) => key === ACTION_KEY.SEARCH_HIDE_DOMAIN && value.includes(domain),
           );
           isBlockingDomain && augmentations.push(augmentation);
           return augmentations;
-        }, [] as AugmentationObject[]),
+        }, [] as Augmentation[]),
     );
     // Singleton instance not reinitialized on rerender.
     // ! Be careful when updating the dependency list!

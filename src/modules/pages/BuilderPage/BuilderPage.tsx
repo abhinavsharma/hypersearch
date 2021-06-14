@@ -117,7 +117,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.ACTIVE,
-    } as OpenActivePageMessage);
+    });
   };
 
   const handleSave = (): void => {

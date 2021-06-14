@@ -1,37 +1,120 @@
-declare type Condition = {
-  evaluate_with: import('utils/constants').CONDITION_LIST_EVALUATIONS;
-  condition_list: ConditionObject[];
-};
+/**
+ * @module types:augmentations
+ * @version 1.0.0
+ * @license (C) Insight
+ */
 
-declare type Action = {
-  evaluate_with: import('utils/constants').ACTION_LIST_EVALUATIONS;
-  action_list: ActionObject[];
-};
-
-declare type ActionObject = {
-  label: import('utils/constants').ACTION_LABELS;
-  key: import('utils/constants').ACTION_KEYS;
-  type: import('utils/constants').ACTION_TYPES;
-  value: string[];
-};
-
-declare type ConditionObject = {
-  label: import('utils/constants').CONDITION_LABELS;
-  key: import('utils/constants').CONDITION_KEYS | import('utils/constants').LEGACY_KEYS;
-  unique_key?: import('utils/constants').CONDITION_KEYS;
-  type: import('utils/constants').CONDITION_TYPES;
-  value: string[];
-  evaluation?: import('utils/constants').LEGACY_EVALUATION;
-};
-
-declare type AugmentationObject = {
+declare type Augmentation = {
   id: string;
   name: string;
   description: string;
   conditions: Condition;
   actions: Action;
-  enabled?: boolean;
   installed?: boolean;
   pinned?: boolean;
+  enabled?: boolean;
   stats?: number;
 };
+
+declare type AugmentationValidatorSetting = {
+  condition_list: ConditionObject[];
+  evalAsAny: boolean;
+  matchingDomains: boolean;
+  matchingQuery: boolean;
+  matchingEngine: boolean;
+  matchingIntent: { intentDomains: string[]; intentElements: HTMLElement[] };
+  hasAnyPageCondition: boolean;
+  numRegexConditions: number;
+  matchingRegexConditions: boolean[];
+  allRegexMatches: boolean;
+};
+
+declare type AugmentationEventType = TAugmentationEvent[keyof TAugmentationEvent];
+declare type AugmentationEventStatus = TAugmentationStatus[keyof TAugmentationStatus];
+
+declare type ActionObjectOption = Partial<TCustomActionObject>;
+declare type ConditionObjectOptions = Partial<TCustomCondtionObject>;
+declare type AugmentationEditOptions = Augmentation & TAugmentationOptions;
+
+//-----------------------------------------------------------------------------------------------
+// ! Action
+//-----------------------------------------------------------------------------------------------
+
+declare type Action = {
+  action_list: ActionObject[];
+};
+
+declare type ActionObject = {
+  label: ActionLabel;
+  key: ActionKey;
+  type: ActionType;
+  value: ActionValue;
+  id?: string;
+};
+
+declare type ActionKey = TActionKey[keyof TActionKey];
+declare type ActionLabel = TActionLabel[keyof TActionLabel];
+declare type ActionType = TActionType[keyof TActionType];
+declare type ActionValue = Array<string | Record<string, any>>;
+
+//-----------------------------------------------------------------------------------------------
+// ! Condition
+//-----------------------------------------------------------------------------------------------
+
+declare type Condition = {
+  evaluate_with: ConditionEvaluation;
+  condition_list: ConditionObject[];
+};
+
+declare type ConditionObject = {
+  label: ConditionObjectLabel;
+  type: ConditionObjectType;
+  unique_key: ConditionObjectKey;
+  value: ConditionObjectValue;
+  key: ConditionObjectLegacyKey | ConditionObjectKey;
+  evaluation?: _ConditionEvaluation;
+  id?: string;
+};
+
+declare type ConditionObjectLegacyKey = TConditionObjectLegacyKey[keyof TConditionObjectLegacyKey];
+declare type ConditionEvaluation = TConditionEvaluation[keyof TConditionEvaluation];
+declare type ConditionObjectKey = TConditionUniqueKey[keyof TConditionUniqueKey];
+declare type ConditionObjectType = TConditionType[keyof TConditionType];
+declare type ConditionObjectLabel = TConditionLabel[keyof TConditionLabel];
+declare type ConditionObjectValue = ConditionValue[];
+declare type ConditionValue = string | Record<string, string>;
+declare type ConditionKey = ConditionObjectKey;
+
+//-----------------------------------------------------------------------------------------------
+// ! Helpers
+//-----------------------------------------------------------------------------------------------
+
+type TCustomActionObject = ActionObject & { id: string };
+type TCustomCondtionObject = ConditionObject & { id: string };
+
+type TAugmentationOptions = Partial<{
+  evaluation: ConditionEvaluation;
+  isActive: boolean;
+  isPinning: boolean;
+}>;
+
+type TConditionKey =
+  | TIConditionKey[keyof TIConditionKey]
+  | TConditionUniqueKey[keyof TConditionUniqueKey];
+
+type TAugmentationStatusRequired<T extends AugmentationStatus> = AugmentationObject & {
+  status: Array<TAugmentationStatus[T] & TAugmentationStatus>;
+};
+
+type TConditionEvaluation = typeof import('utils/constants/augmentations').CONDITION_EVALUATION;
+type TIConditionKey = typeof import('utils/constants/augmentations').LEGACY_KEY;
+type TConditionLabel = typeof import('utils/constants/augmentations').CONDITION_LABEL;
+type TConditionObjectEvaluation = typeof import('utils/constants/augmentations').LEGACY_EVALUATION;
+type TConditionType = typeof import('utils/constants/augmentations').LEGACY_CONDITION_TYPE;
+type TConditionUniqueKey = typeof import('utils/constants/augmentations').CONDITION_KEY;
+type TActionKey = typeof import('utils/constants/augmentations').ACTION_KEY;
+type TActionLabel = typeof import('utils/constants/augmentations').ACTION_LABEL;
+type TActionType = typeof import('utils/constants/augmentations').LEGACY_ACTION_TYPE;
+type TAugmentationEvent = typeof import('utils/constants/augmentations').AUGMENTATION_EVENT;
+type TAugmentationStatus = typeof import('utils/constants/augmentations').AUGMENTATION_STATUS;
+type TConditionObjectLegacyKey = typeof import('utils/constants/augmentations').LEGACY_KEY;

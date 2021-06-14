@@ -48,12 +48,14 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
         enabled: isEdit,
         installed: isEdit,
       },
-    } as OpenBuilderMessage);
+    });
   };
 
   const handleDisableInstalled = () => {
     setActiveKey(
-      getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
+      getFirstValidTabIndex(
+        SidebarLoader.sidebarTabs.filter(({ augmentation: { id } }) => id !== tab.augmentation.id),
+      ),
     );
     AugmentationManager.addOrEditAugmentation(tab.augmentation, { isActive: false });
   };
@@ -68,7 +70,9 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
 
   const handleHideSuggested = (tab: SidebarTab) => {
     setActiveKey(
-      getFirstValidTabIndex(SidebarLoader.sidebarTabs.filter(({ id }) => id !== tab.id)),
+      getFirstValidTabIndex(
+        SidebarLoader.sidebarTabs.filter(({ augmentation: { id } }) => id !== tab.augmentation.id),
+      ),
     );
     AugmentationManager.disableSuggestedAugmentation(tab.augmentation);
   };

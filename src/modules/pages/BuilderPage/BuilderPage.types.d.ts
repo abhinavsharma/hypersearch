@@ -1,12 +1,12 @@
 import { FunctionComponent } from 'react';
 
 declare module './BuilderPage' {
-  type CustomAugmentationObject<T = AugmentationObject> = T & {
+  type CustomAugmentation<T = Augmentation> = T & {
     installed?: boolean;
   };
 
   type BuilderPageProps = {
-    augmentation: AugmentationObject;
+    augmentation: Augmentation;
     isAdding?: boolean;
   };
 
