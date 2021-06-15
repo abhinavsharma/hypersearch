@@ -114,6 +114,9 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           if (msg.page === OPEN_BUILDER_PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
           }
+          if (msg.page === OPEN_BUILDER_PAGE.SETTINGS && msg.email) {
+            setPageData({ email: msg.email });
+          }
           msg.page && setShowPage(msg.page);
           break;
         // LOGGING
@@ -189,7 +192,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   />
                 );
               case OPEN_BUILDER_PAGE.SETTINGS:
-                return <SettingsPage />;
+                return <SettingsPage email={pageData?.email} />;
               default:
                 return null;
             }

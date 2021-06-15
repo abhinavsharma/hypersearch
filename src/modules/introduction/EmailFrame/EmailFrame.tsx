@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Input, Button, Typography } from 'antd';
 import UserManager from 'lib/UserManager';
 import { StepContext } from 'modules/introduction';
-import { APP_NAME, MAILCHIMP_API_KEY, MAILCHIMP_URL, validateEmail } from 'utils';
+import { APP_NAME, EXTENSION_HOST, MAILCHIMP_API_KEY, MAILCHIMP_URL, validateEmail } from 'utils';
 import './EmailFrame.scss';
 
 /** MAGICS **/
@@ -29,10 +29,7 @@ export const EmailFrame = () => {
 
   const handleEmailSubmit = async () => {
     //handleNext();
-    window.open(
-      `https://insightbrowser.com?auth_email=${encodeURIComponent(emailValue)}`,
-      '_blank',
-    );
+    window.open(`https://${EXTENSION_HOST}?auth_email=${encodeURIComponent(emailValue)}`, '_blank');
     fetch(MAILCHIMP_URL.replace('<placeholder>', md5(emailValue.toLowerCase())), {
       method: 'PUT',
       headers: {

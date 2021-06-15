@@ -4,12 +4,12 @@ declare type RemoteBookmark = {
   parent?: string;
   position?: number;
   title?: string;
-  dateAdded?: Number;
+  dateAdded?: number;
   guid?: string;
-  children?: [ RemoteBookmark ];
+  children?: [RemoteBookmark];
 };
 
-declare type BookmarksReponse = {
+declare type BookmarksResponse = {
   add?: RemoteBookmark[];
   update?: RemoteBookmark[];
   delete?: RemoteBookmark[];

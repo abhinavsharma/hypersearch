@@ -34,11 +34,38 @@ class UserManager {
   private _privacy: boolean | undefined = undefined;
   private _cognitoUser: CognitoUser | undefined = undefined;
   private _token: TAccessToken | undefined = undefined;
+  private static _storage: Record<string, any> = Object.create(null);
+
+  private static getStorageItem(key: string) {
+    return this._storage[key];
+  }
+
+  private static setStorageItem(key: string, value: any) {
+    this._storage[key] = value;
+    chrome.storage.local.set({ [key]: value });
+  }
+
+  private static removeStorageItem(key: string) {
+    this._storage[key] = undefined;
+    chrome.storage.local.remove(key);
+  }
+
+  private static clearStorage() {
+    this._storage = Object.create(null);
+  }
+
+  private static STORAGE = {
+    getItem: (key: string) => UserManager.getStorageItem(key),
+    setItem: (key: string, value: any) => UserManager.setStorageItem(key, value),
+    removeItem: (key: string) => UserManager.removeStorageItem(key),
+    clear: () => UserManager.clearStorage(),
+  };
 
   public getCognitoPool() {
     return new CognitoUserPool({
       UserPoolId: AWS_COGNITO_POOL_ID,
       ClientId: AWS_COGNITO_CLIENT_ID,
+      Storage: UserManager.STORAGE,
     });
   }
 
@@ -47,6 +74,7 @@ class UserManager {
       this._cognitoUser = new CognitoUser({
         Pool: this.getCognitoPool(),
         Username: this._email,
+        Storage: UserManager.STORAGE,
       });
       debug('Current Cognito User Set', this._cognitoUser);
     }
@@ -91,10 +119,10 @@ class UserManager {
           }
           debug('AWS Cognito Authenticate Success', session);
           debug('AWS Cognito Token', session?.getIdToken());
-
           this._token = session?.getIdToken();
           resolve(this._token || null);
         });
+        user.getSignInUserSession();
       } else {
         resolve(null);
       }
@@ -135,6 +163,9 @@ class UserManager {
   }
 
   public async login(email: string) {
+    if (email && this._token) {
+      return null;
+    }
     await new Promise((resolve) =>
       chrome.storage.sync.set({ [SYNC_EMAIL_KEY]: email }, () => resolve(true)),
     );
@@ -193,6 +224,13 @@ class UserManager {
         chrome.storage.sync.set({ [SYNC_DISTINCT_KEY]: this._id }, () => resolve(true)),
       );
     }
+
+    await new Promise((resolve) =>
+      chrome.storage.local.get((data) => {
+        UserManager._storage = data;
+        resolve(true);
+      }),
+    );
 
     await this.getUserToken();
   }

@@ -40,9 +40,9 @@ const BOOKMARKS_SYNC_BUTTON_TEXT = 'Sync Bookmarks';
 const BOOKMARKS_SYNCING_BUTTON_TEXT = 'Syncing Bookmarks';
 const BOOKMARKS_SYNC_BUTTON_LOGIN_TEXT = 'Login to sync Bookmarks';
 
-export const SettingsContext = React.createContext<TSettingsContext>(Object.create(null));
+export const SettingsContext = React.createContext<SettingsContext>(Object.create(null));
 
-export const SettingsPage = () => {
+export const SettingsPage: SettingsPage = ({ email }) => {
   const [storedEmail, setStoredEmail] = useState<string>(UserManager.user.email ?? '');
   const [storedToken, setStoredToken] = useState<TAccessToken | undefined>(UserManager.user.token);
   const [useServerSuggestions, setUseServerSuggestions] = useState<boolean | undefined>(false);
@@ -113,6 +113,7 @@ export const SettingsPage = () => {
   };
 
   const context = {
+    email,
     storedEmail,
     storedToken,
     useServerSuggestions,

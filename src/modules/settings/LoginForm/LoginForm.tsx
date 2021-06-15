@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
 import Typography from 'antd/lib/typography';
@@ -19,6 +19,7 @@ const SENT_REACTIVATION_BUTTON_TEXT = 'New activation code sent to <placeholder>
 
 export const LoginForm = () => {
   const {
+    email,
     storedEmail,
     storedToken,
     setStoredEmail,
@@ -63,12 +64,18 @@ export const LoginForm = () => {
     }
   };
 
-  const handleReactivate = async () => {
+  const handleReactivate = async (_e: any = undefined, email?: string) => {
     // send activation code to given email
-    await UserManager.login(UserManager.user.email as string);
-    setSentReactivation(true);
+    await UserManager.login(email ?? (UserManager.user.email as string));
+    !email && setSentReactivation(true);
     setActivationCode('');
   };
+
+  useEffect(() => {
+    if (email) {
+      handleReactivate(undefined, email);
+    }
+  }, [email]);
 
   return storedToken ? (
     <div className="settings-logout-row">

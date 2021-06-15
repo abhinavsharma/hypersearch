@@ -40,6 +40,7 @@ const Sidebar: Sidebar = () => {
   ).length;
 
   const shouldPreventExpand =
+    !new URL(window.location.href).searchParams.get('auth_email') &&
     !SidebarLoader.tourStep &&
     (isSmallWidth || !isTabsLength || !isSearchTabs || isKpPage || SidebarLoader.preventAutoExpand);
 

@@ -425,7 +425,7 @@ class BookmarksSynchronizer {
    * Fetches bookmarks from the server.
    * @param apiToken token to access server API.
    */
-  private async fetchBookmarks(apiToken: string): Promise<BookmarksReponse> {
+  private async fetchBookmarks(apiToken: string): Promise<BookmarksResponse> {
     const { data } = await this._axios.get(BOOKMARKS_READ_ENDPOINT, {
       headers: {
         Authorization: apiToken,
@@ -448,7 +448,7 @@ class BookmarksSynchronizer {
     apiToken: string,
     changes: RemoteBookmark[],
     deletions: string[],
-  ): Promise<BookmarksReponse> {
+  ): Promise<BookmarksResponse> {
     return await this._axios.post(
       BOOKMARKS_SAVE_ENDPOINT,
       {

@@ -8,12 +8,7 @@
 import axios from 'axios';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
 import BookmarksSynchronizer from 'lib/Sync/BookmarksSynchronizer';
-import {
-  debug,
-  getPublicationUrl,
-  isFirefox,
-  sanitizeUrl,
-} from 'utils/helpers';
+import { debug, getPublicationUrl, isFirefox, sanitizeUrl } from 'utils/helpers';
 import {
   EXTENSION_SHORT_URL_RECEIVED,
   FRESHPAINT_API_ENDPOINT,
@@ -262,13 +257,6 @@ import {
     chrome.webNavigation.getFrame(
       { frameId: details.sourceFrameId, tabId: details.sourceTabId },
       (frame) => {
-        if (details.url.includes('https://insightbrowser.com?auth_email=')) {
-          chrome.tabs.sendMessage(details.tabId, {
-            type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-            page: OPEN_BUILDER_PAGE.SETTINGS,
-            email: new URL(details.url).searchParams.get('auth_email'),
-          });
-        }
         chrome.tabs.sendMessage(details.sourceTabId, {
           type: SEND_FRAME_INFO_MESSAGE,
           frame,
@@ -340,13 +328,11 @@ import {
         }
         break;
       case SYNC_START_MESSAGE:
-        BookmarksSynchronizer
-          .sync(msg.token)
-          .then(() => {
-            chrome.tabs.sendMessage(sender.tab?.id ?? -1, {
-              type: SYNC_END_MESSAGE,
-            });
+        BookmarksSynchronizer.sync(msg.token).then(() => {
+          chrome.tabs.sendMessage(sender.tab?.id ?? -1, {
+            type: SYNC_END_MESSAGE,
           });
+        });
 
         break;
       default:
