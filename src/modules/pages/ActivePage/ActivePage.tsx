@@ -53,12 +53,19 @@ export const ActivePage: ActivePage = () => {
       }, [] as AugmentationObject[]),
   );
 
-  const handleOpenSettings = () =>
-    chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.SETTINGS,
-      create: true,
-    });
+  const handleOpenSettings = (e: React.MouseEvent) => {
+    if (e.ctrlKey && e.altKey) {
+      chrome.runtime.sendMessage({
+        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+        page: OPEN_BUILDER_PAGE.FEATURE,
+      });
+    } else {
+      chrome.runtime.sendMessage({
+        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
+        page: OPEN_BUILDER_PAGE.SETTINGS,
+      });
+    }
+  };
 
   const handleClose = () => {
     if (tourStep) {

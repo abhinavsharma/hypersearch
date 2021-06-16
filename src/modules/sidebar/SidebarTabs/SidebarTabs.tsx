@@ -39,6 +39,7 @@ import 'antd/lib/message/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
+import { FeaturePage } from 'modules/pages/FeaturePage/FeaturePage';
 
 const { TabPane } = Tabs;
 
@@ -193,6 +194,8 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                 );
               case OPEN_BUILDER_PAGE.SETTINGS:
                 return <SettingsPage email={pageData?.email} />;
+              case OPEN_BUILDER_PAGE.FEATURE:
+                return <FeaturePage />;
               default:
                 return null;
             }

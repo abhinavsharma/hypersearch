@@ -12,6 +12,7 @@ export const SYNC_DISTINCT_KEY = 'distinctId';
 export const SYNC_PUBLICATION_TIME_TRACK_KEY = 'publicationTimeTrack';
 export const SYNC_ALTERNATE_HOVER_ACTION = 'altHoverAction';
 export const USER_JWT_TOKEN = 'cognito_user_jwt';
+export const DEV_FEATURE_FLAGS = 'devFeatures';
 export const CACHED_SUBTABS_KEY = 'cachedSubtabs';
 export const USE_COUNT_PREFIX = 'augmentationUseCount';
 export const IGNORED_PREFIX = 'ignored';
@@ -72,6 +73,8 @@ export const CUSTOM_SEARCH_ENGINES =
   'https://raw.githubusercontent.com/insightbrowser/augmentations/main/serp_query_selectors.json';
 export const SAFARI_FALLBACK_URL = 'https://www.ecosia.org/search';
 export const DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX = 'google.com/search';
+export const FEATURE_FLAG_BLOB_URL =
+  'https://raw.githubusercontent.com/insightbrowser/scripts/main/ios_feature_flags.json';
 export const EXTENSION_HOST = 'extensions.insightbrowser.com';
 export const EXTENSION_SHARE_URL = 'https://extensions.insightbrowser.com/extend?text=';
 export const EXTENSION_SHORT_SHARE_URL = 'https://extensions.insightbrowser.com/extend/';
@@ -134,6 +137,7 @@ export enum OPEN_BUILDER_PAGE {
   GUTTER = 'gutter',
   BUILDER = 'builder',
   SETTINGS = 'settings',
+  FEATURE = 'feature',
 }
 
 // ! INTERNAL MESSAGES

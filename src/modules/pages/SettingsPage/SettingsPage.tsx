@@ -27,6 +27,7 @@ import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SettingsPage.scss';
+import { FeatureGate, useFeature } from 'lib/FeatureGate/FeatureGate';
 
 const { Title } = Typography;
 
@@ -47,6 +48,9 @@ export const SettingsPage: SettingsPage = ({ email }) => {
   const [storedToken, setStoredToken] = useState<TAccessToken | undefined>(UserManager.user.token);
   const [useServerSuggestions, setUseServerSuggestions] = useState<boolean | undefined>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  const [bookmarksFeature] = useFeature('desktop_bookmarks');
+  const [loginFeature] = useFeature('desktop_login');
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -132,28 +136,31 @@ export const SettingsPage: SettingsPage = ({ email }) => {
           <span className="page-title">{HEADER_TITLE}</span>
         </header>
         <div className="sidebar-page-wrapper">
-          {/* login */}
-          <section>
-            <h2 className="title">
-              {
-                // prettier-ignore
-                storedEmail && storedToken
-                ? LOGOUT_SECTION_TITLE
-                : storedEmail
-                  ? ACTIVATION_SECTION_TITLE
-                  : LOGIN_SECTION_TITLE
-              }
-            </h2>
-            <div className="settings-section-content insight-row">
-              <LoginForm />
-            </div>
-            <Divider />
-          </section>
+          <FeatureGate feature="desktop_login">
+            <section>
+              <h2 className="title">
+                {
+                  // prettier-ignore
+                  storedEmail && storedToken
+                  ? LOGOUT_SECTION_TITLE
+                  : storedEmail
+                    ? ACTIVATION_SECTION_TITLE
+                    : LOGIN_SECTION_TITLE
+                }
+              </h2>
+              <div className="settings-section-content insight-row">
+                <LoginForm />
+              </div>
+              <Divider />
+            </section>
+          </FeatureGate>
           {/* change privacy */}
           <section>
-            {storedToken && <h2 className="title">{ACTIVE_LICENSE_MAIN_HEADER}</h2>}
+            {(storedToken || !loginFeature) && (
+              <h2 className="title">{ACTIVE_LICENSE_MAIN_HEADER}</h2>
+            )}
             <div className="settings-section-content">
-              {storedToken && (
+              {(storedToken || !loginFeature) && (
                 <>
                   <Switch
                     className="privacy-toggle-button"
@@ -164,7 +171,7 @@ export const SettingsPage: SettingsPage = ({ email }) => {
               )}
               {
                 //prettier-ignore
-                !storedToken && useServerSuggestions === undefined ? (
+                !(storedToken || !loginFeature) && useServerSuggestions === undefined ? (
                   <>
                     <Title level={2}>{INACTIVE_LICENSE_MAIN_HEADER}</Title>
                     <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
@@ -184,23 +191,24 @@ export const SettingsPage: SettingsPage = ({ email }) => {
               }
             </div>
           </section>
-          {/* force sync bookmarks */}
-          <section>
-            <div className="settings-section-content">
-              <Button
-                block
-                type="primary"
-                onClick={handleForceSync}
-                disabled={!storedToken || isSyncing}
-              >
-                <span className="insight-row">
-                  <RefreshCw className={isSyncing ? 'spin' : ''} />
-                  &nbsp;{bookmarksStatus()}
-                </span>
-              </Button>
-            </div>
-            <Divider />
-          </section>
+          <FeatureGate feature="desktop_bookmarks">
+            <section>
+              <div className="settings-section-content">
+                <Button
+                  block
+                  type="primary"
+                  onClick={handleForceSync}
+                  disabled={!(storedToken || bookmarksFeature) || isSyncing}
+                >
+                  <span className="insight-row">
+                    <RefreshCw className={isSyncing ? 'spin' : ''} />
+                    &nbsp;{bookmarksStatus()}
+                  </span>
+                </Button>
+              </div>
+              <Divider />
+            </section>
+          </FeatureGate>
         </div>
       </div>
     </SettingsContext.Provider>
