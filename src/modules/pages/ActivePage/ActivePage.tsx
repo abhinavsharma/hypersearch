@@ -54,7 +54,7 @@ export const ActivePage: ActivePage = () => {
   );
 
   const handleOpenSettings = (e: React.MouseEvent) => {
-    if (e.ctrlKey && e.altKey) {
+    if (e.shiftKey) {
       chrome.runtime.sendMessage({
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
         page: OPEN_BUILDER_PAGE.FEATURE,
