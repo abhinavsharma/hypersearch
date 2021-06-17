@@ -1,16 +1,15 @@
-import React, { Suspense, useCallback, useContext, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
 import { SYNC_PRIVACY_KEY } from 'utils';
-import { StepContext } from 'modules/introduction';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './ToggleAnonymousQueries.scss';
 
 /** MAGICS **/
 // * CHECKED STATE
-const CHECKED_SWITCH_TEXT = 'Use server suggestions';
-const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
+export const CHECKED_SWITCH_TEXT = 'Use server suggestions';
+export const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
   <>
     <p>Recommended for most people, even very privacy sensitive users.</p>
     <p>
@@ -37,8 +36,8 @@ const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
   </>
 );
 // * UNCHECKED STATE
-const UNCHECKED_SWITCH_TEXT = 'Do not use sever suggestions';
-const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
+export const UNCHECKED_SWITCH_TEXT = 'Do not use sever suggestions';
+export const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
   <>
     <p>Only recommended for local use.</p>
     <p>
@@ -71,20 +70,19 @@ const WarningOutlined = React.lazy(
 const { Title } = Typography;
 
 export const ToggleAnonymousQueries = () => {
-  const stepContext = useContext(StepContext);
   const [checked, setChecked] = useState<boolean>();
 
   const getStorageValue = useCallback(async () => {
-    const isAnonymous = await new Promise<Record<string, boolean>>((resolve) =>
+    const useServerSuggestions = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
     ).then((result) => result?.[SYNC_PRIVACY_KEY]);
-    if (isAnonymous === undefined && stepContext.license.isActivated) {
+    if (useServerSuggestions === undefined) {
       chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: true });
       setChecked(true);
     } else {
-      stepContext.license.isActivated && setChecked(isAnonymous);
+      setChecked(useServerSuggestions);
     }
-  }, [stepContext.license.isActivated]);
+  }, []);
 
   useEffect(() => {
     getStorageValue();

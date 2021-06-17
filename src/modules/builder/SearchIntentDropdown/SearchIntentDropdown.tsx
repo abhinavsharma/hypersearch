@@ -39,8 +39,8 @@ export const SearchIntentDropdown: SearchIntentDropdown = ({ newValue, handleSel
         placeholder={SEARCH_INTENT_DROPDOWN_LABEL}
         filterOption={handleFilter}
         onChange={handleSelect}
-        className="insight-select-full-width"
-        dropdownClassName="insight-select-full-width-dropdown"
+        className="insight-full-width"
+        dropdownClassName="insight-full-width-dropdown"
         getPopupContainer={getPopupContainer}
       >
         {intents?.map(({ name, intent_id }) => (

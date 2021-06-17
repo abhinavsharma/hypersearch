@@ -17,6 +17,7 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
+import UserManager from 'lib/UserManager';
 
 /** MAGICS **/
 const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit local lens';
@@ -33,7 +34,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
 
   const handleOpenAugmentationBuilder = (isEdit?: boolean) => {
     AugmentationManager.preparedLogMessage =
-      isEdit || SidebarLoader.strongPrivacy
+      isEdit || UserManager.user.privacy
         ? null
         : {
             augmentation: tab.augmentation,

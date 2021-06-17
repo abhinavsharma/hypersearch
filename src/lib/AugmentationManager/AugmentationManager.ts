@@ -31,6 +31,7 @@ import {
   MY_TRUSTLIST_TEMPLATE,
   DEDICATED_SERP_REGEX,
 } from 'utils';
+import UserManager from 'lib/UserManager';
 
 class AugmentationManager {
   public preparedLogMessage: Record<'augmentation', AugmentationObject> | null;
@@ -79,7 +80,7 @@ class AugmentationManager {
     ] as AugmentationObject['actions']['action_list'];
     blockList.actions.action_list = newActionList;
     isNewBlock &&
-      !SidebarLoader.strongPrivacy &&
+      !UserManager.user.privacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_ADD_DOMAIN, {
         domain,
       });
@@ -108,9 +109,9 @@ class AugmentationManager {
     blockList.actions.action_list = newActionList;
     this.addOrEditAugmentation(blockList, {
       actions: newActionList,
-    });
-    SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
-    !SidebarLoader.strongPrivacy &&
+    }),
+      (SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain));
+    !UserManager.user.privacy &&
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
         domain,
       });
@@ -294,9 +295,7 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public getAugmentationRelevancy(
-    augmentation: AugmentationObject,
-  ): {
+  public getAugmentationRelevancy(augmentation: AugmentationObject): {
     isHidden: boolean;
     isRelevant: boolean;
     hasPreventAutoexpand: boolean;
@@ -417,7 +416,7 @@ class AugmentationManager {
           key === CONDITION_KEYS.SEARCH_ENGINE_IS ||
           unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
         ) {
-          const cse = (value[0] as unknown) as CustomSearchEngine;
+          const cse = value[0] as unknown as CustomSearchEngine;
           const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params?.every(
             (param) => !!SidebarLoader.url.searchParams.get(param),
           );
@@ -620,7 +619,7 @@ class AugmentationManager {
       }
     }
     this.preparedLogMessage &&
-      !SidebarLoader.strongPrivacy &&
+      !UserManager.user.privacy &&
       SidebarLoader.sendLogMessage(EXTENSION_AUGMENTATION_SAVE, {
         augmentation: this.preparedLogMessage.augmentation,
       });

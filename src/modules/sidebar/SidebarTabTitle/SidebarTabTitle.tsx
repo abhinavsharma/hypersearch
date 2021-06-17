@@ -18,6 +18,7 @@ import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabTitle.scss';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { useDebouncedFn } from 'beautiful-react-hooks';
+import UserManager from 'lib/UserManager';
 
 /** MAGICS **/
 const SUGGESTED_TOOLTIP_TEXT = `Lens suggested by ${APP_NAME}`;
@@ -29,7 +30,7 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_HOVEROPEN, {
         query: SidebarLoader.query,
         url: msg.url,
-        license_keys: [SidebarLoader.userData.license],
+        license_keys: [UserManager.user.license],
         position_in_serp:
           (SidebarLoader.publicationSlices as any)['original'].indexOf(
             extractUrlProperties(msg.url).full,
@@ -44,12 +45,9 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
   const handleClick = () => {
     setActiveKey((index + 1).toString());
     SidebarLoader.sendLogMessage(EXTENSION_SERP_SUBTAB_CLICKED, {
-      originalUrl: SidebarLoader.strongPrivacy
-        ? md5(SidebarLoader.url.href)
-        : SidebarLoader.url.href,
-      license_keys: [SidebarLoader.userData.license],
-      originalQuery: SidebarLoader.strongPrivacy ? md5(SidebarLoader.query) : SidebarLoader.query,
-      subtabUrl: SidebarLoader.strongPrivacy ? md5(tab.url.href) : tab.url.href,
+      originalUrl: UserManager.user.privacy ? md5(SidebarLoader.url.href) : SidebarLoader.url.href,
+      originalQuery: UserManager.user.privacy ? md5(SidebarLoader.query) : SidebarLoader.query,
+      subtabUrl: UserManager.user.privacy ? md5(tab.url.href) : tab.url.href,
       subtabName: tab.title,
     });
   };
@@ -64,13 +62,11 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
           ));
       if (msg.type === TRIGGER_FRAME_SCROLL_LOG_MESSAGE && matching) {
         SidebarLoader.sendLogMessage(EXTENSION_SUBTAB_SCROLL, {
-          originalUrl: SidebarLoader.strongPrivacy
+          originalUrl: UserManager.user.privacy
             ? md5(SidebarLoader.url.href)
             : SidebarLoader.url.href,
-          originalQuery: SidebarLoader.strongPrivacy
-            ? md5(SidebarLoader.query)
-            : SidebarLoader.query,
-          subtabUrl: SidebarLoader.strongPrivacy ? md5(tab.url.href) : tab.url.href,
+          originalQuery: UserManager.user.privacy ? md5(SidebarLoader.query) : SidebarLoader.query,
+          subtabUrl: UserManager.user.privacy ? md5(tab.url.href) : tab.url.href,
           subtabName: tab.title,
         });
       }

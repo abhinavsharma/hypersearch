@@ -6,9 +6,15 @@
 }
 
 .insight-list {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: flex-start;
+}
+
+.insight-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
 }
 
 .insight-no-border {
@@ -42,11 +48,11 @@
   }
 }
 
-.insight-select-full-width {
+.insight-full-width {
   width: 100%;
 }
 
-.insight-select-full-width-dropdown {
+.insight-full-width-dropdown {
   @include fullWidthDropdown;
 }
 

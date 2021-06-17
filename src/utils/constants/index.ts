@@ -11,6 +11,7 @@ export const SYNC_FINISHED_KEY = 'hasFinishedIntro';
 export const SYNC_DISTINCT_KEY = 'distinctId';
 export const SYNC_PUBLICATION_TIME_TRACK_KEY = 'publicationTimeTrack';
 export const SYNC_ALTERNATE_HOVER_ACTION = 'altHoverAction';
+export const USER_JWT_TOKEN = 'cognito_user_jwt';
 export const CACHED_SUBTABS_KEY = 'cachedSubtabs';
 export const USE_COUNT_PREFIX = 'augmentationUseCount';
 export const IGNORED_PREFIX = 'ignored';
@@ -18,6 +19,11 @@ export const INSTALLED_PREFIX = 'cse-custom';
 export const CSE_PREFIX = 'cse';
 export const PINNED_PREFIX = 'pinned';
 export const DEDICATED_ENGINE_PREFIX = 'dedicated-serp';
+export const BOOKMARKS_LAST_FETCH = 'bookmarks_last_fetch';
+export const BOOKMARKS_TO_ADD = 'bookmarks_to_add';
+export const BOOKMARKS_TO_UPDATE = 'bookmarks_to_update';
+export const BOOKMARKS_TO_DELETE = 'bookmarks_to_delete';
+export const BOOKMARKS_REMOTE_TO_LOCAL_ID = 'bookmarks_remote_to_local_id';
 
 /**
  * ! CUSTOM AUGMENTATIONS
@@ -45,6 +51,8 @@ export const LUMOS_API_URL_PROD = 'https://zy6kcqa01a.execute-api.us-east-2.amaz
 export const LUMOS_API_URL_DEBUG = 'https://nwwcsdsuw2.execute-api.us-east-2.amazonaws.com/dev/';
 export const IN_DEBUG_MODE = process.env.NODE_ENV || window.INSIGHT_FORCE_DEBUG;
 export const LUMOS_API_URL = process.env.NODE_ENV ? LUMOS_API_URL_PROD : LUMOS_API_URL_PROD;
+export const BOOKMARKS_READ_ENDPOINT = 'sync/bookmarks/read';
+export const BOOKMARKS_SAVE_ENDPOINT = 'sync/bookmarks/save';
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
 export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
@@ -79,12 +87,14 @@ export const FRESHPAINT_API_ENDPOINT = 'https://api.perfalytics.com/track';
 export const FRESHPAINT_API_TOKEN = 'ee065c1d-6cfa-4f63-8844-36c638543e2d';
 // Minimum inner width of the tab to expand sidebar by default.
 export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
-export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1200;
+export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
 // Mailchimp Configuration
 export const MAILCHIMP_SERVER_PREFIX = 'us6';
 export const MAILCHIMP_LIST_ID = '4df884a9d6';
 export const MAILCHIMP_API_KEY = '1779b85b6ac29f101e1b9d119c9e9b80';
 export const MAILCHIMP_URL = `https://${MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/<placeholder>`;
+export const AWS_COGNITO_POOL_ID = 'us-east-2_YuInMWEfg';
+export const AWS_COGNITO_CLIENT_ID = '7bou6gv1lk6hs35ptm0ciqja77';
 
 /**
  * ! FLAGS
@@ -123,6 +133,7 @@ export enum OPEN_BUILDER_PAGE {
   ACTIVE = 'active',
   GUTTER = 'gutter',
   BUILDER = 'builder',
+  SETTINGS = 'settings',
 }
 
 // ! INTERNAL MESSAGES
@@ -152,6 +163,10 @@ export const TRIGGER_STOP_TRACK_TIMER_MESSAGE = 'TRIGGER_STOP_TRACK_TIMER_MESSAG
 export const HIDE_FRAME_OVERLAY_MESSAGE = 'HIDE_FRAME_OVERLAY_MESSAGE;';
 export const TRIGGER_FRAME_SCROLL_LOG_MESSAGE = 'TRIGGER_FRAME_SCROLL_LOG_MESSAGE';
 export const TRIGGER_GUTTER_HOVEROPEN_MESSAGE = 'TRIGGER_GUTTER_HOVEROPEN_MESSAGE';
+export const SYNC_START_MESSAGE = 'SYNC_START_MESSAGE';
+export const SYNC_END_MESSAGE = 'SYNC_END_MESSAGE';
+export const ADD_EXTERNAL_AUGMENTATION_MESSAGE = 'ADD_EXTERNAL_AUGMENTATION_MESSAGE';
+export const ACTIVATE_EMAIL_MESSAGE = 'ACTIVATE_EMAIL_MESSAGE';
 
 // ! LOG MESSAGES
 export const SEND_LOG_MESSAGE = 'SEND_LOG_MESSAGE';

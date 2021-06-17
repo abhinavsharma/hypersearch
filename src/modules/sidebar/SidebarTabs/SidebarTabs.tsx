@@ -9,7 +9,8 @@ import Tabs from 'antd/lib/tabs';
 import message from 'antd/lib/message';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { ActivePage, BuilderPage, GutterPage } from 'modules/pages';
+import UserManager from 'lib/UserManager';
+import { ActivePage, BuilderPage, GutterPage, SettingsPage } from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -51,7 +52,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
           query: SidebarLoader.query,
           url: msg.url,
-          license_keys: [SidebarLoader.userData.license],
+          license_keys: [UserManager.user.license],
           position_in_serp:
             SidebarLoader.publicationSlices['original'].indexOf(
               extractUrlProperties(msg.url).full,
@@ -75,7 +76,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
               query: SidebarLoader.query,
               url: msg.url,
-              license_keys: [SidebarLoader.userData.license],
+              license_keys: [UserManager.user.license],
               filter_name: sourceTab.title,
               position_in_serp:
                 SidebarLoader.publicationSlices[sourceTab.id][sourceTab.url.href].indexOf(
@@ -112,6 +113,9 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           }
           if (msg.page === OPEN_BUILDER_PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
+          }
+          if (msg.page === OPEN_BUILDER_PAGE.SETTINGS && msg.email) {
+            setPageData({ email: msg.email });
           }
           msg.page && setShowPage(msg.page);
           break;
@@ -187,6 +191,8 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                     domain={pageData?.publication}
                   />
                 );
+              case OPEN_BUILDER_PAGE.SETTINGS:
+                return <SettingsPage email={pageData?.email} />;
               default:
                 return null;
             }

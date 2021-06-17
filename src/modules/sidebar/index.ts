@@ -1,6 +1,5 @@
 export * from './ActionBar/ActionBar';
 export * from './Sidebar/Sidebar';
-export * from './SidebarFooter/SidebarFooter';
 export * from './SidebarHeader/SidebarHeader';
 export * from './SidebarTabContainer/SidebarTabContainer';
 export * from './SidebarTabMeta/SidebarTabMeta';
