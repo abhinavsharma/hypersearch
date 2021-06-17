@@ -200,6 +200,11 @@ class UserManager {
     );
   }
 
+  public async setUserLicense(license: string) {
+    this._license = license;
+    chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' });
+  }
+
   //-----------------------------------------------------------------------------------------------
   // ! Internal Implementation
   //-----------------------------------------------------------------------------------------------
