@@ -4,7 +4,14 @@ import { Helmet } from 'react-helmet';
 import { Input, Button, Typography } from 'antd';
 import UserManager from 'lib/UserManager';
 import { StepContext } from 'modules/introduction';
-import { APP_NAME, EXTENSION_HOST, MAILCHIMP_API_KEY, MAILCHIMP_URL, validateEmail } from 'utils';
+import {
+  APP_NAME,
+  EXTENSION_HOST,
+  MAILCHIMP_API_KEY,
+  MAILCHIMP_URL,
+  SYNC_LICENSE_KEY,
+  validateEmail,
+} from 'utils';
 import { useFeature } from 'lib/FeatureGate/FeatureGate';
 import './EmailFrame.scss';
 
@@ -30,11 +37,19 @@ export const EmailFrame = () => {
   const handleNext = useCallback(() => stepContext.setCurrentStep(2), [stepContext]);
 
   const handleEmailSubmit = async () => {
-    loginFeature &&
+    if (loginFeature) {
       window.open(
         `https://${EXTENSION_HOST}?auth_email=${encodeURIComponent(emailValue)}`,
         '_blank',
       );
+    } else {
+      await new Promise((resolve) =>
+        chrome.storage.sync.set(
+          { [SYNC_LICENSE_KEY]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
+          () => resolve(true),
+        ),
+      );
+    }
     UserManager.setUserEmail(emailValue);
     handleNext();
     fetch(MAILCHIMP_URL.replace('<placeholder>', md5(emailValue.toLowerCase())), {
