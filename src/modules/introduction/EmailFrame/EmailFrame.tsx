@@ -5,6 +5,7 @@ import { Input, Button, Typography } from 'antd';
 import UserManager from 'lib/UserManager';
 import { StepContext } from 'modules/introduction';
 import { APP_NAME, EXTENSION_HOST, MAILCHIMP_API_KEY, MAILCHIMP_URL, validateEmail } from 'utils';
+import { useFeature } from 'lib/FeatureGate/FeatureGate';
 import './EmailFrame.scss';
 
 /** MAGICS **/
@@ -24,11 +25,17 @@ export const EmailFrame = () => {
   const [emailValue, setEmailValue] = useState<string>(UserManager.user.email ?? '');
   const [emailIsValid, setEmailIsValid] = useState<boolean>(false);
   const stepContext = useContext(StepContext);
+  const [loginFeature] = useFeature('desktop_login');
 
   const handleNext = useCallback(() => stepContext.setCurrentStep(2), [stepContext]);
 
   const handleEmailSubmit = async () => {
-    window.open(`https://${EXTENSION_HOST}?auth_email=${encodeURIComponent(emailValue)}`, '_blank');
+    loginFeature &&
+      window.open(
+        `https://${EXTENSION_HOST}?auth_email=${encodeURIComponent(emailValue)}`,
+        '_blank',
+      );
+    UserManager.setUserEmail(emailValue);
     handleNext();
     fetch(MAILCHIMP_URL.replace('<placeholder>', md5(emailValue.toLowerCase())), {
       method: 'PUT',

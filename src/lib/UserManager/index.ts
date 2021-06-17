@@ -193,6 +193,13 @@ class UserManager {
     this._token = undefined;
   }
 
+  public async setUserEmail(email: string) {
+    this._email = email;
+    await new Promise((resolve) =>
+      chrome.storage.sync.set({ [SYNC_EMAIL_KEY]: email }, () => resolve(true)),
+    );
+  }
+
   //-----------------------------------------------------------------------------------------------
   // ! Internal Implementation
   //-----------------------------------------------------------------------------------------------

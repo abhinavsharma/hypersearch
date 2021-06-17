@@ -4,10 +4,10 @@ import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
 import { StepContext, ToggleAnonymousQueries } from 'modules/introduction';
 import { APP_NAME } from 'utils';
+import UserManager from 'lib/UserManager';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './PrivacyFrame.scss';
-import UserManager from 'lib/UserManager';
 
 /** MAGICS **/
 export const ACTIVE_LICENSE_MAIN_HEADER = 'Choose a Privacy Setting';
@@ -35,7 +35,7 @@ export const PrivacyFrame = () => {
         <title>{TAB_TITLE}</title>
       </Helmet>
       <div id="privacy-frame-container">
-        {UserManager.user.token ? (
+        {UserManager.user.email ? (
           <>
             <Title level={2}>{ACTIVE_LICENSE_MAIN_HEADER}</Title>
             <ToggleAnonymousQueries />
