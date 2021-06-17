@@ -260,6 +260,8 @@ class SidebarLoader {
 
   public tourStep!: string;
 
+  public showPublicationRating: boolean;
+
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.augmentationStats = Object.create(null);
@@ -278,6 +280,7 @@ class SidebarLoader {
     this.featureDomains = [];
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
+    this.showPublicationRating = false;
   }
 
   public get maxAvailableSpace() {

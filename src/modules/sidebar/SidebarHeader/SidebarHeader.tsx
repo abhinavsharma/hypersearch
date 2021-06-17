@@ -21,8 +21,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarHeader.scss';
 
-const { Title } = Typography;
-
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
@@ -35,13 +33,15 @@ const HIDE_TOOLTIP_TEXT = `Hide ("${SHRINK_KEY.KEY}" key)`;
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
-export const SidebarHeader: SidebarHeader = ({ tabs }) => {
+export const SidebarHeader: SidebarHeader = () => {
+  const { Title } = Typography;
+
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
 
   const handleClose = () => {
     isExpanded && handleExpand();
     SidebarLoader.isPreview = false;
-    flipSidebar(document, 'hide', tabs.length, SidebarLoader.maxAvailableSpace);
+    flipSidebar(document, 'hide', SidebarLoader);
   };
 
   const handleOpenBuilder = () => {
@@ -57,7 +57,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
     setIsExpanded(SidebarLoader.isExpanded);
-    expandSidebar(SidebarLoader.sidebarTabs.length, SidebarLoader.maxAvailableSpace);
+    expandSidebar(SidebarLoader);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 

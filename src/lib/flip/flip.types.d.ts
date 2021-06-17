@@ -1,7 +1,6 @@
 declare type FlipSidebar = (
   document: Document,
   force: 'hide' | 'show',
-  tabsLength: number,
-  maxAvailableWidth: number,
+  loader: TSidebarLoader,
   preventOverlay?: boolean,
 ) => void;

@@ -4,7 +4,7 @@
  * @license (C) Insight
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import List from 'antd/lib/list';
 import Tooltip from 'antd/lib/tooltip';
 import SidebarLoader from 'lib/sidebar';
@@ -18,6 +18,7 @@ import {
   SIDEBAR_PAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXPAND_KEY,
+  SIDEBAR_Z_INDEX,
 } from 'constant';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -32,6 +33,8 @@ const LIST_STYLE = { paddingRight: 5 };
 const MAX_TAB_LENGTH = 3;
 
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
+  const tooltipContainer = useRef<HTMLDivElement>(null);
+
   const handleClick = () => {
     if (!tabs.length) {
       chrome.runtime.sendMessage({
@@ -41,7 +44,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       });
     }
     SidebarLoader.isPreview = true;
-    flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace);
+    flipSidebar(document, 'show', SidebarLoader);
   };
 
   const ListItem = (item: SidebarTab) => (
@@ -82,21 +85,29 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         ])
       : filteredTabs;
 
+  const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
   const keepParent = { keepParent: false };
 
   return (
-    <Tooltip title={TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-      <div onClick={handleClick} className="insight-sidebar-toggle-button" data-height={tabHeight}>
-        <div className="insight-sidebar-toggle-appname">
-          <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
+    <>
+      <Tooltip title={TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
+        <div
+          onClick={handleClick}
+          className="insight-sidebar-toggle-button"
+          data-height={tabHeight}
+        >
+          <div className="insight-sidebar-toggle-appname">
+            <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
+          </div>
+          <List
+            style={LIST_STYLE}
+            itemLayout="horizontal"
+            dataSource={dataSource}
+            renderItem={ListItem}
+          />
         </div>
-        <List
-          style={LIST_STYLE}
-          itemLayout="horizontal"
-          dataSource={dataSource}
-          renderItem={ListItem}
-        />
-      </div>
-    </Tooltip>
+      </Tooltip>
+      <div className="tooltip-container" ref={tooltipContainer} style={containerStyle} />
+    </>
   );
 };

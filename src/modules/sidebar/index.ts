@@ -3,6 +3,7 @@ export * from './Sidebar/Sidebar';
 export * from './SidebarHeader/SidebarHeader';
 export * from './SidebarNote/SidebarNote';
 export * from './SidebarNoteTab/SidebarNoteTab';
+export * from './SidebarNubPublicationRating/SidebarNubPublicationRating';
 export * from './SidebarSliceNote/SidebarSliceNote';
 export * from './SidebarTabContainer/SidebarTabContainer';
 export * from './SidebarTabMeta/SidebarTabMeta';

@@ -2,7 +2,9 @@ import React, { MutableRefObject, useCallback, useEffect, useRef, useState } fro
 import Tooltip from 'antd/lib/tooltip';
 import {
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
+  INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
+  INSIGHT_SHOW_GUTTER_ICON_SELECTOR,
   SIDEBAR_Z_INDEX,
   SWITCH_TO_TAB,
   TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
@@ -69,7 +71,7 @@ export const RightActionBar: RightActionBar = ({
       }
 
       if (rootRef.current) {
-        rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
+        rootRef.current.setAttribute(INSIGHT_SHOW_GUTTER_ICON_SELECTOR, 'true');
       }
     },
     [url],
@@ -82,7 +84,7 @@ export const RightActionBar: RightActionBar = ({
     }
 
     if (rootRef.current) {
-      rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
+      rootRef.current.setAttribute(INSIGHT_SHOW_GUTTER_ICON_SELECTOR, 'false');
     }
     clearTimeout(timeoutRef.current);
   }, [isSearched, isFeatured]);
@@ -121,7 +123,7 @@ export const RightActionBar: RightActionBar = ({
       }
 
       rootRef.current =
-        rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root-right');
+        rootRef.current ?? iconRef.current.closest(`.${INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR}`);
 
       // prettier-ignore
       const newResult =

@@ -10,7 +10,14 @@ import message from 'antd/lib/message';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import UserManager from 'lib/user';
-import { ActivePage, BuilderPage, GutterPage, SettingsPage, FeaturePage } from 'modules/pages';
+import {
+  ActivePage,
+  BuilderPage,
+  GutterPage,
+  SettingsPage,
+  FeaturePage,
+  PublicationUserReviewPage,
+} from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -103,7 +110,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             setTimeout(() => message.destroy(), 2500);
             break;
           }
-          flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace, true);
+          flipSidebar(document, 'show', SidebarLoader, true);
           setActiveKey('0');
           if (msg.page === SIDEBAR_PAGE.GUTTER && msg.augmentations) {
             setPageData({ augmentations: msg.augmentations, publication: msg.publication });
@@ -113,6 +120,9 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           }
           if (msg.page === SIDEBAR_PAGE.SETTINGS && msg.email) {
             setPageData({ email: msg.email });
+          }
+          if (msg.page === SIDEBAR_PAGE.RATING) {
+            setPageData({ info: msg.info, rating: msg.rating });
           }
           msg.page && setShowPage(msg.page);
           break;
@@ -137,13 +147,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               ),
             );
             if (index !== -1) {
-              flipSidebar(
-                document,
-                'show',
-                tabs.length,
-                SidebarLoader.maxAvailableSpace,
-                SidebarLoader.isPreview,
-              );
+              flipSidebar(document, 'show', SidebarLoader, SidebarLoader.isPreview);
               SidebarLoader.isPreview ??= true;
               setActiveKey(String(index + 1));
             }
@@ -192,6 +196,10 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                 return <SettingsPage email={pageData?.email} />;
               case SIDEBAR_PAGE.FEATURE:
                 return <FeaturePage />;
+              case SIDEBAR_PAGE.RATING:
+                return (
+                  <PublicationUserReviewPage info={pageData?.info} rating={pageData?.rating} />
+                );
               default:
                 return null;
             }

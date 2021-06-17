@@ -13,7 +13,9 @@ import SidebarLoader from 'lib/sidebar';
 import {
   AUGMENTATION_ID,
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
+  INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
+  INSIGHT_SHOW_GUTTER_ICON_SELECTOR,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   SIDEBAR_PAGE,
   SIDEBAR_Z_INDEX,
@@ -119,7 +121,7 @@ export const LeftActionBar: LeftActionBar = ({
     }
 
     if (rootRef.current) {
-      rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
+      rootRef.current.setAttribute(INSIGHT_SHOW_GUTTER_ICON_SELECTOR, 'false');
     }
   }, [isSearched, isTrusted, isBlocked, isFeatured]);
 
@@ -130,7 +132,7 @@ export const LeftActionBar: LeftActionBar = ({
       }
 
       if (rootRef.current) {
-        rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
+        rootRef.current.setAttribute(INSIGHT_SHOW_GUTTER_ICON_SELECTOR, 'true');
       }
     };
 
@@ -140,7 +142,7 @@ export const LeftActionBar: LeftActionBar = ({
       }
 
       rootRef.current =
-        rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root-left');
+        rootRef.current ?? iconRef.current.closest(`.${INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR}`);
 
       /* eslint-disable */
       const newResult =

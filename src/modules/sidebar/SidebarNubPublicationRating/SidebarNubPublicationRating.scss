@@ -1,0 +1,21 @@
+@use 'styles/variables' as *;
+@use 'styles/animations' as *;
+
+.insight-sidebar-publication-rating-nub {
+  @include shakeAnimation;
+  right: 0;
+  margin-left: auto;
+  bottom: $sidebar_space_medium;
+  width: $sidebar_toggle_rating_width !important;
+  height: $sidebar_toggle_rating_height !important;
+  color: $color_background_darker !important;
+  background: $color_background_white;
+  font-size: $sidebar_font_medium;
+  border-right: none;
+  border-radius: $sidebar_space_medium 0 0 $sidebar_space_medium !important;
+  box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}

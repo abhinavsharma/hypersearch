@@ -10,7 +10,7 @@ import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import { flipSidebar } from 'lib/flip';
 import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'lib/helpers';
-import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
+import { SidebarNubPublicationRating, SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
   EXTENSION_AUTO_EXPAND,
@@ -24,12 +24,16 @@ import {
 import './Sidebar.scss';
 import { useDebouncedFn } from 'beautiful-react-hooks';
 import UserManager from 'lib/user';
+import { usePublicationInfo } from 'lib/publication';
 
 const Sidebar: Sidebar = () => {
+  const [rating, setRating] = useState<number>(0);
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
   const [activeKey, setActiveKey] = useState<string>(
     getFirstValidTabIndex(SidebarLoader.sidebarTabs),
   );
+
+  const { publicationInfo, averageRating } = usePublicationInfo(window.location.hostname);
 
   const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
   const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
@@ -46,23 +50,22 @@ const Sidebar: Sidebar = () => {
 
   const handleResize = useDebouncedFn(() => {
     if (SidebarLoader.isPreview || !shouldPreventExpand) {
-      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+      flipSidebar(document, 'show', SidebarLoader);
     }
   }, 300);
+
+  useEffect(() => {
+    SidebarLoader.showPublicationRating = averageRating > 0;
+    setRating(averageRating);
+  }, [averageRating]);
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
 
     if (shouldPreventExpand && !SidebarLoader.isPreview) {
-      flipSidebar(document, 'hide', validTabsLength, SidebarLoader.maxAvailableSpace, true);
+      flipSidebar(document, 'hide', SidebarLoader);
     } else {
-      flipSidebar(
-        document,
-        'show',
-        validTabsLength,
-        SidebarLoader.maxAvailableSpace,
-        SidebarLoader.isPreview,
-      );
+      flipSidebar(document, 'show', SidebarLoader, SidebarLoader.isPreview);
       SidebarLoader.isPreview ??= true;
     }
 
@@ -85,7 +88,7 @@ const Sidebar: Sidebar = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength]);
+  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength, rating]);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -121,6 +124,7 @@ const Sidebar: Sidebar = () => {
       <div id="insight-sidebar-container" className="insight-full-size-fixed">
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
+      {rating > 0 && <SidebarNubPublicationRating rating={averageRating} info={publicationInfo} />}
       {tabsLength && <SidebarToggleButton tabs={sidebarTabs} />}
     </>
   );
