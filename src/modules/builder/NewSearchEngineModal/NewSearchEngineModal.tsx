@@ -50,10 +50,10 @@ export const NewSearchEngineModal: NewSearchEngineModal = ({
       if (!requiredParam) {
         throw new Error(`URL must contain ${URL_REPLACE_STRING}!`);
       }
-      const cseObject: CustomSearchEngine = {
+      const cseObject: SearchEngineObject = {
         querySelector: EMPTY_CUSTOM_SEARCH_ENGINE_BLOB.querySelector,
         search_engine_json: {
-          required_prefix: extractUrlProperties(newUrl).full,
+          required_prefix: extractUrlProperties(newUrl).full ?? '',
           required_params: [requiredParam],
         },
       };

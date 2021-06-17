@@ -244,7 +244,7 @@ import {
     }
   });
   // Fire an event when the user is navigating away from the current site. This will run asynchronously and it's not
-  // guaranteed that `SidebarLoader`'s `getCustomSearchEngine` method finds a value in the storage, because of the
+  // guaranteed that `SidebarLoader`'s `getSearchEngineObject` method finds a value in the storage, because of the
   // race conditions. On the other hand, we can safely ignore this behavior, because in that case, both results will
   // come from the same source, and going to be identical. The only drawback is an extra fetch request from the client.
   chrome.webNavigation.onBeforeNavigate.addListener(async () => {

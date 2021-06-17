@@ -1,9 +1,9 @@
 import { ChangeEventHandler, Dispatch, FunctionComponent, SetStateAction } from 'react';
-import { CustomAugmentationObject } from 'modules/pages';
+import { CustomAugmentation } from 'modules/pages';
 
 declare module './MetaSection' {
   type MetaSectionProps = {
-    augmentation: CustomAugmentationObject<AugmentationObject>;
+    augmentation: CustomAugmentation<Augmentation>;
     name: string;
     onNameChange: ChangeEventHandler<HTMLInputElement>;
     description: string;

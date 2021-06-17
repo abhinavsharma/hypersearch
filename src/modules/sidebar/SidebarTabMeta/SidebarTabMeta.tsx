@@ -5,7 +5,7 @@ import Tooltip from 'antd/lib/tooltip';
 import Button from 'antd/lib/button';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import { DomainStateCheckbox } from 'modules/gutter';
-import { ACTION_KEYS, extractPublication } from 'utils';
+import { ACTION_KEY, extractPublication } from 'utils';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabMeta.scss';
@@ -22,10 +22,10 @@ const { Paragraph, Text } = Typography;
 
 export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   const [currentStat, setCurrentStat] = useState<number>(
-    SidebarLoader.augmentationStats[tab.id] ?? 0,
+    SidebarLoader.augmentationStats[tab.augmentation.id] ?? 0,
   );
   const [domains, setDomains] = useState<string[]>(
-    SidebarLoader.publicationSlices[tab.id][tab.url.href] ?? [],
+    SidebarLoader.publicationSlices[tab.augmentation.id][tab.url.href] ?? [],
   );
   const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -33,7 +33,7 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
   const showDomains =
     Array.from(new Set(tab.augmentation?.actions.action_list.map(({ key }) => key))).indexOf(
-      ACTION_KEYS.SEARCH_DOMAINS,
+      ACTION_KEY.SEARCH_DOMAINS,
     ) > -1;
 
   const ellipsis = {
@@ -45,22 +45,22 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   };
 
   useEffect(() => {
-    setCurrentStat(SidebarLoader.augmentationStats[tab.id] ?? 0);
-    setDomains(SidebarLoader.publicationSlices[tab.id][tab.url.href]);
+    setCurrentStat(SidebarLoader.augmentationStats[tab.augmentation.id] ?? 0);
+    setDomains(SidebarLoader.publicationSlices[tab.augmentation.id][tab.url.href]);
   }, [
     // Singleton instance not reinitialized on rerender.
     // ! Be careful when updating the dependency list!
-    tab.id,
+    tab.augmentation.id,
     tab.url.href,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    SidebarLoader.augmentationStats[tab.id],
+    SidebarLoader.augmentationStats[tab.augmentation.id],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    SidebarLoader.publicationSlices[tab.id][tab.url.href],
+    SidebarLoader.publicationSlices[tab.augmentation.id][tab.url.href],
   ]);
 
   const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
 
-  const showMeta = currentStat > 0 || !!tab.description?.length || !!domains?.length;
+  const showMeta = currentStat > 0 || !!tab.augmentation.description?.length || !!domains?.length;
 
   const keepParent = { keepParent: false };
 
@@ -98,8 +98,10 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
                 className={`meta-text ${expanded ? 'expanded' : 'collapsed'}`}
               >
                 {currentStat > 0 && <span className="space-right">{currentStat} Uses.</span>}
-                {tab.description && <span className="space-right">{tab.description}</span>}
-                {tab.url && tab.isCse && showDomains && (
+                {tab.augmentation.description && (
+                  <span className="space-right">{tab.augmentation.description}</span>
+                )}
+                {tab.url && showDomains && (
                   <>
                     <span className="space-right">Lens&nbsp;sources&nbsp;include</span>
                     {Array.from(new Set(domains))?.map((domain, index, originalDomainsArray) => (

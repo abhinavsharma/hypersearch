@@ -7,8 +7,8 @@ declare module './ConditionsSection' {
   type ConditionsSectionProps = {
     conditions: CustomCondition[];
     setConditions: Dispatch<SetStateAction<CustomCondition[]>>;
-    evaluation: import('utils/constants').CONDITION_LIST_EVALUATIONS;
-    setEvaluation: Dispatch<SetStateAction<import('utils/constants').CONDITION_LIST_EVALUATIONS>>;
+    evaluation: ConditionEvaluation;
+    setEvaluation: Dispatch<SetStateAction<ConditionEvaluation>>;
     onAdd: (e: CustomCondition) => void;
     onSave: (e: CustomCondition) => void;
     onDelete: (e: CustomCondition) => void;

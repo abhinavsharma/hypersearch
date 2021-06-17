@@ -44,7 +44,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.BUILDER,
       augmentation,
-    } as OpenBuilderMessage);
+    });
   };
 
   const keepParent = { keepParent: false };

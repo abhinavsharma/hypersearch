@@ -29,7 +29,7 @@ import {
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
         page: OPEN_BUILDER_PAGE.BUILDER,
         augmentation: data.result,
-      } as OpenBuilderMessage);
+      });
     }
   });
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);

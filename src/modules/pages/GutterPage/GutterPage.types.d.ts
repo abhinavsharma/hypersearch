@@ -3,13 +3,13 @@ import { FunctionComponent } from 'react';
 declare module './GutterPage' {
   type Section = {
     type: 'block' | 'search' | 'local';
-    augmentations: Array<AugmentationObject & { actionIndex?: number }>;
+    augmentations: Array<Augmentation & { actionIndex?: number }>;
     title: string;
     subtitle: string;
   };
 
   type GutterPageProps = {
-    hidingAugmentations: AugmentationObject[];
+    hidingAugmentations: Augmentation[];
     domain: string;
     inline?: boolean;
   };

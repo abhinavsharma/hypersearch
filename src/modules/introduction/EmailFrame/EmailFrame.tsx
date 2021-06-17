@@ -28,8 +28,8 @@ export const EmailFrame = () => {
   const handleNext = useCallback(() => stepContext.setCurrentStep(2), [stepContext]);
 
   const handleEmailSubmit = async () => {
-    //handleNext();
     window.open(`https://${EXTENSION_HOST}?auth_email=${encodeURIComponent(emailValue)}`, '_blank');
+    handleNext();
     fetch(MAILCHIMP_URL.replace('<placeholder>', md5(emailValue.toLowerCase())), {
       method: 'PUT',
       headers: {

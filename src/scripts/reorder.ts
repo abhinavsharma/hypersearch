@@ -50,9 +50,10 @@ import { debug, extractUrlProperties } from 'utils/helpers';
 
     if (!linkElement) return;
 
-    const domain = extractUrlProperties(
-      linkElement.getAttribute('href')?.replace(/.*https?:\/\//, 'https://') ?? '',
-    ).hostname;
+    const domain =
+      extractUrlProperties(
+        linkElement.getAttribute('href')?.replace(/.*https?:\/\//, 'https://') ?? '',
+      ).hostname ?? '';
 
     const isMoved = !!movedDomains.find(
       (movedDomain) => domain.search(movedDomain) > -1 || movedDomain.search(domain) > -1,

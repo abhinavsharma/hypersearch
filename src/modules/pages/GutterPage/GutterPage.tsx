@@ -6,9 +6,9 @@ import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
 import { DomainStateCheckbox } from 'modules/gutter/DomainStateCheckbox/DomainStateCheckbox';
 import {
-  ACTION_KEYS,
-  ACTION_LABELS,
-  ACTION_TYPES,
+  ACTION_KEY,
+  ACTION_LABEL,
+  LEGACY_ACTION_TYPE,
   EMPTY_AUGMENTATION,
   MY_BLOCKLIST_ID,
   MY_TRUSTLIST_ID,
@@ -45,7 +45,7 @@ const PlusOutlined = React.lazy(
 );
 
 export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inline }) => {
-  const [currentHiders, setCurrentHiders] = useState<AugmentationObject[]>(
+  const [currentHiders, setCurrentHiders] = useState<Augmentation[]>(
     hidingAugmentations.filter(({ id }) => id !== MY_BLOCKLIST_ID),
   );
 
@@ -56,7 +56,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
   ].filter(
     (augmentation) =>
       !!augmentation.actions.action_list.filter(({ key, value }) => {
-        if (key === ACTION_KEYS.SEARCH_DOMAINS) {
+        if (key === ACTION_KEY.SEARCH_DOMAINS) {
           return !!value.find((searchedDomain) => searchedDomain === domain);
         }
         return false;
@@ -65,7 +65,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const availableLocalAugmentations: Record<
     string,
-    Array<AugmentationObject & { actionIndex: number }>
+    Array<Augmentation & { actionIndex: number }>
   > = [
     ...SidebarLoader.installedAugmentations,
     ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
@@ -73,7 +73,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     const searchDomainActions = augmentation.actions.action_list.reduce(
       (actions, action, index) => {
         const { key, value } = action;
-        if (key === ACTION_KEYS.SEARCH_DOMAINS && !value.includes(domain)) {
+        if (key === ACTION_KEY.SEARCH_DOMAINS && !value.includes(domain)) {
           actions.push({ ...action, index });
         }
         return actions;
@@ -115,19 +115,19 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.ACTIVE,
-    } as OpenActivePageMessage);
+    });
   };
 
-  const handleAddSearchDomainToLocal = (augmentation: AugmentationObject, index: number) => {
+  const handleAddSearchDomainToLocal = (augmentation: Augmentation, index: number) => {
     const newActions = augmentation.actions.action_list.map((action, actionIndex) =>
       actionIndex === index ? { ...action, value: [...action.value, domain] } : action,
     );
     if (index === augmentation.actions.action_list.length) {
       newActions.push({
-        key: ACTION_KEYS.SEARCH_DOMAINS,
-        label: ACTION_LABELS.SEARCH_DOMAINS,
+        key: ACTION_KEY.SEARCH_DOMAINS,
+        label: ACTION_LABEL.SEARCH_DOMAINS,
         value: [domain],
-        type: ACTION_TYPES.LIST,
+        type: LEGACY_ACTION_TYPE.LIST,
       });
     }
     AugmentationManager.addOrEditAugmentation(augmentation, {
@@ -135,16 +135,16 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     });
   };
 
-  const handleEditInstalled = (augmentation: AugmentationObject) => {
+  const handleEditInstalled = (augmentation: Augmentation) => {
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.BUILDER,
       augmentation,
-    } as OpenBuilderMessage);
+    });
   };
 
-  const handleDeleteInstalled = (augmentation: AugmentationObject, type: Section['type']) => {
-    const checkKey = type === 'block' ? ACTION_KEYS.SEARCH_HIDE_DOMAIN : ACTION_KEYS.SEARCH_DOMAINS;
+  const handleDeleteInstalled = (augmentation: Augmentation, type: Section['type']) => {
+    const checkKey = type === 'block' ? ACTION_KEY.SEARCH_HIDE_DOMAIN : ACTION_KEY.SEARCH_DOMAINS;
     const newData: Record<string, any> = {
       actions: augmentation.actions.action_list.map((action) => {
         const { key, value } = action;
@@ -160,7 +160,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     AugmentationManager.addOrEditAugmentation(augmentation, newData);
   };
 
-  const handleDisableSuggested = (augmentation: AugmentationObject, type: Section['type']) => {
+  const handleDisableSuggested = (augmentation: Augmentation, type: Section['type']) => {
     if (type === 'block') {
       setCurrentHiders((prev) => prev.filter(({ id }) => id !== augmentation.id));
       SidebarLoader.hideDomains = SidebarLoader.hideDomains.filter((hidden) => hidden !== domain);
@@ -179,15 +179,15 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
           ...EMPTY_AUGMENTATION.actions,
           action_list: [
             {
-              key: ACTION_KEYS.SEARCH_DOMAINS,
-              label: ACTION_LABELS.SEARCH_DOMAINS,
-              type: ACTION_TYPES.LIST,
+              key: ACTION_KEY.SEARCH_DOMAINS,
+              label: ACTION_LABEL.SEARCH_DOMAINS,
+              type: LEGACY_ACTION_TYPE.LIST,
               value: [domain],
             },
           ],
         },
       },
-    } as OpenBuilderMessage);
+    });
   };
 
   return (
@@ -288,7 +288,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
                               {(() => {
                                 const action =
                                   augmentation.actions.action_list[augmentation.actionIndex ?? -1];
-                                return action?.key === ACTION_KEYS.SEARCH_DOMAINS
+                                return action?.key === ACTION_KEY.SEARCH_DOMAINS
                                   ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
                                     ? ADD_TO_TRUSTLIST_BUTTON_SUBTITLE
                                     : `${ADD_TO_AUGMENTATION_BUTTON_SUBTITLE}\u00a0${action.value.join(

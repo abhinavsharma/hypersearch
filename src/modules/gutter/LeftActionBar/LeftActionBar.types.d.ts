@@ -4,9 +4,9 @@ declare module './LeftActionBar' {
   type LeftActionBarProps = {
     publication: string;
     container: string;
-    searchingAugmentations: AugmentationObject[];
-    blockingAugmentations: AugmentationObject[];
-    featuringAugmentations: AugmentationObject[];
+    searchingAugmentations: Augmentation[];
+    blockingAugmentations: Augmentation[];
+    featuringAugmentations: Augmentation[];
   };
 
   type LeftActionBar = FunctionComponent<LeftActionBarProps>;

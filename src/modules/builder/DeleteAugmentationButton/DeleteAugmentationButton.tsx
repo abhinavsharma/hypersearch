@@ -23,7 +23,7 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: OPEN_BUILDER_PAGE.ACTIVE,
-    } as OpenActivePageMessage);
+    });
   };
 
   return (

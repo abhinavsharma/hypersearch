@@ -8,7 +8,7 @@ import {
   LUMOS_API_URL,
   LUMOS_APP_BASE_URL_PROD,
   LUMOS_APP_BASE_URL_DEBUG,
-  CONDITION_KEYS,
+  CONDITION_KEY,
 } from 'utils/constants';
 
 /**
@@ -152,7 +152,10 @@ export const removeProtocol = (urlLike: string) => {
  * @param urlLike - The URL string which properties will be extracted
  * @returns The extracted properties [`hostname`, `params`, `full`]
  */
-export const extractUrlProperties = (urlLike: string): ExtractedURLProperties => {
+export const extractUrlProperties = (urlLike: string) => {
+  let hostname: string | undefined = undefined;
+  let params: string[] | undefined = undefined;
+  let full: string | undefined = undefined;
   try {
     if (typeof urlLike !== 'string') {
       throw new TypeError(`URL like value must be string! Given type is ${typeof urlLike}`);
@@ -162,29 +165,29 @@ export const extractUrlProperties = (urlLike: string): ExtractedURLProperties =>
         ? urlLike
         : `https://${urlLike}`;
     const raw = new URL(url);
-    const hostname = removeProtocol(raw.hostname);
-    return {
-      hostname,
-      params: raw.searchParams
-        .toString()
-        .split('&')
-        .map((i) => i.split('=')[0]),
-      full: hostname + raw.pathname,
-    };
+    hostname = removeProtocol(raw.hostname);
+    params = raw.searchParams
+      .toString()
+      .split('&')
+      .map((i) => i.split('=')[0]);
+    full = hostname + raw.pathname;
   } catch (err) {
     debug('extractUrlProperties - error', err, '\nGiven value', urlLike);
-    return Object.create(null);
   }
+  return { hostname, params, full };
 };
 
 export const extractPublication = (urlLike: string) => {
   if (typeof urlLike !== 'string') {
     return urlLike;
   }
-  const urlProps = extractUrlProperties(urlLike);
-  const publication = DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
-    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
-    : urlProps.hostname;
+  const { hostname, full } = extractUrlProperties(urlLike);
+  if (!(hostname && full)) {
+    return '';
+  }
+  const publication = DOMAINS_TO_RELEVANT_SLICE[hostname]
+    ? full.match(DOMAINS_TO_RELEVANT_SLICE[hostname])?.[0] ?? hostname
+    : hostname;
   return publication;
 };
 
@@ -254,10 +257,13 @@ export const getPublicationUrl = (urlLike: string): string | null => {
   if (typeof urlLike !== 'string') {
     return null;
   }
-  const urlProps = extractUrlProperties(urlLike);
-  return DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname]
-    ? urlProps.full.match(DOMAINS_TO_RELEVANT_SLICE[urlProps.hostname])?.[0] ?? urlProps.hostname
-    : urlProps.hostname;
+  const { hostname, full } = extractUrlProperties(urlLike);
+  if (!(hostname && full)) {
+    return '';
+  }
+  return DOMAINS_TO_RELEVANT_SLICE[hostname]
+    ? full.match(DOMAINS_TO_RELEVANT_SLICE[hostname])?.[0] ?? hostname
+    : hostname;
 };
 
 export const sanitizeUrl = (urlLike: string) => {
@@ -461,13 +467,13 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
   const bothSuggested = aSuggested && bSuggested;
 
   const aIsAny =
-    aConditions.indexOf(CONDITION_KEYS.SEARCH_ENGINE_IS) > -1 ||
-    aConditions.indexOf(CONDITION_KEYS.ANY_SEARCH_ENGINE) > -1 ||
-    aConditions.indexOf(CONDITION_KEYS.ANY_URL) > -1;
+    aConditions.indexOf(CONDITION_KEY.SEARCH_ENGINE_IS) > -1 ||
+    aConditions.indexOf(CONDITION_KEY.ANY_SEARCH_ENGINE) > -1 ||
+    aConditions.indexOf(CONDITION_KEY.ANY_URL) > -1;
   const bIsAny =
-    bConditions.indexOf(CONDITION_KEYS.SEARCH_ENGINE_IS) > -1 ||
-    bConditions.indexOf(CONDITION_KEYS.ANY_SEARCH_ENGINE) > -1 ||
-    bConditions.indexOf(CONDITION_KEYS.ANY_URL) > -1;
+    bConditions.indexOf(CONDITION_KEY.SEARCH_ENGINE_IS) > -1 ||
+    bConditions.indexOf(CONDITION_KEY.ANY_SEARCH_ENGINE) > -1 ||
+    bConditions.indexOf(CONDITION_KEY.ANY_URL) > -1;
 
   // Trivial cases that can be handled by checking tab types:
   // Pinned > Installed > Suggested > Any URL

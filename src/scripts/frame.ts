@@ -36,10 +36,9 @@ import './results';
 
   type ALLOWED_ELEMENT = HTMLDivElement & HTMLLinkElement;
 
-  const LOCAL_HOSTNAME = extractUrlProperties(window.location.href)?.hostname.replace(
-    /\.[\w.]*$/,
-    '',
-  );
+  const LOCAL_HOSTNAME =
+    extractUrlProperties(window.location.href)?.hostname?.replace(/\.[\w.]*$/, '') ??
+    window.location.href;
   const APP_FRAME = window.location !== window.parent.location;
 
   const handleLCP: ReportHandler = () => {

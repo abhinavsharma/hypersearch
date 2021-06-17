@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 
 declare module './ShareButton' {
   type ShareButtonProps = {
-    augmentation: AugmentationObject;
+    augmentation: Augmentation;
     icon?: boolean;
     disabled?: boolean;
   };

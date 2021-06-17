@@ -1,9 +1,11 @@
 /**
- * @module AugmentationManager
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * lib:augmentations
+ * --------------------------------------
  * @version 1.0.0
+ * @see https://bit.ly/2T9OS97
+ * @license (C) Insight
  */
+
 import { v4 as uuid } from 'uuid';
 import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
 import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
@@ -24,24 +26,24 @@ import {
   EXTENSION_AUGMENTATION_SAVE,
   MY_TRUSTLIST_ID,
   ENABLED_AUGMENTATION_TYPES,
-  ACTION_KEYS,
-  CONDITION_TYPES,
-  CONDITION_KEYS,
-  ACTION_LABELS,
   MY_TRUSTLIST_TEMPLATE,
   DEDICATED_SERP_REGEX,
+  ACTION_KEY,
+  ACTION_LABEL,
+  LEGACY_CONDITION_TYPE,
+  CONDITION_KEY,
 } from 'utils';
 import UserManager from 'lib/UserManager';
 
 class AugmentationManager {
-  public preparedLogMessage: Record<'augmentation', AugmentationObject> | null;
+  public preparedLogMessage: Record<'augmentation', Augmentation> | null;
 
   constructor() {
     debug('AugmentationManager - initialize\n---\n\tSingleton Instance', this, '\n---');
     this.preparedLogMessage = Object.create(null);
   }
 
-  public isAugmentationEnabled(augmentation: AugmentationObject) {
+  public isAugmentationEnabled(augmentation: Augmentation) {
     const operations: Array<ActionObject | ConditionObject> = [
       ...augmentation.conditions.condition_list,
       ...augmentation.actions.action_list,
@@ -49,7 +51,7 @@ class AugmentationManager {
 
     return operations?.every((operation: ConditionObject | ActionObject) => {
       const key = (operation as ConditionObject).unique_key ?? operation.key;
-      const hasValidKey = ENABLED_AUGMENTATION_TYPES.includes(key as CONDITION_KEYS | ACTION_KEYS);
+      const hasValidKey = ENABLED_AUGMENTATION_TYPES.includes(key);
       return hasValidKey;
     });
   }
@@ -65,19 +67,19 @@ class AugmentationManager {
   public async updateBlockList(domain: string) {
     const blockList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_BLOCKLIST_ID) as AugmentationObject;
+      .find(({ id }) => id === MY_BLOCKLIST_ID) as Augmentation;
     const isNewBlock = !blockList.actions.action_list.find(({ value }) => value[0] === domain);
     const newActionList = [
       ...blockList.actions.action_list.filter(
         (action) => action.value.length && !action.value.includes(domain),
       ),
       {
-        key: ACTION_KEYS.SEARCH_HIDE_DOMAIN,
-        label: ACTION_LABELS.SEARCH_HIDE_DOMAIN,
-        type: CONDITION_TYPES.LIST,
+        key: ACTION_KEY.SEARCH_HIDE_DOMAIN,
+        label: ACTION_LABEL.SEARCH_HIDE_DOMAIN,
+        type: LEGACY_CONDITION_TYPE.LIST,
         value: [domain],
       },
-    ] as AugmentationObject['actions']['action_list'];
+    ] as Augmentation['actions']['action_list'];
     blockList.actions.action_list = newActionList;
     isNewBlock &&
       !UserManager.user.privacy &&
@@ -100,10 +102,10 @@ class AugmentationManager {
   public async deleteFromBlockList(domain: string) {
     const blockList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_BLOCKLIST_ID) as AugmentationObject;
+      .find(({ id }) => id === MY_BLOCKLIST_ID) as Augmentation;
     const newActionList = [
       ...blockList.actions.action_list.filter(({ key, value }) =>
-        key === ACTION_KEYS.SEARCH_HIDE_DOMAIN ? value[0] !== domain : true,
+        key === ACTION_KEY.SEARCH_HIDE_DOMAIN ? value[0] !== domain : true,
       ),
     ];
     blockList.actions.action_list = newActionList;
@@ -125,7 +127,7 @@ class AugmentationManager {
   public async toggleTrustlist(domain: string) {
     const trustList = SidebarLoader.installedAugmentations
       .concat(SidebarLoader.otherAugmentations)
-      .find(({ id }) => id === MY_TRUSTLIST_ID) as AugmentationObject;
+      .find(({ id }) => id === MY_TRUSTLIST_ID) as Augmentation;
     const existingDomain = !!(trustList.actions.action_list[0]?.value ?? []).includes(domain);
     const newActionValue = existingDomain
       ? (trustList.actions.action_list[0]?.value ?? []).filter((value) => value !== domain)
@@ -186,7 +188,7 @@ class AugmentationManager {
     return new URL(url);
   }
 
-  public processSearchAlsoActionString(value: CustomSearchEngine['search_engine_json']) {
+  public processSearchAlsoActionString(value: SearchEngineObject['search_engine_json']) {
     const url = new URL(`https://${removeProtocol(value.required_prefix)}`);
     value.required_params.forEach((param) => url.searchParams.append(param, SidebarLoader.query));
     return url;
@@ -202,7 +204,7 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public disableSuggestedAugmentation(augmentation: AugmentationObject) {
+  public disableSuggestedAugmentation(augmentation: Augmentation) {
     SidebarLoader.ignoredAugmentations.push(augmentation);
     chrome.storage.local.set({
       [`${IGNORED_PREFIX}-${augmentation.id}`]: augmentation,
@@ -216,7 +218,7 @@ class AugmentationManager {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
-  public enableSuggestedAugmentation(augmentation: AugmentationObject) {
+  public enableSuggestedAugmentation(augmentation: Augmentation) {
     SidebarLoader.ignoredAugmentations = SidebarLoader.ignoredAugmentations.filter(
       (i) => i.id !== augmentation.id,
     );
@@ -231,7 +233,7 @@ class AugmentationManager {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
-  public pinAugmentation(augmentation: AugmentationObject) {
+  public pinAugmentation(augmentation: Augmentation) {
     augmentation.pinned = true;
     SidebarLoader.pinnedAugmentations.push(augmentation);
     chrome.storage.local.set({
@@ -246,7 +248,7 @@ class AugmentationManager {
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
 
-  public unpinAugmentation(augmentation: AugmentationObject) {
+  public unpinAugmentation(augmentation: Augmentation) {
     augmentation.pinned = false;
     SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
       (i) => i.id !== augmentation.id,
@@ -268,7 +270,7 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public removeInstalledAugmentation(augmentation: AugmentationObject) {
+  public removeInstalledAugmentation(augmentation: Augmentation) {
     this.unpinAugmentation(augmentation);
     SidebarLoader.pinnedAugmentations = SidebarLoader.pinnedAugmentations.filter(
       (i) => i.id !== augmentation.id,
@@ -295,7 +297,7 @@ class AugmentationManager {
    * @method
    * @memberof AugmentationManager
    */
-  public getAugmentationRelevancy(augmentation: AugmentationObject): {
+  public getAugmentationRelevancy(augmentation: Augmentation): {
     isHidden: boolean;
     isRelevant: boolean;
     hasPreventAutoexpand: boolean;
@@ -312,22 +314,17 @@ class AugmentationManager {
     // ! SEARCH DOMAINS
     const hasAnyPageCondition = !!augmentation.conditions.condition_list.filter(
       ({ key, unique_key }) =>
-        (key === CONDITION_KEYS.ANY_SEARCH_ENGINE &&
+        ((unique_key ?? key) === CONDITION_KEY.ANY_SEARCH_ENGINE &&
           SidebarLoader.isSerp &&
           SidebarLoader.url.href.match(DEDICATED_SERP_REGEX)) ||
-        (unique_key === CONDITION_KEYS.ANY_SEARCH_ENGINE &&
-          SidebarLoader.isSerp &&
-          SidebarLoader.url.href.match(DEDICATED_SERP_REGEX)) ||
-        key === CONDITION_KEYS.ANY_URL ||
-        unique_key === CONDITION_KEYS.ANY_URL,
+        (unique_key ?? key) === CONDITION_KEY.ANY_URL,
     ).length;
 
     const domainsToLookCondition =
       augmentation.conditions.condition_list.reduce(
         (conditions, { key, unique_key, value }) =>
-          // search contains domain
-          unique_key === CONDITION_KEYS.SEARCH_CONTAINS || key === CONDITION_KEYS.SEARCH_CONTAINS
-            ? conditions.concat(value)
+          (unique_key ?? key) === CONDITION_KEY.SEARCH_CONTAINS
+            ? conditions.concat(value as unknown as string)
             : conditions,
         [] as string[],
       ) ?? [];
@@ -335,7 +332,7 @@ class AugmentationManager {
     const domainsToLookAction =
       augmentation.actions?.action_list.reduce(
         (actions, { key, value }) =>
-          key === ACTION_KEYS.SEARCH_DOMAINS ? actions.concat(value) : actions,
+          key === ACTION_KEY.SEARCH_DOMAINS ? actions.concat(value as unknown as string) : actions,
         [] as string[],
       ) ?? [];
 
@@ -371,19 +368,15 @@ class AugmentationManager {
     // ! SEARCH QUERY
     const matchingQuery = augmentation.conditions?.condition_list.some(
       ({ key, unique_key, value }) =>
-        (unique_key === CONDITION_KEYS.SEARCH_QUERY_CONTAINS ||
-          key === CONDITION_KEYS.SEARCH_QUERY_CONTAINS) &&
-        SidebarLoader.query?.search(value[0]) > -1,
+        (unique_key ?? key) === CONDITION_KEY.SEARCH_QUERY_CONTAINS &&
+        SidebarLoader.query?.search(value[0] as string) > -1,
     );
 
     // ! SEARCH INTENT
     let hasPreventAutoexpand = false;
     const matchingIntent = augmentation.conditions.condition_list
       .reduce((intents, { key, unique_key, value }) => {
-        if (
-          key === CONDITION_KEYS.SEARCH_INTENT_IS ||
-          unique_key === CONDITION_KEYS.SEARCH_INTENT_IS
-        ) {
+        if ((unique_key ?? key) === CONDITION_KEY.SEARCH_INTENT_IS) {
           const matchingIntent = SearchEngineManager.intents.find(
             ({ intent_id }) => intent_id === value[0],
           );
@@ -412,11 +405,8 @@ class AugmentationManager {
     // ! SEARCH ENGINE
     const matchingEngine = !!augmentation.conditions.condition_list.find(
       ({ key, unique_key, value }) => {
-        if (
-          key === CONDITION_KEYS.SEARCH_ENGINE_IS ||
-          unique_key === CONDITION_KEYS.SEARCH_ENGINE_IS
-        ) {
-          const cse = value[0] as unknown as CustomSearchEngine;
+        if ((unique_key ?? key) === CONDITION_KEY.SEARCH_ENGINE_IS) {
+          const cse = value[0] as unknown as SearchEngineObject;
           const hasAllMatchingParams = (cse.search_engine_json ?? cse)?.required_params?.every(
             (param) => !!SidebarLoader.url.searchParams.get(param),
           );
@@ -430,12 +420,12 @@ class AugmentationManager {
 
     // ! URL/DOMAIN MATCH
     let numRegexConditions = 0;
-    const regexConditions = [
-      CONDITION_KEYS.URL_EQUALS,
-      CONDITION_KEYS.URL_MATCHES,
-      CONDITION_KEYS.DOMAIN_EQUALS,
-      CONDITION_KEYS.DOMAIN_MATCHES,
-      CONDITION_KEYS.DOMAIN_CONTAINS,
+    const regexConditions: KeyEventMap<ConditionKey> = [
+      CONDITION_KEY.URL_EQUALS,
+      CONDITION_KEY.URL_MATCHES,
+      CONDITION_KEY.DOMAIN_EQUALS,
+      CONDITION_KEY.DOMAIN_MATCHES,
+      CONDITION_KEY.DOMAIN_CONTAINS,
     ];
     const matchingUrl = augmentation.conditions.condition_list.reduce((matches, condition) => {
       const { unique_key: key, value } = condition;
@@ -445,27 +435,30 @@ class AugmentationManager {
       if (regexConditions.includes(key)) {
         numRegexConditions += 1;
       }
-      if (key === CONDITION_KEYS.URL_EQUALS && SidebarLoader.url.href === value[0]) {
-        matches.push(true);
-      }
-      if (key === CONDITION_KEYS.URL_MATCHES && SidebarLoader.url.href.match(value[0])?.length) {
+      if (key === CONDITION_KEY.URL_EQUALS && SidebarLoader.url.href === value[0]) {
         matches.push(true);
       }
       if (
-        key === CONDITION_KEYS.DOMAIN_EQUALS &&
+        key === CONDITION_KEY.URL_MATCHES &&
+        SidebarLoader.url.href.match(value[0] as string)?.length
+      ) {
+        matches.push(true);
+      }
+      if (
+        key === CONDITION_KEY.DOMAIN_EQUALS &&
         extractUrlProperties(SidebarLoader.url.href).hostname === value[0]
       ) {
         matches.push(true);
       }
       if (
-        key === CONDITION_KEYS.DOMAIN_MATCHES &&
-        extractUrlProperties(SidebarLoader.url.href).hostname.match(value[0])?.length
+        key === CONDITION_KEY.DOMAIN_MATCHES &&
+        extractUrlProperties(SidebarLoader.url.href).hostname?.match(value[0] as string)?.length
       ) {
         matches.push(true);
       }
       if (
-        key === CONDITION_KEYS.DOMAIN_CONTAINS &&
-        value.includes(extractUrlProperties(SidebarLoader.url.href).hostname)
+        key === CONDITION_KEY.DOMAIN_CONTAINS &&
+        value.includes(extractUrlProperties(SidebarLoader.url.href).hostname ?? '')
       ) {
         matches.push(true);
       }
@@ -477,21 +470,21 @@ class AugmentationManager {
         ? augmentation.conditions.condition_list?.every(({ key, unique_key }) => {
             const actualKey = unique_key ?? key;
             switch (actualKey) {
-              case CONDITION_KEYS.SEARCH_CONTAINS:
+              case CONDITION_KEY.SEARCH_CONTAINS:
                 return matchingDomains;
-              case CONDITION_KEYS.SEARCH_QUERY_CONTAINS:
+              case CONDITION_KEY.SEARCH_QUERY_CONTAINS:
                 return matchingQuery;
-              case CONDITION_KEYS.SEARCH_ENGINE_IS:
+              case CONDITION_KEY.SEARCH_ENGINE_IS:
                 return matchingEngine;
-              case CONDITION_KEYS.SEARCH_INTENT_IS:
+              case CONDITION_KEY.SEARCH_INTENT_IS:
                 return matchingIntent;
-              case CONDITION_KEYS.ANY_SEARCH_ENGINE:
-              case CONDITION_KEYS.ANY_URL:
+              case CONDITION_KEY.ANY_SEARCH_ENGINE:
+              case CONDITION_KEY.ANY_URL:
                 return hasAnyPageCondition;
-              case CONDITION_KEYS.URL_EQUALS:
-              case CONDITION_KEYS.URL_MATCHES:
-              case CONDITION_KEYS.DOMAIN_EQUALS:
-              case CONDITION_KEYS.DOMAIN_MATCHES:
+              case CONDITION_KEY.URL_EQUALS:
+              case CONDITION_KEY.URL_MATCHES:
+              case CONDITION_KEY.DOMAIN_EQUALS:
+              case CONDITION_KEY.DOMAIN_MATCHES:
                 return numRegexConditions === matchingUrl.length;
             }
           })
@@ -548,7 +541,7 @@ class AugmentationManager {
    * @memberof AugmentationManager
    */
   public addOrEditAugmentation(
-    augmentation: AugmentationObject,
+    augmentation: Augmentation,
     {
       actions,
       conditions,

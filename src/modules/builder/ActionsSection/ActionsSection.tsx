@@ -1,14 +1,14 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { ActionInput } from 'modules/builder';
+import { LEGACY_ACTION_TYPE } from 'utils';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
-import { ACTION_TYPES } from 'utils';
 
 export const ActionsSection: ActionsSection = ({ actions, onAdd, onSave, onDelete }) => {
   const newAction: TCustomAction = {
     id: uuid(),
-    type: ACTION_TYPES.LIST,
+    type: LEGACY_ACTION_TYPE.LIST,
     value: [''],
   } as any;
   return (
