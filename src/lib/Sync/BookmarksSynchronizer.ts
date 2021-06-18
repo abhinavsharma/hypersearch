@@ -8,6 +8,8 @@ import axios, { AxiosInstance } from 'axios';
 import {
   debug,
   isFirefox,
+  IN_DEBUG_MODE,
+  LUMOS_API_URL_DEBUG,
   LUMOS_API_URL_PROD,
   BOOKMARKS_READ_ENDPOINT,
   BOOKMARKS_SAVE_ENDPOINT,
@@ -89,7 +91,7 @@ class BookmarksSynchronizer {
     this._remoteToLocalId = {};
     this._isSyncing = false;
     this._axios = axios.create({
-      baseURL: LUMOS_API_URL_PROD,
+      baseURL: IN_DEBUG_MODE ? LUMOS_API_URL_DEBUG : LUMOS_API_URL_PROD,
     });
     this.configure();
   }
