@@ -11,6 +11,8 @@ Install dependencies:
 
 Alternatively, `make setup` is available executing the same commands as above. However, this will install `json-bump` as a global dependency to have `make ship` working properly.
 
+Also, `jq` is used to operate on manifests in make targets. Check the installation [page](https://stedolan.github.io/jq/download/) for your specific plataform.
+
 ## Structure
 
 - `dist_{is|sc}` - The distribution folder for production build.

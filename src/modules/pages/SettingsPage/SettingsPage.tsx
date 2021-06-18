@@ -198,7 +198,7 @@ export const SettingsPage: SettingsPage = ({ email }) => {
                   block
                   type="primary"
                   onClick={handleForceSync}
-                  disabled={!(storedToken || bookmarksFeature) || isSyncing}
+                  disabled={!(storedToken && bookmarksFeature) || isSyncing}
                 >
                   <span className="insight-row">
                     <RefreshCw className={isSyncing ? 'spin' : ''} />
