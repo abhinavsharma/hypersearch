@@ -547,7 +547,7 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     }
     return aLowestIntentDomains.rate > bLowestIntentDomains.rate ? 1 : -1;
   }
-  return 0;
+  return -1;
 };
 
 /**
