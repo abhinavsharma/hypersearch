@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.93](https://github.com/lumosbrowser/lumos-extension/compare/v0.0.92...v0.0.93) (2021-06-18)
+
+
+### Features
+
+* **authentication:** add support for cross domain authentication ([993822a](https://github.com/lumosbrowser/lumos-extension/commit/993822a77c7646db164fbbb9d8fe2782b5207731))
+* **feature gating:** add support for feature flags ([2ec4571](https://github.com/lumosbrowser/lumos-extension/commit/2ec45713c135bbcd53dc30ec3562be612a64b574))
+* **onboarding:** add optional email step to onboarding ([24a38ee](https://github.com/lumosbrowser/lumos-extension/commit/24a38ee87c5c329d4ad5a4d01e185e248ce24361))
+* **onboarding:** remove license step, init login when email set ([55a2979](https://github.com/lumosbrowser/lumos-extension/commit/55a2979c27a3f3bc179aeaa1e66adc2a367796bd))
+* **onboarding:** remove license step, init login when email set ([3fc1e18](https://github.com/lumosbrowser/lumos-extension/commit/3fc1e18446dd9a0d8283749d377c97b803a761cd))
+* **settings page:** add user settings page to sidebar ([240ffc1](https://github.com/lumosbrowser/lumos-extension/commit/240ffc1e8cd996e8a46070c4c8992437700b6382))
+
+
+### Bug Fixes
+
+* **hover action:** adjust element references on duckduckgo ([9684f5b](https://github.com/lumosbrowser/lumos-extension/commit/9684f5b851d8e91c60d49ab00a79ca35f6c92428))
+* **onboarding:** add auth feature gating to onboarding ([fbfaad0](https://github.com/lumosbrowser/lumos-extension/commit/fbfaad06f13c92b8de9bfd8ff1bed3a83c1f6f63))
+* **onboaring email step:** place license when email submitted ([fe2434c](https://github.com/lumosbrowser/lumos-extension/commit/fe2434c2b941cb17b5bac8aaf1a895bfc07eba98))
+* **tab sorting:** respect default order when no sorting condition matches ([2614c60](https://github.com/lumosbrowser/lumos-extension/commit/2614c60ead0eecdc801f87c847128d2c46f9c662))
+
 ### [0.0.92](https://github.com/lumosbrowser/lumos-extension/compare/v0.0.91...v0.0.92) (2021-06-10)
 
 
