@@ -1,4 +1,10 @@
-import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
+/**
+ * @module modules:introduction
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
+import React, { useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Steps from 'antd/lib/steps';
 import {
@@ -9,12 +15,13 @@ import {
   EmailFrame,
 } from 'modules/introduction';
 import { useFeature } from 'lib/features';
-import UserManager from 'lib/user';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'constant';
 import 'antd/lib/steps/style/index.css';
 import './IntroductionPage.scss';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const TAB_TITLE = `Welcome to ${APP_NAME}`;
 const WELCOME_SECTION_TITLE = 'Welcome';
 const LICENSE_SECTION_TITLE = 'License';
@@ -24,23 +31,57 @@ const FINISHED_SECTION_TITLE = 'Done';
 
 const { Step } = Steps;
 
-type TStepContext = {
+//-----------------------------------------------------------------------------------------------
+// ! Context
+//-----------------------------------------------------------------------------------------------
+export const StepContext = React.createContext<{
   currentStep: number;
-  setCurrentStep: React.Dispatch<SetStateAction<number>>;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   finished: boolean;
-  license: string | undefined;
-  setLicense: React.Dispatch<SetStateAction<string | undefined>>;
-  setFinished: React.Dispatch<SetStateAction<boolean>>;
-};
+  setFinished: React.Dispatch<React.SetStateAction<boolean>>;
+}>(Object.create(null));
 
-export const StepContext = React.createContext<TStepContext>(Object.create(null));
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const IntroductionPage = () => {
+  const CONTEXT_VALUE = Object.create(null);
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [license, setLicense] = useState<string | undefined>(UserManager.user.license);
+  CONTEXT_VALUE.currentStep = currentStep;
+  CONTEXT_VALUE.setCurrentStep = setCurrentStep;
+
   const [finished, setFinished] = useState<boolean>(false);
+  CONTEXT_VALUE.finished = finished;
+  CONTEXT_VALUE.setFinished = setFinished;
+
   const [loginFeature] = useFeature('desktop_login');
 
+  const STEPS = [
+    {
+      title: WELCOME_SECTION_TITLE,
+      component: <WelcomeFrame key={0} />,
+      disabled: undefined,
+    },
+    {
+      title: loginFeature ? EMAIL_SECTION_TITLE : LICENSE_SECTION_TITLE,
+      component: loginFeature ? <EmailFrame key={1} /> : <LicenseFrame key={1} />,
+      disabled: undefined,
+    },
+    {
+      title: PRIVACY_SECTION_TITLE,
+      component: <PrivacyFrame key={2} />,
+      disabled: undefined,
+    },
+    {
+      title: FINISHED_SECTION_TITLE,
+      component: <QueriesFrame key={3} />,
+      disabled: currentStep !== 2 && !finished,
+    },
+  ];
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const checkFinished = useCallback(async () => {
     const stored = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_FINISHED_KEY, resolve),
@@ -55,39 +96,23 @@ export const IntroductionPage = () => {
     checkFinished();
   }, [checkFinished]);
 
-  const contextValue = {
-    currentStep,
-    setCurrentStep,
-    finished,
-    setFinished,
-    license,
-    setLicense,
-  };
+  const current = STEPS[currentStep];
 
-  const STEPS = [
-    <WelcomeFrame key={0} />,
-    loginFeature ? <EmailFrame key={1} /> : <LicenseFrame key={1} />,
-    <PrivacyFrame key={2} />,
-    <QueriesFrame key={3} />,
-  ];
-
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div id="insight-intro-container">
       <Helmet>
         <title>{TAB_TITLE}</title>
       </Helmet>
-      <StepContext.Provider value={contextValue}>
+      <StepContext.Provider value={CONTEXT_VALUE}>
         <Steps current={currentStep} onChange={setCurrentStep}>
-          <Step title={WELCOME_SECTION_TITLE} />
-          {loginFeature ? (
-            <Step title={EMAIL_SECTION_TITLE} />
-          ) : (
-            <Step title={LICENSE_SECTION_TITLE} />
-          )}
-          <Step title={PRIVACY_SECTION_TITLE} />
-          <Step title={FINISHED_SECTION_TITLE} disabled={currentStep !== 2 && !finished} />
+          {STEPS.map((step) => (
+            <Step key={step.title} title={step.title} disabled={step.disabled} />
+          ))}
         </Steps>
-        {STEPS[currentStep]}
+        {current.component}
       </StepContext.Provider>
     </div>
   );

@@ -28,10 +28,10 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_HOVEROPEN, {
         query: SidebarLoader.query,
         url: msg.url,
-        license_keys: [UserManager.user.license],
+        license_keys: UserManager.user.licenses,
         position_in_serp:
-          (SidebarLoader.publicationSlices as any)['original'].indexOf(
-            extractUrlProperties(msg.url).full,
+          SidebarLoader.publicationSlices['original'].indexOf(
+            extractUrlProperties(msg.url).full ?? '',
           ) + 1,
       });
     },

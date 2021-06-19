@@ -59,7 +59,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
 
   const INPUTS: KeyEventMap<ActionKey> = {
     [ACTION_KEY.SEARCH_DOMAINS]: (
-      <MultiValueInput values={action.value as string[]} handleAdd={handleChange} />
+      <MultiValueInput input={action.value as string[]} replace={handleChange} />
     ),
     [ACTION_KEY.SEARCH_ALSO]: (
       <SearchEngineDropdown

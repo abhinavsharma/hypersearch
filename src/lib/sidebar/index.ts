@@ -704,7 +704,7 @@ class SidebarLoader {
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
           url: this.url,
-          license_keys: [UserManager.user.license],
+          license_keys: UserManager.user.licenses,
         });
       }
       await this.handleSubtabApiResponse(response);
@@ -958,16 +958,16 @@ class SidebarLoader {
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
     const getSubtabs = async (url = this.url.href) => {
-      debug('\n---\n\tRequest API', url, '\n\tLicense', UserManager.user.license, '\n---');
-      return (await postAPI(
+      debug('\n---\n\tRequest API', url, '\n\tLicense', UserManager.user.licenses, '\n---');
+      return await postAPI<SubtabsResponse>(
         'subtabs',
         { url },
         {
-          client: 'desktop',
-          license_keys: UserManager.user.license ? [UserManager.user.license] : [],
           uuid: UserManager.user.id,
+          client: 'desktop',
+          license_keys: UserManager.user.licenses,
         },
-      )) as SubtabsResponse;
+      );
     };
     let response: SubtabsResponse = Object.create(null);
     debug(
@@ -990,19 +990,19 @@ class SidebarLoader {
         response = cache.data;
       } else {
         debug('\n---\n\tCache not found or expired...\n---');
-        const { suggested_augmentations: defaultResponse } = await getSubtabs(DUMMY_SUBTABS_URL);
-        const { suggested_augmentations: amazonResponse } = await getSubtabs(
-          DUMMY_AMAZON_SUBTABS_URL,
-        );
+        const { suggested_augmentations: defaultResponse } =
+          (await getSubtabs(DUMMY_SUBTABS_URL)) ?? (Object.create(null) as SubtabsResponse);
+        const { suggested_augmentations: amazonResponse } =
+          (await getSubtabs(DUMMY_AMAZON_SUBTABS_URL)) ?? (Object.create(null) as SubtabsResponse);
 
         const suggested_augmentations = defaultResponse
           ?.concat(amazonResponse ?? [])
-          .reduce((result, suggestion) => {
+          .reduce((result: Augmentation[], suggestion: Augmentation) => {
             if (!result.find(({ id }) => id === suggestion.id)) {
               result.push(suggestion);
             }
             return result;
-          }, [] as Augmentation[]);
+          }, []);
 
         response = {
           subtabs: [],
@@ -1022,7 +1022,7 @@ class SidebarLoader {
         );
       }
     } else {
-      response = await getSubtabs();
+      response = (await getSubtabs()) ?? (Object.create(null) as SubtabsResponse);
     }
     debug('fetchSubtabs - success\n---\n\tSubtabs Response', response, '\n---');
     return response;
@@ -1075,7 +1075,7 @@ class SidebarLoader {
       '\n---',
     );
 
-    if (!IN_DEBUG_MODE && UserManager.user.license) {
+    if (!IN_DEBUG_MODE && UserManager.user.licenses.length) {
       chrome.runtime.sendMessage({
         event,
         properties,

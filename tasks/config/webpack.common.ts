@@ -10,11 +10,11 @@ export default (env: { mode: string; PROJECT: 'is' | 'sc' }): Configuration => {
     entry: {
       insight_background: path.join(__dirname, PATHS.src + '/scripts/background.ts'),
       insight_hot_reload: path.join(__dirname, PATHS.src + '/scripts/hot.ts'),
-      insight_main_content: path.join(__dirname, PATHS.src + '/scripts/main.ts'),
+      insight_main_content: path.join(__dirname, PATHS.src + '/scripts/main.tsx'),
       insight_frame_content: path.join(__dirname, PATHS.src + '/scripts/frame.ts'),
       insight_block_content: path.join(__dirname, PATHS.src + '/scripts/block.ts'),
       insight_reorder_content: path.join(__dirname, PATHS.src + '/scripts/reorder.ts'),
-      insight_introduction_content: path.join(__dirname, PATHS.src + '/scripts/introduction.tsx'),
+      /* insight_introduction_content: path.join(__dirname, PATHS.src + '/scripts/introduction.tsx'), */
     },
     output: {
       path: path.join(__dirname, `${env.mode === 'production' ? PATHS.dist : PATHS.build}/js`),

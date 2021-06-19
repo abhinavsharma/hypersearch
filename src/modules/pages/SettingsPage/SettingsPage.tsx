@@ -1,17 +1,22 @@
+/**
+ * @module modules:pages
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshCw } from 'react-feather';
 import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
 import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
 import UserManager from 'lib/user';
-import { LoginForm } from 'modules/settings';
+import { useFeature } from 'lib/features';
+import { BookmarksSyncButton, LicenseForm, LoginForm } from 'modules/settings';
+
 import {
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   SIDEBAR_PAGE,
-  SYNC_END_MESSAGE,
-  SYNC_START_MESSAGE,
   SYNC_PRIVACY_KEY,
 } from 'constant';
 import {
@@ -27,52 +32,39 @@ import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SettingsPage.scss';
-import { FeatureGate, useFeature } from 'lib/features';
 
 const { Title } = Typography;
 
-/** MAGICS **/
+export const SettingsContext = React.createContext<SettingsContext>(Object.create(null));
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const HEADER_TITLE = 'Settings';
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
 const LOGIN_SECTION_TITLE = 'Login to your account';
 const ACTIVATION_SECTION_TITLE = 'Activate your account';
 const LOGOUT_SECTION_TITLE = `You are successfully logged in to ${APP_NAME}`;
-const BOOKMARKS_SYNC_BUTTON_TEXT = 'Sync Bookmarks';
-const BOOKMARKS_SYNCING_BUTTON_TEXT = 'Syncing Bookmarks';
-const BOOKMARKS_SYNC_BUTTON_LOGIN_TEXT = 'Login to sync Bookmarks';
+const LICENSE_SECTION_HEADER = 'Manage Licenses';
 
-export const SettingsContext = React.createContext<SettingsContext>(Object.create(null));
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const SettingsPage: SettingsPage = ({ email }) => {
   const [storedEmail, setStoredEmail] = useState<string>(UserManager.user.email ?? '');
   const [storedToken, setStoredToken] = useState<TAccessToken | undefined>(UserManager.user.token);
   const [useServerSuggestions, setUseServerSuggestions] = useState<boolean | undefined>(false);
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
-  const [bookmarksFeature] = useFeature('desktop_bookmarks');
   const [loginFeature] = useFeature('desktop_login');
 
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === SYNC_END_MESSAGE) {
-        setIsSyncing(false);
-      }
-    });
-  }, []);
-
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const handleClose = () => {
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
       page: SIDEBAR_PAGE.ACTIVE,
       create: true,
-    });
-  };
-
-  const handleForceSync = async () => {
-    setIsSyncing(true);
-    chrome.runtime.sendMessage({
-      type: SYNC_START_MESSAGE,
-      token: (await UserManager.getUserToken())?.getJwtToken(),
     });
   };
 
@@ -108,14 +100,6 @@ export const SettingsPage: SettingsPage = ({ email }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.token]);
 
-  const bookmarksStatus = () => {
-    if (isSyncing) {
-      return BOOKMARKS_SYNCING_BUTTON_TEXT;
-    }
-
-    return !storedToken ? BOOKMARKS_SYNC_BUTTON_LOGIN_TEXT : BOOKMARKS_SYNC_BUTTON_TEXT;
-  };
-
   const context = {
     email,
     storedEmail,
@@ -126,89 +110,102 @@ export const SettingsPage: SettingsPage = ({ email }) => {
     handlePrivacyChange,
   };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
+  const LoginSection = () =>
+    loginFeature ? (
+      <section>
+        <h2 className="title">
+          {
+            // prettier-ignore
+            storedEmail && storedToken
+            ? LOGOUT_SECTION_TITLE
+            : storedEmail
+              ? ACTIVATION_SECTION_TITLE
+              : LOGIN_SECTION_TITLE
+          }
+        </h2>
+        <div className="settings-section-content insight-row">
+          <LoginForm />
+        </div>
+      </section>
+    ) : null;
+
+  const PrivacySection = () => (
+    <section>
+      <Divider />
+      {(storedToken || !loginFeature) && <h2 className="title">{ACTIVE_LICENSE_MAIN_HEADER}</h2>}
+      <div className="settings-section-content">
+        {(storedToken || !loginFeature) && (
+          <>
+            <Switch
+              className="privacy-toggle-button"
+              checked={useServerSuggestions}
+              onChange={handlePrivacyChange}
+            />
+          </>
+        )}
+        {
+          //prettier-ignore
+          (!storedToken && loginFeature) ? (
+            <>
+              <Title level={2}>{INACTIVE_LICENSE_MAIN_HEADER}</Title>
+              <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
+            </>
+          ) :
+            !useServerSuggestions ? (
+              <>
+                <Title level={2}>{UNCHECKED_SWITCH_TEXT}</Title>
+                <div className="privacy-explainer">{UNCHECKED_PRIVACY_EXPLAINER_CONTENT}</div>
+              </>
+            ) : (
+              <>
+                <Title level={2}>{CHECKED_SWITCH_TEXT}</Title>
+                <div className="privacy-explainer">{CHECKED_PRIVACY_EXPLAINER_CONTENT}</div>
+              </>
+            )
+        }
+      </div>
+    </section>
+  );
+
+  const LicenseSection = () => (
+    <section>
+      <h2 className="title">{LICENSE_SECTION_HEADER}</h2>
+      <div className="settings-section-content">
+        <LicenseForm />
+      </div>
+    </section>
+  );
+
+  const BookmarksSection = () => (
+    <section>
+      <div className="settings-section-content">
+        <BookmarksSyncButton token={storedToken} />
+      </div>
+      <Divider />
+    </section>
+  );
+
+  const Header = () => (
+    <header className="sidebar-page-header">
+      <Button type="link" className="left-button" onClick={handleClose}>
+        {HEADER_LEFT_BUTTON_TEXT}
+      </Button>
+      <span className="page-title">{HEADER_TITLE}</span>
+    </header>
+  );
+
   return (
     <SettingsContext.Provider value={context}>
       <div id="settings-page" className="sidebar-page">
-        <header className="sidebar-page-header">
-          <Button type="link" className="left-button" onClick={handleClose}>
-            {HEADER_LEFT_BUTTON_TEXT}
-          </Button>
-          <span className="page-title">{HEADER_TITLE}</span>
-        </header>
+        <Header />
         <div className="sidebar-page-wrapper">
-          <FeatureGate feature="desktop_login">
-            <section>
-              <h2 className="title">
-                {
-                  // prettier-ignore
-                  storedEmail && storedToken
-                  ? LOGOUT_SECTION_TITLE
-                  : storedEmail
-                    ? ACTIVATION_SECTION_TITLE
-                    : LOGIN_SECTION_TITLE
-                }
-              </h2>
-              <div className="settings-section-content insight-row">
-                <LoginForm />
-              </div>
-              <Divider />
-            </section>
-          </FeatureGate>
-          {/* change privacy */}
-          <section>
-            {(storedToken || !loginFeature) && (
-              <h2 className="title">{ACTIVE_LICENSE_MAIN_HEADER}</h2>
-            )}
-            <div className="settings-section-content">
-              {(storedToken || !loginFeature) && (
-                <>
-                  <Switch
-                    className="privacy-toggle-button"
-                    checked={useServerSuggestions}
-                    onChange={handlePrivacyChange}
-                  />
-                </>
-              )}
-              {
-                //prettier-ignore
-                !(storedToken || !loginFeature) && useServerSuggestions === undefined ? (
-                  <>
-                    <Title level={2}>{INACTIVE_LICENSE_MAIN_HEADER}</Title>
-                    <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
-                  </>
-                ) :
-                  !useServerSuggestions ? (
-                    <>
-                      <Title level={2}>{UNCHECKED_SWITCH_TEXT}</Title>
-                      <div className="privacy-explainer">{UNCHECKED_PRIVACY_EXPLAINER_CONTENT}</div>
-                    </>
-                  ) : (
-                    <>
-                      <Title level={2}>{CHECKED_SWITCH_TEXT}</Title>
-                      <div className="privacy-explainer">{CHECKED_PRIVACY_EXPLAINER_CONTENT}</div>
-                    </>
-                  )
-              }
-            </div>
-          </section>
-          <FeatureGate feature="desktop_bookmarks">
-            <section>
-              <div className="settings-section-content">
-                <Button
-                  block
-                  type="primary"
-                  onClick={handleForceSync}
-                  disabled={!(storedToken && bookmarksFeature) || isSyncing}
-                >
-                  <span className="insight-row">
-                    <RefreshCw className={isSyncing ? 'spin' : ''} />
-                    &nbsp;{bookmarksStatus()}
-                  </span>
-                </Button>
-              </div>
-              <Divider />
-            </section>
-          </FeatureGate>
+          <LoginSection />
+          {(storedToken || !loginFeature) && <LicenseSection />}
+          <PrivacySection />
+          <BookmarksSection />
         </div>
       </div>
     </SettingsContext.Provider>
