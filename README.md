@@ -6,14 +6,23 @@ Insight supercharges search with results from expert and community trusted sourc
 
 > ##
 > #### Technical Documentation
+>
 > __[Augmentation Specification](https://coda.io/d/Technical-Documentation_dVTEz9ECa5H/Augmentations-Spec_suGx8#_luk97)__
+>
 > __[Auto Expand Criteria](https://coda.io/d/Technical-Documentation_dVTEz9ECa5H/Desktop-Autoexpand-Criteria_suBc2#_lu-2V)__
+>
 > __[Application Architecture](docs/ARCHITECTURE.md)__
+>
 > __[Custom Search Engines (CSE)](https://coda.io/d/Technical-Documentation_dVTEz9ECa5H/Custom-Search-Engines_suGZG#_luABT)__
+>
 > __[Logging Specification](https://coda.io/d/Technical-Documentation_dVTEz9ECa5H/Desktop-Extension-Logging_sueRp#Events_tustj/r21)__
+>
 > __[Publications Concept](https://www.notion.so/lasoai/WebUrlAnswer-vs-WebUrl-vs-Publications-453a6d2bd8f24b2c8af3d48686ca9101)__
+>
 > __[Referral Redemption Concurrency](https://coda.io/d/Technical-Documentation_dVTEz9ECa5H/Referral-redemption-concurrency_suHzX#_lu6WV)__
+>
 > __[Tab Sorting Criteria](https://coda.io/d/Technical-Documentation_dVTEz9ECa5H/Subtab-Sorting_su95m#_lutd5)__
+>
 > ##
 
 # Project Structure
