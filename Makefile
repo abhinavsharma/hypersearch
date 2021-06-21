@@ -1,5 +1,5 @@
 setup:
-	npm install
+	npm install --legacy-peer-deps
 dev:
 	npm run watch
 prod:
