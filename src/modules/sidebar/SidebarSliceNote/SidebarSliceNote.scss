@@ -1,0 +1,20 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+.slice-note {
+  .ant-comment {
+    .ant-comment-inner {
+      .ant-comment-avatar {
+        .ant-avatar {
+          .anticon > svg {
+            @include centerBox;
+            transform: translate(-50%, 50%);
+            width: 50%;
+            height: 50%;
+            margin-bottom: $sidebar_space_medium;
+          }
+        }
+      }
+    }
+  }
+}

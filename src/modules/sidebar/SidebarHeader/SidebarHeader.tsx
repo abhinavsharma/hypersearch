@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { Maximize, Minimize, Sliders } from 'react-feather';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import { Maximize, Minimize, Sliders } from 'react-feather';
 import SidebarLoader from 'lib/sidebar';
 import { CustomSidebarIcon } from 'modules/shared';
 import { flipSidebar } from 'lib/flip';
@@ -21,15 +21,20 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarHeader.scss';
 
-/** MAGICS **/
+const { Title } = Typography;
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const ICON_COLOR = '#999999';
 const SHRINK_TOOLTIP_TEXT = `Back to Search Engine ("${FULLSCREEN_KEY.KEY}" key)`;
 const EXPAND_TOOLTIP_TEXT = `Fullscreen ("${FULLSCREEN_KEY.KEY}" key)`;
 const MENU_TOOLTIP_TEXT = 'Configure';
 const HIDE_TOOLTIP_TEXT = `Hide ("${SHRINK_KEY.KEY}" key)`;
 
-const { Title } = Typography;
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
 
@@ -57,6 +62,10 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   };
 
   const keepParent = { keepParent: false };
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
 
   return (
     <div id="sidebar-header">

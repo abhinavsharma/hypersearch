@@ -4,12 +4,14 @@ import UserManager from 'lib/user';
 import Skeleton from 'antd/lib/skeleton';
 import { decodeSpace, triggerSerpProcessing } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
+import { SidebarNoteTab } from 'modules/sidebar';
 import {
   EXTENSION_SERP_FILTER_LOADED,
   SIDEBAR_TAB_FAKE_URL,
   HIDE_FRAME_OVERLAY_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXTERNAL_PDF_RENDERER_URL,
+  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/skeleton/style/index.css';
 
@@ -57,7 +59,15 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       : '100%',
   };
 
-  return tab.url.href !== SIDEBAR_TAB_FAKE_URL ? (
+  if (tab.url.href === SIDEBAR_TAB_FAKE_URL) {
+    return null;
+  }
+
+  if (tab.url.href === SIDEBAR_TAB_NOTE_TAB) {
+    return <SidebarNoteTab url={tab.augmentation.actions.action_list[0].value[0] as string} />;
+  }
+
+  return (
     <div ref={containerRef} className="insight-tab-iframe-container">
       <iframe
         key={decodeSpace(tab.url.href)}
@@ -82,5 +92,5 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         </div>
       )}
     </div>
-  ) : null;
+  );
 };

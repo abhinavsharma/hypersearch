@@ -7,13 +7,9 @@
 export const APP_NAME = 'Insight';
 export const APP_NAME_LONG = 'Insight Lenses';
 
-export const SIDEBAR_PAGE = {
-  ACTIVE: 'active',
-  GUTTER: 'gutter',
-  BUILDER: 'builder',
-  SETTINGS: 'settings',
-  FEATURE: 'feature',
-} as const;
+//-----------------------------------------------------------------------------------------------
+// ! Engine
+//-----------------------------------------------------------------------------------------------
 
 /**
  * The search engine used when there is no matching engine to the current page
@@ -36,13 +32,16 @@ export const DUMMY_SUBTABS_URL = 'https://www.google.com/search?q=react';
 export const DUMMY_AMAZON_SUBTABS_URL = 'https://www.amazon.com/s?k=dummy';
 
 //-----------------------------------------------------------------------------------------------
-// ! Sidebar Tab URL Query Parameters
+// ! Tabs
 //-----------------------------------------------------------------------------------------------
-export const SIDEBAR_TAB_FAKE_URL = 'sidebar-fake-tab';
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
-export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
+
+export const SIDEBAR_TAB_NOTE_TAB = 'sidebar-note-tab';
+export const SIDEBAR_TAB_FAKE_URL = 'sidebar-fake-tab';
+
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
 export const URL_PARAM_NO_COOKIE_KEY = 'insight-no-cookie';
+export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
 
 //-----------------------------------------------------------------------------------------------
 // ! Options

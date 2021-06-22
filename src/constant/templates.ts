@@ -1,3 +1,6 @@
+import { v4 as uuid } from 'uuid';
+import { INSTALLED_PREFIX, NOTE_TAB_TITLE } from './index';
+
 import {
   ACTION_EVALUATION,
   ACTION_KEY,
@@ -37,11 +40,20 @@ export const EMPTY_AUGMENTATION = {
   name: '',
 } as Augmentation;
 
-export const ANY_URL_CONDITION_TEMPLATE = {
+export const ANY_SEARCH_ENGINE_CONDITION_TEMPLATE = {
   evaluation: LEGACY_EVALUATION.MATCHES,
   key: CONDITION_KEY.ANY_SEARCH_ENGINE,
   unique_key: CONDITION_KEY.ANY_SEARCH_ENGINE,
   label: CONDITION_LABEL.ANY_SEARCH_ENGINE,
+  type: LEGACY_CONDITION_TYPE.LIST,
+  value: ['.*'],
+};
+
+export const ANY_URL_CONDITION_TEMPLATE = {
+  evaluation: LEGACY_EVALUATION.MATCHES,
+  key: CONDITION_KEY.ANY_URL,
+  unique_key: CONDITION_KEY.ANY_URL,
+  label: CONDITION_LABEL.ANY_URL,
   type: LEGACY_CONDITION_TYPE.LIST,
   value: ['.*'],
 };
@@ -80,7 +92,7 @@ export const MY_BLOCKLIST_TEMPLATE = {
   enabled: true,
   conditions: {
     ...EMPTY_AUGMENTATION.conditions,
-    condition_list: [ANY_URL_CONDITION_TEMPLATE],
+    condition_list: [ANY_SEARCH_ENGINE_CONDITION_TEMPLATE],
   },
   actions: {
     ...EMPTY_AUGMENTATION.actions,
@@ -102,7 +114,7 @@ export const MY_TRUSTLIST_TEMPLATE = {
   enabled: true,
   conditions: {
     ...EMPTY_AUGMENTATION.conditions,
-    condition_list: [ANY_URL_CONDITION_TEMPLATE],
+    condition_list: [ANY_SEARCH_ENGINE_CONDITION_TEMPLATE],
   },
   actions: {
     ...EMPTY_AUGMENTATION.actions,
@@ -116,6 +128,28 @@ export const MY_TRUSTLIST_TEMPLATE = {
     ],
   },
 } as Augmentation;
+
+export const createNote = (url: string) => ({
+  ...EMPTY_AUGMENTATION,
+  id: `${INSTALLED_PREFIX}-note-${uuid()}`,
+  name: NOTE_TAB_TITLE,
+  enabled: true,
+  conditions: {
+    ...EMPTY_AUGMENTATION.conditions,
+    condition_list: [ANY_URL_CONDITION_TEMPLATE],
+  },
+  actions: {
+    ...EMPTY_AUGMENTATION.actions,
+    action_list: [
+      {
+        key: ACTION_KEY.URL_NOTE,
+        label: ACTION_LABEL.URL_NOTE,
+        type: LEGACY_ACTION_TYPE.LIST,
+        value: [url],
+      },
+    ],
+  },
+});
 
 export const EMPTY_CUSTOM_SEARCH_ENGINE_BLOB = {
   querySelector: {

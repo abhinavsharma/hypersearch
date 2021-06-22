@@ -55,6 +55,8 @@ import {
   SIDEBAR_PAGE,
   AUGMENTATION_ID,
   DISABLED_AUGMENTATIONS,
+  NOTE_TAB_TITLE,
+  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import UserManager from 'lib/user';
 
@@ -365,8 +367,16 @@ class SidebarLoader {
         urls.push(fakeUrl);
         fakeTab = true;
       }
+
       const customSearchUrl = emptyUrl();
       switch (action.key) {
+        case ACTION_KEY.URL_NOTE: {
+          const fakeUrl = emptyUrl();
+          fakeUrl.href = SIDEBAR_TAB_NOTE_TAB;
+          augmentation.name = NOTE_TAB_TITLE;
+          this.url.href.includes(action.value[0] + '') && urls.push(fakeUrl);
+          break;
+        }
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case ACTION_KEY.SEARCH_HIDE_DOMAIN:

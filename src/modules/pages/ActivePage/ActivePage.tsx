@@ -101,7 +101,8 @@ export const ActivePage: ActivePage = () => {
     {
       augmentations: SidebarLoader.installedAugmentations.filter(
         (augmentation) =>
-          !SidebarLoader.pinnedAugmentations.find(({ id }) => id === augmentation.id),
+          !SidebarLoader.pinnedAugmentations.find(({ id }) => id === augmentation.id) &&
+          !augmentation.actions.action_list.find((action) => action.key === ACTION_KEY.URL_NOTE),
       ),
       title: INSTALLED_SECTION_TITLE,
       subtitle: makeEllipsis(SidebarLoader.url.href, 60),

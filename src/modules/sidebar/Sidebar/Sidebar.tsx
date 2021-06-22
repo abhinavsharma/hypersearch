@@ -14,6 +14,7 @@ import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
   EXTENSION_AUTO_EXPAND,
+  POST_TAB_UPDATE_MESSAGE,
   SIDEBAR_TAB_FAKE_URL,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
@@ -92,6 +93,7 @@ const Sidebar: Sidebar = () => {
         case UPDATE_SIDEBAR_TABS_MESSAGE:
           setSidebarTabs(SidebarLoader.getTabsAndAugmentations());
           triggerSerpProcessing(SidebarLoader);
+          setTimeout(() => chrome.runtime.sendMessage({ type: POST_TAB_UPDATE_MESSAGE }), 300);
           break;
         case DISABLE_SUGGESTED_AUGMENTATION:
           AugmentationManager.disableSuggestedAugmentation(msg.augmentation);

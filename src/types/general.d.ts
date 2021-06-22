@@ -121,6 +121,13 @@ declare interface Array<T> {
 declare type PublicationSlices = Record<string, Record<string, string[]>> &
   Record<'original', string[]>;
 
+declare type NoteRecord = {
+  id: string;
+  note: string;
+  slice?: string;
+  key?: string;
+};
+
 declare type Prefix = TPrefix[keyof TPrefix];
 
 //-----------------------------------------------------------------------------------------------

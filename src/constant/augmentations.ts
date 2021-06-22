@@ -94,6 +94,7 @@ export const ACTION_LABEL = {
   SEARCH_DOMAINS: 'Search only these domains',
   SEARCH_HIDE_DOMAIN: 'Hide results from domain',
   SEARCH_FEATURE: 'Highlight results from domain',
+  URL_NOTE: 'Create notes for the current page',
 } as const;
 
 export const CONDITION_LABEL = {
@@ -125,6 +126,7 @@ export const ACTION_KEY = {
   SEARCH_DOMAINS: 'search_domains',
   SEARCH_HIDE_DOMAIN: 'search_hide_domain',
   SEARCH_FEATURE: 'search_feature',
+  URL_NOTE: 'url_note',
 } as const;
 
 export const CONDITION_KEY = {

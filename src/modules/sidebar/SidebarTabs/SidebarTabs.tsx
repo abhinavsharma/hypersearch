@@ -30,6 +30,7 @@ import {
   USE_COUNT_PREFIX,
   SIDEBAR_PAGE,
   PRERENDER_TABS,
+  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/message/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -214,7 +215,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             >
               {tab.augmentation && (
                 <>
-                  {activeKey === (i + 1).toString() && (
+                  {activeKey === (i + 1).toString() && tab.url.href !== SIDEBAR_TAB_NOTE_TAB && (
                     <ActionBar tab={tab} setActiveKey={setActiveKey} />
                   )}
                   <SidebarTabMeta tab={tab} />

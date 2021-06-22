@@ -4,12 +4,13 @@
  * @license (C) Insight
  */
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
+import { CreateNoteButton } from 'modules/builder/CreateNoteButton/CreateNoteButton';
 import { DomainStateCheckbox } from 'modules/gutter/DomainStateCheckbox/DomainStateCheckbox';
 import {
   ACTION_KEY,
@@ -20,6 +21,7 @@ import {
   SIDEBAR_PAGE,
   PROTECTED_AUGMENTATIONS,
   AUGMENTATION_ID,
+  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -55,6 +57,7 @@ const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inline }) => {
+  const [hasNote, setHasNote] = useState<boolean>(false);
   const [currentHiders, setCurrentHiders] = useState<Augmentation[]>(
     hidingAugmentations.filter(({ id }) => id !== AUGMENTATION_ID.BLOCKLIST),
   );
@@ -80,6 +83,9 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     ...SidebarLoader.installedAugmentations,
     ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
   ].reduce((a, augmentation) => {
+    const isNote = augmentation.actions.action_list.find(
+      (action) => action.key === ACTION_KEY.URL_NOTE,
+    );
     const searchDomainActions = augmentation.actions.action_list.reduce(
       (actions, action, index) => {
         const { key, value } = action;
@@ -95,7 +101,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       searchDomainActions.forEach((action) => {
         a[domain].push({ ...augmentation, actionIndex: action.index });
       });
-      a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
+      !isNote &&
+        a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
     }
     return a;
   }, Object.create(null));
@@ -204,6 +211,13 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     });
   };
 
+  useEffect(() => {
+    setHasNote(!!SidebarLoader.sidebarTabs.find(({ url }) => url.href === SIDEBAR_TAB_NOTE_TAB));
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [SidebarLoader.sidebarTabs]);
+
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
@@ -219,6 +233,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       )}
       <div className="sidebar-page-wrapper">
         <section>
+          <CreateNoteButton hasNote={hasNote} />
           <h3 className="domain-text">
             <code>{domain}</code>
           </h3>
