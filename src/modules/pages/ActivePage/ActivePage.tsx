@@ -1,22 +1,20 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import SidebarLoader from 'lib/sidebar';
 import { AugmentationRow } from 'modules/builder';
 import { GutterPage } from 'modules/pages';
 import { Settings } from 'react-feather';
+import { makeEllipsis, getFirstValidTabIndex, extractUrlProperties } from 'lib/helpers';
+import { flipSidebar } from 'lib/flip';
 import {
-  makeEllipsis,
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   EMPTY_AUGMENTATION,
   OPEN_BUILDER_PAGE,
-  getFirstValidTabIndex,
-  flipSidebar,
   SWITCH_TO_TAB,
-  extractUrlProperties,
   ACTION_KEY,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
 

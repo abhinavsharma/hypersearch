@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Select, { OptionProps } from 'antd/lib/select';
 import Button from 'antd/lib/button';
-import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
+import SearchEngineManager from 'lib/engines';
 import { NewSearchEngineModal } from 'modules/builder';
-import { SIDEBAR_Z_INDEX } from 'utils';
+import { SIDEBAR_Z_INDEX } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/select/style/index.css';
 

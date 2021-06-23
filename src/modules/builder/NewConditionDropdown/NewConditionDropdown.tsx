@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Select from 'antd/lib/select';
-import { CONDITION_KEY, CONDITION_LABEL, LEGACY_EVALUATION, LEGACY_KEY } from 'utils';
+import { CONDITION_KEY, CONDITION_LABEL, LEGACY_EVALUATION, LEGACY_KEY } from 'constant';
 import 'antd/lib/select/style/index.css';
 
 /** MAGICS **/

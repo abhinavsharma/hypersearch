@@ -1,0 +1,60 @@
+{
+    //-----------------------------------------------------------------------------------------------
+    // ! Project Snippets
+    //-----------------------------------------------------------------------------------------------
+    // Place your global snippets here. Each snippet is defined under a snippet name and has a scope,
+    // prefix, body and description. Add comma separated ids of the languages where the snippet is
+    // applicable in the scope field. If scopeis left empty or omitted, the snippet gets applied to all
+    // languages. The prefix is what is used to trigger the snippet and the body will be expanded and
+    // inserted. Possible variables are: $1, $2 for tab stops, $0 for the final cursor position, and
+    // ${1:label}, ${2:another} for placeholders. Placeholders with the same ids are connected.
+    // * @example
+    // * |0| {
+    // * |1|  "description": "@insight/doc/{element}",
+    // * |2| 	"prefix": "log",
+    // * |3| 	"body": [
+    // * |4| 		"console.log('$1');",
+    // * |5| 		"$2"
+    // * |6| 	]
+    // * |7| }
+    //-----------------------------------------------------------------------------------------------
+    "Module": {
+        "description": "@insight/doc/module",
+        "prefix": "idocm",
+        "body": [
+            "/**",
+            " * @module $1",
+            " * @version 1.0.0",
+            " * @license (C) Insight",
+            " */",
+            "$2"
+        ]
+    },
+    "Section": {
+        "description": "@insight/doc/section",
+        "prefix": "idocs",
+        "body": [
+            "//-----------------------------------------------------------------------------------------------",
+            "// ! $1",
+            "//-----------------------------------------------------------------------------------------------",
+        ]
+    },
+    "Export": {
+        "description": "@insight/doc/export",
+        "prefix": "idoce",
+        "body": [
+            "/**",
+            " * $1",
+            " * --------------------------------------",
+            " * $2",
+            " */",
+        ]
+    },
+    "Line": {
+        "description": "@insight/doc/line",
+        "prefix": "idocl",
+        "body": [
+            "//-----------------------------------------------------------------------------------------------"
+        ]
+    }
+}

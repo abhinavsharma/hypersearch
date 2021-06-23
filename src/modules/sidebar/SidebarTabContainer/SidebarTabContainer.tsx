@@ -1,18 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import UserManager from 'lib/UserManager';
+import SidebarLoader from 'lib/sidebar';
+import UserManager from 'lib/user';
 import Skeleton from 'antd/lib/skeleton';
+import { decodeSpace, triggerSerpProcessing } from 'lib/helpers';
+import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   EXTENSION_SERP_FILTER_LOADED,
   SIDEBAR_TAB_FAKE_URL,
-  keyboardHandler,
-  keyUpHandler,
-  decodeSpace,
-  triggerSerpProcessing,
   HIDE_FRAME_OVERLAY_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXTERNAL_PDF_RENDERER_URL,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/skeleton/style/index.css';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {

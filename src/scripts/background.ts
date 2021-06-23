@@ -6,9 +6,9 @@
  * @version 1.0.0
  */
 import axios from 'axios';
-import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
-import BookmarksSynchronizer from 'lib/Sync/BookmarksSynchronizer';
-import { debug, getPublicationUrl, isFirefox, sanitizeUrl } from 'utils/helpers';
+import SearchEngineManager from 'lib/engines';
+import BookmarksSynchronizer from 'lib/bookmarks';
+import { debug, getPublicationUrl, isFirefox, sanitizeUrl } from 'lib/helpers';
 import {
   EXTENSION_SHORT_URL_RECEIVED,
   FRESHPAINT_API_ENDPOINT,
@@ -28,7 +28,7 @@ import {
   URL_PARAM_NO_COOKIE_KEY,
   SYNC_START_MESSAGE,
   SYNC_END_MESSAGE,
-} from 'utils/constants';
+} from 'constant';
 
 (() => {
   // ! INITIALIZATION

@@ -4,8 +4,8 @@ import {
   SIDEBAR_Z_INDEX,
   SYNC_PUBLICATION_TIME_TRACK_KEY,
   TRIGGER_PUBLICATION_TIMER_MESSAGE,
-} from 'utils/constants';
-import { sanitizeUrl } from 'utils/helpers';
+} from 'constant';
+import { sanitizeUrl } from 'lib/helpers';
 import 'antd/lib/tooltip/style/index.css';
 
 /** MAGICS **/

@@ -1,22 +1,9 @@
-/**
- * @module Reorder
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
- * @version 1.0.0
- * @description
- *  This script is reordering the results of a search results page
- *  to let the top three results be always unique. It will consider
- *  the individual results ranking among other results and prefer
- *  moving higher ranked results to the top, respecting the diversity.
- *  The script need to be run when the document is ready and results
- *  are rendered, also any other modification have been completed.
- */
 import {
   GOOGLE_SERP_RESULT_A_SELECTOR,
   GOOGLE_SERP_RESULT_CONTAINER,
   GOOGLE_SERP_RESULT_DIV_SELECTOR,
-} from 'utils/constants';
-import { debug, extractUrlProperties } from 'utils/helpers';
+} from 'constant';
+import { debug, extractUrlProperties } from 'lib/helpers';
 
 ((document, window) => {
   // First X results to replace with unique results.

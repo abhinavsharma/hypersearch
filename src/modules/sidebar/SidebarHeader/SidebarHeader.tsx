@@ -3,19 +3,19 @@ import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { Maximize, Minimize, Sliders } from 'react-feather';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import SidebarLoader from 'lib/sidebar';
 import { CustomSidebarIcon } from 'modules/shared';
+import { flipSidebar } from 'lib/flip';
+import { expandSidebar } from 'lib/expand';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME_LONG,
-  expandSidebar,
   FULLSCREEN_KEY,
-  flipSidebar,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SHRINK_KEY,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';

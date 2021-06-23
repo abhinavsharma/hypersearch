@@ -1,27 +1,36 @@
+/**
+ * @module modules:pages
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import SidebarLoader from 'lib/sidebar';
+import AugmentationManager from 'lib/augmentations';
 import { MetaSection, ActionsSection, ConditionsSection } from 'modules/builder';
 import {
   ANY_URL_CONDITION_TEMPLATE,
+  AUGMENTATION_TITLE,
   EMPTY_AUGMENTATION,
-  FORKED_AUGMENTATION_APPENDAGE,
-  NEW_AUGMENTATION_TITLE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   SIDEBAR_Z_INDEX,
   TOUR_AUGMENTATION,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import './BuilderPage.scss';
 
-/** MAGICS **/
+const { Panel } = Collapse;
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const HEADER_LEFT_BUTTON = 'Cancel';
 const HEADER_ADD_TITLE = 'Add Local Lens';
 const HEADER_EDIT_TITLE = 'Edit Local Lens';
@@ -50,8 +59,9 @@ const TOUR_TOOLTIP_STYLE: React.CSSProperties = {
 
 const TOUR_TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
-const { Panel } = Collapse;
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, isAdding }) => {
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
@@ -61,8 +71,8 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
     tourStep
       ? TOUR_AUGMENTATION.name
       : !augmentation.installed && !!augmentation.name?.length
-        ? `${augmentation.name}${FORKED_AUGMENTATION_APPENDAGE}`
-        : augmentation.name || NEW_AUGMENTATION_TITLE,
+        ? `${augmentation.name}${AUGMENTATION_TITLE.FORKED}`
+        : augmentation.name || AUGMENTATION_TITLE.NEW,
     /* eslint-enable */
   );
 
@@ -112,6 +122,10 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
           ...action,
         })),
   );
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
@@ -185,6 +199,9 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SidebarLoader.tourStep]);
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   const SectionHeader: SectionHeader = ({ title, tourTitle, tourText }) => {
     const [isVisible, setIsVisible] = useState<boolean>(tourStep === '2');
     const tooltipContainer = useRef<HTMLDivElement>(null);

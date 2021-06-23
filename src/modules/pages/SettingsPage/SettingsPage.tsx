@@ -4,7 +4,7 @@ import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
 import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
-import UserManager from 'lib/UserManager';
+import UserManager from 'lib/user';
 import { LoginForm } from 'modules/settings';
 import {
   APP_NAME,
@@ -13,7 +13,7 @@ import {
   SYNC_END_MESSAGE,
   SYNC_START_MESSAGE,
   SYNC_PRIVACY_KEY,
-} from 'utils';
+} from 'constant';
 import {
   ACTIVE_LICENSE_MAIN_HEADER,
   CHECKED_PRIVACY_EXPLAINER_CONTENT,
@@ -27,7 +27,7 @@ import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SettingsPage.scss';
-import { FeatureGate, useFeature } from 'lib/FeatureGate/FeatureGate';
+import { FeatureGate, useFeature } from 'lib/features';
 
 const { Title } = Typography;
 

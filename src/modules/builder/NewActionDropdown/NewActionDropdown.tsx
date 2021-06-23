@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Select from 'antd/lib/select';
-import { ACTION_KEY, ACTION_LABEL } from 'utils';
+import { ACTION_KEY, ACTION_LABEL } from 'constant';
 import 'antd/lib/select/style/index.css';
 
 /** MAGICS **/

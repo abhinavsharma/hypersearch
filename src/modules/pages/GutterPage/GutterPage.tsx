@@ -1,27 +1,38 @@
+/**
+ * @module modules:pages
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { Suspense, useState } from 'react';
 import Button from 'antd/lib/button';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import SidebarLoader from 'lib/sidebar';
+import AugmentationManager from 'lib/augmentations';
 import { DomainStateCheckbox } from 'modules/gutter/DomainStateCheckbox/DomainStateCheckbox';
 import {
   ACTION_KEY,
   ACTION_LABEL,
   LEGACY_ACTION_TYPE,
   EMPTY_AUGMENTATION,
-  MY_BLOCKLIST_ID,
-  MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   PROTECTED_AUGMENTATIONS,
-} from 'utils';
+  AUGMENTATION_ID,
+} from 'constant';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './GutterPage.scss';
 
-/** MAGICS **/
+const PlusOutlined = React.lazy(
+  async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
+);
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
 const HEADER_TITLE = 'Domain Settings';
 const INSTALLED_SECTION_TITLE = 'Add this domain to a local lens';
@@ -40,13 +51,12 @@ const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new Lens that sear
 const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Lens';
 const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
 
-const PlusOutlined = React.lazy(
-  async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
-);
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inline }) => {
   const [currentHiders, setCurrentHiders] = useState<Augmentation[]>(
-    hidingAugmentations.filter(({ id }) => id !== MY_BLOCKLIST_ID),
+    hidingAugmentations.filter(({ id }) => id !== AUGMENTATION_ID.BLOCKLIST),
   );
 
   const searchingAugmentations = [
@@ -60,7 +70,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
           return !!value.find((searchedDomain) => searchedDomain === domain);
         }
         return false;
-      }).length && augmentation.id !== MY_TRUSTLIST_ID,
+      }).length && augmentation.id !== AUGMENTATION_ID.TRUSTLIST,
   );
 
   const availableLocalAugmentations: Record<
@@ -81,7 +91,7 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       [] as Array<ActionObject & { index: number }>,
     );
     if (!Array.isArray(a[domain])) a[domain] = [];
-    if (!PROTECTED_AUGMENTATIONS.includes(augmentation.id)) {
+    if (!(PROTECTED_AUGMENTATIONS as readonly string[]).includes(augmentation.id)) {
       searchDomainActions.forEach((action) => {
         a[domain].push({ ...augmentation, actionIndex: action.index });
       });
@@ -110,6 +120,10 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       subtitle: SEARCHING_SECTION_SUBTITLE,
     },
   ];
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
@@ -190,6 +204,9 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     });
   };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div id="gutter-page" className={`sidebar-page ${inline ? 'inline-gutter-page-embedded' : ''}`}>
       {!inline && (
@@ -289,7 +306,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
                                 const action =
                                   augmentation.actions.action_list[augmentation.actionIndex ?? -1];
                                 return action?.key === ACTION_KEY.SEARCH_DOMAINS
-                                  ? augmentation.id === MY_TRUSTLIST_ID && !action.value?.length
+                                  ? augmentation.id === AUGMENTATION_ID.TRUSTLIST &&
+                                    !action.value?.length
                                     ? ADD_TO_TRUSTLIST_BUTTON_SUBTITLE
                                     : `${ADD_TO_AUGMENTATION_BUTTON_SUBTITLE}\u00a0${action.value.join(
                                         ', ',

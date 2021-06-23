@@ -1,12 +1,30 @@
+/**
+ * @module modules:introduction
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
-import { SYNC_PRIVACY_KEY } from 'utils';
+import { SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './ToggleAnonymousQueries.scss';
 
-/** MAGICS **/
+const CheckCircleFilled = React.lazy(
+  async () => await import('@ant-design/icons/CheckCircleFilled').then((mod) => mod),
+);
+
+const WarningOutlined = React.lazy(
+  async () => await import('@ant-design/icons/WarningOutlined').then((mod) => mod),
+);
+
+const { Title } = Typography;
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 // * CHECKED STATE
 export const CHECKED_SWITCH_TEXT = 'Use server suggestions';
 export const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
@@ -59,16 +77,9 @@ export const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
   </>
 );
 
-const CheckCircleFilled = React.lazy(
-  async () => await import('@ant-design/icons/CheckCircleFilled').then((mod) => mod),
-);
-
-const WarningOutlined = React.lazy(
-  async () => await import('@ant-design/icons/WarningOutlined').then((mod) => mod),
-);
-
-const { Title } = Typography;
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const ToggleAnonymousQueries = () => {
   const [checked, setChecked] = useState<boolean>();
 
@@ -88,11 +99,18 @@ export const ToggleAnonymousQueries = () => {
     getStorageValue();
   }, [getStorageValue]);
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
+
   const handleToggle = (value: boolean) => {
     setChecked(value);
     chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: value });
   };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div id="privacy-toggle-container">
       <Switch className="privacy-toggle-button" checked={checked} onChange={handleToggle} />

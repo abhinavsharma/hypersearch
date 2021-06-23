@@ -1,25 +1,43 @@
+/**
+ * @module modules:shared
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
 import Typography from 'antd/lib/typography';
 import { Share } from 'react-feather';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import AugmentationManager from 'lib/augmentations';
+import { b64EncodeUnicode } from 'lib/helpers';
 import {
   AIRTABLE_PUBLIC_LENSES_CREATE,
-  b64EncodeUnicode,
+  AUGMENTATION_ID,
   BAZAAR_URL,
   EXTENSION_SHARE_URL,
   EXTENSION_SHORT_URL_RECEIVED,
-  MY_BLOCKLIST_ID,
   SIDEBAR_Z_INDEX,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import './ShareButton.scss';
 
-/** MAGICS **/
+const CopyOutlined = React.lazy(
+  async () => await import('@ant-design/icons/CopyOutlined').then((mod) => mod),
+);
+
+const UploadOutlined = React.lazy(
+  async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
+);
+
+const { Paragraph } = Typography;
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const ELLIPSIS_ROWS = 3;
 const POPOVER_WIDTH = 400; //px
 const SHARE_BUTTON_COLOR = '#999999';
@@ -31,22 +49,15 @@ const SHARE_AUGMENTATION_BUTTON_TITLE = 'Share Lens';
 const POPOVER_TITLE = 'Share <placeholder>';
 const POPOVER_CLOSE_BUTTON_TEXT = 'Close';
 
-const { Paragraph } = Typography;
-
-const CopyOutlined = React.lazy(
-  async () => await import('@ant-design/icons/CopyOutlined').then((mod) => mod),
-);
-
-const UploadOutlined = React.lazy(
-  async () => await import('@ant-design/icons/UploadOutlined').then((mod) => mod),
-);
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
   const encoded = b64EncodeUnicode(
     JSON.stringify({
       ...augmentation,
       id:
-        augmentation.id === MY_BLOCKLIST_ID
+        augmentation.id === AUGMENTATION_ID.BLOCKLIST
           ? augmentation.id.concat(`-${uuid()}`)
           : augmentation.id,
     }),
@@ -56,6 +67,10 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
   const [shared, setShared] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean | undefined>(undefined);
   const tooltipContainer = useRef<HTMLDivElement>(null);
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
 
   const handleShare = async () => {
     setVisible(undefined);
@@ -75,6 +90,10 @@ export const ShareButton: ShareButton = ({ icon, disabled, augmentation }) => {
       }
     });
   }, []);
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
 
   const popoverContent = () => {
     const copyable = {

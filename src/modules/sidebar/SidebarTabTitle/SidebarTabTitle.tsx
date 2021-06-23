@@ -1,24 +1,22 @@
 import React, { useEffect } from 'react';
 import md5 from 'md5';
+import { useDebouncedFn } from 'beautiful-react-hooks';
 import Tooltip from 'antd/lib/tooltip';
+import SidebarLoader from 'lib/sidebar';
+import UserManager from 'lib/user';
+import { decodeSpace, extractUrlProperties, removeProtocol } from 'lib/helpers';
 import {
   APP_NAME,
-  decodeSpace,
   EXTENSION_SERP_LINK_HOVEROPEN,
   EXTENSION_SERP_SUBTAB_CLICKED,
   EXTENSION_SUBTAB_SCROLL,
-  extractUrlProperties,
-  removeProtocol,
   SIDEBAR_TAB_FAKE_URL,
   TRIGGER_FRAME_SCROLL_LOG_MESSAGE,
   TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabTitle.scss';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import { useDebouncedFn } from 'beautiful-react-hooks';
-import UserManager from 'lib/UserManager';
 
 /** MAGICS **/
 const SUGGESTED_TOOLTIP_TEXT = `Lens suggested by ${APP_NAME}`;

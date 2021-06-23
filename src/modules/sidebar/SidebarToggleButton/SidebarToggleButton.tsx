@@ -1,17 +1,16 @@
 /**
- * @module SidebarToggleButton
- * @author Abhinav Sharma<abhinav@laso.ai>
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module modules:sidebar
  * @version 1.0.0
+ * @license (C) Insight
  */
+
 import React from 'react';
 import List from 'antd/lib/list';
 import Tooltip from 'antd/lib/tooltip';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import SidebarLoader from 'lib/sidebar';
+import { flipSidebar } from 'lib/flip';
+import { removeEmoji } from 'lib/helpers';
 import {
-  flipSidebar,
-  removeEmoji,
   APP_NAME,
   EMPTY_AUGMENTATION,
   SIDEBAR_TAB_FAKE_URL,
@@ -19,7 +18,7 @@ import {
   OPEN_BUILDER_PAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXPAND_KEY,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';

@@ -3,7 +3,7 @@ import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
-import { CONDITION_KEY, LEGACY_KEY, LEGACY_EVALUATION } from 'utils';
+import { CONDITION_KEY, LEGACY_KEY, LEGACY_EVALUATION } from 'constant';
 import {
   MultiValueInput,
   NewConditionDropdown,

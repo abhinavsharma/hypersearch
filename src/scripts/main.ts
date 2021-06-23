@@ -1,18 +1,17 @@
-import UserManager from 'lib/UserManager';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
+import UserManager from 'lib/user';
+import { activityMonitor } from 'lib/activity';
+import SidebarLoader from 'lib/sidebar';
+import { debug, replaceLocation } from 'lib/helpers';
+import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
+
 import {
-  activityMonitor,
-  keyboardHandler,
-  keyUpHandler,
-  debug,
-  replaceLocation,
   URL_UPDATED_MESSAGE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   ADD_EXTERNAL_AUGMENTATION_MESSAGE,
   ACTIVATE_EMAIL_MESSAGE,
-} from 'utils';
+} from 'constant';
 
 (async (document: Document, location: Location) => {
   debug(

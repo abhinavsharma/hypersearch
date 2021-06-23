@@ -159,4 +159,4 @@ declare module '*.scss' {
   export default classes;
 }
 
-declare type TSidebarLoader = typeof import('lib/SidebarLoader/SidebarLoader').default;
+declare type TSidebarLoader = typeof import('lib/sidebar').default;

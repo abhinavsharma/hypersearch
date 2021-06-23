@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
 import Typography from 'antd/lib/typography';
-import UserManager from 'lib/UserManager';
+import UserManager from 'lib/user';
 import { SettingsContext } from 'modules/pages';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';

@@ -1,17 +1,25 @@
+/**
+ * @module modules:builder
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React from 'react';
 import Tag from 'antd/lib/tag';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import AugmentationManager from 'lib/augmentations';
 import Tooltip from 'antd/lib/tooltip';
 import {
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   PROTECTED_AUGMENTATIONS,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const LOCAL_AUGMENTATION_TOOLTIP_TEXT = 'Local';
 const USAGE_TEXT = `<placeholder> uses`;
 const INSTALLED_EDIT_TOOLTIP_TEXT = '';
@@ -24,7 +32,13 @@ const PIN_TEXT = 'Pin';
 const UNPIN_TEXT = 'Unpin';
 const DELETE_TEXT = 'Delete';
 
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned, other }) => {
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const handlePin = () => AugmentationManager.pinAugmentation(augmentation);
   const handleUnpin = () => AugmentationManager.unpinAugmentation(augmentation);
   const handleEnable = () => {
@@ -49,6 +63,9 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
 
   const keepParent = { keepParent: false };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div className="insight-augmentation-row">
       <div className="insight-augmentation-row-name">
@@ -77,7 +94,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
           {augmentation.installed ? INSTALLED_EDIT_TEXT : SUGGESTED_EDIT_TEXT}
         </Tag>
       </Tooltip>
-      {!PROTECTED_AUGMENTATIONS.includes(augmentation.id) && (
+      {!(PROTECTED_AUGMENTATIONS as readonly string[]).includes(augmentation.id) && (
         <>
           {ignored ? (
             <Tag

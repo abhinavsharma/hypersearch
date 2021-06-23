@@ -1,6 +1,6 @@
-import { runFunctionWhenDocumentReady } from 'utils';
-import { BLOCKED_ADS } from 'utils/constants';
-import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
+import { runFunctionWhenDocumentReady } from 'lib/helpers';
+import { processSerpResults } from 'lib/gutter';
+import { BLOCKED_ADS } from 'constant';
 
 ((document) => {
   const originalHost = document.location.host.replace('www.', '');
@@ -18,7 +18,7 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
     setTimeout(() => {
       adBlocks.forEach((adBlock) => {
         const adText = adBlock.adText.split(',');
-        const adTextContainer = adBlock.adTextContainer || 'span';
+        const adTextContainer = (adBlock as any).adTextContainer ?? 'span';
         const adElementSelector = adBlock.adElementSelector;
         let node: HTMLElement;
         const search = adText.map((adText) => "normalize-space()='" + adText + "'").join(' or ');

@@ -1,25 +1,33 @@
+/**
+ * @module modules:sidebar
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { Suspense, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { GitMerge, EyeOff, Edit, MapPin } from 'react-feather';
 import { ShareButton } from 'modules/shared';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import SidebarLoader from 'lib/sidebar';
+import AugmentationManager from 'lib/augmentations';
+import UserManager from 'lib/user';
+import { getFirstValidTabIndex } from 'lib/helpers';
 import {
   CSE_PREFIX,
-  getFirstValidTabIndex,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   PROTECTED_AUGMENTATIONS,
   SIDEBAR_Z_INDEX,
-} from 'utils';
+} from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
-import UserManager from 'lib/UserManager';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit local lens';
 const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork: Duplicate lens and edit locally';
 const PIN_AUGMENTATION_BUTTON_TEXT = 'Temporarily pin this lens';
@@ -29,9 +37,15 @@ const DISABLE_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Hide lens';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const ICON_UNSELECTED_COLOR = '#999';
 
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const tooltipContainer = useRef<HTMLDivElement>(null);
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const handleOpenAugmentationBuilder = (isEdit?: boolean) => {
     AugmentationManager.preparedLogMessage =
       isEdit || UserManager.user.privacy
@@ -88,10 +102,13 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
   const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
   const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div id="actionbar">
       <div className="insight-suggested-tab-popup">
-        {!PROTECTED_AUGMENTATIONS.includes(tab.augmentation?.id) && (
+        {!(PROTECTED_AUGMENTATIONS as readonly string[]).includes(tab.augmentation?.id) && (
           <Tooltip
             title={
               tab.augmentation?.installed

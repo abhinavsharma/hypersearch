@@ -1,5 +1,5 @@
-import { TRIGGER_FRAME_SCROLL_LOG_MESSAGE, HIDE_FRAME_OVERLAY_MESSAGE } from 'utils/constants';
-import { extractUrlProperties } from 'utils/helpers';
+import { TRIGGER_FRAME_SCROLL_LOG_MESSAGE, HIDE_FRAME_OVERLAY_MESSAGE } from 'constant';
+import { extractUrlProperties } from 'lib/helpers';
 import { getLCP, ReportHandler } from 'web-vitals';
 import './results';
 

@@ -1,13 +1,18 @@
 import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Steps from 'antd/lib/steps';
-import { WelcomeFrame, PrivacyFrame, QueriesFrame, LicenseFrame } from 'modules/introduction';
-import { EmailFrame } from '../EmailFrame/EmailFrame';
-import { APP_NAME, SYNC_FINISHED_KEY } from 'utils';
+import {
+  WelcomeFrame,
+  PrivacyFrame,
+  QueriesFrame,
+  LicenseFrame,
+  EmailFrame,
+} from 'modules/introduction';
+import { useFeature } from 'lib/features';
+import UserManager from 'lib/user';
+import { APP_NAME, SYNC_FINISHED_KEY } from 'constant';
 import 'antd/lib/steps/style/index.css';
 import './IntroductionPage.scss';
-import { useFeature } from 'lib/FeatureGate/FeatureGate';
-import UserManager from 'lib/UserManager';
 
 /** MAGICS **/
 const TAB_TITLE = `Welcome to ${APP_NAME}`;

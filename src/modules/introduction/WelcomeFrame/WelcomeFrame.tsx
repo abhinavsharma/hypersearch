@@ -4,12 +4,11 @@ import Button from 'antd/lib/button';
 import { Helmet } from 'react-helmet';
 import Typist from 'react-typist';
 import { StepContext } from 'modules/introduction';
-import { APP_NAME } from 'utils';
+import { APP_NAME } from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './WelcomeFrame.scss';
 
-/** MAGICS **/
 const TAB_TITLE = `Welcome to ${APP_NAME}`;
 const PAGE_MAIN_HEADER = 'Ready to supercharge search?';
 const NEXT_BUTTON_TEXT = 'Yes';

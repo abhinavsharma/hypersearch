@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Select, { OptionProps } from 'antd/lib/select';
-import SearchEngineManager from 'lib/SearchEngineManager/SearchEngineManager';
-import { SIDEBAR_Z_INDEX } from 'utils';
+import SearchEngineManager from 'lib/engines';
+import { SIDEBAR_Z_INDEX } from 'constant';
 import 'antd/lib/select/style/index.css';
 
 /** MAGICS **/

@@ -2,7 +2,9 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import md5 from 'md5';
 import { Helmet } from 'react-helmet';
 import { Input, Button, Typography } from 'antd';
-import UserManager from 'lib/UserManager';
+import UserManager from 'lib/user';
+import { validateEmail } from 'lib/helpers';
+import { useFeature } from 'lib/features';
 import { StepContext } from 'modules/introduction';
 import {
   APP_NAME,
@@ -10,9 +12,7 @@ import {
   MAILCHIMP_API_KEY,
   MAILCHIMP_URL,
   SYNC_LICENSE_KEY,
-  validateEmail,
-} from 'utils';
-import { useFeature } from 'lib/FeatureGate/FeatureGate';
+} from 'constant';
 import './EmailFrame.scss';
 
 /** MAGICS **/

@@ -1,24 +1,38 @@
+/**
+ * @module modules:builder
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { Suspense } from 'react';
 import Button from 'antd/lib/button';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
+import AugmentationManager from 'lib/augmentations';
 import {
-  MY_BLOCKLIST_ID,
+  AUGMENTATION_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   PROTECTED_AUGMENTATIONS,
-} from 'utils/constants';
+} from 'constant';
 import 'antd/lib/button/style/index.css';
-
-/** MAGICS **/
-const DELETE_TEXT = 'Delete Lens';
 
 const DeleteOutlined = React.lazy(
   async () => await import('@ant-design/icons/DeleteOutlined').then((mod) => mod),
 );
 
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
+const DELETE_TEXT = 'Delete Lens';
+
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentation, disabled }) => {
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const handleDelete = (): void => {
-    if (disabled || augmentation.id === MY_BLOCKLIST_ID) return;
+    if (disabled || augmentation.id === AUGMENTATION_ID.BLOCKLIST) return;
     AugmentationManager.removeInstalledAugmentation(augmentation);
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -26,6 +40,9 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
     });
   };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div className="button-container">
       <Button
@@ -37,7 +54,9 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
       >
         <div
           className={`insight-augmentation-delete-button-content ${
-            disabled || PROTECTED_AUGMENTATIONS.includes(augmentation.id) ? 'disabled' : ''
+            disabled || (PROTECTED_AUGMENTATIONS as readonly string[]).includes(augmentation.id)
+              ? 'disabled'
+              : ''
           }`}
         >
           <Suspense fallback={null}>

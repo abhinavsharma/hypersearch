@@ -2,8 +2,8 @@ import React from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'utils';
-import { useFeature } from 'lib/FeatureGate/FeatureGate';
+import { OPEN_AUGMENTATION_BUILDER_MESSAGE, OPEN_BUILDER_PAGE } from 'constant';
+import { useFeature } from 'lib/features';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
 

@@ -29,6 +29,17 @@ declare type AugmentationValidatorSetting = {
   allRegexMatches: boolean;
 };
 
+declare type AugmentationRelevancyResult = {
+  isHidden: boolean;
+  isRelevant: boolean;
+  hasPreventAutoexpand: boolean;
+  domainsToLookAction: string[];
+  domainsToLookCondition: string[];
+  matchingIntent: Array<string | Element>;
+  matchingDomainsAction: string[];
+  matchingDomainsCondition: string[];
+} & NullPrototype<any>;
+
 declare type AugmentationEventType = TAugmentationEvent[keyof TAugmentationEvent];
 declare type AugmentationEventStatus = TAugmentationStatus[keyof TAugmentationStatus];
 
@@ -106,15 +117,16 @@ type TAugmentationStatusRequired<T extends AugmentationStatus> = AugmentationObj
   status: Array<TAugmentationStatus[T] & TAugmentationStatus>;
 };
 
-type TConditionEvaluation = typeof import('utils/constants/augmentations').CONDITION_EVALUATION;
-type TIConditionKey = typeof import('utils/constants/augmentations').LEGACY_KEY;
-type TConditionLabel = typeof import('utils/constants/augmentations').CONDITION_LABEL;
-type TConditionObjectEvaluation = typeof import('utils/constants/augmentations').LEGACY_EVALUATION;
-type TConditionType = typeof import('utils/constants/augmentations').LEGACY_CONDITION_TYPE;
-type TConditionUniqueKey = typeof import('utils/constants/augmentations').CONDITION_KEY;
-type TActionKey = typeof import('utils/constants/augmentations').ACTION_KEY;
-type TActionLabel = typeof import('utils/constants/augmentations').ACTION_LABEL;
-type TActionType = typeof import('utils/constants/augmentations').LEGACY_ACTION_TYPE;
-type TAugmentationEvent = typeof import('utils/constants/augmentations').AUGMENTATION_EVENT;
-type TAugmentationStatus = typeof import('utils/constants/augmentations').AUGMENTATION_STATUS;
-type TConditionObjectLegacyKey = typeof import('utils/constants/augmentations').LEGACY_KEY;
+type TConditionEvaluation = typeof import('constant/augmentations').CONDITION_EVALUATION;
+type TIConditionKey = typeof import('constant/augmentations').LEGACY_KEY;
+type TConditionLabel = typeof import('constant/augmentations').CONDITION_LABEL;
+type TConditionObjectEvaluation = typeof import('constant/augmentations').LEGACY_EVALUATION;
+type TConditionType = typeof import('constant/augmentations').LEGACY_CONDITION_TYPE;
+type TConditionUniqueKey = typeof import('constant/augmentations').CONDITION_KEY;
+type TActionKey = typeof import('constant/augmentations').ACTION_KEY;
+type TActionLabel = typeof import('constant/augmentations').ACTION_LABEL;
+type TActionType = typeof import('constant/augmentations').LEGACY_ACTION_TYPE;
+type TAugmentationEvent = typeof import('constant/augmentations').AUGMENTATION_EVENT;
+type TAugmentationStatus = typeof import('constant/augmentations').AUGMENTATION_STATUS;
+type TConditionObjectLegacyKey = typeof import('constant/augmentations').LEGACY_KEY;
+type TAugmentationId = typeof import('constant/augmentations').AUGMENTATION_ID;

@@ -1,32 +1,24 @@
 /**
- * @module Results
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module scripts:results
  * @version 1.0.0
- * @description
- *  This script is handling the creation of the inline gutter unit buttons and overlays.
- *  These buttons are created on the left of each SERP result and if a result is blocked,
- *  an overlay will appear above its container element. The script is communicating with
- *  the extension through the window `postMessage` API. Whenever an augmentation has been
- *  processed by AugmentationManager (create, edit, delete ...etc) or loaded to the sidebar,
- *  a message will be sent which triggers an iteration of creating gutter unit elements.
+ * @license (C) Insight
  */
-const GOOGLE_VERTICAL_NEWS_LINK_SELECTOR = '.EPLo7b a';
-const GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR = '.JJZKK a';
 
+import { debug, extractPublication, runFunctionWhenDocumentReady } from 'lib/helpers';
+import { processSerpResults } from 'lib/gutter';
 import {
   ACTION_KEY,
+  AUGMENTATION_ID,
+  GOOGLE_HORIZONTAL_NEWS_LINK_SELECTOR,
+  GOOGLE_VERTICAL_NEWS_LINK_SELECTOR,
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_FEATURED_BY_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
-  MY_TRUSTLIST_ID,
   PROCESS_SERP_OVERLAY_MESSAGE,
   SWITCH_TO_TAB,
-} from 'utils/constants';
-import { debug, extractPublication, runFunctionWhenDocumentReady } from 'utils/helpers';
-import { processSerpResults } from 'utils/processSerpResults/processSerpResults';
+} from 'constant';
 
 ((document, window) => {
   let openedAlready = false;
@@ -162,7 +154,9 @@ import { processSerpResults } from 'utils/processSerpResults/processSerpResults'
               ) as HTMLDivElement[]
             ).find(
               (result: HTMLElement) =>
-                (result?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)?.includes(MY_TRUSTLIST_ID) ||
+                (result
+                  ?.getAttribute(INSIGHT_SEARCH_BY_SELECTOR)
+                  ?.includes(AUGMENTATION_ID.TRUSTLIST) ||
                   result?.getAttribute(INSIGHT_FEATURED_BY_SELECTOR)?.length) &&
                 !result?.getAttribute(INSIGHT_BLOCKED_BY_SELECTOR),
             );

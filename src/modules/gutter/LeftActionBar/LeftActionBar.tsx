@@ -1,24 +1,31 @@
+/**
+ * @module modules:gutter
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, Menu } from 'react-feather';
 import { PublicationTimeTracker } from '../PublicationTimeTracker/PublicationTimeTracker';
 import {
+  AUGMENTATION_ID,
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
-  MY_BLOCKLIST_ID,
-  MY_TRUSTLIST_ID,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   OPEN_BUILDER_PAGE,
   SIDEBAR_Z_INDEX,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
-} from 'utils/constants';
+} from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './LeftActionBar.scss';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const ADD_TO_TRUSTLIST_TOOLTIP_TITLE =
   'Add <placeholder> to my trusted sites.\nAutomatically previews results from this site.';
 const REMOVE_FROM_TRUSTLIST_TOOLTIP_TITLE = `Remove <placeholder> from my trusted sites.`;
@@ -32,6 +39,9 @@ const ICON_UNSELECTED_COLOR = '#999';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
 
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const LeftActionBar: LeftActionBar = ({
   publication,
   container,
@@ -41,17 +51,17 @@ export const LeftActionBar: LeftActionBar = ({
 }) => {
   const [isBlocked, setIsBlocked] = useState<boolean>(!!blockingAugmentations.length);
   const [isTrusted, setIsTrusted] = useState<boolean>(
-    !!searchingAugmentations.find(({ id }) => id === MY_TRUSTLIST_ID),
+    !!searchingAugmentations.find(({ id }) => id === AUGMENTATION_ID.TRUSTLIST),
   );
   const [isSearched, _setIsSearched] = useState<boolean>(
-    searchingAugmentations.some(({ id }) => id !== MY_TRUSTLIST_ID),
+    searchingAugmentations.some(({ id }) => id !== AUGMENTATION_ID.TRUSTLIST),
   );
 
   const onlyBlockedByBlocklist =
-    blockingAugmentations.length === 1 && blockingAugmentations[0].id === MY_BLOCKLIST_ID;
+    blockingAugmentations.length === 1 && blockingAugmentations[0].id === AUGMENTATION_ID.BLOCKLIST;
 
   const isFeatured = !!featuringAugmentations.length;
-  const inBlocklist = !!blockingAugmentations.find(({ id }) => id === MY_BLOCKLIST_ID);
+  const inBlocklist = !!blockingAugmentations.find(({ id }) => id === AUGMENTATION_ID.BLOCKLIST);
 
   const iconRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
@@ -237,7 +247,7 @@ export const LeftActionBar: LeftActionBar = ({
               ? SEARCHING_AUGMENTATION_LIST_TEXT.replace(
                   '<placeholder>',
                   searchingAugmentations
-                    .filter(({ id }) => id !== MY_TRUSTLIST_ID)
+                    .filter(({ id }) => id !== AUGMENTATION_ID.TRUSTLIST)
                     .map(({ name }) => name)
                     .join(', '),
                 )

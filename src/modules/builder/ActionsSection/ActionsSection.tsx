@@ -1,7 +1,7 @@
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { ActionInput } from 'modules/builder';
-import { LEGACY_ACTION_TYPE } from 'utils';
+import { LEGACY_ACTION_TYPE } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
 

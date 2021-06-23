@@ -1,14 +1,25 @@
+/**
+ * @module modules:gutter
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { MY_BLOCKLIST_ID, MY_TRUSTLIST_ID } from 'utils';
+import SidebarLoader from 'lib/sidebar';
+import AugmentationManager from 'lib/augmentations';
+import { AUGMENTATION_ID } from 'constant';
 import 'antd/lib/checkbox/style/index.css';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const TRUSTED_CHECKBOX_TEXT = 'Trusted';
 const BLOCKED_CHECKBOX_TEXT = 'Blocked';
 
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   const augmentations = useMemo(
     () => [...SidebarLoader.installedAugmentations, ...SidebarLoader.otherAugmentations],
@@ -19,12 +30,12 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   );
 
   const trustList = useMemo(
-    () => augmentations.find(({ id }) => id === MY_TRUSTLIST_ID),
+    () => augmentations.find(({ id }) => id === AUGMENTATION_ID.TRUSTLIST),
     [augmentations],
   );
 
   const blockList = useMemo(
-    () => augmentations.find(({ id }) => id === MY_BLOCKLIST_ID),
+    () => augmentations.find(({ id }) => id === AUGMENTATION_ID.BLOCKLIST),
     [augmentations],
   );
 
@@ -39,6 +50,10 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
       (action) => !!action.value.find((value) => value === domain),
     ).length,
   );
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
 
   const handleToggleBlocked = async (e: CheckboxChangeEvent) => {
     e.target.checked
@@ -55,19 +70,22 @@ export const DomainStateCheckbox: DomainStateCheckbox = ({ domain }) => {
   useEffect(() => {
     setIsBlocked(
       !!augmentations
-        .find(({ id }) => id === MY_BLOCKLIST_ID)
+        .find(({ id }) => id === AUGMENTATION_ID.BLOCKLIST)
         ?.actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
 
     setIsTrusted(
       !!augmentations
-        .find(({ id }) => id === MY_TRUSTLIST_ID)
+        .find(({ id }) => id === AUGMENTATION_ID.TRUSTLIST)
         ?.actions?.action_list?.filter((action) => !!action.value.find((value) => value === domain))
         .length,
     );
   }, [domain, augmentations]);
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div className="domain-state-checkbox-container">
       <Checkbox

@@ -1,9 +1,9 @@
-import React, { ReactElement, Suspense, useRef, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
-import { ACTION_KEY, ACTION_LABEL } from 'utils/constants';
+import { ACTION_KEY, ACTION_LABEL } from 'constant';
 import { NewActionDropdown, MultiValueInput, SearchEngineDropdown } from 'modules/builder';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -48,7 +48,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
     handleChange([updated]);
   };
 
-  const DEFAULT_INPUTS: string[] = [
+  const DEFAULT_INPUTS: ActionKey[] = [
     ACTION_KEY.OPEN_URL,
     ACTION_KEY.SEARCH_FEATURE,
     ACTION_KEY.SEARCH_APPEND,
@@ -57,7 +57,7 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
     ACTION_KEY.NO_COOKIE,
   ];
 
-  const INPUTS: KeyEventMap<Record<Partial<ActionKey | 'default'>, ReactElement>> = {
+  const INPUTS: KeyEventMap<ActionKey> = {
     [ACTION_KEY.SEARCH_DOMAINS]: (
       <MultiValueInput values={action.value as string[]} handleAdd={handleChange} />
     ),

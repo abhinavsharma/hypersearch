@@ -6,10 +6,10 @@
  */
 import React, { useEffect, useState } from 'react';
 import md5 from 'md5';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import { flipSidebar } from 'utils/flipSidebar/flipSidebar';
-import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'utils/helpers';
+import SidebarLoader from 'lib/sidebar';
+import AugmentationManager from 'lib/augmentations';
+import { flipSidebar } from 'lib/flip';
+import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'lib/helpers';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
@@ -19,10 +19,10 @@ import {
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   WINDOW_REQUIRED_MIN_WIDTH,
-} from 'utils/constants';
+} from 'constant';
 import './Sidebar.scss';
 import { useDebouncedFn } from 'beautiful-react-hooks';
-import UserManager from 'lib/UserManager';
+import UserManager from 'lib/user';
 
 const Sidebar: Sidebar = () => {
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);

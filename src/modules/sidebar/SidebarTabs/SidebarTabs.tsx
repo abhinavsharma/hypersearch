@@ -1,16 +1,16 @@
 /**
- * @module SidebarTabs
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module modules:sidebar
  * @version 1.0.0
+ * @license (C) Insight
  */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Tabs from 'antd/lib/tabs';
 import message from 'antd/lib/message';
-import SidebarLoader from 'lib/SidebarLoader/SidebarLoader';
-import AugmentationManager from 'lib/AugmentationManager/AugmentationManager';
-import UserManager from 'lib/UserManager';
-import { ActivePage, BuilderPage, GutterPage, SettingsPage } from 'modules/pages';
+import SidebarLoader from 'lib/sidebar';
+import AugmentationManager from 'lib/augmentations';
+import UserManager from 'lib/user';
+import { ActivePage, BuilderPage, GutterPage, SettingsPage, FeaturePage } from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -18,9 +18,9 @@ import {
   SidebarTabMeta,
   SidebarTabTitle,
 } from 'modules/sidebar';
+import { extractUrlProperties, removeProtocol } from 'lib/helpers';
+import { flipSidebar } from 'lib/flip';
 import {
-  flipSidebar,
-  extractUrlProperties,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
@@ -29,16 +29,12 @@ import {
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
   OPEN_BUILDER_PAGE,
-  removeProtocol,
   PRERENDER_TABS,
-  //URL_PARAM_POSSIBLE_SERP_RESULT,
-} from 'utils';
-//import { SidebarFooter } from '../SidebarFooter/SidebarFooter';
+} from 'constant';
 import 'antd/lib/message/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tabs/style/index.css';
 import './SidebarTabs.scss';
-import { FeaturePage } from 'modules/pages/FeaturePage/FeaturePage';
 
 const { TabPane } = Tabs;
 

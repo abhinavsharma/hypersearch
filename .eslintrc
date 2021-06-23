@@ -9,6 +9,8 @@
     "plugin:prettier/recommended"
   ],
   "parserOptions": {
+    "project": "./tsconfig.json",
+    "tsconfigRootDir": "./",
     "ecmaVersion": 2020,
     "sourceType": "module",
     "ecmaFeatures": {
@@ -23,6 +25,10 @@
     "@typescript-eslint/interface-name-prefix": "off",
     "react/prop-types": "off",
     "no-console": "error",
+    "no-else-return": "error",
+    "no-empty": "error",
+    "no-new-object": "error",
+    "no-useless-escape": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

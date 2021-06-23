@@ -3,7 +3,12 @@ import { v4 as uuid } from 'uuid';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
-import { CONDITION_KEY, CONDITION_LABEL, CONDITION_EVALUATION, LEGACY_CONDITION_TYPE } from 'utils';
+import {
+  CONDITION_KEY,
+  CONDITION_LABEL,
+  CONDITION_EVALUATION,
+  LEGACY_CONDITION_TYPE,
+} from 'constant';
 import { ConditionInput } from 'modules/builder';
 import 'antd/lib/grid/style/index.css';
 import 'antd/lib/button/style/index.css';

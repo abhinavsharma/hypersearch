@@ -6,7 +6,7 @@ import {
   SIDEBAR_Z_INDEX,
   SWITCH_TO_TAB,
   TRIGGER_GUTTER_HOVEROPEN_MESSAGE,
-} from 'utils/constants';
+} from 'constant';
 import { HoverOpenIcon } from 'modules/gutter/HoverOpenIcon/HoverOpenIcon';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
