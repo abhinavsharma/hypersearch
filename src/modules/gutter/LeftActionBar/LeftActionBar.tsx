@@ -14,7 +14,7 @@ import {
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   SIDEBAR_Z_INDEX,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
@@ -73,7 +73,7 @@ export const LeftActionBar: LeftActionBar = ({
     e.stopPropagation();
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.GUTTER,
+      page: SIDEBAR_PAGE.GUTTER,
       augmentations: blockingAugmentations,
       publication,
     });

@@ -17,7 +17,7 @@ import { getFirstValidTabIndex } from 'lib/helpers';
 import {
   CSE_PREFIX,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   PROTECTED_AUGMENTATIONS,
   SIDEBAR_Z_INDEX,
 } from 'constant';
@@ -55,7 +55,7 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
           };
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.BUILDER,
+      page: SIDEBAR_PAGE.BUILDER,
       augmentation: {
         ...tab.augmentation,
         id: isEdit ? tab.augmentation.id : `${CSE_PREFIX}-${uuid()}`,

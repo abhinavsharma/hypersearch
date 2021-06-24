@@ -9,7 +9,7 @@ import { LoginForm } from 'modules/settings';
 import {
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   SYNC_END_MESSAGE,
   SYNC_START_MESSAGE,
   SYNC_PRIVACY_KEY,
@@ -63,7 +63,7 @@ export const SettingsPage: SettingsPage = ({ email }) => {
   const handleClose = () => {
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.ACTIVE,
+      page: SIDEBAR_PAGE.ACTIVE,
       create: true,
     });
   };

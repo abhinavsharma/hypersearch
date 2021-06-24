@@ -28,7 +28,7 @@ import {
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   PRERENDER_TABS,
 } from 'constant';
 import 'antd/lib/message/style/index.css';
@@ -39,7 +39,7 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
-  const [showPage, setShowPage] = useState<OPEN_BUILDER_PAGE>(OPEN_BUILDER_PAGE.ACTIVE);
+  const [showPage, setShowPage] = useState<SidebarPage>(SIDEBAR_PAGE.ACTIVE);
   const [pageData, setPageData] = useState<Record<string, any>>();
 
   const handleLog = useCallback(
@@ -104,13 +104,13 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           }
           flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace, true);
           setActiveKey('0');
-          if (msg.page === OPEN_BUILDER_PAGE.GUTTER && msg.augmentations) {
+          if (msg.page === SIDEBAR_PAGE.GUTTER && msg.augmentations) {
             setPageData({ augmentations: msg.augmentations, publication: msg.publication });
           }
-          if (msg.page === OPEN_BUILDER_PAGE.BUILDER && msg.augmentation) {
+          if (msg.page === SIDEBAR_PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
           }
-          if (msg.page === OPEN_BUILDER_PAGE.SETTINGS && msg.email) {
+          if (msg.page === SIDEBAR_PAGE.SETTINGS && msg.email) {
             setPageData({ email: msg.email });
           }
           msg.page && setShowPage(msg.page);
@@ -171,25 +171,25 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         <TabPane key="0" tab={null} className="sidebar-tab-panel" forceRender>
           {(() => {
             switch (showPage) {
-              case OPEN_BUILDER_PAGE.ACTIVE:
+              case SIDEBAR_PAGE.ACTIVE:
                 return <ActivePage />;
-              case OPEN_BUILDER_PAGE.BUILDER:
+              case SIDEBAR_PAGE.BUILDER:
                 return (
                   <BuilderPage
                     augmentation={pageData?.augmentation}
                     isAdding={pageData?.isAdding}
                   />
                 );
-              case OPEN_BUILDER_PAGE.GUTTER:
+              case SIDEBAR_PAGE.GUTTER:
                 return (
                   <GutterPage
                     hidingAugmentations={pageData?.augmentations}
                     domain={pageData?.publication}
                   />
                 );
-              case OPEN_BUILDER_PAGE.SETTINGS:
+              case SIDEBAR_PAGE.SETTINGS:
                 return <SettingsPage email={pageData?.email} />;
-              case OPEN_BUILDER_PAGE.FEATURE:
+              case SIDEBAR_PAGE.FEATURE:
                 return <FeaturePage />;
               default:
                 return null;

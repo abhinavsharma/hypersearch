@@ -35,7 +35,6 @@ import {
   PINNED_PREFIX,
   USE_COUNT_PREFIX,
   GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
-  BANNED_EXTENSION_IDS,
   INSTALLED_PREFIX,
   DUMMY_AMAZON_SUBTABS_URL,
   MY_TRUSTLIST_TEMPLATE,
@@ -53,8 +52,9 @@ import {
   URL_PARAM_POSSIBLE_SERP_RESULT,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   EXTENSION_HOST,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   AUGMENTATION_ID,
+  DISABLED_AUGMENTATIONS,
 } from 'constant';
 import UserManager from 'lib/user';
 
@@ -530,7 +530,7 @@ class SidebarLoader {
       if (
         !this.ignoredAugmentations.find((i) => i.id === augmentation.id) &&
         !hasInjectJs &&
-        !BANNED_EXTENSION_IDS.includes(augmentation.id)
+        !(DISABLED_AUGMENTATIONS as readonly string[]).includes(augmentation.id)
       ) {
         const {
           isRelevant,
@@ -724,7 +724,7 @@ class SidebarLoader {
       if (authEmail && window.location.href.includes(EXTENSION_HOST)) {
         chrome.runtime.sendMessage({
           type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-          page: OPEN_BUILDER_PAGE.SETTINGS,
+          page: SIDEBAR_PAGE.SETTINGS,
           email: authEmail,
         });
       }

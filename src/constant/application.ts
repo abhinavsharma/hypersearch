@@ -1,0 +1,95 @@
+/**
+ * @module constant:application
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
+export const APP_NAME = 'Insight';
+export const APP_NAME_LONG = 'Insight Lenses';
+
+export const SIDEBAR_PAGE = {
+  ACTIVE: 'active',
+  GUTTER: 'gutter',
+  BUILDER: 'builder',
+  SETTINGS: 'settings',
+  FEATURE: 'feature',
+} as const;
+
+/**
+ * The search engine used when there is no matching engine to the current page
+ */
+export const DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX = 'google.com/search';
+
+/**
+ * The search engine used when the current browser is any version of Safari
+ */
+export const SAFARI_FALLBACK_URL = 'https://www.ecosia.org/search';
+
+/**
+ * The URL sent as query parameter to subtabs API when strong privacy is enabled
+ */
+export const DUMMY_SUBTABS_URL = 'https://www.google.com/search?q=react';
+
+/**
+ * The URL sent as query parameter to subtabs API when strong privacy is enabled on Amazon websites
+ */
+export const DUMMY_AMAZON_SUBTABS_URL = 'https://www.amazon.com/s?k=dummy';
+
+//-----------------------------------------------------------------------------------------------
+// ! Sidebar Tab URL Query Parameters
+//-----------------------------------------------------------------------------------------------
+export const SIDEBAR_TAB_FAKE_URL = 'sidebar-fake-tab';
+export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
+export const URL_PARAM_POSSIBLE_SERP_RESULT = 'insight-possible-serp-result';
+export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';
+export const URL_PARAM_NO_COOKIE_KEY = 'insight-no-cookie';
+
+//-----------------------------------------------------------------------------------------------
+// ! Options
+//-----------------------------------------------------------------------------------------------
+
+/**
+ * The CSS layer of the sidebar frame
+ */
+export const SIDEBAR_Z_INDEX = 9999;
+
+/**
+ * The number of sidebar tabs that are pre-rendered
+ */
+export const PRERENDER_TABS = 3;
+
+/**
+ * The number of result domains considered top domains (augmentation matching)
+ */
+export const NUM_DOMAINS_TO_CONSIDER = 5;
+
+/**
+ * The maximum number of allowed result domain overlap
+ */
+export const NUM_DOMAINS_TO_EXCLUDE = 3;
+
+/**
+ * The number of minutes after the cached subtabs response considered invalid
+ */
+export const SUBTABS_CACHE_EXPIRE_MIN = 30;
+
+/**
+ * The number of seconds to wait before cancel activity monitoring service
+ */
+export const MAX_INACTIVE_SECONDS = 10;
+
+/**
+ * The minimum width of the browser window to trigger sidebar on page load finish
+ */
+export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
+
+/**
+ * The minimum width of the browser window to trigger sidebar on gutter hover action
+ */
+export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
+
+//-----------------------------------------------------------------------------------------------
+// ! Development
+//-----------------------------------------------------------------------------------------------
+export const ENV = process.env.mode === 'development' ? 'DEV' : 'PROD';
+export const IN_DEBUG_MODE = ENV === 'DEV' || window.top.INSIGHT_FORCE_DEBUG;

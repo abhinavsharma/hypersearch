@@ -1,16 +1,10 @@
 /**
- * @module constants:augmentations
+ * @module constant:augmentations
  * @version 1.0.0
  * @license (C) Insight
  */
 
 import { INSTALLED_PREFIX } from '.';
-
-export const NUM_DOMAINS_TO_CONSIDER = 5;
-
-export const NUM_DOMAINS_TO_EXCLUDE = 3;
-
-export const SUBTABS_CACHE_EXPIRE_MIN = 30;
 
 export const AUGMENTATION_TITLE = {
   NEW: '🎉 My Lens',

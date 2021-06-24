@@ -7,7 +7,7 @@ import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   URL_UPDATED_MESSAGE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   ADD_EXTERNAL_AUGMENTATION_MESSAGE,
   ACTIVATE_EMAIL_MESSAGE,
@@ -26,7 +26,7 @@ import {
     if (data.name === ADD_EXTERNAL_AUGMENTATION_MESSAGE) {
       chrome.runtime.sendMessage({
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: OPEN_BUILDER_PAGE.BUILDER,
+        page: SIDEBAR_PAGE.BUILDER,
         augmentation: data.result,
       });
     }
@@ -43,7 +43,7 @@ import {
       case ACTIVATE_EMAIL_MESSAGE:
         chrome.runtime.sendMessage({
           type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-          page: OPEN_BUILDER_PAGE.SETTINGS,
+          page: SIDEBAR_PAGE.SETTINGS,
           email: decodeURIComponent(msg.email),
         });
         break;

@@ -12,7 +12,7 @@ import {
   APP_NAME_LONG,
   FULLSCREEN_KEY,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SHRINK_KEY,
 } from 'constant';
@@ -45,7 +45,7 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
     }
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.ACTIVE,
+      page: SIDEBAR_PAGE.ACTIVE,
     });
   };
 

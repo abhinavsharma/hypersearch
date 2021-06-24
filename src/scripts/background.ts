@@ -14,7 +14,7 @@ import {
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   OPEN_NEW_TAB_MESSAGE,
   OPEN_SETTINGS_PAGE_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
@@ -273,7 +273,7 @@ import {
       ? chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') })
       : chrome.tabs.sendMessage(id ?? -1, {
           type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-          page: OPEN_BUILDER_PAGE.ACTIVE,
+          page: SIDEBAR_PAGE.ACTIVE,
         });
   });
   // The content script does not support the `tabs` property yet, so we have to pass the messages through the background

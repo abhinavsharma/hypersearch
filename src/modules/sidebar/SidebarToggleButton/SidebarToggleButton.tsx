@@ -15,7 +15,7 @@ import {
   EMPTY_AUGMENTATION,
   SIDEBAR_TAB_FAKE_URL,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXPAND_KEY,
 } from 'constant';
@@ -36,7 +36,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
     if (!tabs.length) {
       chrome.runtime.sendMessage({
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: OPEN_BUILDER_PAGE.BUILDER,
+        page: SIDEBAR_PAGE.BUILDER,
         augmentation: EMPTY_AUGMENTATION,
       });
     }

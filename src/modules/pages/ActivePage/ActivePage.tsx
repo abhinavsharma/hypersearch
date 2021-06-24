@@ -11,7 +11,7 @@ import {
   APP_NAME,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
   EMPTY_AUGMENTATION,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   SWITCH_TO_TAB,
   ACTION_KEY,
 } from 'constant';
@@ -55,12 +55,12 @@ export const ActivePage: ActivePage = () => {
     if (e.shiftKey) {
       chrome.runtime.sendMessage({
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: OPEN_BUILDER_PAGE.FEATURE,
+        page: SIDEBAR_PAGE.FEATURE,
       });
     } else {
       chrome.runtime.sendMessage({
         type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: OPEN_BUILDER_PAGE.SETTINGS,
+        page: SIDEBAR_PAGE.SETTINGS,
       });
     }
   };
@@ -92,7 +92,7 @@ export const ActivePage: ActivePage = () => {
   const handleCreate = () =>
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.BUILDER,
+      page: SIDEBAR_PAGE.BUILDER,
       augmentation: EMPTY_AUGMENTATION,
       create: true,
     });

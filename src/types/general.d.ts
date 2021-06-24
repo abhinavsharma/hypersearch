@@ -4,6 +4,9 @@
  * @license (C) Insight
  */
 
+//-----------------------------------------------------------------------------------------------
+// ! Sidebar
+//-----------------------------------------------------------------------------------------------
 declare type SidebarTab = {
   url: URL;
   matchingDomainsCondition?: string[];
@@ -11,6 +14,9 @@ declare type SidebarTab = {
   matchingIntent?: (Intent | string)[];
   augmentation: Augmentation;
 };
+
+declare type SidebarPage = TSidebarPage[keyof TSidebarPage];
+type TSidebarPage = typeof import('constant').SIDEBAR_PAGE;
 
 //-----------------------------------------------------------------------------------------------
 // ! Engine

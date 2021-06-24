@@ -16,6 +16,7 @@ import { debug } from 'lib/helpers';
 import {
   AWS_COGNITO_CLIENT_ID,
   AWS_COGNITO_POOL_ID,
+  ENV,
   SYNC_DISTINCT_KEY,
   SYNC_EMAIL_KEY,
   SYNC_LICENSE_KEY,
@@ -58,8 +59,8 @@ class User {
 
   public getCognitoPool() {
     return new CognitoUserPool({
-      UserPoolId: AWS_COGNITO_POOL_ID,
-      ClientId: AWS_COGNITO_CLIENT_ID,
+      UserPoolId: AWS_COGNITO_POOL_ID[ENV],
+      ClientId: AWS_COGNITO_CLIENT_ID[ENV],
       Storage: User.STORAGE,
     });
   }

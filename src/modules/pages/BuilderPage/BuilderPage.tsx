@@ -17,7 +17,7 @@ import {
   AUGMENTATION_TITLE,
   EMPTY_AUGMENTATION,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  OPEN_BUILDER_PAGE,
+  SIDEBAR_PAGE,
   SIDEBAR_Z_INDEX,
   TOUR_AUGMENTATION,
 } from 'constant';
@@ -130,7 +130,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
   const handleClose = () => {
     chrome.runtime.sendMessage({
       type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: OPEN_BUILDER_PAGE.ACTIVE,
+      page: SIDEBAR_PAGE.ACTIVE,
     });
   };
 

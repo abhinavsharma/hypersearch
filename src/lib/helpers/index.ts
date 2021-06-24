@@ -5,10 +5,10 @@ import {
   PROCESS_SERP_OVERLAY_MESSAGE,
   DOMAINS_TO_RELEVANT_SLICE,
   LUMOS_API_URL,
-  LUMOS_APP_BASE_URL_PROD,
-  LUMOS_APP_BASE_URL_DEBUG,
   CONDITION_KEY,
   AUGMENTATION_ID,
+  LUMOS_APP_BASE_URL,
+  ENV,
 } from 'constant';
 
 /**
@@ -356,7 +356,9 @@ export const validateEmail = (email: string) => {
 const swapUrlsForDebuggingInJsonResponse = <T>(json: T): T => {
   try {
     return IN_DEBUG_MODE
-      ? JSON.parse(JSON.stringify(json).replace(LUMOS_APP_BASE_URL_PROD, LUMOS_APP_BASE_URL_DEBUG))
+      ? JSON.parse(
+          JSON.stringify(json).replace(LUMOS_APP_BASE_URL['PROD'], LUMOS_APP_BASE_URL['DEV']),
+        )
       : json;
   } catch (err) {
     debug('swapUrlsForDebuggingInJsonResponse - error', err);
@@ -413,7 +415,7 @@ export const postAPI = async <T>(
   body: Record<string, any> = Object.create(null),
 ): Promise<T | null> => {
   try {
-    const url: URL = new URL(LUMOS_API_URL + api);
+    const url: URL = new URL(LUMOS_API_URL[ENV] + api);
     Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
     const raw = await fetch(url.href, {
       method: 'POST',
@@ -429,7 +431,7 @@ export const postAPI = async <T>(
     return data ? swapUrlsForDebuggingInJsonResponse<T>(data) : Object.create(null);
   } catch (err) {
     debug('postAPI error', err);
-    return null;
+    return Object.create(null);
   }
 };
 

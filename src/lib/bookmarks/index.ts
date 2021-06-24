@@ -7,9 +7,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { debug, isFirefox } from 'lib/helpers';
 import {
-  IN_DEBUG_MODE,
-  LUMOS_API_URL_DEBUG,
-  LUMOS_API_URL_PROD,
   BOOKMARKS_READ_ENDPOINT,
   BOOKMARKS_SAVE_ENDPOINT,
   BOOKMARKS_LAST_FETCH,
@@ -17,6 +14,8 @@ import {
   BOOKMARKS_TO_ADD,
   BOOKMARKS_TO_DELETE,
   BOOKMARKS_REMOTE_TO_LOCAL_ID,
+  LUMOS_API_URL,
+  ENV,
 } from 'constant';
 
 //-----------------------------------------------------------------------------------------------
@@ -82,9 +81,7 @@ class Bookmarks {
     this._toDelete = [];
     this._remoteToLocalId = {};
     this._isSyncing = false;
-    this._axios = axios.create({
-      baseURL: IN_DEBUG_MODE ? LUMOS_API_URL_DEBUG : LUMOS_API_URL_PROD,
-    });
+    this._axios = axios.create({ baseURL: LUMOS_API_URL[ENV] });
     this.configure();
   }
 
