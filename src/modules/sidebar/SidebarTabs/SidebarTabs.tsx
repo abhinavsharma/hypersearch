@@ -50,7 +50,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           url: msg.url,
           license_keys: [UserManager.user.license],
           position_in_serp:
-            SidebarLoader.publicationSlices['original'].indexOf(
+            SidebarLoader.publicationSlices['original']?.indexOf(
               extractUrlProperties(msg.url).full ?? '',
             ) + 1,
         });
