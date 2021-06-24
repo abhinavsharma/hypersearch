@@ -1,5 +1,8 @@
 {
-  "permissions": [
-    "bookmarks"
-  ]
+  "applications": {
+    "gecko": {
+      "id": "hi@insightbrowser.com"
+    }
+  },
+  "permissions": ["bookmarks"]
 }

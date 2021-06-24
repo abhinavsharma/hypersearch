@@ -3,92 +3,51 @@
   "name": "Insight",
   "description": "Insight supercharges search with fast previews, trusted sources, muting and lenses that offer unique and useful perspectives.",
   "version": "0.0.93",
-  "applications": {
-    "gecko": {
-      "id": "hi@insightbrowser.com"
-    }
-  },
-  "web_accessible_resources": [
-    "*.png",
-    "*.svg",
-    "*.html",
-    "*.css"
-  ],
+  "web_accessible_resources": ["*.png", "*.svg", "*.html", "*.css"],
   "icons": {
     "128": "logo128.png"
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "js/insight_main_content.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["js/insight_main_content.js"],
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "all_frames": true,
-      "js": [
-        "js/insight_frame_content.js"
-      ],
+      "js": ["js/insight_frame_content.js"],
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "all_frames": true,
-      "js": [
-        "js/insight_block_content.js"
-      ],
+      "js": ["js/insight_block_content.js"],
       "run_at": "document_end"
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "all_frames": true,
-      "js": [
-        "js/insight_reorder_content.js"
-      ],
+      "js": ["js/insight_reorder_content.js"],
       "run_at": "document_end"
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "css": [
-        "index.css"
-      ]
+      "matches": ["<all_urls>"],
+      "css": ["index.css"]
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "all_frames": true,
-      "css": [
-        "overwrite.css"
-      ]
+      "css": ["overwrite.css"]
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "all_frames": true,
-      "css": [
-        "bundle.css"
-      ]
+      "css": ["bundle.css"]
     }
   ],
   "background": {
-    "scripts": [
-      "js/insight_hot_reload.js",
-      "js/insight_background.js"
-    ]
+    "scripts": ["js/insight_hot_reload.js", "js/insight_background.js"]
   },
   "browser_action": {
     "default_title": "Insight"
@@ -101,7 +60,5 @@
     "webRequestBlocking",
     "webNavigation"
   ],
-  "optional_permissions": [
-    "bookmarks"
-  ]
+  "optional_permissions": ["bookmarks"]
 }

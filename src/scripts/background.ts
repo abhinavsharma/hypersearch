@@ -116,9 +116,12 @@ import {
   chrome.webRequest.onBeforeSendHeaders.addListener(
     (details) => {
       if (details.url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1) {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-          for (let i = 0; i < tabs.length; ++i) {
-            chrome.tabs.sendMessage(tabs[i].id ?? -1, {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (chrome.runtime.lastError) {
+            debug('Chrome Last Error', chrome.runtime.lastError);
+          }
+          for (let i = 0; i < tabs?.length ?? 0; ++i) {
+            chrome.tabs.sendMessage(tabs[i]?.id ?? -1, {
               type: EXTENSION_SHORT_URL_RECEIVED,
               shortUrl: details.url,
             });
@@ -193,6 +196,9 @@ import {
           },
         });
         chrome.tabs.query({ currentWindow: true }, (tabs) => {
+          if (chrome.runtime.lastError) {
+            debug('Chrome Last Error', chrome.runtime.lastError);
+          }
           tabs?.forEach((tab) => {
             chrome.tabs.sendMessage(tab.id ?? -1, {
               currentTime,
@@ -211,6 +217,9 @@ import {
   // the start time from the current time (timestamps in milliseconds converted to minutes).
   chrome.tabs.onActivated.addListener(({ tabId }) => {
     chrome.tabs.query({}, async (tabs) => {
+      if (chrome.runtime.lastError) {
+        debug('Chrome Last Error', chrome.runtime.lastError);
+      }
       const currentTab = tabs?.find(({ id }) => id == tabId);
       const publication = getPublicationUrl(currentTab?.url ?? '');
       await stopTrackingTimer(publication ?? '');
