@@ -8,8 +8,8 @@ import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import { IntroductionPage } from 'modules/introduction';
 import {
   URL_UPDATED_MESSAGE,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   ADD_EXTERNAL_AUGMENTATION_MESSAGE,
   ACTIVATE_EMAIL_MESSAGE,
@@ -31,8 +31,8 @@ import {
   window.addEventListener('message', ({ data }) => {
     if (data.name === ADD_EXTERNAL_AUGMENTATION_MESSAGE) {
       chrome.runtime.sendMessage({
-        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: SIDEBAR_PAGE.BUILDER,
+        type: MESSAGE.OPEN_PAGE,
+        page: PAGE.BUILDER,
         augmentation: data.result,
       });
     }
@@ -48,8 +48,8 @@ import {
     switch (msg.type) {
       case ACTIVATE_EMAIL_MESSAGE:
         chrome.runtime.sendMessage({
-          type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-          page: SIDEBAR_PAGE.SETTINGS,
+          type: MESSAGE.OPEN_PAGE,
+          page: PAGE.SETTINGS,
           email: decodeURIComponent(msg.email),
         });
         break;

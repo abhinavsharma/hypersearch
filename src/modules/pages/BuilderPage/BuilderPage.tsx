@@ -19,8 +19,8 @@ import {
   ANY_URL_CONDITION_TEMPLATE,
   AUGMENTATION_TITLE,
   EMPTY_AUGMENTATION,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   SIDEBAR_Z_INDEX,
   TOUR_AUGMENTATION,
 } from 'constant';
@@ -54,8 +54,10 @@ const THEN_TOUR_POPUP_TEXT =
 // * META
 const META_HEADER_TEXT = 'About';
 const META_TOUR_POPUP_TITLE = 'Metadata';
-const META_TOUR_POPUP_TEXT =
-  'From here you can rename your lens, disable it temporarily or share it.';
+
+const META_TOUR_POPUP_TEXT = `
+From here you can rename your lens, disable it temporarily or share it.
+` as const;
 
 const TOUR_TOOLTIP_STYLE: React.CSSProperties = {
   display: 'flex',
@@ -138,8 +140,8 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 

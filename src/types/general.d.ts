@@ -16,7 +16,7 @@ declare type SidebarTab = {
 };
 
 declare type SidebarPage = TSidebarPage[keyof TSidebarPage];
-type TSidebarPage = typeof import('constant').SIDEBAR_PAGE;
+type TSidebarPage = typeof import('constant').PAGE;
 
 //-----------------------------------------------------------------------------------------------
 // ! Engine

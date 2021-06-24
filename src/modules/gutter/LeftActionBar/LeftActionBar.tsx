@@ -16,8 +16,8 @@ import {
   INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_SHOW_GUTTER_ICON_SELECTOR,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   SIDEBAR_Z_INDEX,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
@@ -78,8 +78,8 @@ export const LeftActionBar: LeftActionBar = ({
   const handleOpenBuilder = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.GUTTER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.GUTTER,
       augmentations: blockingAugmentations,
       publication,
     });

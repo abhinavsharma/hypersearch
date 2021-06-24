@@ -50,9 +50,9 @@ import {
   CONDITION_KEY,
   DEDICATED_SERP_REGEX,
   URL_PARAM_POSSIBLE_SERP_RESULT,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  MESSAGE,
   EXTENSION_HOST,
-  SIDEBAR_PAGE,
+  PAGE,
   AUGMENTATION_ID,
   DISABLED_AUGMENTATIONS,
   NOTE_TAB_TITLE,
@@ -736,8 +736,8 @@ class SidebarLoader {
       const authEmail = new URL(window.location.href).searchParams.get('auth_email');
       if (authEmail && window.location.href.includes(EXTENSION_HOST)) {
         chrome.runtime.sendMessage({
-          type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-          page: SIDEBAR_PAGE.SETTINGS,
+          type: MESSAGE.OPEN_PAGE,
+          page: PAGE.SETTINGS,
           email: authEmail,
         });
       }

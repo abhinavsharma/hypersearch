@@ -8,7 +8,7 @@ import React from 'react';
 import Tag from 'antd/lib/tag';
 import AugmentationManager from 'lib/augmentations';
 import Tooltip from 'antd/lib/tooltip';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_PAGE, PROTECTED_AUGMENTATIONS } from 'constant';
+import { MESSAGE, PAGE, PROTECTED_AUGMENTATIONS } from 'constant';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
@@ -51,8 +51,8 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
       };
     }
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       augmentation,
     });
   };

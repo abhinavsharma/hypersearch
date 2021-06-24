@@ -3,7 +3,7 @@ import Tooltip from 'antd/lib/tooltip';
 import { flipSidebar } from 'lib/flip';
 import { FeatureGate } from 'lib/features';
 import SidebarLoader from 'lib/sidebar';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_PAGE, SIDEBAR_Z_INDEX } from 'constant';
+import { MESSAGE, PAGE, SIDEBAR_Z_INDEX } from 'constant';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarNubPublicationRating.scss';
 
@@ -14,8 +14,8 @@ export const SidebarNubPublicationRating: SidebarNubPublicationRating = ({ ratin
     chrome.runtime.sendMessage({
       info,
       rating,
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.RATING,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.PUBLICATION,
     });
     flipSidebar(document, 'show', SidebarLoader);
   };

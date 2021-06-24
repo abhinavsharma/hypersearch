@@ -28,14 +28,14 @@ import {
 import { extractUrlProperties, removeProtocol } from 'lib/helpers';
 import { flipSidebar } from 'lib/flip';
 import {
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
-  SIDEBAR_PAGE,
+  PAGE,
   PRERENDER_TABS,
   SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
@@ -47,7 +47,7 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
-  const [showPage, setShowPage] = useState<SidebarPage>(SIDEBAR_PAGE.ACTIVE);
+  const [showPage, setShowPage] = useState<SidebarPage>(PAGE.ACTIVE);
   const [pageData, setPageData] = useState<Record<string, any>>();
 
   const handleLog = useCallback(
@@ -100,7 +100,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
       switch (msg.type) {
         // Set up listener for expanding sidebar with the augmentation builder page,
         // when the extension toolbar icon is clicked by the user.
-        case OPEN_AUGMENTATION_BUILDER_MESSAGE:
+        case MESSAGE.OPEN_PAGE:
           if (msg.augmentation && !AugmentationManager.isAugmentationEnabled(msg.augmentation)) {
             message.error({
               top: 30,
@@ -112,16 +112,16 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           }
           flipSidebar(document, 'show', SidebarLoader, true);
           setActiveKey('0');
-          if (msg.page === SIDEBAR_PAGE.GUTTER && msg.augmentations) {
+          if (msg.page === PAGE.GUTTER && msg.augmentations) {
             setPageData({ augmentations: msg.augmentations, publication: msg.publication });
           }
-          if (msg.page === SIDEBAR_PAGE.BUILDER && msg.augmentation) {
+          if (msg.page === PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
           }
-          if (msg.page === SIDEBAR_PAGE.SETTINGS && msg.email) {
+          if (msg.page === PAGE.SETTINGS && msg.email) {
             setPageData({ email: msg.email });
           }
-          if (msg.page === SIDEBAR_PAGE.RATING) {
+          if (msg.page === PAGE.PUBLICATION) {
             setPageData({ info: msg.info, rating: msg.rating });
           }
           msg.page && setShowPage(msg.page);
@@ -176,27 +176,27 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         <TabPane key="0" tab={null} className="sidebar-tab-panel" forceRender>
           {(() => {
             switch (showPage) {
-              case SIDEBAR_PAGE.ACTIVE:
+              case PAGE.ACTIVE:
                 return <ActivePage />;
-              case SIDEBAR_PAGE.BUILDER:
+              case PAGE.BUILDER:
                 return (
                   <BuilderPage
                     augmentation={pageData?.augmentation}
                     isAdding={pageData?.isAdding}
                   />
                 );
-              case SIDEBAR_PAGE.GUTTER:
+              case PAGE.GUTTER:
                 return (
                   <GutterPage
                     hidingAugmentations={pageData?.augmentations}
                     domain={pageData?.publication}
                   />
                 );
-              case SIDEBAR_PAGE.SETTINGS:
+              case PAGE.SETTINGS:
                 return <SettingsPage email={pageData?.email} />;
-              case SIDEBAR_PAGE.FEATURE:
+              case PAGE.FEATURE:
                 return <FeaturePage />;
-              case SIDEBAR_PAGE.RATING:
+              case PAGE.PUBLICATION:
                 return (
                   <PublicationUserReviewPage info={pageData?.info} rating={pageData?.rating} />
                 );

@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_PAGE } from 'constant';
+import { MESSAGE, PAGE } from 'constant';
 import { useFeature } from 'lib/features';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -21,8 +21,8 @@ export const FeaturePage: FeaturePage = () => {
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.SETTINGS,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.SETTINGS,
     });
   };
 

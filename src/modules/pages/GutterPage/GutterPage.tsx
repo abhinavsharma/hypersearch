@@ -17,8 +17,8 @@ import {
   ACTION_LABEL,
   LEGACY_ACTION_TYPE,
   EMPTY_AUGMENTATION,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   PROTECTED_AUGMENTATIONS,
   AUGMENTATION_ID,
   SIDEBAR_TAB_NOTE_TAB,
@@ -134,8 +134,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 
@@ -158,8 +158,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const handleEditInstalled = (augmentation: Augmentation) => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       augmentation,
     });
   };
@@ -191,8 +191,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const handleCreateAugmentation = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       create: true,
       augmentation: {
         ...EMPTY_AUGMENTATION,

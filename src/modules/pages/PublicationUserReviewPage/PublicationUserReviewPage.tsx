@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import List from 'antd/lib/list';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_PAGE } from 'constant';
+import { MESSAGE, PAGE } from 'constant';
 import 'antd/lib/list/style/index.css';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -11,6 +11,7 @@ import './PublicationUserReviewPage.scss';
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
+
 const HEADER_TITLE = 'Review';
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
 const PAGE_HEADER = '<placeholder>';
@@ -20,14 +21,12 @@ const PAGE_REVIEWS_HEADER = 'Trusted Reviews';
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
+
 export const PublicationUserReviewPage: PublicationUserReviewPage = ({ rating, info }) => {
-  //-----------------------------------------------------------------------------------------------
-  // ! Handlers
-  //-----------------------------------------------------------------------------------------------
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 
@@ -42,9 +41,6 @@ export const PublicationUserReviewPage: PublicationUserReviewPage = ({ rating, i
 
   const header = <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>;
 
-  //-----------------------------------------------------------------------------------------------
-  // ! Render
-  //-----------------------------------------------------------------------------------------------
   return (
     <div id="settings-page" className="sidebar-page">
       <header className="sidebar-page-header">

@@ -7,14 +7,7 @@ import { GutterPage } from 'modules/pages';
 import { Settings } from 'react-feather';
 import { makeEllipsis, getFirstValidTabIndex, extractUrlProperties } from 'lib/helpers';
 import { flipSidebar } from 'lib/flip';
-import {
-  APP_NAME,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  EMPTY_AUGMENTATION,
-  SIDEBAR_PAGE,
-  SWITCH_TO_TAB,
-  ACTION_KEY,
-} from 'constant';
+import { APP_NAME, MESSAGE, EMPTY_AUGMENTATION, PAGE, SWITCH_TO_TAB, ACTION_KEY } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
 
@@ -54,13 +47,13 @@ export const ActivePage: ActivePage = () => {
   const handleOpenSettings = (e: React.MouseEvent) => {
     if (e.shiftKey) {
       chrome.runtime.sendMessage({
-        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: SIDEBAR_PAGE.FEATURE,
+        type: MESSAGE.OPEN_PAGE,
+        page: PAGE.FEATURE,
       });
     } else {
       chrome.runtime.sendMessage({
-        type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-        page: SIDEBAR_PAGE.SETTINGS,
+        type: MESSAGE.OPEN_PAGE,
+        page: PAGE.SETTINGS,
       });
     }
   };
@@ -91,8 +84,8 @@ export const ActivePage: ActivePage = () => {
 
   const handleCreate = () =>
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       augmentation: EMPTY_AUGMENTATION,
       create: true,
     });

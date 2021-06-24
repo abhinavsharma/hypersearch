@@ -11,8 +11,8 @@ import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME_LONG,
   FULLSCREEN_KEY,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SHRINK_KEY,
 } from 'constant';
@@ -49,8 +49,8 @@ export const SidebarHeader: SidebarHeader = () => {
       SidebarLoader.tourStep = '2';
     }
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 
