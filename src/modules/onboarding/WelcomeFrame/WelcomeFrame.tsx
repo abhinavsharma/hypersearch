@@ -3,7 +3,7 @@ import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import { Helmet } from 'react-helmet';
 import Typist from 'react-typist';
-import { StepContext } from 'modules/introduction';
+import { StepContext } from 'modules/onboarding';
 import { APP_NAME } from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';

@@ -9,6 +9,8 @@ import {
   AUGMENTATION_ID,
   LUMOS_APP_BASE_URL,
   ENV,
+  SYNC_PRIVACY_KEY,
+  SYNC_LICENSE_KEY,
 } from 'constant';
 
 /**
@@ -566,7 +568,13 @@ export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
   return (tabs.findLastIndex(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL) + 1).toString();
 };
 
-// TODO #2 END
+export const getStoredUserSettings = async () =>
+  await new Promise<Record<string, boolean>>((resolve) =>
+    chrome.storage.sync.get([SYNC_PRIVACY_KEY, SYNC_LICENSE_KEY], resolve),
+  ).then((result) => ({
+    privacy: result?.[SYNC_PRIVACY_KEY],
+    license: (result?.[SYNC_LICENSE_KEY] ?? '') || undefined,
+  }));
 
 export const CustomStorage = {
   getItem(key: string) {
@@ -574,12 +582,6 @@ export const CustomStorage = {
     chrome.storage.local.get(key, (data) => {
       result = data[key] || null;
     });
-    /* while (result === undefined) {
-      // don't blame me, it's Felipe's idea :)
-      if (chrome.runtime.lastError) {
-        break;
-      }
-    } */
     return result ?? null;
   },
   removeItem(key: string) {

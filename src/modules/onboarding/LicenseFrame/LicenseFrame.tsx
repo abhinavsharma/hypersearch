@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
 import { LicenseForm } from 'modules/settings';
-import { StepContext } from 'modules/introduction';
+import { StepContext } from 'modules/onboarding';
 import UserManager from 'lib/user';
 import { APP_NAME } from 'constant';
 import 'antd/lib/input/style/index.css';

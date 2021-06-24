@@ -1,3 +1,9 @@
+/**
+ * @module lib:publication
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import { PUBLICATION_INFO_BLOB_URL } from 'constant';
 import { useCallback, useEffect, useState } from 'react';
 

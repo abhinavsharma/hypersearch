@@ -1,20 +1,27 @@
-import React, { useContext } from 'react';
+/**
+ * @module module:onboarding
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
-import { StepContext, ToggleAnonymousQueries } from 'modules/introduction';
-import { APP_NAME } from 'constant';
+import { StepContext, ToggleAnonymousQueries } from 'modules/onboarding';
 import UserManager from 'lib/user';
+import { APP_NAME } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './PrivacyFrame.scss';
 
-/** MAGICS **/
-export const ACTIVE_LICENSE_MAIN_HEADER = 'Choose a Privacy Setting';
-export const INACTIVE_LICENSE_MAIN_HEADER = 'Maximum Privacy Enabled';
-
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const TAB_TITLE = `${APP_NAME} - Privacy Setting`;
 const NEXT_BUTTON_TEXT = 'Next';
+export const ACTIVE_LICENSE_MAIN_HEADER = 'Choose a Privacy Setting';
+export const INACTIVE_LICENSE_MAIN_HEADER = 'Maximum Privacy Enabled';
 
 export const INACTIVE_LICENSE_TEXT_CONTENT = (
   <>
@@ -26,8 +33,13 @@ export const INACTIVE_LICENSE_TEXT_CONTENT = (
 const { Title } = Typography;
 
 export const PrivacyFrame = () => {
+  const [licenses, setLicenses] = useState<string[]>(UserManager.user.licenses);
   const { setCurrentStep } = useContext(StepContext);
   const handleNext = () => setCurrentStep(3);
+
+  useEffect(() => {
+    setLicenses(UserManager.user.licenses);
+  }, [UserManager.user.licenses]);
 
   return (
     <>
@@ -35,7 +47,7 @@ export const PrivacyFrame = () => {
         <title>{TAB_TITLE}</title>
       </Helmet>
       <div id="privacy-frame-container">
-        {UserManager.user.licenses.length ? (
+        {licenses.length ? (
           <>
             <Title level={2}>{ACTIVE_LICENSE_MAIN_HEADER}</Title>
             <ToggleAnonymousQueries />

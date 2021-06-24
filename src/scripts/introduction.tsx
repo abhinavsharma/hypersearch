@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { IntroductionPage } from 'modules/introduction';
+import { IntroductionPage } from 'modules/onboarding';
 import UserManager from 'lib/user';
 
 (async () => {

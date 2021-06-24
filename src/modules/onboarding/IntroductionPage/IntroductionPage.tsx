@@ -13,11 +13,13 @@ import {
   QueriesFrame,
   LicenseFrame,
   EmailFrame,
-} from 'modules/introduction';
+} from 'modules/onboarding';
 import { useFeature } from 'lib/features';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'constant';
 import 'antd/lib/steps/style/index.css';
 import './IntroductionPage.scss';
+
+const { Step } = Steps;
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -29,23 +31,23 @@ const EMAIL_SECTION_TITLE = 'Email';
 const PRIVACY_SECTION_TITLE = 'Privacy';
 const FINISHED_SECTION_TITLE = 'Done';
 
-const { Step } = Steps;
-
 //-----------------------------------------------------------------------------------------------
 // ! Context
 //-----------------------------------------------------------------------------------------------
-export const StepContext = React.createContext<{
+type TContext = {
   currentStep: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   finished: boolean;
   setFinished: React.Dispatch<React.SetStateAction<boolean>>;
-}>(Object.create(null));
+};
+export const StepContext = React.createContext<TContext>(Object.create(null));
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
-export const IntroductionPage = () => {
-  const CONTEXT_VALUE = Object.create(null);
+export const IntroductionPage: IntroductionPage = () => {
+  const CONTEXT_VALUE: TContext = Object.create(null);
+
   const [currentStep, setCurrentStep] = useState<number>(0);
   CONTEXT_VALUE.currentStep = currentStep;
   CONTEXT_VALUE.setCurrentStep = setCurrentStep;

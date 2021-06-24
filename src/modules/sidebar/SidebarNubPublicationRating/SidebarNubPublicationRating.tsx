@@ -1,3 +1,9 @@
+/**
+ * @module modules:sidebar
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { useRef } from 'react';
 import Tooltip from 'antd/lib/tooltip';
 import { flipSidebar } from 'lib/flip';
@@ -7,6 +13,9 @@ import { MESSAGE, PAGE, SIDEBAR_Z_INDEX } from 'constant';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarNubPublicationRating.scss';
 
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const SidebarNubPublicationRating: SidebarNubPublicationRating = ({ rating, info }) => {
   const tooltipContainer = useRef<HTMLDivElement>(null);
 
@@ -23,6 +32,9 @@ export const SidebarNubPublicationRating: SidebarNubPublicationRating = ({ ratin
   const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
   const keepParent = { keepParent: false };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   const component = (
     <>
       <Tooltip title={info.description} placement="right" destroyTooltipOnHide={keepParent}>

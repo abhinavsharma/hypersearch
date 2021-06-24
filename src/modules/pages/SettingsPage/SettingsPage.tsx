@@ -19,7 +19,7 @@ import {
   INACTIVE_LICENSE_TEXT_CONTENT,
   UNCHECKED_PRIVACY_EXPLAINER_CONTENT,
   UNCHECKED_SWITCH_TEXT,
-} from 'modules/introduction';
+} from 'modules/onboarding';
 import { BookmarksSyncButton, LicenseForm, LoginForm } from 'modules/settings';
 import { APP_NAME, MESSAGE, PAGE, SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';

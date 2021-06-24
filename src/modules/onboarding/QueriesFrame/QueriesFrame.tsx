@@ -4,7 +4,7 @@ import Button from 'antd/lib/button';
 import Collapse from 'antd/lib/collapse';
 import List from 'antd/lib/list';
 import Typography from 'antd/lib/typography';
-import { StepContext } from 'modules/introduction';
+import { StepContext } from 'modules/onboarding';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';

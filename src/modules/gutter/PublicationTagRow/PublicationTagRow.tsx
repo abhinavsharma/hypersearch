@@ -29,9 +29,13 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
   //-----------------------------------------------------------------------------------------------
 
   useEffect(() => {
+    if (!ratingFeature) {
+      return;
+    }
+
     const handleMouseEnter = () => {
       if (containerRef.current) {
-        ratingFeature && (containerRef.current.style.opacity = '1');
+        containerRef.current.style.opacity = '1';
       }
 
       if (resultRef.current) {
@@ -54,14 +58,13 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
         rootRef.current ??
         containerRef.current.closest(`.${INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR}`);
 
-      /* eslint-disable */
       const newResult =
+        // prettier-ignore
         resultRef.current ?? window.location.href.search(/duckduckgo\.com/gi) > -1
           ? (rootRef.current?.parentElement as HTMLDivElement)
           : container
             ? (rootRef.current?.closest(container) as HTMLDivElement)
             : rootRef.current?.parentElement;
-      /* eslint-enable */
 
       if (newResult) {
         resultRef.current = newResult as HTMLDivElement;
@@ -71,15 +74,10 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
         'style',
         `
         z-index: ${SIDEBAR_Z_INDEX - 2};
-        margin-top: -${resultRef.current?.offsetHeight + 5}px;
+        /* margin-top: -${resultRef.current?.offsetHeight - 17}px; */
         height: 17px;
         `,
       );
-
-      if (resultRef.current) {
-        resultRef.current.style.marginTop = '-17px';
-        resultRef.current.style.paddingTop = '17px';
-      }
     }
 
     resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
@@ -97,7 +95,7 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
   // ! Render
   //-----------------------------------------------------------------------------------------------
 
-  return (
+  return ratingFeature ? (
     <div className="insight-row publication-tag-container" ref={containerRef}>
       {averageRating > 0 && (
         <span>
@@ -107,5 +105,5 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
       )}
       {text && <span>{text.replace(/^[\w]/, text.match(/^[\w]/)?.[0]?.toUpperCase() ?? '')}</span>}
     </div>
-  );
+  ) : null;
 };

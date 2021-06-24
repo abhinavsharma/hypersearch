@@ -7,10 +7,11 @@
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
-import { SYNC_PRIVACY_KEY } from 'constant';
+import { SYNC_LICENSE_KEY, SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './ToggleAnonymousQueries.scss';
+import { getStoredUserSettings } from 'lib/helpers';
 
 const CheckCircleFilled = React.lazy(
   async () => await import('@ant-design/icons/CheckCircleFilled').then((mod) => mod),
@@ -84,33 +85,32 @@ export const ToggleAnonymousQueries = () => {
   const [checked, setChecked] = useState<boolean>();
 
   const getStorageValue = useCallback(async () => {
-    const useServerSuggestions = await new Promise<Record<string, boolean>>((resolve) =>
-      chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
-    ).then((result) => result?.[SYNC_PRIVACY_KEY]);
-    if (useServerSuggestions === undefined) {
+    const { license, privacy } = await getStoredUserSettings();
+    if (license === undefined) {
       chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: true });
       setChecked(true);
-    } else {
-      setChecked(useServerSuggestions);
     }
+    privacy && setChecked(privacy);
   }, []);
 
   useEffect(() => {
     getStorageValue();
   }, [getStorageValue]);
 
-  //-----------------------------------------------------------------------------------------------
-  // ! Handlers
-  //-----------------------------------------------------------------------------------------------
-
-  const handleToggle = (value: boolean) => {
+  const handleToggle = async (value: boolean) => {
     setChecked(value);
-    chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: value });
+    const { privacy, license } = await new Promise<Record<string, boolean>>((resolve) =>
+      chrome.storage.sync.get([SYNC_PRIVACY_KEY, SYNC_LICENSE_KEY], resolve),
+    ).then((result) => ({
+      privacy: result?.[SYNC_PRIVACY_KEY],
+      license: result?.[SYNC_LICENSE_KEY],
+    }));
+    chrome.storage.sync.set({
+      [SYNC_PRIVACY_KEY]: value ?? privacy ?? true,
+      [SYNC_LICENSE_KEY]: license,
+    });
   };
 
-  //-----------------------------------------------------------------------------------------------
-  // ! Render
-  //-----------------------------------------------------------------------------------------------
   return (
     <div id="privacy-toggle-container">
       <Switch className="privacy-toggle-button" checked={checked} onChange={handleToggle} />

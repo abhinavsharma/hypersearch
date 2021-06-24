@@ -5,7 +5,7 @@ import { Input, Button, Typography } from 'antd';
 import UserManager from 'lib/user';
 import { validateEmail } from 'lib/helpers';
 import { useFeature } from 'lib/features';
-import { StepContext } from 'modules/introduction';
+import { StepContext } from 'modules/onboarding';
 import {
   APP_NAME,
   EXTENSION_HOST,

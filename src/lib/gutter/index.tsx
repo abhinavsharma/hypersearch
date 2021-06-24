@@ -135,6 +135,7 @@ export const processSerpResults: ProcessSerpResults = (
 
       renderComponentToDocument(
         root,
+
         <PublicationTagRow publication={publication} container={containerSelector} />,
         INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
       );

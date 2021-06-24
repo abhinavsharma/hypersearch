@@ -5,7 +5,7 @@ import { activityMonitor } from 'lib/activity';
 import SidebarLoader from 'lib/sidebar';
 import { debug, replaceLocation } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
-import { IntroductionPage } from 'modules/introduction';
+import { IntroductionPage } from 'modules/onboarding';
 import {
   URL_UPDATED_MESSAGE,
   MESSAGE,
