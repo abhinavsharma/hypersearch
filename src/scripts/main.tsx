@@ -1,9 +1,11 @@
+import React from 'react';
+import { render } from 'react-dom';
 import UserManager from 'lib/user';
 import { activityMonitor } from 'lib/activity';
 import SidebarLoader from 'lib/sidebar';
 import { debug, replaceLocation } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
-
+import { IntroductionPage } from 'modules/introduction';
 import {
   URL_UPDATED_MESSAGE,
   OPEN_AUGMENTATION_BUILDER_MESSAGE,
@@ -22,6 +24,10 @@ import {
     '\n---',
   );
   await UserManager.initialize();
+  if (location.href.includes('extension://')) {
+    const root = document.getElementById('root');
+    render(<IntroductionPage />, root);
+  }
   window.addEventListener('message', ({ data }) => {
     if (data.name === ADD_EXTERNAL_AUGMENTATION_MESSAGE) {
       chrome.runtime.sendMessage({

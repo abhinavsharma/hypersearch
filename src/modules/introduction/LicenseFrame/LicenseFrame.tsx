@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
-import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
+import { LicenseForm } from 'modules/settings';
 import { StepContext } from 'modules/introduction';
 import UserManager from 'lib/user';
 import { APP_NAME } from 'constant';
@@ -11,39 +11,47 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './LicenseFrame.scss';
 
-/** MAGICS **/
-const TAB_TITLE = `${APP_NAME} - Enter License Key`;
-const PAGE_MAIN_HEADER = 'Enter Your License Key';
-const LICENSE_INPUT_PLACEHOLDER = 'If you have a special access key, paste it here';
-const USE_LICENSE_BUTTON_TEXT = 'Next';
-const USE_UNLICENSED_BUTTON_TEXT = 'Try Unlicensed';
-const LICENSE_KEY_LENGTH = 39;
-const BUTTON_CONTAINER_STYLE: React.CSSProperties = { width: '400px' };
-const USE_UNLICENSED_BUTTON_STYLE: React.CSSProperties = { color: 'white' };
-
 const { Title } = Typography;
 
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
+const TAB_TITLE = `${APP_NAME} - Enter License Key`;
+const PAGE_MAIN_HEADER = 'Enter Your License Key';
+const USE_UNLICENSED_BUTTON_TEXT = 'Try Unlicensed';
+const USE_UNLICENSED_BUTTON_STYLE: React.CSSProperties = { color: 'white' };
+
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const LicenseFrame = () => {
-  const stepContext = useContext(StepContext);
+  const { setCurrentStep } = useContext(StepContext);
 
-  const handleNext = () => stepContext.setCurrentStep(3);
-
-  const handleLicenseSubmit = async () => {
-    stepContext.license && UserManager.setUserLicense(stepContext.license);
-    handleNext();
-  };
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
+  const handleNext = () => setCurrentStep(2);
 
   const handleFreeTier = () => {
-    stepContext.setLicense(undefined);
+    UserManager.replaceUserLicenses([]);
     handleNext();
   };
 
-  const validateLicense = () => {
-    return stepContext.license?.length === 39 && stepContext.license?.match(/^[\w-]*$/gi);
-  };
-
-  const handleLicenseChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    stepContext.setLicense(e.target.value);
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
+  const UseUnlicensedButton = () => (
+    <Button
+      type="link"
+      size="large"
+      shape="round"
+      style={USE_UNLICENSED_BUTTON_STYLE}
+      className="step-button"
+      onClick={handleFreeTier}
+    >
+      {USE_UNLICENSED_BUTTON_TEXT}
+    </Button>
+  );
 
   return (
     <div id="license-frame-container">
@@ -51,35 +59,11 @@ export const LicenseFrame = () => {
         <title>{TAB_TITLE}</title>
       </Helmet>
       <Title level={2}>{PAGE_MAIN_HEADER}</Title>
-      <Input
-        type="text"
-        minLength={LICENSE_KEY_LENGTH}
-        maxLength={LICENSE_KEY_LENGTH}
-        value={stepContext.license}
-        placeholder={LICENSE_INPUT_PLACEHOLDER}
-        onChange={handleLicenseChange}
-      />
-      <div className="horizontal-container" style={BUTTON_CONTAINER_STYLE}>
-        <Button
-          type="ghost"
-          shape="round"
-          size="large"
-          className="step-button"
-          onClick={handleLicenseSubmit}
-          disabled={!validateLicense()}
-        >
-          {USE_LICENSE_BUTTON_TEXT}
-        </Button>
-        <Button
-          type="link"
-          size="large"
-          style={USE_UNLICENSED_BUTTON_STYLE}
-          className="step-button"
-          onClick={handleFreeTier}
-        >
-          {USE_UNLICENSED_BUTTON_TEXT}
-        </Button>
-      </div>
+      <LicenseForm />
+      <Button className="step-button" shape="round" onClick={handleNext}>
+        Next
+      </Button>
+      <UseUnlicensedButton />
     </div>
   );
 };

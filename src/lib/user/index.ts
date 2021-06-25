@@ -17,16 +17,18 @@ import {
   AWS_COGNITO_CLIENT_ID,
   AWS_COGNITO_POOL_ID,
   ENV,
+  DEFAULT_LICENSE,
   SYNC_DISTINCT_KEY,
   SYNC_EMAIL_KEY,
-  SYNC_LICENSE_KEY,
+  LEGACY_LOCAL_LICENSE,
   SYNC_PRIVACY_KEY,
+  SYNC_LICENSE_KEY,
 } from 'constant';
 
 class User {
   private _id: string | undefined = undefined;
   private _email: string | undefined = undefined;
-  private _license: string | undefined = undefined;
+  private _licenses: Array<string> = Array(0);
   private _privacy: boolean | undefined = undefined;
   private _cognitoUser: CognitoUser | undefined = undefined;
   private _token: TAccessToken | undefined = undefined;
@@ -96,7 +98,7 @@ class User {
       id: this._id,
       email: this._email,
       privacy: this._privacy,
-      license: this._license,
+      licenses: this._licenses,
       token: this._token,
     };
   }
@@ -143,7 +145,7 @@ class User {
   public async activate(code: string) {
     return await new Promise<TAccessToken | undefined>((resolve) =>
       chrome.storage.sync.set(
-        { [SYNC_LICENSE_KEY]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
+        { [LEGACY_LOCAL_LICENSE]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
         () =>
           this.getCognitoUser()?.sendCustomChallengeAnswer(code, {
             onSuccess: (session) => {
@@ -167,6 +169,7 @@ class User {
     await new Promise((resolve) =>
       chrome.storage.sync.set({ [SYNC_EMAIL_KEY]: email }, () => resolve(true)),
     );
+    !this._licenses.length && (await this.addUserLicense(DEFAULT_LICENSE));
     this._email = email;
     !this.getCognitoUser() && this.signup(email);
     this.getCognitoUser()?.setAuthenticationFlowType('CUSTOM_AUTH');
@@ -198,9 +201,34 @@ class User {
     );
   }
 
-  public async setUserLicense(license: string) {
-    this._license = license;
-    chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' });
+  public async replaceUserLicenses(licenses: string[]) {
+    return new Promise<string[] | null>((resolve, reject) =>
+      chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: licenses }, () => {
+        const hasError = chrome.runtime.lastError;
+        if (hasError) {
+          debug('UserManager - Add User License - Error', hasError.message);
+          reject(null);
+        }
+        this._licenses = licenses;
+        debug('UserManager - Add User License - Success', licenses);
+        resolve(this._licenses);
+      }),
+    );
+  }
+
+  public async addUserLicense(license: string) {
+    this._licenses.push(license);
+    return new Promise<string[] | null>((resolve, reject) =>
+      chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: this._licenses }, () => {
+        const hasError = chrome.runtime.lastError;
+        if (hasError) {
+          debug('UserManager - Add User License - Error', hasError.message);
+          reject(null);
+        }
+        debug('UserManager - Add User License - Success', license);
+        resolve(this._licenses);
+      }),
+    );
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -219,9 +247,15 @@ class User {
     this._email = storedEmail?.[SYNC_EMAIL_KEY] ?? '';
 
     const storedLicense = await new Promise<Record<string, string> | undefined>((resolve) =>
+      chrome.storage.sync.get(LEGACY_LOCAL_LICENSE, resolve),
+    ).then((data) => data?.[LEGACY_LOCAL_LICENSE]);
+    const storedLicenses = await new Promise<Record<string, string[]> | undefined>((resolve) =>
       chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
+    ).then((data) => data?.[SYNC_LICENSE_KEY]);
+
+    this._licenses = Array.from(
+      new Set(storedLicense ? [storedLicense, ...(storedLicenses ?? [])] : storedLicenses ?? []),
     );
-    this._license = storedLicense?.[SYNC_LICENSE_KEY] ?? '';
 
     const storedUserPrivacy = await new Promise<Record<string, string> | undefined>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),

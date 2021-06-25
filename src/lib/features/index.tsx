@@ -16,19 +16,19 @@ import { DEV_FEATURE_FLAGS, FEATURE_FLAG_BLOB_URL, UPDATE_SIDEBAR_TABS_MESSAGE }
  * @returns [Status, Setter]
  */
 export const useFeature = (feature: string) => {
-  const [localFlags, setLocalFlags] = useState<FeatureEntry>(Object.create(null));
-  const [features, setFeatures] = useState<FeatureEntry>(Object.create(null));
+  const [localFlags, setLocalFlags] = useState<Features>(Object.create(null));
+  const [features, setFeatures] = useState<Features>(Object.create(null));
 
   const getFeatures = useCallback(async () => {
     const remoteBlob = await fetch(FEATURE_FLAG_BLOB_URL, { mode: 'cors' });
     const raw = await remoteBlob.json();
-    const locals = await new Promise<Record<string, FeatureEntry>>((resolve) =>
+    const locals = await new Promise<Record<string, Features>>((resolve) =>
       chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
     ).then((data) => data[DEV_FEATURE_FLAGS]);
     setLocalFlags(locals);
     setFeatures(
       Object.assign(
-        raw['features'].reduce((record: FeatureEntry, entry: Record<'name' | 'enabled', any>) => {
+        raw['features'].reduce((record: Features, entry: FeatureEntry) => {
           record[entry.name] = entry.enabled;
           return record;
         }, Object.create(null)),
@@ -57,7 +57,7 @@ export const useFeature = (feature: string) => {
   ] as [boolean, () => void];
 };
 
-export const FeatureGate: FeatureGate = ({ children, feature, fallback }) => {
+export const FeatureGate: FeatureGate = ({ component, feature, fallback }) => {
   const [enabled] = useFeature(feature);
-  return <>{enabled ? children : fallback ?? null}</>;
+  return <>{enabled ? component : fallback ?? null}</>;
 };

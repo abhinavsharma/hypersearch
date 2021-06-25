@@ -134,7 +134,7 @@ export const ConditionInput: ConditionInput = ({
       <SearchIntentDropdown handleSelect={handleSelect} newValue={newValue} />
     ),
     [CONDITION_KEY.DOMAIN_CONTAINS]: (
-      <MultiValueInput values={condition.value as string[]} handleAdd={handleChange} />
+      <MultiValueInput input={condition.value as string[]} replace={handleChange} />
     ),
     default: <Input key={condition.id} onChange={handleChange} value={newValue as string} />,
   };

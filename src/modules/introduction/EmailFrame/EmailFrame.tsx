@@ -11,7 +11,7 @@ import {
   EXTENSION_HOST,
   MAILCHIMP_API_KEY,
   MAILCHIMP_URL,
-  SYNC_LICENSE_KEY,
+  LEGACY_LOCAL_LICENSE,
 } from 'constant';
 import './EmailFrame.scss';
 
@@ -45,7 +45,7 @@ export const EmailFrame = () => {
     } else {
       await new Promise((resolve) =>
         chrome.storage.sync.set(
-          { [SYNC_LICENSE_KEY]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
+          { [LEGACY_LOCAL_LICENSE]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
           () => resolve(true),
         ),
       );

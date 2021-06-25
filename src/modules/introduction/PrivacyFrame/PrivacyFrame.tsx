@@ -26,8 +26,8 @@ export const INACTIVE_LICENSE_TEXT_CONTENT = (
 const { Title } = Typography;
 
 export const PrivacyFrame = () => {
-  const stepContext = useContext(StepContext);
-  const handleNext = () => stepContext.setCurrentStep(3);
+  const { setCurrentStep } = useContext(StepContext);
+  const handleNext = () => setCurrentStep(3);
 
   return (
     <>
@@ -35,7 +35,7 @@ export const PrivacyFrame = () => {
         <title>{TAB_TITLE}</title>
       </Helmet>
       <div id="privacy-frame-container">
-        {UserManager.user.email ? (
+        {UserManager.user.licenses.length ? (
           <>
             <Title level={2}>{ACTIVE_LICENSE_MAIN_HEADER}</Title>
             <ToggleAnonymousQueries />

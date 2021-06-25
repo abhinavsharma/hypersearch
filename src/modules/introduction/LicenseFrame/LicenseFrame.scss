@@ -3,6 +3,10 @@
 #license-frame-container {
   padding: $intro_space_larger 0;
 
+  h2 {
+    margin-bottom: $intro_space_large !important;
+  }
+
   input {
     margin-top: $intro_space_small;
     height: 50px;
@@ -12,6 +16,48 @@
     border-right: none;
     border-top: none;
     outline: none;
+  }
+
+  .ant-input-group-wrapper {
+    width: 0;
+
+    .ant-input-group-addon {
+      background: transparent !important;
+    }
+  }
+
+  button.ant-input-search-button {
+    background: transparent !important;
+    font-size: $intro_font_small;
+    border: none;
+  }
+
+  button.ant-btn-dangerous {
+    span {
+      color: $color_icon_danger;
+    }
+  }
+
+  button.step-button {
+    display: inline-flex !important;
+    font-size: $intro_font_small;
+    height: auto;
+    margin-top: $sidebar_space_largest;
+    border-color: $color_border_white;
+
+    &:not([disabled]) {
+      &:visited,
+      &:link {
+        color: $intro_color_text_link;
+        border-color: $color_border_dark;
+      }
+
+      &:hover,
+      &:focus,
+      &:active {
+        color: $intro_color_text_hover;
+      }
+    }
   }
 
   button.step-button:nth-of-type(1) {
