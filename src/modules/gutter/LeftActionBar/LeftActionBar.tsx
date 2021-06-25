@@ -170,16 +170,6 @@ export const LeftActionBar: LeftActionBar = ({
 
       if (resultRef.current) {
         resultRef.current.style.minWidth = resultMinWidth + '';
-        /* if (ratingFeature && window.location.href.search(/google\.[\w.]*]/)) {
-          const cites = resultRef.current.querySelectorAll('cite');
-          cites.forEach((cite) => {
-            const citeUrl = cite.parentElement;
-            if (citeUrl) {
-              citeUrl.style.left = '100px';
-              citeUrl.style.top = '17px';
-            }
-          });
-        } */
       }
 
       resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
