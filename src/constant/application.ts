@@ -108,5 +108,6 @@ export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
 //-----------------------------------------------------------------------------------------------
 export const ENV = process.env.mode === 'development' ? 'DEV' : 'PROD';
 export const IN_DEBUG_MODE = ENV === 'DEV' || window.top.INSIGHT_FORCE_DEBUG;
-export const IS_ROOT_FRAME = window.location.href === window.parent.location.href;
+export const IS_ROOT_FRAME = window.location.href === window.top.location.href;
 export const IS_SIDEBAR_TAB_FRAME = !IS_ROOT_FRAME;
+export const IS_CHROME_PAGE = window.top.location.href.includes('extension://')

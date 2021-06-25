@@ -20,7 +20,7 @@ import {
     urls: ['<all_urls>'],
   } as unknown as Record<'urls' | 'types', chrome.webRequest.ResourceType[]>;
 
-  const EXTRA_SPEC = ['blocking', 'responseHeaders'];
+  const EXTRA_SPEC = ['blocking'];
 
   const EXTRA_RESPONSE_HEADERS = [
     {
@@ -49,7 +49,9 @@ import {
       };
     },
     { ...OPTIONS, types: ['sub_frame'] },
-    isFirefox() ? EXTRA_SPEC.concat('extraHeaders') : EXTRA_SPEC,
+    isFirefox()
+      ? EXTRA_SPEC.concat(['extraHeaders', 'responseHeaders'])
+      : EXTRA_SPEC.concat('responseHeaders'),
   );
 
   //-----------------------------------------------------------------------------------------------
@@ -91,6 +93,6 @@ import {
       return { requestHeaders: applyRequestHeaderMutations(requestHeaders, url, frameId) };
     },
     OPTIONS,
-    EXTRA_SPEC,
+    EXTRA_SPEC.concat('requestHeaders'),
   );
 })();

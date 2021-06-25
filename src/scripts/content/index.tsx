@@ -1,41 +1,65 @@
+/**
+ * @module scripts:content
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React from 'react';
 import { render } from 'react-dom';
 import { IntroductionPage } from 'modules/onboarding';
-import UserManager from 'lib/user';
-import SidebarLoader from 'lib/sidebar';
 import { activityMonitor } from 'lib/activity';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
-import { debug, extractPublication, replaceLocation } from 'lib/helpers';
+import {
+  debug,
+  extractPublication,
+  replaceLocation,
+  runFunctionWhenDocumentReady,
+} from 'lib/helpers';
 import {
   URL_UPDATED_MESSAGE,
   MESSAGE,
   PAGE,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   ACTIVATE_EMAIL_MESSAGE,
-  IN_DEBUG_MODE,
   IS_SIDEBAR_TAB_FRAME,
   IS_ROOT_FRAME,
+  IS_CHROME_PAGE,
 } from 'constant';
 
 (() => {
+  // prettier-ignore
+  debug('Frame Type: ',
+    (IS_SIDEBAR_TAB_FRAME && 'Sidebar Tab') ||
+    (IS_ROOT_FRAME && 'Root Document') ||
+    (IS_CHROME_PAGE && 'Chrome Page') ||
+    "Unknown"
+  );
+
   if (IS_SIDEBAR_TAB_FRAME) {
-    async () => {
-      await import('./frame');
-      await import('./block');
-      await import('./reorder');
-      await import('./results');
-    };
+    (async () => {
+      const LOAD_ASYNC_SCRIPTS_TO_TAB = async () => {
+        await import('./frame');
+        await import('./block');
+        await import('./reorder');
+        await import('./results');
+      };
+      runFunctionWhenDocumentReady(document, LOAD_ASYNC_SCRIPTS_TO_TAB);
+    })();
   }
 
   if (IS_ROOT_FRAME) {
     (async (document: Document, location: Location) => {
       const LOCAL_URL = replaceLocation(location) ?? new URL(location.href);
-      debug('execute content script\n---\n\tCurrent Location', extractPublication(LOCAL_URL.href));
 
-      await UserManager.initialize();
-      await SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
+      debug('Content Script - Entry\n---\n\tCurrent Location', extractPublication(LOCAL_URL.href));
 
-      if (location.href.includes('extension://')) {
+      const UserManager = (await import('lib/user')).default;
+      UserManager.initialize();
+
+      const SidebarLoader = (await import('lib/sidebar')).default;
+      SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
+
+      if (IS_CHROME_PAGE) {
         const root = document.getElementById('root');
         render(<IntroductionPage />, root);
       }
@@ -67,12 +91,12 @@ import {
 
       activityMonitor(document);
 
-      await import('./block');
-      await import('./results');
+      const LOAD_ASYNC_SCRIPTS_TO_TOP = async () => {
+        await import('./block');
+        await import('./results');
+      };
 
-      if (IN_DEBUG_MODE) {
-        await import('./hot');
-      }
+      runFunctionWhenDocumentReady(document, LOAD_ASYNC_SCRIPTS_TO_TOP);
     })(document, location);
   }
 })();

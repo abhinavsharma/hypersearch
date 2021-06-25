@@ -10,26 +10,9 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/insight_main_content.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "js": ["js/insight_frame_content.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "js": ["js/insight_block_content.js"],
-      "run_at": "document_end"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "js": ["js/insight_reorder_content.js"],
-      "run_at": "document_end"
+      "js": ["js/insight_content.js"],
+      "run_at": "document_start",
+      "all_frames": true
     },
     {
       "matches": ["<all_urls>"],
@@ -37,17 +20,12 @@
     },
     {
       "matches": ["<all_urls>"],
-      "all_frames": true,
-      "css": ["overwrite.css"]
-    },
-    {
-      "matches": ["<all_urls>"],
-      "all_frames": true,
-      "css": ["bundle.css"]
+      "css": ["overwrite.css", "bundle.css"],
+      "all_frames": true
     }
   ],
   "background": {
-    "scripts": ["js/insight_hot_reload.js", "js/insight_background.js"]
+    "scripts": ["js/insight_background.js"]
   },
   "browser_action": {
     "default_title": "Insight"

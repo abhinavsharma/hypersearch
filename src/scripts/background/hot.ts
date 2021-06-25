@@ -1,4 +1,9 @@
+import { IN_DEBUG_MODE } from 'constant';
+
 (() => {
+  if (!IN_DEBUG_MODE) {
+    return;
+  }
   const filesInDirectory = (dir: DirectoryEntry): Promise<FileEntry[]> =>
     new Promise<FileEntry[]>((resolve) =>
       dir.createReader().readEntries((entries) =>
@@ -40,5 +45,3 @@
     }
   });
 })();
-
-export {};
