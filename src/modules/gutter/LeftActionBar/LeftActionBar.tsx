@@ -8,7 +8,8 @@ import React, { MutableRefObject, useCallback, useEffect, useRef, useState } fro
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, Menu } from 'react-feather';
-import { PublicationTimeTracker } from '../PublicationTimeTracker/PublicationTimeTracker';
+import { PublicationTimeTracker } from 'modules/gutter';
+import SidebarLoader from 'lib/sidebar';
 import {
   AUGMENTATION_ID,
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
@@ -22,6 +23,7 @@ import {
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './LeftActionBar.scss';
+import { useFeature } from 'lib/features';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -68,6 +70,8 @@ export const LeftActionBar: LeftActionBar = ({
   const resultRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const tooltipContainer = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<any>(null);
+
+  const ratingFeature = useFeature('desktop_rating');
 
   const handleOpenBuilder = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
@@ -156,13 +160,26 @@ export const LeftActionBar: LeftActionBar = ({
         `
         z-index: ${SIDEBAR_Z_INDEX - 2};
         margin-top: -${resultRef.current?.offsetHeight}px;
-        height: ${resultRef.current?.offsetHeight};
+        height: ${resultRef.current?.offsetHeight}px;
         `,
       );
 
+      const resultMinWidth =
+        resultRef.current?.offsetWidth +
+        (window.innerWidth - (Number(SidebarLoader.maxAvailableSpace) ?? 0));
+
       if (resultRef.current) {
-        resultRef.current.style.marginLeft = '-100px';
-        resultRef.current.style.paddingLeft = '100px';
+        resultRef.current.style.minWidth = resultMinWidth + '';
+        /* if (ratingFeature && window.location.href.search(/google\.[\w.]*]/)) {
+          const cites = resultRef.current.querySelectorAll('cite');
+          cites.forEach((cite) => {
+            const citeUrl = cite.parentElement;
+            if (citeUrl) {
+              citeUrl.style.left = '100px';
+              citeUrl.style.top = '17px';
+            }
+          });
+        } */
       }
 
       resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
@@ -173,7 +190,7 @@ export const LeftActionBar: LeftActionBar = ({
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [container, handleMouseLeave, isSearched, isTrusted, isBlocked, isFeatured]);
+  }, [container, handleMouseLeave, isSearched, isTrusted, isBlocked, isFeatured, ratingFeature]);
 
   const getPopupContainer = () => tooltipContainer.current as HTMLDivElement;
 

@@ -169,9 +169,6 @@ export const processSerpResults: ProcessSerpResults = (
 
     serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, publication);
 
-    // DuckDuckGo result container are bound to click event and open the page, even if it's blocked.
-    // To prevent this behavior, we disable all `pointerEvents` on the container element.
-    // See: https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
     if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
       serpResult.style.pointerEvents = 'none';
     }
@@ -211,6 +208,7 @@ export const processSerpResults: ProcessSerpResults = (
       if (existingRootLeft) {
         existingRootLeft.parentElement?.replaceChild(buttonRootLeft, existingRootLeft);
       }
+
       buttonRootLeft.classList.add(`insight-gutter-button-root-left`);
       root?.appendChild(buttonRootLeft);
       render(

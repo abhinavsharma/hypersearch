@@ -5,7 +5,9 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { DEV_FEATURE_FLAGS, FEATURE_FLAG_BLOB_URL } from 'constant';
+import SidebarLoader from 'lib/sidebar';
+import { triggerSerpProcessing } from 'lib/helpers';
+import { DEV_FEATURE_FLAGS, FEATURE_FLAG_BLOB_URL, UPDATE_SIDEBAR_TABS_MESSAGE } from 'constant';
 
 /**
  * Hook for getting the current state of the specified feature.
@@ -49,6 +51,8 @@ export const useFeature = (feature: string) => {
         },
       });
       setFeatures({ ...features, [feature]: !features[feature] });
+      chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+      triggerSerpProcessing(SidebarLoader, false);
     },
   ] as [boolean, () => void];
 };
