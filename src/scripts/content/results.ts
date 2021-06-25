@@ -141,6 +141,7 @@ import {
     blockingAugmentations = Object.create(null);
     featuringAugmentations = Object.create(null);
   };
+
   try {
     window.addEventListener('message', ({ data }: any) => {
       if (data?.name === PROCESS_SERP_OVERLAY_MESSAGE) {

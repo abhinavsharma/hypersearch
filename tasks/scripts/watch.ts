@@ -26,9 +26,9 @@ import config from '../config/webpack.dev';
 
     if (!built) {
       console.log(chalk.inverse.bold(' ---   GENERATING ASSETS   --- \n'));
-      (Object.values(
-        statData.namedChunkGroups ?? Object.create(null),
-      ) as StatsChunkGroup[]).forEach((entry) => {
+      (
+        Object.values(statData.namedChunkGroups ?? Object.create(null)) as StatsChunkGroup[]
+      ).forEach((entry) => {
         entry.name &&
           console.log(
             chalk.greenBright.bold(entry.name),

@@ -31,6 +31,22 @@ export const DUMMY_SUBTABS_URL = 'https://www.google.com/search?q=react';
  */
 export const DUMMY_AMAZON_SUBTABS_URL = 'https://www.amazon.com/s?k=dummy';
 
+/**
+ * The User Agent string appended to sidebar tab requests when {@link SPECIAL_URL_JUNK_STRING junk string} also present
+ */
+export const CUSTOM_UA_STRING = 'Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36';
+
+/**
+ * The list of removable response header names
+ */
+export const STRIPPED_RESPONSE_HEADERS = [
+    'x-frame-options',
+    'frame-options',
+    'content-security-policy',
+    'access-control-allow-origin',
+    'referer-policy',
+];
+
 //-----------------------------------------------------------------------------------------------
 // ! Tabs
 //-----------------------------------------------------------------------------------------------
@@ -92,3 +108,5 @@ export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
 //-----------------------------------------------------------------------------------------------
 export const ENV = process.env.mode === 'development' ? 'DEV' : 'PROD';
 export const IN_DEBUG_MODE = ENV === 'DEV' || window.top.INSIGHT_FORCE_DEBUG;
+export const IS_ROOT_FRAME = window.location.href === window.parent.location.href;
+export const IS_SIDEBAR_TAB_FRAME = !IS_ROOT_FRAME;

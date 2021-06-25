@@ -1,16 +1,14 @@
 /**
- * @module BackgroundService
- * @author Abhinav Sharma<abhinav@laso.ai>
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module scripts:background
  * @version 1.0.0
+ * @license (C) Insight
  */
+
 import axios from 'axios';
 import SearchEngineManager from 'lib/engines';
 import BookmarksSynchronizer from 'lib/bookmarks';
-import { debug, getPublicationUrl, isFirefox, sanitizeUrl } from 'lib/helpers';
+import { debug, getPublicationUrl, sanitizeUrl } from 'lib/helpers';
 import {
-  EXTENSION_SHORT_URL_RECEIVED,
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
   MESSAGE,
@@ -24,154 +22,16 @@ import {
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   TRIGGER_STOP_TRACK_TIMER_MESSAGE,
   URL_UPDATED_MESSAGE,
-  SPECIAL_URL_JUNK_STRING,
-  URL_PARAM_NO_COOKIE_KEY,
   SYNC_START_MESSAGE,
   SYNC_END_MESSAGE,
 } from 'constant';
 
+//-----------------------------------------------------------------------------------------------
+// ! Modules
+//-----------------------------------------------------------------------------------------------
+import './headers';
+
 (() => {
-  // ! INITIALIZATION
-  // ! HEADER MODIFICATIONS
-  // Firefox does not allow the `extraHeaders` property on the `webRequest` object.
-  const extraSpec = ['blocking', 'responseHeaders', isFirefox() ? '' : 'extraHeaders'].filter(
-    (i) => i,
-  );
-
-  const processCookieString = (header: string) => {
-    if (header.search(/__sso\.key/g) > -1) {
-      return header;
-    }
-    let newHeader = header;
-    if (newHeader.search(/Secure/) === -1) {
-      newHeader = newHeader.concat(' Secure');
-    }
-    if (newHeader.search(/SameSite=[\w]*/g) === -1) {
-      newHeader = newHeader.concat(' SameSite=None');
-    } else {
-      newHeader = newHeader.replace(/SameSite=[\w]*/g, 'SameSite=None');
-    }
-    return newHeader;
-  };
-
-  // Rewrite all request headers to remove CORS related content and allow remote sites to be loaded into
-  // IFrames for example. This is a NOT SAFE solution and ignores any external security concern provided.
-  chrome.webRequest.onHeadersReceived.addListener(
-    (details) => {
-      const strippedHeaders = [
-        'x-frame-options',
-        'frame-options',
-        'content-security-policy',
-        'access-control-allow-origin',
-        'referer-policy',
-      ];
-
-      const banCookies = details.url.search(URL_PARAM_NO_COOKIE_KEY) > -1;
-
-      banCookies && strippedHeaders.push('set-cookie');
-
-      const responseHeaders =
-        details.responseHeaders?.filter(
-          (responseHeader) => !strippedHeaders.includes(responseHeader.name.toLowerCase()),
-        ) ?? [];
-
-      const result = {
-        responseHeaders: [
-          ...responseHeaders.map((header) => {
-            if (header.name.toLowerCase() === 'set-cookie') {
-              header.value = processCookieString(header.value ?? '');
-            }
-            if (header.name.toLowerCase() === 'location') {
-              try {
-                header.value = new URL(
-                  header.value?.replace(/^https?:\/\//, 'https://') ?? '',
-                ).href;
-              } catch (e) {
-                debug('onHeadersReceived - error', e);
-              }
-            }
-            return header;
-          }),
-          {
-            name: 'Content-Security-Policy',
-            value: `frame-ancestors *`,
-          },
-          {
-            name: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-        ],
-      };
-      return result;
-    },
-    {
-      urls: ['<all_urls>'],
-      types: ['sub_frame'],
-    },
-    extraSpec,
-  );
-  // Rewrite outgoing headers to mimic if UA was a mobile device. We are always want to show the mobile page in
-  // the sidebar. However, this solution is not covering every case. See: `scripts/frame.ts` for details. The idea
-  // here is to append the URL with a junk string on each request we want mobile page back and check for this junk.
-  chrome.webRequest.onBeforeSendHeaders.addListener(
-    (details) => {
-      if (details.url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1) {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (chrome.runtime.lastError) {
-            debug('Chrome Last Error', chrome.runtime.lastError);
-          }
-          for (let i = 0; i < tabs?.length ?? 0; ++i) {
-            chrome.tabs.sendMessage(tabs[i]?.id ?? -1, {
-              type: EXTENSION_SHORT_URL_RECEIVED,
-              shortUrl: details.url,
-            });
-          }
-        });
-      }
-      // Bookface needs `_sso.key` cookie to sent with `SameSite=none` to be able to display in iframe.
-      chrome.cookies.getAll({ name: '_sso.key' }, (cookies) => {
-        const ssoCookie = cookies[0];
-        if (ssoCookie) {
-          chrome.cookies.set({
-            domain: ssoCookie.domain,
-            expirationDate: ssoCookie.expirationDate,
-            httpOnly: true,
-            name: '_sso.key',
-            path: '/',
-            value: ssoCookie.value,
-            url: 'https://bookface.ycombinator.com',
-            sameSite: 'no_restriction',
-            secure: true,
-          });
-        }
-      });
-
-      const requestHeaders = details.requestHeaders?.map((requestHeader) => {
-        if (requestHeader.name.toLowerCase() === 'cookie') {
-          requestHeader.value = processCookieString(requestHeader.value ?? '');
-        }
-        const specialUrl = details.url.includes(SPECIAL_URL_JUNK_STRING);
-        const urlMatchesSearchPattern = specialUrl;
-        if (
-          urlMatchesSearchPattern &&
-          details.frameId > 0 &&
-          requestHeader.name.toLowerCase() === 'user-agent' &&
-          details.url.search(/ecosia\.org/gi) < 1
-        ) {
-          requestHeader.value =
-            'Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36';
-        }
-
-        return requestHeader;
-      });
-
-      return {
-        requestHeaders,
-      };
-    },
-    { urls: ['<all_urls>'] },
-    ['blocking', 'requestHeaders'],
-  );
   // ! PUBLICATION TRACKER
   // Map of publication URLs and their timestamp of when the user started reading that page.
   const trackData: Record<string, number> = Object.create(null);
