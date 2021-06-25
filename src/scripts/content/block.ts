@@ -1,6 +1,6 @@
+import { BLOCKED_ADS } from 'constant';
 import { runFunctionWhenDocumentReady } from 'lib/helpers';
 import { processSerpResults } from 'lib/gutter';
-import { BLOCKED_ADS } from 'constant';
 
 ((document) => {
   const originalHost = document.location.host.replace('www.', '');

@@ -4,12 +4,14 @@
  * @license (C) Insight
  */
 
-import { EXTENSION_SHORT_URL_RECEIVED } from 'constant';
+import { EXTENSION_SHORT_URL_RECEIVED, PUBLICATION_REDIRECT_URL } from 'constant';
 import {
   applyResponseHeaderModifications,
   applyRequestHeaderMutations,
   debug,
   isFirefox,
+  extractPublication,
+  extractUrlProperties,
 } from 'lib/helpers';
 
 //-----------------------------------------------------------------------------------------------
@@ -38,9 +40,15 @@ import {
   //-----------------------------------------------------------------------------------------------
   chrome.webRequest.onHeadersReceived.addListener(
     ({ responseHeaders, url }) => {
-      if (chrome.runtime.lastError || !responseHeaders || !url) {
-        debug('OnBeforeHeadersReceived - Error', chrome.runtime.lastError, responseHeaders, url);
+      if (chrome.runtime.lastError?.message || !responseHeaders || !url) {
+        debug(
+          'OnBeforeHeadersReceived - Error',
+          chrome.runtime.lastError?.message,
+          responseHeaders,
+          url,
+        );
       }
+
       return {
         responseHeaders: [
           ...applyResponseHeaderModifications(url, responseHeaders ?? []),
@@ -61,8 +69,8 @@ import {
     ({ requestHeaders = [], url, frameId }) => {
       if (url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (chrome.runtime.lastError) {
-            debug('Chrome Last Error', chrome.runtime.lastError);
+          if (chrome.runtime.lastError?.message) {
+            debug('Chrome Last Error', chrome.runtime.lastError?.message);
           }
           for (let i = 0; i < tabs?.length ?? 0; ++i) {
             chrome.tabs.sendMessage(tabs[i]?.id ?? -1, {
@@ -94,5 +102,28 @@ import {
     },
     OPTIONS,
     EXTRA_SPEC.concat('requestHeaders'),
+  );
+
+  chrome.webRequest.onBeforeRedirect.addListener(
+    async (details) => {
+      debug('Redirect: ', details.redirectUrl, details.url);
+      const publication = extractPublication(details.url);
+      if (publication) {
+        await new Promise((resolve) =>
+          chrome.storage.local.set(
+            {
+              [`${PUBLICATION_REDIRECT_URL}-${extractUrlProperties(details.redirectUrl).hostname}`]:
+                {
+                  from: extractPublication(details.url),
+                  to: extractUrlProperties(details.redirectUrl).hostname,
+                },
+            },
+            () => resolve(true),
+          ),
+        );
+      }
+    },
+    OPTIONS,
+    ['extraHeaders'],
   );
 })();

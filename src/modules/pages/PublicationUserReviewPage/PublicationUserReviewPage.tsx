@@ -51,11 +51,11 @@ export const PublicationUserReviewPage: PublicationUserReviewPage = ({ rating, i
       </header>
       <div className="sidebar-page-wrapper">
         <section>
-          <h2 className="title">{PAGE_HEADER.replace('<placeholder>', info?.url)}</h2>
+          <h2 className="title">{PAGE_HEADER.replace('<placeholder>', info?.url ?? '')}</h2>
           <span className="publication-page-rating">
             {PAGE_RATING_TEXT.replace('<placeholder>', String(rating))}
           </span>
-          <span className="publication-page-description">{info?.description}</span>
+          <span className="publication-page-description">{info?.tags[0].text}</span>
           <Divider />
         </section>
         <section>

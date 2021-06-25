@@ -85,9 +85,8 @@ declare type PublicationTag = {
 };
 
 declare type PublicationInfo = {
-  url: string;
-  description: string;
   tags: PublicationTag[];
+  url?: string;
 };
 
 //-----------------------------------------------------------------------------------------------

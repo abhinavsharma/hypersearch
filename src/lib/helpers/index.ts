@@ -193,7 +193,7 @@ export const extractPublication = (urlLike: string) => {
   }
   const publication = DOMAINS_TO_RELEVANT_SLICE[hostname]
     ? full.match(DOMAINS_TO_RELEVANT_SLICE[hostname])?.[0] ?? hostname
-    : hostname;
+    : null;
   return publication;
 };
 

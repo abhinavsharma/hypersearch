@@ -1,7 +1,6 @@
-import { TRIGGER_FRAME_SCROLL_LOG_MESSAGE, HIDE_FRAME_OVERLAY_MESSAGE } from 'constant';
-import { extractUrlProperties } from 'lib/helpers';
 import { getLCP, ReportHandler } from 'web-vitals';
-import './results';
+import { extractUrlProperties } from 'lib/helpers';
+import { TRIGGER_FRAME_SCROLL_LOG_MESSAGE, HIDE_FRAME_OVERLAY_MESSAGE } from 'constant';
 
 ((document, window) => {
   const CLEAN_ELEMENTS_FROM: Record<string, string[]> = {

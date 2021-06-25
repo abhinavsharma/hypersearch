@@ -4,7 +4,12 @@
  * @license (C) Insight
  */
 
-import { debug, extractPublication, runFunctionWhenDocumentReady } from 'lib/helpers';
+import {
+  debug,
+  extractPublication,
+  extractUrlProperties,
+  runFunctionWhenDocumentReady,
+} from 'lib/helpers';
 import { processSerpResults } from 'lib/gutter';
 import {
   ACTION_KEY,
@@ -103,7 +108,8 @@ import {
 
       if (!resultLink) return;
 
-      const resultDomain = extractPublication(resultLink);
+      const resultDomain =
+        extractPublication(resultLink) ?? extractUrlProperties(resultLink).hostname ?? '';
 
       const container = element instanceof HTMLElement ? result : element.container;
 

@@ -28,7 +28,7 @@ const ALL_NOTES_PANEL_HEADER = 'All Notes';
 export const SidebarNoteTab: SidebarNoteTab = ({ url }) => {
   const { full, hostname } = extractUrlProperties(url);
   const slice = full?.split('/').slice(0, 2).join('/') ?? '';
-  const publication = extractPublication(url);
+  const publication = extractPublication(url) ?? hostname ?? '';
 
   if (!full && !hostname) {
     return null;
@@ -61,7 +61,7 @@ export const SidebarNoteTab: SidebarNoteTab = ({ url }) => {
           header={makeEllipsis(PANEL_HEADER.replace('<placeholder>', publication), 50)}
           key="3"
         >
-          <SidebarSliceNote slice={publication} prefix={PUBLICATION_NOTE_PREFIX} />
+          <SidebarSliceNote slice={publication ?? ''} prefix={PUBLICATION_NOTE_PREFIX} />
         </Panel>
       )}
       {SHOW_HOSTNAME_NOTES && (

@@ -1,11 +1,17 @@
 /**
- * @module utils:processSerpResults
+ * @module lib:gutter
  * @version 1.0.0
  * @license (C) Insight
  */
 
 import React from 'react';
 import { render } from 'react-dom';
+import { v4 as uuid } from 'uuid';
+import { extractPublication, removeProtocol } from 'lib/helpers';
+import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
+import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
+import { PublicationTagRow } from 'modules/gutter/PublicationTagRow/PublicationTagRow';
+import { createResultOverlay } from 'lib/overlay';
 import {
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_FEATURED_BY_SELECTOR,
@@ -17,13 +23,6 @@ import {
   INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
   INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR,
 } from 'constant';
-
-import { v4 as uuid } from 'uuid';
-import { extractPublication, removeProtocol } from 'lib/helpers';
-import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
-import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
-import { PublicationTagRow } from 'modules/gutter/PublicationTagRow/PublicationTagRow';
-import { createResultOverlay } from 'lib/overlay';
 
 const renderComponentToDocument = (
   root: HTMLElement,
@@ -74,9 +73,9 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (!resultLink?.startsWith('http')) continue;
 
-    const publication = processAsOpenPage ? resultLink : extractPublication(resultLink);
+    const publication = processAsOpenPage ? resultLink : extractPublication(resultLink) ?? '';
 
-    if (typeof publication !== 'string' && augmentations) continue;
+    if (!publication && augmentations) continue;
 
     let blockers: Augmentation[] = [];
 

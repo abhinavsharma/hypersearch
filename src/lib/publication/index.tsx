@@ -4,7 +4,8 @@
  * @license (C) Insight
  */
 
-import { PUBLICATION_INFO_BLOB_URL } from 'constant';
+import { PUBLICATION_INFO_BLOB_URL, PUBLICATION_REDIRECT_URL } from 'constant';
+import { extractUrlProperties } from 'lib/helpers';
 import { useCallback, useEffect, useState } from 'react';
 
 const fetchPublicationInfo = async () => {
@@ -14,13 +15,13 @@ const fetchPublicationInfo = async () => {
 };
 
 export const getPublicationInfo = async (url: string) => {
+  const id = `${PUBLICATION_REDIRECT_URL}-${extractUrlProperties(url).hostname}`;
+  const redirectData = await new Promise<Record<string, { from: string; to: string }>>((resolve) =>
+    chrome.storage.local.get(id, resolve),
+  ).then((data) => data[id]);
   const publicationInfos = await fetchPublicationInfo();
-  const publicationInfo =
-    publicationInfos[url] ||
-    Object.values(publicationInfos).find((value) => {
-      return value.url === url;
-    });
-  return publicationInfo;
+  const publicationInfo = publicationInfos[url] || publicationInfos[redirectData.from];
+  return { ...publicationInfo, url: redirectData?.to || url };
 };
 
 export const usePublicationInfo = (publication: string) => {

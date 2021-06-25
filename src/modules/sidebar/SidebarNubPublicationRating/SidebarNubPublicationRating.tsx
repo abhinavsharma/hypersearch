@@ -37,7 +37,7 @@ export const SidebarNubPublicationRating: SidebarNubPublicationRating = ({ ratin
   //-----------------------------------------------------------------------------------------------
   const component = (
     <>
-      <Tooltip title={info.description} placement="right" destroyTooltipOnHide={keepParent}>
+      <Tooltip title={info.tags[0].text} placement="right" destroyTooltipOnHide={keepParent}>
         <div onClick={handleClick} className="insight-sidebar-publication-rating-nub">
           <h3>{rating}&nbsp;⭐</h3>
         </div>

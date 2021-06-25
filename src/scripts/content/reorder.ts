@@ -1,9 +1,9 @@
+import { debug, extractUrlProperties } from 'lib/helpers';
 import {
   GOOGLE_SERP_RESULT_A_SELECTOR,
   GOOGLE_SERP_RESULT_CONTAINER,
   GOOGLE_SERP_RESULT_DIV_SELECTOR,
 } from 'constant';
-import { debug, extractUrlProperties } from 'lib/helpers';
 
 ((document, window) => {
   // First X results to replace with unique results.
