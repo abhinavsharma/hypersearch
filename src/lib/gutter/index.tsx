@@ -7,7 +7,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { v4 as uuid } from 'uuid';
-import { extractPublication, removeProtocol } from 'lib/helpers';
+import { extractPublication, extractUrlProperties, removeProtocol } from 'lib/helpers';
 import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
 import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
 import { PublicationTagRow } from 'modules/gutter/PublicationTagRow/PublicationTagRow';
@@ -73,7 +73,9 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (!resultLink?.startsWith('http')) continue;
 
-    const publication = processAsOpenPage ? resultLink : extractPublication(resultLink) ?? '';
+    const publication = processAsOpenPage
+      ? resultLink
+      : extractPublication(resultLink) ?? extractUrlProperties(resultLink).hostname ?? '';
 
     if (!publication && augmentations) continue;
 
