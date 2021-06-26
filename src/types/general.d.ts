@@ -16,7 +16,7 @@ declare type SidebarTab = {
 };
 
 declare type SidebarPage = TSidebarPage[keyof TSidebarPage];
-type TSidebarPage = typeof import('constant').SIDEBAR_PAGE;
+type TSidebarPage = typeof import('constant').PAGE;
 
 //-----------------------------------------------------------------------------------------------
 // ! Engine
@@ -76,6 +76,21 @@ declare type SubtabsResponse = {
 };
 
 //-----------------------------------------------------------------------------------------------
+// ! Publication
+//-----------------------------------------------------------------------------------------------
+
+declare type PublicationTag = {
+  text: string;
+  rating: number;
+};
+
+declare type PublicationInfo = {
+  tags: PublicationTag[];
+  url?: string;
+  publication?: string;
+};
+
+//-----------------------------------------------------------------------------------------------
 // ! Log
 //-----------------------------------------------------------------------------------------------
 
@@ -120,6 +135,14 @@ declare interface Array<T> {
 
 declare type PublicationSlices = Record<string, Record<string, string[]>> &
   Record<'original', string[]>;
+
+declare type NoteRecord = {
+  id: string;
+  note: string;
+  slice?: string;
+  key?: string;
+  external?: boolean;
+};
 
 declare type Prefix = TPrefix[keyof TPrefix];
 

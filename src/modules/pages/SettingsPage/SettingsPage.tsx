@@ -11,14 +11,6 @@ import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
 import UserManager from 'lib/user';
 import { useFeature } from 'lib/features';
-import { BookmarksSyncButton, LicenseForm, LoginForm } from 'modules/settings';
-
-import {
-  APP_NAME,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
-  SYNC_PRIVACY_KEY,
-} from 'constant';
 import {
   ACTIVE_LICENSE_MAIN_HEADER,
   CHECKED_PRIVACY_EXPLAINER_CONTENT,
@@ -27,7 +19,9 @@ import {
   INACTIVE_LICENSE_TEXT_CONTENT,
   UNCHECKED_PRIVACY_EXPLAINER_CONTENT,
   UNCHECKED_SWITCH_TEXT,
-} from 'modules/introduction';
+} from 'modules/onboarding';
+import { BookmarksSyncButton, LicenseForm, LoginForm } from 'modules/settings';
+import { APP_NAME, MESSAGE, PAGE, SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -62,8 +56,8 @@ export const SettingsPage: SettingsPage = ({ email }) => {
   //-----------------------------------------------------------------------------------------------
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
       create: true,
     });
   };

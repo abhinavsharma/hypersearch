@@ -39,6 +39,12 @@
     }
   }
 
+  .insight-sidebar-publication-rating-nub {
+    font-size: $sidebar_font_medium;
+    border-right: none;
+    margin-left: $sidebar_space_large;
+  }
+
   .insight-sidebar-toggle-appname {
     position: relative;
     text-align: center;

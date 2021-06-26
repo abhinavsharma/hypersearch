@@ -9,10 +9,6 @@
     "release": "standard-version && npm run build && cd dist && web-ext build && cd .. && ts-node tasks/scripts/post_release.ts",
     "test": "npx jest"
   },
-  "contributors": [
-    "Abhinav Sharma <abhinav@laso.ai>",
-    "Matyas Angyal <matyas@laso.ai>"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/lumosbrowser/lumos-extension.git"

@@ -1,13 +1,12 @@
-import { SIDEBAR_Z_INDEX } from 'constant';
+import { SIDEBAR_TAB_FAKE_URL, SIDEBAR_Z_INDEX } from 'constant';
 import variables from 'styles/variables.scss';
 
-export const flipSidebar: FlipSidebar = (
-  outerDocument,
-  force,
-  tabsLength,
-  maxAvailableWidth,
-  preventOverlay,
-) => {
+export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOverlay) => {
+  const maxAvailableWidth = loader.maxAvailableSpace;
+  const tabsLength = loader.sidebarTabs.filter(
+    ({ url }) => url.href !== SIDEBAR_TAB_FAKE_URL,
+  ).length;
+
   const availableWidth = Number(
     maxAvailableWidth > Number(variables.sidebarMaxWidth.slice(0, -2))
       ? maxAvailableWidth
@@ -57,6 +56,10 @@ export const flipSidebar: FlipSidebar = (
   const showButton = (document.getElementsByClassName('insight-sidebar-toggle-button')[0] ??
     document.createElement('div')) as HTMLDivElement;
 
+  const ratingButton = (document.getElementsByClassName(
+    'insight-sidebar-publication-rating-nub',
+  )[0] ?? document.createElement('div')) as HTMLDivElement;
+
   if (innerDocument.classList.contains('insight-expanded')) return;
 
   if (force === 'hide') {
@@ -67,8 +70,8 @@ export const flipSidebar: FlipSidebar = (
       outerDocument.getElementById('sidebar-root')?.setAttribute(
         'style',
         `
-        height: 0;
-        width: 0;
+        height: ${loader.showPublicationRating ? 130 : 0}px;
+        width: ${loader.showPublicationRating ? 200 : 0}px;
       `,
       );
       showButton.setAttribute(
@@ -82,9 +85,11 @@ export const flipSidebar: FlipSidebar = (
         'style',
         `
         position: fixed;
-        min-height: ${tabsLength === 0 ? '0' : '100px'};
-        height: ${showButton.getAttribute('data-height') ?? '0'}px;
-        width: ${tabsLength === 0 ? '0' : '160px'};
+        min-height: ${tabsLength === 0 ? (!loader.showPublicationRating ? '0' : '100px') : '100px'};
+        height: ${
+          loader.showPublicationRating ? '150' : showButton.getAttribute('data-height') ?? '0'
+        }px;
+        width: ${tabsLength === 0 ? (!loader.showPublicationRating ? '0' : '350px') : '160px'};
         border-width: 0 !important;
         top: auto;
         right: 0;
@@ -95,6 +100,8 @@ export const flipSidebar: FlipSidebar = (
       );
       showButton.style.visibility = 'visible';
       showButton.style.display = 'flex';
+      ratingButton.style.visibility = 'visible';
+      ratingButton.style.display = 'flex';
       showButton.style.flexDirection = 'row';
       if (!preventOverlay) {
         sidebarOverlay.style.opacity = '0';
@@ -107,6 +114,8 @@ export const flipSidebar: FlipSidebar = (
     sidebarContainer.style.visibility = 'visible';
     showButton.style.display = 'none';
     showButton.style.visibility = 'hidden';
+    ratingButton.style.display = 'none';
+    ratingButton.style.visibility = 'hidden';
     sidebarContainer.style.width = `${actualWidth - 30}px`;
     sidebarContainer.style.maxWidth = `${variables.sidebarStretchedMaxWidth}px`;
     tabsContainer.style.visibility = 'visible';

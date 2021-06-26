@@ -1,10 +1,11 @@
-import React, { Suspense, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import Row from 'antd/lib/row';
 import Col from 'antd/lib/col';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
-import { ACTION_KEY, ACTION_LABEL } from 'constant';
 import { NewActionDropdown, MultiValueInput, SearchEngineDropdown } from 'modules/builder';
+import SidebarLoader from 'lib/sidebar';
+import { ACTION_KEY, ACTION_LABEL } from 'constant';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/grid/style/index.css';
@@ -68,8 +69,22 @@ export const ActionInput: ActionInput = ({ action, saveAction, deleteAction }) =
         placeholder={ACTION_LABEL.SEARCH_ALSO}
       />
     ),
+    [ACTION_KEY.URL_NOTE]: <Input key={action.id} value={SidebarLoader.url.href} disabled />,
     default: <Input key={action.id} value={action.value as string[]} onChange={handleChange} />,
   };
+
+  useEffect(() => {
+    newKey === ACTION_KEY.URL_NOTE &&
+      saveAction({
+        ...action,
+        label: newLabel,
+        key: newKey,
+        value: [SidebarLoader.url.href],
+      });
+    // Singleton instance not reinitialized on rerender.
+    // ! Be careful when updating the dependency list!
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newKey]);
 
   return (
     <Row className="insight-large-input-row">

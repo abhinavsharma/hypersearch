@@ -14,13 +14,7 @@ import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import UserManager from 'lib/user';
 import { getFirstValidTabIndex } from 'lib/helpers';
-import {
-  CSE_PREFIX,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
-  PROTECTED_AUGMENTATIONS,
-  SIDEBAR_Z_INDEX,
-} from 'constant';
+import { CSE_PREFIX, MESSAGE, PAGE, PROTECTED_AUGMENTATIONS, SIDEBAR_Z_INDEX } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './ActionBar.scss';
@@ -54,8 +48,8 @@ export const ActionBar: ActionBar = ({ tab, setActiveKey }) => {
             augmentation: tab.augmentation,
           };
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       augmentation: {
         ...tab.augmentation,
         id: isEdit ? tab.augmentation.id : `${CSE_PREFIX}-${uuid()}`,

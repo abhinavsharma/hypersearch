@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { Maximize, Minimize, Sliders } from 'react-feather';
 import Typography from 'antd/lib/typography';
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
-import { Maximize, Minimize, Sliders } from 'react-feather';
 import SidebarLoader from 'lib/sidebar';
 import { CustomSidebarIcon } from 'modules/shared';
 import { flipSidebar } from 'lib/flip';
@@ -11,8 +11,8 @@ import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
   APP_NAME_LONG,
   FULLSCREEN_KEY,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SHRINK_KEY,
 } from 'constant';
@@ -21,22 +21,27 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarHeader.scss';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const ICON_COLOR = '#999999';
 const SHRINK_TOOLTIP_TEXT = `Back to Search Engine ("${FULLSCREEN_KEY.KEY}" key)`;
 const EXPAND_TOOLTIP_TEXT = `Fullscreen ("${FULLSCREEN_KEY.KEY}" key)`;
 const MENU_TOOLTIP_TEXT = 'Configure';
 const HIDE_TOOLTIP_TEXT = `Hide ("${SHRINK_KEY.KEY}" key)`;
 
-const { Title } = Typography;
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
+export const SidebarHeader: SidebarHeader = () => {
+  const { Title } = Typography;
 
-export const SidebarHeader: SidebarHeader = ({ tabs }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(SidebarLoader.isExpanded);
 
   const handleClose = () => {
     isExpanded && handleExpand();
     SidebarLoader.isPreview = false;
-    flipSidebar(document, 'hide', tabs.length, SidebarLoader.maxAvailableSpace);
+    flipSidebar(document, 'hide', SidebarLoader);
   };
 
   const handleOpenBuilder = () => {
@@ -44,19 +49,23 @@ export const SidebarHeader: SidebarHeader = ({ tabs }) => {
       SidebarLoader.tourStep = '2';
     }
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 
   const handleExpand = () => {
     SidebarLoader.isExpanded = !SidebarLoader.isExpanded;
     setIsExpanded(SidebarLoader.isExpanded);
-    expandSidebar(SidebarLoader.sidebarTabs.length, SidebarLoader.maxAvailableSpace);
+    expandSidebar(SidebarLoader);
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   };
 
   const keepParent = { keepParent: false };
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
 
   return (
     <div id="sidebar-header">

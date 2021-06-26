@@ -7,12 +7,7 @@
 import React, { Suspense } from 'react';
 import Button from 'antd/lib/button';
 import AugmentationManager from 'lib/augmentations';
-import {
-  AUGMENTATION_ID,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
-  PROTECTED_AUGMENTATIONS,
-} from 'constant';
+import { AUGMENTATION_ID, MESSAGE, PAGE, PROTECTED_AUGMENTATIONS } from 'constant';
 import 'antd/lib/button/style/index.css';
 
 const DeleteOutlined = React.lazy(
@@ -35,8 +30,8 @@ export const DeleteAugmentationButton: DeleteAugmentationButton = ({ augmentatio
     if (disabled || augmentation.id === AUGMENTATION_ID.BLOCKLIST) return;
     AugmentationManager.removeInstalledAugmentation(augmentation);
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 

@@ -10,7 +10,15 @@ import message from 'antd/lib/message';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import UserManager from 'lib/user';
-import { ActivePage, BuilderPage, GutterPage, SettingsPage, FeaturePage } from 'modules/pages';
+import {
+  ActivePage,
+  BuilderPage,
+  GutterPage,
+  SettingsPage,
+  FeaturePage,
+  PublicationPage,
+  NotePage,
+} from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -21,15 +29,16 @@ import {
 import { extractUrlProperties, removeProtocol } from 'lib/helpers';
 import { flipSidebar } from 'lib/flip';
 import {
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
+  MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   EXTENSION_SERP_LINK_CLICKED,
   EXTENSION_SERP_FILTER_LINK_CLICKED,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SWITCH_TO_TAB,
   USE_COUNT_PREFIX,
-  SIDEBAR_PAGE,
+  PAGE,
   PRERENDER_TABS,
+  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/message/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -39,7 +48,7 @@ import './SidebarTabs.scss';
 const { TabPane } = Tabs;
 
 export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
-  const [showPage, setShowPage] = useState<SidebarPage>(SIDEBAR_PAGE.ACTIVE);
+  const [showPage, setShowPage] = useState<SidebarPage>(PAGE.ACTIVE);
   const [pageData, setPageData] = useState<Record<string, any>>();
 
   const handleLog = useCallback(
@@ -92,7 +101,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
       switch (msg.type) {
         // Set up listener for expanding sidebar with the augmentation builder page,
         // when the extension toolbar icon is clicked by the user.
-        case OPEN_AUGMENTATION_BUILDER_MESSAGE:
+        case MESSAGE.OPEN_PAGE:
           if (msg.augmentation && !AugmentationManager.isAugmentationEnabled(msg.augmentation)) {
             message.error({
               top: 30,
@@ -102,16 +111,30 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             setTimeout(() => message.destroy(), 2500);
             break;
           }
-          flipSidebar(document, 'show', tabs?.length, SidebarLoader.maxAvailableSpace, true);
+          flipSidebar(document, 'show', SidebarLoader, true);
           setActiveKey('0');
-          if (msg.page === SIDEBAR_PAGE.GUTTER && msg.augmentations) {
-            setPageData({ augmentations: msg.augmentations, publication: msg.publication });
+          if (msg.page === PAGE.GUTTER && msg.augmentations) {
+            setPageData({
+              augmentations: msg.augmentations,
+              publication: msg.publication,
+              fromGutter: msg.fromGutter,
+            });
           }
-          if (msg.page === SIDEBAR_PAGE.BUILDER && msg.augmentation) {
+          if (msg.page === PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
           }
-          if (msg.page === SIDEBAR_PAGE.SETTINGS && msg.email) {
+          if (msg.page === PAGE.SETTINGS && msg.email) {
             setPageData({ email: msg.email });
+          }
+          if (msg.page === PAGE.PUBLICATION) {
+            setPageData({ info: msg.info, rating: msg.rating });
+          }
+          if (msg.page === PAGE.NOTES) {
+            setPageData({
+              url: msg.url,
+              publication: msg.publication,
+              forceCustom: msg.forceCustom,
+            });
           }
           msg.page && setShowPage(msg.page);
           break;
@@ -136,13 +159,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               ),
             );
             if (index !== -1) {
-              flipSidebar(
-                document,
-                'show',
-                tabs.length,
-                SidebarLoader.maxAvailableSpace,
-                SidebarLoader.isPreview,
-              );
+              flipSidebar(document, 'show', SidebarLoader, SidebarLoader.isPreview);
               SidebarLoader.isPreview ??= true;
               setActiveKey(String(index + 1));
             }
@@ -171,26 +188,36 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         <TabPane key="0" tab={null} className="sidebar-tab-panel" forceRender>
           {(() => {
             switch (showPage) {
-              case SIDEBAR_PAGE.ACTIVE:
+              case PAGE.ACTIVE:
                 return <ActivePage />;
-              case SIDEBAR_PAGE.BUILDER:
+              case PAGE.BUILDER:
                 return (
                   <BuilderPage
                     augmentation={pageData?.augmentation}
                     isAdding={pageData?.isAdding}
                   />
                 );
-              case SIDEBAR_PAGE.GUTTER:
+              case PAGE.GUTTER:
                 return (
                   <GutterPage
                     hidingAugmentations={pageData?.augmentations}
                     domain={pageData?.publication}
                   />
                 );
-              case SIDEBAR_PAGE.SETTINGS:
+              case PAGE.SETTINGS:
                 return <SettingsPage email={pageData?.email} />;
-              case SIDEBAR_PAGE.FEATURE:
+              case PAGE.FEATURE:
                 return <FeaturePage />;
+              case PAGE.PUBLICATION:
+                return <PublicationPage info={pageData?.info} rating={pageData?.rating} />;
+              case PAGE.NOTES:
+                return (
+                  <NotePage
+                    url={pageData?.url}
+                    customUrl={pageData?.publication}
+                    forceCustom={pageData?.forceCustom}
+                  />
+                );
               default:
                 return null;
             }
@@ -214,15 +241,13 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             >
               {tab.augmentation && (
                 <>
-                  {activeKey === (i + 1).toString() && (
+                  {activeKey === (i + 1).toString() && tab.url.href !== SIDEBAR_TAB_NOTE_TAB && (
                     <ActionBar tab={tab} setActiveKey={setActiveKey} />
                   )}
                   <SidebarTabMeta tab={tab} />
                 </>
               )}
-              {/* {tab.readable && <SidebarTabReadable readable={tab.readable} />} */}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
-              {/* tab.url.searchParams.get(URL_PARAM_POSSIBLE_SERP_RESULT) && <SidebarFooter /> */}
             </TabPane>
           );
         })}

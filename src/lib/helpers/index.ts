@@ -9,6 +9,12 @@ import {
   AUGMENTATION_ID,
   LUMOS_APP_BASE_URL,
   ENV,
+  SYNC_PRIVACY_KEY,
+  SYNC_LICENSE_KEY,
+  SPECIAL_URL_JUNK_STRING,
+  CUSTOM_UA_STRING,
+  URL_PARAM_NO_COOKIE_KEY,
+  STRIPPED_RESPONSE_HEADERS,
 } from 'constant';
 
 /**
@@ -187,7 +193,7 @@ export const extractPublication = (urlLike: string) => {
   }
   const publication = DOMAINS_TO_RELEVANT_SLICE[hostname]
     ? full.match(DOMAINS_TO_RELEVANT_SLICE[hostname])?.[0] ?? hostname
-    : hostname;
+    : null;
   return publication;
 };
 
@@ -566,7 +572,13 @@ export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
   return (tabs.findLastIndex(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL) + 1).toString();
 };
 
-// TODO #2 END
+export const getStoredUserSettings = async () =>
+  await new Promise<Record<string, boolean>>((resolve) =>
+    chrome.storage.sync.get([SYNC_PRIVACY_KEY, SYNC_LICENSE_KEY], resolve),
+  ).then((result) => ({
+    privacy: result?.[SYNC_PRIVACY_KEY],
+    license: (result?.[SYNC_LICENSE_KEY] ?? '') || undefined,
+  }));
 
 export const CustomStorage = {
   getItem(key: string) {
@@ -574,12 +586,6 @@ export const CustomStorage = {
     chrome.storage.local.get(key, (data) => {
       result = data[key] || null;
     });
-    /* while (result === undefined) {
-      // don't blame me, it's Felipe's idea :)
-      if (chrome.runtime.lastError) {
-        break;
-      }
-    } */
     return result ?? null;
   },
   removeItem(key: string) {
@@ -592,3 +598,65 @@ export const CustomStorage = {
     //
   },
 };
+
+export const processCookieString = (header: string) => {
+  if (header.search(/__sso\.key/g) > -1) {
+    return header;
+  }
+  let newHeader = header;
+  if (newHeader.search(/Secure/) === -1) {
+    newHeader = newHeader.concat(' Secure');
+  }
+  if (newHeader.search(/SameSite=[\w]*/g) === -1) {
+    newHeader = newHeader.concat(' SameSite=None');
+  } else {
+    newHeader = newHeader.replace(/SameSite=[\w]*/g, 'SameSite=None');
+  }
+  return newHeader;
+};
+
+const getStrippedHeaders = (url: string) => {
+  const BAN_COOKIES = url.includes(URL_PARAM_NO_COOKIE_KEY);
+  BAN_COOKIES && STRIPPED_RESPONSE_HEADERS.push('set-cookie');
+  return STRIPPED_RESPONSE_HEADERS;
+};
+
+export const applyResponseHeaderModifications = (
+  url: string,
+  headers: chrome.webRequest.HttpHeader[],
+) => {
+  return headers
+    .filter((header) => !getStrippedHeaders(url).includes(header.name.toLowerCase()))
+    .map((header) => {
+      if (header.name.toLowerCase() === 'set-cookie') {
+        header.value = processCookieString(header.value ?? '');
+      }
+      if (header.name.toLowerCase() === 'location') {
+        try {
+          header.value = new URL(header.value?.replace(/^https?:\/\//, 'https://') ?? '').href;
+        } catch (e) {
+          debug('onHeadersReceived - error', e);
+        }
+      }
+      return header;
+    });
+};
+
+export const applyRequestHeaderMutations = (
+  requestHeaders: chrome.webRequest.HttpHeader[],
+  url: string,
+  frameId: number,
+) =>
+  requestHeaders?.map((requestHeader) => {
+    const isCookieHeader = requestHeader.name.toLowerCase() === 'cookie';
+    isCookieHeader && (requestHeader.value = processCookieString(requestHeader.value ?? ''));
+    const specialUrl = url.includes(SPECIAL_URL_JUNK_STRING);
+    const urlMatchesSearchPattern = specialUrl;
+    const shouldRewriteUA =
+      urlMatchesSearchPattern &&
+      frameId > 0 &&
+      requestHeader.name.toLowerCase() === 'user-agent' &&
+      url.search(/ecosia\.org/gi) < 1;
+    shouldRewriteUA && (requestHeader.value = CUSTOM_UA_STRING);
+    return requestHeader;
+  });

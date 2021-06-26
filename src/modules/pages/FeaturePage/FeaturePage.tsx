@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
 import Switch from 'antd/lib/switch';
-import { OPEN_AUGMENTATION_BUILDER_MESSAGE, SIDEBAR_PAGE } from 'constant';
+import { MESSAGE, PAGE } from 'constant';
 import { useFeature } from 'lib/features';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -14,14 +14,15 @@ const HEADER_LEFT_BUTTON_TEXT = 'Close';
 export const FeaturePage: FeaturePage = () => {
   const [bookmarksFeature, toggleBookmarksFeature] = useFeature('desktop_bookmarks');
   const [loginFeature, toggleLoginFeature] = useFeature('desktop_login');
+  const [ratingFeature, toggleRatingFeature] = useFeature('desktop_ratings');
 
   const handleToggleLogin = () => toggleLoginFeature();
   const handleToggleBookmarks = () => toggleBookmarksFeature();
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.SETTINGS,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.SETTINGS,
     });
   };
 
@@ -37,22 +38,31 @@ export const FeaturePage: FeaturePage = () => {
         <section>
           <h2 className="title">Temporarily Enable/Disable Development Features</h2>
           <div className="settings-section-content insight-row">
-            <h2>Toggle Login Feature</h2>
             <Switch
-              style={{ marginLeft: '50px' }}
+              style={{ marginRight: '20px' }}
+              className="privacy-toggle-button"
+              checked={ratingFeature}
+              onChange={toggleRatingFeature}
+            />
+            <h2>Toggle Publication Review Feature</h2>
+          </div>
+          <div className="settings-section-content insight-row">
+            <Switch
+              style={{ marginRight: '20px' }}
               className="privacy-toggle-button"
               checked={loginFeature}
               onChange={handleToggleLogin}
             />
+            <h2>Toggle Login Feature</h2>
           </div>
           <div className="settings-section-content insight-row">
-            <h2>Toggle Bookmarks Feature</h2>
             <Switch
-              style={{ marginLeft: '50px' }}
+              style={{ marginRight: '20px' }}
               className="privacy-toggle-button"
               checked={bookmarksFeature}
               onChange={handleToggleBookmarks}
             />
+            <h2>Toggle Bookmarks Feature</h2>
           </div>
           <Divider />
         </section>

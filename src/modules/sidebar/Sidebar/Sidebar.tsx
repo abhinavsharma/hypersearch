@@ -1,11 +1,14 @@
 /**
- * @module Sidebar
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module modules:sidebar
  * @version 1.0.0
+ * @license (C) Insight
  */
+
 import React, { useEffect, useState } from 'react';
 import md5 from 'md5';
+import { useDebouncedFn } from 'beautiful-react-hooks';
+import { usePublicationInfo } from 'lib/publication';
+import UserManager from 'lib/user';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import { flipSidebar } from 'lib/flip';
@@ -14,6 +17,7 @@ import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
   EXTENSION_AUTO_EXPAND,
+  POST_TAB_UPDATE_MESSAGE,
   SIDEBAR_TAB_FAKE_URL,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
@@ -21,15 +25,21 @@ import {
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'constant';
 import './Sidebar.scss';
-import { useDebouncedFn } from 'beautiful-react-hooks';
-import UserManager from 'lib/user';
 
-const Sidebar: Sidebar = () => {
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
+export const Sidebar: Sidebar = () => {
+  const { publicationInfo, averageRating } = usePublicationInfo(window.location.hostname);
+  const [rating, setRating] = useState<number>(0);
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
   const [activeKey, setActiveKey] = useState<string>(
     getFirstValidTabIndex(SidebarLoader.sidebarTabs),
   );
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
   const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
   const isTabsLength = firstValidTab !== '0';
@@ -45,23 +55,22 @@ const Sidebar: Sidebar = () => {
 
   const handleResize = useDebouncedFn(() => {
     if (SidebarLoader.isPreview || !shouldPreventExpand) {
-      flipSidebar(document, 'show', validTabsLength, SidebarLoader.maxAvailableSpace);
+      flipSidebar(document, 'show', SidebarLoader);
     }
   }, 300);
+
+  useEffect(() => {
+    SidebarLoader.showPublicationRating = averageRating > 0;
+    setRating(averageRating);
+  }, [averageRating]);
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
 
     if (shouldPreventExpand && !SidebarLoader.isPreview) {
-      flipSidebar(document, 'hide', validTabsLength, SidebarLoader.maxAvailableSpace, true);
+      flipSidebar(document, 'hide', SidebarLoader);
     } else {
-      flipSidebar(
-        document,
-        'show',
-        validTabsLength,
-        SidebarLoader.maxAvailableSpace,
-        SidebarLoader.isPreview,
-      );
+      flipSidebar(document, 'show', SidebarLoader, SidebarLoader.isPreview);
       SidebarLoader.isPreview ??= true;
     }
 
@@ -84,7 +93,7 @@ const Sidebar: Sidebar = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength]);
+  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength, rating]);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
@@ -92,6 +101,7 @@ const Sidebar: Sidebar = () => {
         case UPDATE_SIDEBAR_TABS_MESSAGE:
           setSidebarTabs(SidebarLoader.getTabsAndAugmentations());
           triggerSerpProcessing(SidebarLoader);
+          setTimeout(() => chrome.runtime.sendMessage({ type: POST_TAB_UPDATE_MESSAGE }), 300);
           break;
         case DISABLE_SUGGESTED_AUGMENTATION:
           AugmentationManager.disableSuggestedAugmentation(msg.augmentation);
@@ -114,14 +124,19 @@ const Sidebar: Sidebar = () => {
 
   const tabsLength = !!sidebarTabs.filter(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL).length;
 
+  const shouldShowButton = !!publicationInfo.tags?.length || !!averageRating || !!tabsLength;
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <>
       <div id="insight-sidebar-container" className="insight-full-size-fixed">
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
-      {tabsLength && <SidebarToggleButton tabs={sidebarTabs} />}
+      {shouldShowButton && (
+        <SidebarToggleButton tabs={sidebarTabs} rating={averageRating} info={publicationInfo} />
+      )}
     </>
   );
 };
-
-export { Sidebar };

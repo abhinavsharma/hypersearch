@@ -4,12 +4,12 @@
  * @license (C) Insight
  */
 
+import { getPublicationUrl } from 'lib/helpers';
 import {
   MAX_INACTIVE_SECONDS,
   TRIGGER_START_TRACK_TIMER_MESSAGE,
   TRIGGER_STOP_TRACK_TIMER_MESSAGE,
 } from 'constant';
-import { getPublicationUrl } from 'lib/helpers';
 
 export const activityMonitor = (document: Document): void => {
   if (!getPublicationUrl(window.location.href)) {

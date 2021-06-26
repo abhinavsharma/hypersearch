@@ -7,6 +7,7 @@
 
     .builder-page-collapse-panel {
       .builder-page-collapse-panel-title {
+        display: inline;
         font-weight: bold;
         font-size: $sidebar_font_larger;
 
@@ -32,6 +33,12 @@
           margin-right: $sidebar_space_large;
         }
       }
+    }
+
+    .no-condition-text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }

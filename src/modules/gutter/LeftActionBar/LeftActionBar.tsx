@@ -13,9 +13,11 @@ import SidebarLoader from 'lib/sidebar';
 import {
   AUGMENTATION_ID,
   HOVER_EXPAND_REQUIRED_MIN_WIDTH,
+  INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  INSIGHT_SHOW_GUTTER_ICON_SELECTOR,
+  MESSAGE,
+  PAGE,
   SIDEBAR_Z_INDEX,
   TOGGLE_BLOCKED_DOMAIN_MESSAGE,
   TOGGLE_TRUSTED_DOMAIN_MESSAGE,
@@ -76,10 +78,11 @@ export const LeftActionBar: LeftActionBar = ({
   const handleOpenBuilder = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.GUTTER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.GUTTER,
       augmentations: blockingAugmentations,
       publication,
+      fromGutter: true,
     });
   };
 
@@ -119,7 +122,7 @@ export const LeftActionBar: LeftActionBar = ({
     }
 
     if (rootRef.current) {
-      rootRef.current.setAttribute('insight-show-gutter-icon', 'false');
+      rootRef.current.setAttribute(INSIGHT_SHOW_GUTTER_ICON_SELECTOR, 'false');
     }
   }, [isSearched, isTrusted, isBlocked, isFeatured]);
 
@@ -130,7 +133,7 @@ export const LeftActionBar: LeftActionBar = ({
       }
 
       if (rootRef.current) {
-        rootRef.current.setAttribute('insight-show-gutter-icon', 'true');
+        rootRef.current.setAttribute(INSIGHT_SHOW_GUTTER_ICON_SELECTOR, 'true');
       }
     };
 
@@ -140,7 +143,7 @@ export const LeftActionBar: LeftActionBar = ({
       }
 
       rootRef.current =
-        rootRef.current ?? iconRef.current.closest('.insight-gutter-button-root-left');
+        rootRef.current ?? iconRef.current.closest(`.${INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR}`);
 
       /* eslint-disable */
       const newResult =

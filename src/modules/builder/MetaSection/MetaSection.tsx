@@ -5,6 +5,7 @@ import Input from 'antd/lib/input';
 import Switch from 'antd/lib/switch';
 import { DeleteAugmentationButton } from 'modules/builder';
 import { ShareButton } from 'modules/shared';
+import { NOTE_TAB_TITLE } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/grid/style/index.css';
@@ -16,6 +17,7 @@ const DESCRIPTION_SECTION_LABEL = 'Description (optional)';
 const ENABLED_SECTION_LABEL = 'Enabled';
 
 export const MetaSection: MetaSection = ({
+  isNote,
   augmentation,
   name,
   onNameChange,
@@ -29,7 +31,7 @@ export const MetaSection: MetaSection = ({
       <Row className="insight-large-input-row">
         <Col xs={12}>{NAME_SECTION_LABEL}</Col>
         <Col xs={12}>
-          <Input onChange={onNameChange} value={name} />
+          <Input onChange={onNameChange} value={isNote ? NOTE_TAB_TITLE : name} disabled={isNote} />
         </Col>
       </Row>
       <Row className="insight-large-input-row">

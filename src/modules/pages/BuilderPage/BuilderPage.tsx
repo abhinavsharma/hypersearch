@@ -9,28 +9,34 @@ import { v4 as uuid } from 'uuid';
 import Collapse from 'antd/lib/collapse/Collapse';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
+import Typography from 'antd/lib/typography';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import { MetaSection, ActionsSection, ConditionsSection } from 'modules/builder';
 import {
+  ACTION_KEY,
+  ANY_SEARCH_ENGINE_CONDITION_TEMPLATE,
   ANY_URL_CONDITION_TEMPLATE,
   AUGMENTATION_TITLE,
   EMPTY_AUGMENTATION,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   SIDEBAR_Z_INDEX,
   TOUR_AUGMENTATION,
 } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/popover/style/index.css';
 import 'antd/lib/collapse/style/index.css';
+import 'antd/lib/typography/style/index.css';
 import './BuilderPage.scss';
 
 const { Panel } = Collapse;
+const { Title } = Typography;
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
+const NO_CONDTION_TEXT = 'There are no conditions for the specified action';
 const HEADER_LEFT_BUTTON = 'Cancel';
 const HEADER_ADD_TITLE = 'Add Local Lens';
 const HEADER_EDIT_TITLE = 'Edit Local Lens';
@@ -48,8 +54,10 @@ const THEN_TOUR_POPUP_TEXT =
 // * META
 const META_HEADER_TEXT = 'About';
 const META_TOUR_POPUP_TITLE = 'Metadata';
-const META_TOUR_POPUP_TEXT =
-  'From here you can rename your lens, disable it temporarily or share it.';
+
+const META_TOUR_POPUP_TEXT = `
+From here you can rename your lens, disable it temporarily or share it.
+` as const;
 
 const TOUR_TOOLTIP_STYLE: React.CSSProperties = {
   display: 'flex',
@@ -63,6 +71,9 @@ const TOUR_TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_IN
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, isAdding }) => {
+  const [isNote, setIsNote] = useState<boolean>(
+    !!augmentation.actions.action_list.find(({ key }) => key === ACTION_KEY.URL_NOTE),
+  );
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
 
@@ -99,7 +110,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
           {
             ...(tourStep === '2'
               ? TOUR_AUGMENTATION.conditions.condition_list[0]
-              : ANY_URL_CONDITION_TEMPLATE),
+              : ANY_SEARCH_ENGINE_CONDITION_TEMPLATE),
             id: uuid(),
           },
         ]
@@ -129,8 +140,8 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 
@@ -143,7 +154,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
     handleClose();
     AugmentationManager.addOrEditAugmentation(augmentation, {
       actions,
-      conditions,
+      conditions: isNote ? [ANY_URL_CONDITION_TEMPLATE] : conditions,
       conditionEvaluation,
       description,
       name,
@@ -165,10 +176,14 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
 
   const handleDeleteAction = (e: CustomAction) => {
     setActions((prev) => prev.filter((i) => i.id !== e.id));
+    e.key === ACTION_KEY.URL_NOTE && setIsNote(false);
   };
 
   const handleAddAction = (e: CustomAction) => {
     setActions((prev) => [...prev, e]);
+    setIsNote(
+      !!actions.find(({ key }) => key === ACTION_KEY.URL_NOTE) || e.key === ACTION_KEY.URL_NOTE,
+    );
   };
 
   const handleAddCondition = (e: CustomCondition) => {
@@ -279,15 +294,21 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
             }
             key="1"
           >
-            <ConditionsSection
-              conditions={conditions}
-              setConditions={setConditions}
-              evaluation={conditionEvaluation}
-              setEvaluation={setConditionEvaluation}
-              onAdd={handleAddCondition}
-              onDelete={handleDeleteCondition}
-              onSave={handleSaveCondition}
-            />
+            {!isNote ? (
+              <ConditionsSection
+                conditions={conditions}
+                setConditions={setConditions}
+                evaluation={conditionEvaluation}
+                setEvaluation={setConditionEvaluation}
+                onAdd={handleAddCondition}
+                onDelete={handleDeleteCondition}
+                onSave={handleSaveCondition}
+              />
+            ) : (
+              <div className="no-condition-text">
+                <Title level={4}>{NO_CONDTION_TEXT}</Title>
+              </div>
+            )}
           </Panel>
           <Panel
             className="builder-page-collapse-panel"
@@ -319,6 +340,7 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
             key="3"
           >
             <MetaSection
+              isNote={isNote}
               augmentation={augmentation}
               name={name}
               description={description}

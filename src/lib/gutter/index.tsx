@@ -1,124 +1,49 @@
 /**
- * @module ProcessSerpResults
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module lib:gutter
  * @version 1.0.0
- * @description
- *  Collection of gutter unit and overlay related functionality. Gutter unit is shown near each SERP
- *  result when a result's container element is hovered, the result is blocked by an augmentation or
- *  searched by an augmentation.
- *  "Searched" means that an augmentation has SEARCH_DOMAINS_ACTION, which value is the result's domain.
- *  "Blocked" used as term declaring the result to be ignored by the user and create an overlay above it.
+ * @license (C) Insight
  */
+
 import React from 'react';
 import { render } from 'react-dom';
+import { v4 as uuid } from 'uuid';
+import { extractPublication, removeProtocol } from 'lib/helpers';
+import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
+import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
+import { PublicationTagRow } from 'modules/gutter/PublicationTagRow/PublicationTagRow';
+import { createResultOverlay } from 'lib/overlay';
 import {
   INSIGHT_BLOCKED_BY_SELECTOR,
   INSIGHT_FEATURED_BY_SELECTOR,
   INSIGHT_SEARCH_BY_SELECTOR,
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
-  INSIGHT_HIDDEN_RESULT_SELECTOR,
   INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
-  SIDEBAR_Z_INDEX,
+  INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
+  INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
+  INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR,
 } from 'constant';
-import { v4 as uuid } from 'uuid';
-import { extractPublication, removeProtocol } from 'lib/helpers';
-import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
-import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
 
-/**
- * Create an overlay above the specified element, containing the provided text content and creating
- * CSS selectors according to the set `selectorString` property in the `details` parameter. The overlay
- * can be dismissed by clicking on it. This action will define the node as `protected` and prevent adding
- * the overlay until the page is reloaded. When overlay is created by a blocking augmentation, the gutter
- * unit will be always visible. Dismissing also works when the node is blocked by an augmentation, however
- * the overlay will be visible until no more blockers assigned to the node.
- *
- * Current blocking augmentation IDs are available as a `' ' (space)` separated list in the value of
- * INSIGHT_BLOCKED_BY_SELECTOR attribute. If a node is blocked, the INSIGHT_BLOCKED_DOMAIN_SELECTOR will be
- * set to the node's corresponding domain.
- *
- * @param serpResult - The node where the overlay will be inserted
- * @param blockingAugmentations - The list of augmentations that are blocking the node. When its not set, or
- *  the list is empty, the function will handle the overlay as ad blocker and use the values from `block.ts`.
- *  Blocked advertisements has no gutter icon buttons and only render the overlay itself with its text content.
- * @param details - `Record<text|header|selectorString>` - The text content and class of the overlay
- * @example
- * ```js
- * createOverlay(element, [{id: "my-block-id", ...}], {
- *  header: 'Ad',
- *  text: 'Click to show...',
- *  selectorString: 'blocked-ad'
- * });
- * // The above function call will create an overlay similar to the ad block
- * // while also enabling the following CSS classes to customize the overlay:
- * // - insight-blocked-ad-overlay - The base style of the overlay
- * // - insight-blocked-ad-text-wrapper - The container of text content
- * // - insight-blocked-ad-inner-text - The text content
- * ```
- * @see `scripts/block.ts`
- */
-const createOverlay = (
-  serpResult: HTMLElement,
-  blockingAugmentations: Augmentation[] = [],
-  details: Record<'text' | 'header' | 'selectorString', string>,
-): void => {
-  if (!(serpResult instanceof HTMLElement)) return;
-
-  if (serpResult.getAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR) === 'true') {
-    const existingOverlay = serpResult.querySelector('.insight-hidden-domain-overlay');
-    existingOverlay && existingOverlay.parentElement?.removeChild(existingOverlay);
+const renderComponentToDocument = (
+  root: HTMLElement,
+  component: React.ReactElement,
+  className: string,
+) => {
+  const renderRoot = document.createElement('div');
+  const existingRoot = root.querySelector(`.${className}`);
+  if (existingRoot) {
+    existingRoot.parentElement?.replaceChild(renderRoot, existingRoot);
   }
-
-  // Assume the result is an advertisement when there is no blocking augmentations
-  if (!blockingAugmentations.length) {
-    serpResult.setAttribute('insight-ad-block', 'true');
-  }
-
-  serpResult.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'true');
-
-  if (
-    !serpResult.querySelectorAll('.insight-hidden').length &&
-    serpResult.getAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`) !== 'true'
-  ) {
-    const overlay = document.createElement('div');
-    overlay.classList.add(`insight-${details.selectorString}-overlay`);
-    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 2};`);
-    overlay.classList.add('insight-hidden');
-
-    const textWrapper = document.createElement('div');
-    textWrapper.classList.add(`insight-${details.selectorString}-text-wrapper`);
-    textWrapper.innerText = details.header;
-
-    const innerText = document.createElement('div');
-    innerText.classList.add(`insight-${details.selectorString}-inner-text`);
-    innerText.innerText = details.text;
-
-    overlay.appendChild(textWrapper);
-    textWrapper.appendChild(innerText);
-
-    overlay.addEventListener('click', (e) => {
-      if (serpResult.getAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`) !== 'true') {
-        e.preventDefault();
-        const ol = (e.target as Element)?.closest('.insight-hidden');
-        if (ol?.parentElement) {
-          ol.parentElement.style.overflow = 'none';
-        }
-        if (ol?.parentNode) {
-          ol.parentNode.removeChild(ol);
-        }
-        serpResult.setAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`, 'true');
-      }
-    });
-
-    serpResult.style.position = 'relative';
-    serpResult.style.maxHeight = '125px';
-    serpResult.style.overflow = 'hidden';
-    serpResult.insertBefore(overlay, serpResult.firstChild);
-  }
+  renderRoot.classList.add(className);
+  root.appendChild(renderRoot);
+  render(component, renderRoot);
 };
 
+/**
+ * Process SERP Results
+ * --------------------------------------
+ * Create gutter unit elements and assign custom attributes to SERP results.
+ */
 export const processSerpResults: ProcessSerpResults = (
   results,
   containerSelector,
@@ -148,9 +73,9 @@ export const processSerpResults: ProcessSerpResults = (
 
     if (!resultLink?.startsWith('http')) continue;
 
-    const publication = processAsOpenPage ? resultLink : extractPublication(resultLink);
+    const publication = processAsOpenPage ? resultLink : extractPublication(resultLink) ?? '';
 
-    if (typeof publication !== 'string' && augmentations) continue;
+    if (!publication && augmentations) continue;
 
     let blockers: Augmentation[] = [];
 
@@ -176,7 +101,7 @@ export const processSerpResults: ProcessSerpResults = (
     blockers = augmentations?.block[publication] ?? [];
 
     if (augmentations?.block[publication]?.length || !augmentations) {
-      createOverlay(serpResult, blockers, details);
+      createResultOverlay(serpResult, blockers, details);
     }
 
     serpResult.setAttribute(
@@ -203,15 +128,19 @@ export const processSerpResults: ProcessSerpResults = (
           ? serpResult.parentElement
           : serpResult;
 
-      const buttonRootLeft = document.createElement('div');
-      const existingRootLeft = root?.querySelector('.insight-gutter-button-root-left');
-      if (existingRootLeft) {
-        existingRootLeft.parentElement?.replaceChild(buttonRootLeft, existingRootLeft);
+      if (!(root instanceof HTMLElement)) {
+        continue;
       }
 
-      buttonRootLeft.classList.add(`insight-gutter-button-root-left`);
-      root?.appendChild(buttonRootLeft);
-      render(
+      renderComponentToDocument(
+        root,
+
+        <PublicationTagRow publication={publication} container={containerSelector} />,
+        INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
+      );
+
+      renderComponentToDocument(
+        root,
         <LeftActionBar
           key={uuid()}
           publication={publication}
@@ -220,17 +149,11 @@ export const processSerpResults: ProcessSerpResults = (
           blockingAugmentations={blockers}
           featuringAugmentations={augmentations?.feature[publication] ?? []}
         />,
-        buttonRootLeft,
+        INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
       );
 
-      const buttonRootRight = document.createElement('div');
-      const existingRootRight = root?.querySelector('.insight-gutter-button-root-right');
-      if (existingRootRight) {
-        existingRootRight.parentElement?.replaceChild(buttonRootRight, existingRootRight);
-      }
-      buttonRootRight.classList.add(`insight-gutter-button-root-right`);
-      root?.appendChild(buttonRootRight);
-      render(
+      renderComponentToDocument(
+        root,
         <RightActionBar
           key={uuid()}
           url={resultLink}
@@ -239,7 +162,7 @@ export const processSerpResults: ProcessSerpResults = (
           featuringAugmentations={augmentations?.feature[publication] ?? []}
           blockingAugmentations={blockers}
         />,
-        buttonRootRight,
+        INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR,
       );
     }
   }

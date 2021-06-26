@@ -57,7 +57,11 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
       : '100%',
   };
 
-  return tab.url.href !== SIDEBAR_TAB_FAKE_URL ? (
+  if (tab.url.href === SIDEBAR_TAB_FAKE_URL) {
+    return null;
+  }
+
+  return (
     <div ref={containerRef} className="insight-tab-iframe-container">
       <iframe
         key={decodeSpace(tab.url.href)}
@@ -82,5 +86,5 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         </div>
       )}
     </div>
-  ) : null;
+  );
 };

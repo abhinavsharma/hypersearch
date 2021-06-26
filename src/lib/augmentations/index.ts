@@ -446,6 +446,10 @@ class AugmentationManager {
       return matches;
     }, [] as boolean[]);
 
+    const isMatchingNote = !!augmentation.actions.action_list.find(({ key, value }) => {
+      key === ACTION_KEY.URL_NOTE && SidebarLoader.url.href.includes(value[0] as string);
+    });
+
     const evaluationMatch =
       augmentation.conditions.evaluate_with === 'AND'
         ? augmentation.conditions.condition_list?.every(({ key, unique_key }) => {
@@ -482,7 +486,8 @@ class AugmentationManager {
               matchingDomains ||
               !!matchingIntent.length ||
               matchingEngine ||
-              !!matchingUrl.length))),
+              !!matchingUrl.length ||
+              isMatchingNote))),
       matchingIntent,
       hasPreventAutoexpand,
       domainsToLookAction,

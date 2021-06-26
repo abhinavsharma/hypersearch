@@ -6,6 +6,7 @@
 
 import React, { Suspense, useState } from 'react';
 import Button from 'antd/lib/button';
+import { Edit3 } from 'react-feather';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/sidebar';
@@ -16,8 +17,8 @@ import {
   ACTION_LABEL,
   LEGACY_ACTION_TYPE,
   EMPTY_AUGMENTATION,
-  OPEN_AUGMENTATION_BUILDER_MESSAGE,
-  SIDEBAR_PAGE,
+  MESSAGE,
+  PAGE,
   PROTECTED_AUGMENTATIONS,
   AUGMENTATION_ID,
 } from 'constant';
@@ -50,6 +51,7 @@ const ADD_TO_AUGMENTATION_BUTTON_NEW_ACTION = 'Add as new action';
 const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new Lens that searches this domain';
 const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Lens';
 const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
+const OPEN_NOTE_BUTTON_TEXT = 'Open notes for this page';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
@@ -80,6 +82,9 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     ...SidebarLoader.installedAugmentations,
     ...SidebarLoader.otherAugmentations.filter(({ installed }) => installed),
   ].reduce((a, augmentation) => {
+    const isNote = augmentation.actions.action_list.find(
+      (action) => action.key === ACTION_KEY.URL_NOTE,
+    );
     const searchDomainActions = augmentation.actions.action_list.reduce(
       (actions, action, index) => {
         const { key, value } = action;
@@ -95,7 +100,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       searchDomainActions.forEach((action) => {
         a[domain].push({ ...augmentation, actionIndex: action.index });
       });
-      a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
+      !isNote &&
+        a[domain].push({ ...augmentation, actionIndex: augmentation.actions.action_list.length });
     }
     return a;
   }, Object.create(null));
@@ -127,8 +133,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const handleClose = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.ACTIVE,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.ACTIVE,
     });
   };
 
@@ -151,8 +157,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const handleEditInstalled = (augmentation: Augmentation) => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       augmentation,
     });
   };
@@ -184,8 +190,8 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
 
   const handleCreateAugmentation = () => {
     chrome.runtime.sendMessage({
-      type: OPEN_AUGMENTATION_BUILDER_MESSAGE,
-      page: SIDEBAR_PAGE.BUILDER,
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.BUILDER,
       create: true,
       augmentation: {
         ...EMPTY_AUGMENTATION,
@@ -204,6 +210,16 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     });
   };
 
+  const handleOpenNotes = () => {
+    chrome.runtime.sendMessage({
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.NOTES,
+      url: domain,
+      publication: domain,
+      forceCustom: true,
+    });
+  };
+
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
@@ -219,6 +235,10 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       )}
       <div className="sidebar-page-wrapper">
         <section>
+          <Button className={'insight-create-note'} type="primary" block onClick={handleOpenNotes}>
+            <Edit3 width={16} height={16} />
+            {`\u00a0${OPEN_NOTE_BUTTON_TEXT}`}
+          </Button>
           <h3 className="domain-text">
             <code>{domain}</code>
           </h3>

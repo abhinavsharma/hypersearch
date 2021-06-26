@@ -114,7 +114,7 @@ class Bookmarks {
     if (this._isSyncing) return;
 
     this._isSyncing = true;
-    debug('Bookmarks sync started');
+    debug('BookmarksSync - Start');
 
     try {
       await this.ensureDefaultFolders();
@@ -125,11 +125,11 @@ class Bookmarks {
       this._lastFetch = Math.floor(Date.now() / 1000);
       await this.store(this._lastFetch, BOOKMARKS_LAST_FETCH);
     } catch (e) {
-      debug('Bookmarks synchronizer error', e);
+      debug('BookmarksSync - Error', e.message);
     }
 
     this._isSyncing = false;
-    debug('Bookmarks sync ended');
+    debug('BookmarksSync - Finish');
   }
 
   /**
@@ -209,22 +209,22 @@ class Bookmarks {
    * configure the listeners.
    */
   private checkPermission() {
-    debug('check permission');
+    debug('BookmarksSync - Check Permission');
     chrome.permissions.contains(
       {
         permissions: ['bookmarks'],
       },
       (hasPermission) => {
-        debug('has permission', hasPermission);
+        debug('BookmarksSync - Permission: ', hasPermission);
         if (hasPermission) {
-          debug('configure permission');
+          debug('BookmarksSync - Configure Permission');
           this.configureListeners();
         } else {
-          debug('add listener permission');
+          debug('BookmarksSync - Add Listener Permission');
           chrome.permissions.onAdded.addListener((permission) => {
-            debug('permission changed', permission);
+            debug('BookmarksSync - Permission Changed', permission);
             if (permission.permissions?.includes('bookmarks')) {
-              debug('configure listeners after permission');
+              debug('BookmarksSync - Configure listeners after permission');
               this.configureListeners();
             }
           });
@@ -555,9 +555,9 @@ class Bookmarks {
    * Update local changes to server
    */
   private async uploadLocalChanges(apiToken: string) {
-    debug('uploading added', this._toAdd);
-    debug('uploading updated', this._toUpdate);
-    debug('uploading deleted', this._toDelete);
+    debug('BookmarksSync - Uploading Added', this._toAdd);
+    debug('BookmarksSync - Uploading Updated', this._toUpdate);
+    debug('BookmarksSync - Uploading Deleted', this._toDelete);
 
     const localChanges = this._toAdd.concat(this._toUpdate);
     const promises: Promise<any>[] = localChanges.map((localBookmark) => {
@@ -624,7 +624,7 @@ class Bookmarks {
   private async fetchAndApplyRemoteChanges(apiToken: string) {
     const remoteItems = await this.fetchBookmarks(apiToken);
 
-    debug('remote response', remoteItems);
+    debug('BookmarksSync - Remote Response', remoteItems);
 
     if (remoteItems.add) {
       const parentsAndChildren = this.groupParentsAndChildren(remoteItems.add);

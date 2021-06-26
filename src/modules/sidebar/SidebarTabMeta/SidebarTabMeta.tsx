@@ -5,7 +5,7 @@ import Tooltip from 'antd/lib/tooltip';
 import Button from 'antd/lib/button';
 import { DomainStateCheckbox } from 'modules/gutter';
 import SidebarLoader from 'lib/sidebar';
-import { extractPublication } from 'lib/helpers';
+import { extractPublication, extractUrlProperties } from 'lib/helpers';
 import { ACTION_KEY } from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -88,7 +88,13 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
 
             <div id="publication-meta">
               <Text strong>{extractPublication(tab.url.href)}</Text>
-              <DomainStateCheckbox domain={extractPublication(tab.url.href)} />
+              <DomainStateCheckbox
+                domain={
+                  extractPublication(tab.url.href) ??
+                  extractUrlProperties(tab.url.href).hostname ??
+                  ''
+                }
+              />
             </div>
           </div>
         ) : (

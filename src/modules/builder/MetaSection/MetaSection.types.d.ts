@@ -3,6 +3,7 @@ import { CustomAugmentation } from 'modules/pages';
 
 declare module './MetaSection' {
   type MetaSectionProps = {
+    isNote: boolean;
     augmentation: CustomAugmentation<Augmentation>;
     name: string;
     onNameChange: ChangeEventHandler<HTMLInputElement>;
