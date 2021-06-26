@@ -16,7 +16,8 @@ import {
   GutterPage,
   SettingsPage,
   FeaturePage,
-  PublicationUserReviewPage,
+  PublicationPage,
+  NotePage,
 } from 'modules/pages';
 import {
   ActionBar,
@@ -113,7 +114,11 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           flipSidebar(document, 'show', SidebarLoader, true);
           setActiveKey('0');
           if (msg.page === PAGE.GUTTER && msg.augmentations) {
-            setPageData({ augmentations: msg.augmentations, publication: msg.publication });
+            setPageData({
+              augmentations: msg.augmentations,
+              publication: msg.publication,
+              fromGutter: msg.fromGutter,
+            });
           }
           if (msg.page === PAGE.BUILDER && msg.augmentation) {
             setPageData({ augmentation: msg.augmentation, isAdding: msg.create });
@@ -123,6 +128,13 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           }
           if (msg.page === PAGE.PUBLICATION) {
             setPageData({ info: msg.info, rating: msg.rating });
+          }
+          if (msg.page === PAGE.NOTES) {
+            setPageData({
+              url: msg.url,
+              publication: msg.publication,
+              forceCustom: msg.forceCustom,
+            });
           }
           msg.page && setShowPage(msg.page);
           break;
@@ -197,8 +209,14 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
               case PAGE.FEATURE:
                 return <FeaturePage />;
               case PAGE.PUBLICATION:
+                return <PublicationPage info={pageData?.info} rating={pageData?.rating} />;
+              case PAGE.NOTES:
                 return (
-                  <PublicationUserReviewPage info={pageData?.info} rating={pageData?.rating} />
+                  <NotePage
+                    url={pageData?.url}
+                    customUrl={pageData?.publication}
+                    forceCustom={pageData?.forceCustom}
+                  />
                 );
               default:
                 return null;
@@ -229,9 +247,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   <SidebarTabMeta tab={tab} />
                 </>
               )}
-              {/* {tab.readable && <SidebarTabReadable readable={tab.readable} />} */}
               {tab.url && <SidebarTabContainer tab={tab} currentTab={activeKey} />}
-              {/* tab.url.searchParams.get(URL_PARAM_POSSIBLE_SERP_RESULT) && <SidebarFooter /> */}
             </TabPane>
           );
         })}

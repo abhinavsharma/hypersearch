@@ -3,11 +3,12 @@ import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
 import message from 'antd/lib/message';
-import { SidebarNote } from 'modules/sidebar';
+import { NoteEntry } from 'modules/shared';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/input/style/index.css';
 import 'antd/lib/message/style/index.css';
-import './SidebarSliceNote.scss';
+import './PublicationNotes.scss';
+import { debug } from 'lib/helpers';
 
 const { TextArea } = Input;
 
@@ -16,12 +17,12 @@ const { TextArea } = Input;
 //-----------------------------------------------------------------------------------------------
 const ADD_BUTTON_TEXT = 'Add';
 const EDIT_BUTTON_TEXT = 'Edit';
-const URL_NOTE_PLACEHOLDER = 'Your note about <placeholder> go here';
+const URL_NOTE_PLACEHOLDER = 'Your note about <placeholder> goes here';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
-export const SidebarSliceNote: SidebarSliceNote = ({ slice, prefix }) => {
+export const PublicationNotes: PublicationNotes = ({ slice, prefix, externals }) => {
   const [currentEditing, setCurrentEditing] = useState<string>('');
   const [newSliceNote, setNewSliceNote] = useState<NoteRecord>(Object.create({ id: '', note: '' }));
   const [sliceNotes, setSliceNotes] = useState<NoteRecord[]>(Array(0));
@@ -54,7 +55,6 @@ export const SidebarSliceNote: SidebarSliceNote = ({ slice, prefix }) => {
             : {
                 ...item,
                 slice: item.slice || slice,
-                key: newSliceNote.key,
               },
         ),
       ];
@@ -102,6 +102,7 @@ export const SidebarSliceNote: SidebarSliceNote = ({ slice, prefix }) => {
 
   useEffect(() => {
     getSliceNotes();
+    debug('SLICE: ', slice);
   }, [getSliceNotes]);
 
   //-----------------------------------------------------------------------------------------------
@@ -110,9 +111,16 @@ export const SidebarSliceNote: SidebarSliceNote = ({ slice, prefix }) => {
 
   return (
     <>
-      {sliceNotes.map((note) =>
+      {[
+        ...sliceNotes,
+        ...(externals?.map((item) => ({
+          id: uuid(),
+          note: `${item.rating}\u00a0⭐\u00a0${item.text}`,
+          external: true,
+        })) ?? []),
+      ].map((note) =>
         currentEditing === note.id ? null : (
-          <SidebarNote
+          <NoteEntry
             key={note.id}
             note={note}
             slice={slice}

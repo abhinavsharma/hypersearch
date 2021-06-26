@@ -82,6 +82,7 @@ export const LeftActionBar: LeftActionBar = ({
       page: PAGE.GUTTER,
       augmentations: blockingAugmentations,
       publication,
+      fromGutter: true,
     });
   };
 

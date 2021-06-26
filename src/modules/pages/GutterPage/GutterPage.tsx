@@ -4,13 +4,13 @@
  * @license (C) Insight
  */
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import Button from 'antd/lib/button';
+import { Edit3 } from 'react-feather';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
-import { CreateNoteButton } from 'modules/builder/CreateNoteButton/CreateNoteButton';
 import { DomainStateCheckbox } from 'modules/gutter/DomainStateCheckbox/DomainStateCheckbox';
 import {
   ACTION_KEY,
@@ -21,7 +21,6 @@ import {
   PAGE,
   PROTECTED_AUGMENTATIONS,
   AUGMENTATION_ID,
-  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -52,12 +51,12 @@ const ADD_TO_AUGMENTATION_BUTTON_NEW_ACTION = 'Add as new action';
 const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new Lens that searches this domain';
 const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Lens';
 const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
+const OPEN_NOTE_BUTTON_TEXT = 'Open notes for this page';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inline }) => {
-  const [hasNote, setHasNote] = useState<boolean>(false);
   const [currentHiders, setCurrentHiders] = useState<Augmentation[]>(
     hidingAugmentations.filter(({ id }) => id !== AUGMENTATION_ID.BLOCKLIST),
   );
@@ -211,12 +210,15 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     });
   };
 
-  useEffect(() => {
-    setHasNote(!!SidebarLoader.sidebarTabs.find(({ url }) => url.href === SIDEBAR_TAB_NOTE_TAB));
-    // Singleton instance not reinitialized on rerender.
-    // ! Be careful when updating the dependency list!
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [SidebarLoader.sidebarTabs]);
+  const handleOpenNotes = () => {
+    chrome.runtime.sendMessage({
+      type: MESSAGE.OPEN_PAGE,
+      page: PAGE.NOTES,
+      url: domain,
+      publication: domain,
+      forceCustom: true,
+    });
+  };
 
   //-----------------------------------------------------------------------------------------------
   // ! Render
@@ -233,7 +235,10 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       )}
       <div className="sidebar-page-wrapper">
         <section>
-          <CreateNoteButton hasNote={hasNote} />
+          <Button className={'insight-create-note'} type="primary" block onClick={handleOpenNotes}>
+            <Edit3 width={16} height={16} />
+            {`\u00a0${OPEN_NOTE_BUTTON_TEXT}`}
+          </Button>
           <h3 className="domain-text">
             <code>{domain}</code>
           </h3>

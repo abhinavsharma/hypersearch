@@ -104,6 +104,9 @@ import {
     EXTRA_SPEC.concat('requestHeaders'),
   );
 
+  //-----------------------------------------------------------------------------------------------
+  // ! On Before Redirect
+  //-----------------------------------------------------------------------------------------------
   chrome.webRequest.onBeforeRedirect.addListener(
     async (details) => {
       debug('Redirect: ', details.redirectUrl, details.url);
@@ -112,11 +115,15 @@ import {
         await new Promise((resolve) =>
           chrome.storage.local.set(
             {
-              [`${PUBLICATION_REDIRECT_URL}-${extractUrlProperties(details.redirectUrl).hostname}`]:
-                {
-                  from: extractPublication(details.url),
-                  to: extractUrlProperties(details.redirectUrl).hostname,
-                },
+              [`${PUBLICATION_REDIRECT_URL}-${
+                extractPublication(details.redirectUrl) ||
+                extractUrlProperties(details.redirectUrl).hostname
+              }`]: {
+                from: extractPublication(details.url),
+                to:
+                  extractPublication(details.redirectUrl) ||
+                  extractUrlProperties(details.redirectUrl).hostname,
+              },
             },
             () => resolve(true),
           ),

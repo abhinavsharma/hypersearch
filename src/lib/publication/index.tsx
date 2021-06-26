@@ -5,7 +5,7 @@
  */
 
 import { PUBLICATION_INFO_BLOB_URL, PUBLICATION_REDIRECT_URL } from 'constant';
-import { extractUrlProperties } from 'lib/helpers';
+import { extractPublication, extractUrlProperties } from 'lib/helpers';
 import { useCallback, useEffect, useState } from 'react';
 
 const fetchPublicationInfo = async () => {
@@ -15,13 +15,19 @@ const fetchPublicationInfo = async () => {
 };
 
 export const getPublicationInfo = async (url: string) => {
-  const id = `${PUBLICATION_REDIRECT_URL}-${extractUrlProperties(url).hostname}`;
+  const id = `${PUBLICATION_REDIRECT_URL}-${
+    extractPublication(url) || extractUrlProperties(url).hostname
+  }`;
   const redirectData = await new Promise<Record<string, { from: string; to: string }>>((resolve) =>
     chrome.storage.local.get(id, resolve),
   ).then((data) => data[id]);
   const publicationInfos = await fetchPublicationInfo();
-  const publicationInfo = publicationInfos[url] || publicationInfos[redirectData.from];
-  return { ...publicationInfo, url: redirectData?.to || url };
+  const publicationInfo = publicationInfos[redirectData?.from] ?? publicationInfos[url];
+  return {
+    ...publicationInfo,
+    url: redirectData?.from,
+    publication: redirectData?.to,
+  } as PublicationInfo;
 };
 
 export const usePublicationInfo = (publication: string) => {

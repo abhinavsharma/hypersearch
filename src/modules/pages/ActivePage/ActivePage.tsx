@@ -1,3 +1,9 @@
+/**
+ * @module modules:pages
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React, { Suspense, useEffect, useState } from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
@@ -10,8 +16,15 @@ import { flipSidebar } from 'lib/flip';
 import { APP_NAME, MESSAGE, EMPTY_AUGMENTATION, PAGE, SWITCH_TO_TAB, ACTION_KEY } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
+import { usePublicationInfo } from 'lib/publication';
 
-/** MAGICS **/
+const ZoomInOutlined = React.lazy(
+  async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
+);
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const HEADER_TITLE = 'Lenses';
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
 const INSTALLED_SECTION_TITLE = 'Your Local Lenses for This Page';
@@ -25,12 +38,13 @@ const UNMATCHED_SECTION_SUBTITLE = 'Lenses not matching this page.';
 const CREATE_LENS_BUTTON_TEXT = 'Create New Lens';
 const SETTINGS_ICON_COLOR = '#999999';
 
-const ZoomInOutlined = React.lazy(
-  async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
-);
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const ActivePage: ActivePage = () => {
   const domain = extractUrlProperties(SidebarLoader.url.href).hostname ?? '';
+  const { publicationInfo } = usePublicationInfo(window.location.href);
+
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [hidingAugmentations, setHidingAugmentations] = useState<Augmentation[]>(
     SidebarLoader.installedAugmentations
@@ -44,6 +58,9 @@ export const ActivePage: ActivePage = () => {
       }, [] as Augmentation[]),
   );
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const handleOpenSettings = (e: React.MouseEvent) => {
     if (e.shiftKey) {
       chrome.runtime.sendMessage({
@@ -176,6 +193,9 @@ export const ActivePage: ActivePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SidebarLoader.installedAugmentations, SidebarLoader.otherAugmentations]);
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <div id="active-page" className="sidebar-page">
       <header className="sidebar-page-header">
@@ -195,7 +215,11 @@ export const ActivePage: ActivePage = () => {
       </header>
       <div className="sidebar-page-wrapper">
         {!SidebarLoader.isSerp && (
-          <GutterPage domain={domain} hidingAugmentations={hidingAugmentations} inline />
+          <GutterPage
+            domain={publicationInfo.publication ?? publicationInfo.url ?? domain}
+            hidingAugmentations={hidingAugmentations}
+            inline
+          />
         )}
         {sections.map(
           ({ augmentations, button, title, subtitle, pinned, other, ignored }, i, a) => {

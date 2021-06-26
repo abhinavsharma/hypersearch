@@ -1,12 +1,17 @@
+/**
+ * @module modules:pages
+ * @version 1.0.0
+ * @license (C) Insight
+ */
+
 import React from 'react';
 import Button from 'antd/lib/button';
 import Divider from 'antd/lib/divider';
-import List from 'antd/lib/list';
-import { MESSAGE, PAGE } from 'constant';
-import 'antd/lib/list/style/index.css';
-import 'antd/lib/switch/style/index.css';
+import { PublicationNotes } from 'modules/shared';
+import { MESSAGE, PAGE, PUBLICATION_NOTE_PREFIX } from 'constant';
 import 'antd/lib/button/style/index.css';
-import './PublicationUserReviewPage.scss';
+import 'antd/lib/divider/style/index.css';
+import './PublicationPage.scss';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -22,7 +27,7 @@ const PAGE_REVIEWS_HEADER = 'Trusted Reviews';
 // ! Component
 //-----------------------------------------------------------------------------------------------
 
-export const PublicationUserReviewPage: PublicationUserReviewPage = ({ rating, info }) => {
+export const PublicationPage: PublicationPage = ({ rating, info }) => {
   const handleClose = () => {
     chrome.runtime.sendMessage({
       type: MESSAGE.OPEN_PAGE,
@@ -30,16 +35,7 @@ export const PublicationUserReviewPage: PublicationUserReviewPage = ({ rating, i
     });
   };
 
-  const item = (item: PublicationTag) => (
-    <List.Item>
-      <div className="publication-page-user-review-row">
-        <span>{item.rating}&nbsp;⭐&nbsp;</span>
-        <span>{item.text}</span>
-      </div>
-    </List.Item>
-  );
-
-  const header = <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>;
+  const externals: PublicationTag[] = info?.tags ?? [];
 
   return (
     <div id="settings-page" className="sidebar-page">
@@ -51,15 +47,21 @@ export const PublicationUserReviewPage: PublicationUserReviewPage = ({ rating, i
       </header>
       <div className="sidebar-page-wrapper">
         <section>
-          <h2 className="title">{PAGE_HEADER.replace('<placeholder>', info?.url ?? '')}</h2>
+          <h2 className="title">
+            {PAGE_HEADER.replace('<placeholder>', (info?.publication || info?.url) ?? '')}
+          </h2>
           <span className="publication-page-rating">
             {PAGE_RATING_TEXT.replace('<placeholder>', String(rating))}
           </span>
-          <span className="publication-page-description">{info?.tags[0].text}</span>
+          <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>
+          <div className="publication-notes-wrapper">
+            <PublicationNotes
+              slice={(info?.publication || info?.url) ?? ''}
+              prefix={PUBLICATION_NOTE_PREFIX}
+              externals={externals}
+            />
+          </div>
           <Divider />
-        </section>
-        <section>
-          <List header={header} dataSource={info?.tags} renderItem={item} />
         </section>
       </div>
     </div>

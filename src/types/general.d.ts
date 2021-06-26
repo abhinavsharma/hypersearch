@@ -87,6 +87,7 @@ declare type PublicationTag = {
 declare type PublicationInfo = {
   tags: PublicationTag[];
   url?: string;
+  publication?: string;
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -140,6 +141,7 @@ declare type NoteRecord = {
   note: string;
   slice?: string;
   key?: string;
+  external?: boolean;
 };
 
 declare type Prefix = TPrefix[keyof TPrefix];

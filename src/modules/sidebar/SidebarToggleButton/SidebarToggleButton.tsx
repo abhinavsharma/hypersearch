@@ -26,36 +26,32 @@ import 'antd/lib/tooltip/style/index.css';
 import 'antd/lib/list/style/index.css';
 import './SidebarToggleButton.scss';
 
-/** MAGICS **/
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const TOOLTIP_TEXT = `Preview lenses ("${EXPAND_KEY.KEY}" key)`;
 const MORE_TABS_TEXT = '<placeholder> more';
 const LIST_STYLE = { paddingRight: 5 };
 const MAX_TAB_LENGTH = 3;
 
-export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
+export const SidebarToggleButton: SidebarToggleButton = ({ tabs, info, rating }) => {
   const tooltipContainer = useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
-    if (!tabs.length) {
+    if (rating) {
       chrome.runtime.sendMessage({
+        info,
+        rating,
         type: MESSAGE.OPEN_PAGE,
-        page: PAGE.BUILDER,
-        augmentation: EMPTY_AUGMENTATION,
+        page: PAGE.PUBLICATION,
       });
     }
     SidebarLoader.isPreview = true;
     flipSidebar(document, 'show', SidebarLoader);
   };
-
-  const ListItem = (item: SidebarTab) => (
-    <List.Item>
-      <List.Item.Meta
-        title={
-          item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.augmentation.name)
-        }
-      />
-    </List.Item>
-  );
 
   const filteredTabs = tabs.filter(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL);
 
@@ -88,9 +84,22 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
   const keepParent = { keepParent: false };
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
+  const ListItem = (item: SidebarTab) => (
+    <List.Item>
+      <List.Item.Meta
+        title={
+          item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.augmentation.name)
+        }
+      />
+    </List.Item>
+  );
+
   return (
     <>
-      <Tooltip title={TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
+      <Tooltip title={info.tags?.[0]?.text ?? TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
         <div
           onClick={handleClick}
           className="insight-sidebar-toggle-button"
@@ -99,12 +108,21 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
           <div className="insight-sidebar-toggle-appname">
             <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
           </div>
-          <List
-            style={LIST_STYLE}
-            itemLayout="horizontal"
-            dataSource={dataSource}
-            renderItem={ListItem}
-          />
+          <div className="insight-list">
+            {rating && (
+              <div onClick={handleClick} className="insight-sidebar-publication-rating-nub">
+                <h3>{rating}&nbsp;⭐</h3>
+              </div>
+            )}
+            {!!dataSource.length && (
+              <List
+                style={LIST_STYLE}
+                itemLayout="horizontal"
+                dataSource={dataSource}
+                renderItem={ListItem}
+              />
+            )}
+          </div>
         </div>
       </Tooltip>
       <div className="tooltip-container" ref={tooltipContainer} style={containerStyle} />

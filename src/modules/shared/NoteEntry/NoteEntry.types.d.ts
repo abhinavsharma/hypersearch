@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 
-declare module './SidebarNote' {
-  type SidebarNoteProps = {
+declare module './NoteEntry' {
+  type NoteEntryProps = {
     note: NoteRecord;
     slice: string;
     prefix: string;
@@ -11,5 +11,5 @@ declare module './SidebarNote' {
     setNewSliceNote: React.Dispatch<React.SetStateAction<NoteRecord>>;
   };
 
-  type SidebarNote = FunctionComponent<SidebarNoteProps>;
+  type NoteEntry = FunctionComponent<NoteEntryProps>;
 }

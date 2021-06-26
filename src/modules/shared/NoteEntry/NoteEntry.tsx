@@ -25,7 +25,7 @@ const DELETE_BUTTON_TEXT = 'Delete';
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
-export const SidebarNote: SidebarNote = ({
+export const NoteEntry: NoteEntry = ({
   note,
   slice,
   prefix,
@@ -92,7 +92,7 @@ export const SidebarNote: SidebarNote = ({
     <div key={note.key} className="slice-note">
       <Comment
         datetime={(!slice && note.slice) || ''}
-        author="You"
+        author={note.external ? '' : 'You'}
         actions={actions(note.id)}
         avatar={avatar()}
         content={note.note}

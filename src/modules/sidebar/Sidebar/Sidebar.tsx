@@ -1,16 +1,19 @@
 /**
- * @module Sidebar
- * @author Matyas Angyal<matyas@laso.ai>
- * @license (C) Insight
+ * @module modules:sidebar
  * @version 1.0.0
+ * @license (C) Insight
  */
+
 import React, { useEffect, useState } from 'react';
 import md5 from 'md5';
+import { useDebouncedFn } from 'beautiful-react-hooks';
+import { usePublicationInfo } from 'lib/publication';
+import UserManager from 'lib/user';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import { flipSidebar } from 'lib/flip';
 import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'lib/helpers';
-import { SidebarNubPublicationRating, SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
+import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
   EXTENSION_AUTO_EXPAND,
@@ -22,19 +25,21 @@ import {
   WINDOW_REQUIRED_MIN_WIDTH,
 } from 'constant';
 import './Sidebar.scss';
-import { useDebouncedFn } from 'beautiful-react-hooks';
-import UserManager from 'lib/user';
-import { usePublicationInfo } from 'lib/publication';
 
-const Sidebar: Sidebar = () => {
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
+export const Sidebar: Sidebar = () => {
+  const { publicationInfo, averageRating } = usePublicationInfo(window.location.hostname);
   const [rating, setRating] = useState<number>(0);
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
   const [activeKey, setActiveKey] = useState<string>(
     getFirstValidTabIndex(SidebarLoader.sidebarTabs),
   );
 
-  const { publicationInfo, averageRating } = usePublicationInfo(window.location.hostname);
-
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
   const firstValidTab = getFirstValidTabIndex(SidebarLoader.sidebarTabs);
   const isSmallWidth = window.innerWidth <= WINDOW_REQUIRED_MIN_WIDTH;
   const isTabsLength = firstValidTab !== '0';
@@ -119,15 +124,19 @@ const Sidebar: Sidebar = () => {
 
   const tabsLength = !!sidebarTabs.filter(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL).length;
 
+  const shouldShowButton = !!publicationInfo.tags?.length || !!averageRating || !!tabsLength;
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <>
       <div id="insight-sidebar-container" className="insight-full-size-fixed">
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
-      {rating > 0 && <SidebarNubPublicationRating rating={averageRating} info={publicationInfo} />}
-      {tabsLength && <SidebarToggleButton tabs={sidebarTabs} />}
+      {shouldShowButton && (
+        <SidebarToggleButton tabs={sidebarTabs} rating={averageRating} info={publicationInfo} />
+      )}
     </>
   );
 };
-
-export { Sidebar };

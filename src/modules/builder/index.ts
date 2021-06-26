@@ -3,7 +3,6 @@ export * from './ActionsSection/ActionsSection';
 export * from './AugmentationRow/AugmentationRow';
 export * from './ConditionInput/ConditionInput';
 export * from './ConditionsSection/ConditionsSection';
-export * from './CreateNoteButton/CreateNoteButton';
 export * from './DeleteAugmentationButton/DeleteAugmentationButton';
 export * from './MetaSection/MetaSection';
 export * from './MultiValueInput/MultiValueInput';
