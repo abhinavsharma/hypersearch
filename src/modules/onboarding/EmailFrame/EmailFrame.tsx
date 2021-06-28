@@ -17,7 +17,7 @@ import './EmailFrame.scss';
 
 /** MAGICS **/
 const TAB_TITLE = `${APP_NAME} - Email Address`;
-const PAGE_MAIN_HEADER = 'Unlock Special Lenses';
+const PAGE_MAIN_HEADER = 'Sign in or sign up';
 const EMAIL_INPUT_PLACEHOLDER = 'your@emailaddress.com';
 const PRIVACY_NOTICE = 'Your email address is never linked to your search history';
 const SETTINGS_INSTRUCTIONS = 'Activation code can be obtained on the sidebar settings page';
