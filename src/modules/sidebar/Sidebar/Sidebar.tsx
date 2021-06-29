@@ -68,7 +68,7 @@ export const Sidebar: Sidebar = () => {
   }, 300);
 
   const injectNotesTab = useCallback(() => {
-    if (publicationFeature) {
+    if (publicationFeature && !SidebarLoader.isSerp) {
       const noteUrl = new URL(`https://${DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX}`);
       noteUrl.href = SIDEBAR_TAB_NOTE_TAB;
       noteUrl.searchParams.append(URL_PARAM_TAB_TITLE_KEY, NOTE_TAB_TITLE);
