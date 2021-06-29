@@ -20,7 +20,6 @@ const TAB_TITLE = `${APP_NAME} - Email Address`;
 const PAGE_MAIN_HEADER = 'Sign in or sign up';
 const EMAIL_INPUT_PLACEHOLDER = 'your@emailaddress.com';
 const PRIVACY_NOTICE = 'Your email address is never linked to your search history';
-const SETTINGS_INSTRUCTIONS = 'Activation code can be obtained on the sidebar settings page';
 const USE_LICENSE_BUTTON_TEXT = 'Next';
 const USE_UNLICENSED_BUTTON_TEXT = 'Skip';
 const BUTTON_CONTAINER_STYLE: React.CSSProperties = { width: '400px' };
@@ -93,9 +92,6 @@ export const EmailFrame = () => {
       />
       <Title type="secondary" level={4}>
         {PRIVACY_NOTICE}
-      </Title>
-      <Title type="secondary" level={3}>
-        {SETTINGS_INSTRUCTIONS}{' '}
       </Title>
       <div className="horizontal-container" style={BUTTON_CONTAINER_STYLE}>
         <Button
