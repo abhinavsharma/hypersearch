@@ -57,6 +57,9 @@ import {
   DISABLED_AUGMENTATIONS,
   NOTE_TAB_TITLE,
   SIDEBAR_TAB_NOTE_TAB,
+  NOTE_AUGMENTATION_ID,
+  createNote,
+  DEV_FEATURE_FLAGS,
 } from 'constant';
 import UserManager from 'lib/user';
 
@@ -510,7 +513,7 @@ class SidebarLoader {
    * @method
    * @memberof SidebarLoader
    */
-  public getTabsAndAugmentations(
+  public async getTabsAndAugmentations(
     augmentations: Augmentation[] = [
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
@@ -637,6 +640,20 @@ class SidebarLoader {
 
     this.sidebarTabs = newTabs.sort((a, b) => compareTabs(a, b, this.domains));
 
+    const publicationFeature = await new Promise<Record<string, Features>>((resolve) =>
+      chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
+    ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_ratings']);
+
+    if (publicationFeature && !this.isSerp) {
+      const noteUrl = new URL(`https://${DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX}`);
+      noteUrl.href = SIDEBAR_TAB_NOTE_TAB;
+      noteUrl.searchParams.append(URL_PARAM_TAB_TITLE_KEY, NOTE_TAB_TITLE);
+      this.publicationSlices[NOTE_AUGMENTATION_ID] = Object.create(null);
+      this.sidebarTabs.unshift({
+        augmentation: createNote(this.url.href),
+        url: noteUrl,
+      });
+    }
     /** DEV START **/
     IN_DEBUG_MODE &&
       debug(
@@ -925,7 +942,7 @@ class SidebarLoader {
     debug('handleSubtabApiResponse - call');
     if (!(this.url && response)) return;
     await this.getLocalAugmentations();
-    this.getTabsAndAugmentations([
+    await this.getTabsAndAugmentations([
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
       ...(response.suggested_augmentations ?? []).reduce((a, augmentation) => {

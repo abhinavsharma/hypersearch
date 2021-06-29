@@ -1,0 +1,10 @@
+@use 'styles/variables' as *;
+
+.activation-input-form {
+  display: flex;
+  flex-wrap: wrap;
+
+  .email-feedback-text {
+    padding: $sidebar_space_medium $sidebar_space_large;
+  }
+}

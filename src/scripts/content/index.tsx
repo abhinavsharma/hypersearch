@@ -14,13 +14,7 @@ import {
   replaceLocation,
   runFunctionWhenDocumentReady,
 } from 'lib/helpers';
-import {
-  URL_UPDATED_MESSAGE,
-  MESSAGE,
-  PAGE,
-  TRIGGER_START_TRACK_TIMER_MESSAGE,
-  ACTIVATE_EMAIL_MESSAGE,
-} from 'constant';
+import { URL_UPDATED_MESSAGE, TRIGGER_START_TRACK_TIMER_MESSAGE } from 'constant';
 
 (async (window: Window, document: Document, location: Location) => {
   if (window.location.href !== window.top.location.href) {
@@ -45,7 +39,7 @@ import {
     UserManager.initialize();
 
     const SidebarLoader = (await import('lib/sidebar')).default;
-    SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
+    window.location.href.includes('http') && SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
 
     if (window.top.location.href.includes('extension://')) {
       const IntroductionPage = (await import('modules/onboarding')).IntroductionPage;
@@ -68,15 +62,9 @@ import {
 
     chrome.runtime.onMessage.addListener(async (msg) => {
       switch (msg.type) {
-        case ACTIVATE_EMAIL_MESSAGE:
-          chrome.runtime.sendMessage({
-            type: MESSAGE.OPEN_PAGE,
-            page: PAGE.SETTINGS,
-            email: decodeURIComponent(msg.email),
-          });
-          break;
         case URL_UPDATED_MESSAGE:
-          await SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
+          window.location.href.includes('http') &&
+            (await SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL));
           break;
       }
     });
