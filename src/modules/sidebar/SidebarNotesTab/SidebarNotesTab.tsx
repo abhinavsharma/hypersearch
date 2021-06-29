@@ -23,7 +23,7 @@ export const SidebarNotesTab = () => {
   //-----------------------------------------------------------------------------------------------
   return (
     <>
-      <Collapse accordion defaultActiveKey={['1']}>
+      <Collapse accordion defaultActiveKey={[urlSlices[0]]}>
         {urlSlices.map((slice) => (
           <Panel header={slice} key={slice}>
             <UrlSliceNotes slice={slice} />
