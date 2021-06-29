@@ -81,7 +81,14 @@ export const ActivePage: ActivePage = () => {
       SidebarLoader.tourStep = '';
     }
     if (getFirstValidTabIndex(SidebarLoader.sidebarTabs) === '0') {
-      flipSidebar(window.top.document, 'hide', SidebarLoader, true);
+      if (!SidebarLoader.isSerp) {
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          index: '1000',
+        });
+      } else {
+        flipSidebar(window.top.document, 'hide', SidebarLoader, true);
+      }
     } else {
       chrome.runtime.sendMessage({
         type: SWITCH_TO_TAB,

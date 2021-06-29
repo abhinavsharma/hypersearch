@@ -6,21 +6,26 @@ import Button from 'antd/lib/button';
 import { DomainStateCheckbox } from 'modules/gutter';
 import SidebarLoader from 'lib/sidebar';
 import { extractPublication, extractUrlProperties } from 'lib/helpers';
-import { ACTION_KEY } from 'constant';
+import { ACTION_KEY, NOTE_TAB_TITLE } from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
 import './SidebarTabMeta.scss';
 import 'antd/lib/tooltip/style/index.css';
 
-/** MAGICS **/
+const { Paragraph, Text } = Typography;
+
+//-----------------------------------------------------------------------------------------------
+// ! Magics
+//-----------------------------------------------------------------------------------------------
 const SHOW_ELLIPSIS_BUTTON_TEXT = 'More';
 const HIDE_ELLIPSIS_BUTTON_TEXT = 'Hide';
 const SEARCH_TAB_INFO_TOOLTIP_TEXT = 'About this lens';
 const OPEN_PAGE_INFO_TOOLTIP_TEXT = 'Some pages may not load properly in the sidebar';
 const ICON_COLOR = '#999999';
 
-const { Paragraph, Text } = Typography;
-
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
   const [currentStat, setCurrentStat] = useState<number>(
     SidebarLoader.augmentationStats[tab.augmentation.id] ?? 0,
@@ -59,13 +64,16 @@ export const SidebarTabMeta: SidebarTabMeta = ({ tab }) => {
     SidebarLoader.publicationSlices[tab.augmentation.id][tab.url.href],
   ]);
 
-  const titleFromDomain = tab.url.searchParams.get('insight-tab-title');
+  const titleFromDomain = tab.url.searchParams?.get('insight-tab-title');
 
   const showMeta = currentStat > 0 || !!tab.augmentation.description?.length || !!domains?.length;
 
   const keepParent = { keepParent: false };
 
-  return showMeta || titleFromDomain ? (
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
+  return showMeta || (titleFromDomain && titleFromDomain !== NOTE_TAB_TITLE) ? (
     <div id="tab-meta-container">
       <div id="meta-info-icon-container">
         <Tooltip

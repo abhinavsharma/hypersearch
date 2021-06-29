@@ -111,18 +111,17 @@ import {
     async (details) => {
       debug('Redirect: ', details.redirectUrl, details.url);
       const publication = extractPublication(details.url);
-      if (publication) {
+      const from = extractPublication(details.url);
+      const to = extractPublication(details.redirectUrl);
+      if (publication && from !== to) {
         await new Promise((resolve) =>
           chrome.storage.local.set(
             {
               [`${PUBLICATION_REDIRECT_URL}-${
-                extractPublication(details.redirectUrl) ||
-                extractUrlProperties(details.redirectUrl).hostname
+                to || extractUrlProperties(details.redirectUrl).hostname
               }`]: {
-                from: extractPublication(details.url),
-                to:
-                  extractPublication(details.redirectUrl) ||
-                  extractUrlProperties(details.redirectUrl).hostname,
+                from,
+                to: to || extractUrlProperties(details.redirectUrl).hostname,
               },
             },
             () => resolve(true),

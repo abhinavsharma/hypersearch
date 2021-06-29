@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import SidebarLoader from 'lib/sidebar';
 import UserManager from 'lib/user';
 import Skeleton from 'antd/lib/skeleton';
+import { SidebarNotesTab } from 'modules/sidebar';
 import { decodeSpace, triggerSerpProcessing } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
@@ -10,11 +11,14 @@ import {
   HIDE_FRAME_OVERLAY_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXTERNAL_PDF_RENDERER_URL,
+  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/skeleton/style/index.css';
+import { useFeature } from 'lib/features';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [publicationFeature] = useFeature('desktop_ratings');
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -61,6 +65,10 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     return null;
   }
 
+  if (tab.url.href === SIDEBAR_TAB_NOTE_TAB && publicationFeature) {
+    return <SidebarNotesTab />;
+  }
+
   return (
     <div ref={containerRef} className="insight-tab-iframe-container">
       <iframe
@@ -68,7 +76,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         ref={frameRef}
         sandbox="allow-forms allow-presentation allow-scripts allow-same-origin allow-popups"
         src={
-          tab.url.pathname.match(/\.pdf$/)
+          tab.url.pathname?.match(/\.pdf$/)
             ? EXTERNAL_PDF_RENDERER_URL.replace('<placeholder>', decodeSpace(tab.url.href))
             : decodeSpace(tab.url.href)
         }
@@ -76,7 +84,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         onError={handleError}
         onLoad={handleLoad}
       />
-      {!isLoaded && tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) && (
+      {!isLoaded && tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) && (
         <div className="insight-frame-overlay" ref={overlayRef} style={OVERLAY_STYLE}>
           {Array(Math.trunc(window.innerHeight / 120))
             .fill(null)

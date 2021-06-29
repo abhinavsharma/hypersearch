@@ -14,8 +14,6 @@ import {
   APP_NAME,
   EMPTY_AUGMENTATION,
   SIDEBAR_TAB_FAKE_URL,
-  MESSAGE,
-  PAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXPAND_KEY,
   SIDEBAR_Z_INDEX,
@@ -41,14 +39,6 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs, info, rating })
   const tooltipContainer = useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
-    if (rating) {
-      chrome.runtime.sendMessage({
-        info,
-        rating,
-        type: MESSAGE.OPEN_PAGE,
-        page: PAGE.PUBLICATION,
-      });
-    }
     SidebarLoader.isPreview = true;
     flipSidebar(document, 'show', SidebarLoader);
   };
@@ -109,8 +99,8 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs, info, rating })
             <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
           </div>
           <div className="insight-list">
-            {rating && (
-              <div onClick={handleClick} className="insight-sidebar-publication-rating-nub">
+            {!!rating && (
+              <div className="insight-sidebar-publication-rating-nub">
                 <h3>{rating}&nbsp;⭐</h3>
               </div>
             )}

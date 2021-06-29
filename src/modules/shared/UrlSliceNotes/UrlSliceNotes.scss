@@ -1,0 +1,37 @@
+@use 'styles/variables' as *;
+@use 'styles/mixins' as *;
+
+.sidebar-notes-tab {
+  .title {
+    display: block;
+    color: $color_text_dark;
+    font-weight: bold;
+    margin-right: auto;
+    font-size: $sidebar_font_large;
+    margin: $sidebar_space_medium;
+  }
+
+  .publication-page-rating {
+    font-size: $sidebar_font_largest;
+    font-weight: bold;
+    padding: $sidebar_space_large;
+  }
+
+  .publication-notes-wrapper {
+    .ant-comment {
+      .ant-comment-inner {
+        .ant-comment-avatar {
+          .ant-avatar {
+            .anticon > svg {
+              @include centerBox;
+              transform: translate(-50%, 50%);
+              width: 50%;
+              height: 50%;
+              margin-bottom: $sidebar_space_medium;
+            }
+          }
+        }
+      }
+    }
+  }
+}

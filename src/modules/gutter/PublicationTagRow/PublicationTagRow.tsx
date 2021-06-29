@@ -74,7 +74,7 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
         'style',
         `
         z-index: ${SIDEBAR_Z_INDEX - 2};
-        /* margin-top: -${resultRef.current?.offsetHeight - 17}px; */
+        margin-top: -${resultRef.current?.offsetHeight + 20}px;
         height: 17px;
         `,
       );
