@@ -29,9 +29,7 @@ const ADD_BUTTON_TEXT = 'Add';
 const EDIT_BUTTON_TEXT = 'Edit';
 const DELETE_BUTTON_TEXT = 'Delete';
 const URL_NOTE_PLACEHOLDER = 'Your note about <placeholder> goes here';
-const PAGE_HEADER = '<placeholder>';
 const PAGE_RATING_TEXT = '<placeholder> ⭐';
-const PAGE_REVIEWS_HEADER = 'Trusted Reviews';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
@@ -162,7 +160,6 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
   return (
     <div className="sidebar-notes-tab">
       <section>
-        <h2 className="title">{PAGE_HEADER.replace('<placeholder>', slice)}</h2>
         {!!averageRating && slice === publicationInfo.publication && (
           <span className="publication-page-rating">
             {PAGE_RATING_TEXT.replace('<placeholder>', String(averageRating))}
@@ -171,7 +168,6 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
         <div className="publication-notes-wrapper">
           {slice === publicationInfo.publication && (
             <>
-              {!!publicationInfo.tags?.length && <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>}
               {publicationInfo.tags.map((tag) => (
                 <Comment
                   key={uuid()}

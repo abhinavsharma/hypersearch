@@ -18,6 +18,10 @@
   }
 
   .publication-notes-wrapper {
+    textarea {
+      margin-bottom: $sidebar_space_medium;
+    }
+
     .ant-comment {
       .ant-comment-inner {
         .ant-comment-avatar {
