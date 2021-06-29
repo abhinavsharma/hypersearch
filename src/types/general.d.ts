@@ -142,6 +142,7 @@ declare type NoteRecord = {
   slice?: string;
   key?: string;
   external?: boolean;
+  date?: string;
 };
 
 declare type Prefix = TPrefix[keyof TPrefix];

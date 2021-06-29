@@ -21,7 +21,7 @@ import {
   UNCHECKED_SWITCH_TEXT,
 } from 'modules/onboarding';
 import { BookmarksSyncButton, LicenseForm, LoginForm } from 'modules/settings';
-import { APP_NAME, MESSAGE, PAGE, SYNC_PRIVACY_KEY } from 'constant';
+import { MESSAGE, PAGE, SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -36,9 +36,6 @@ export const SettingsContext = React.createContext<SettingsContext>(Object.creat
 //-----------------------------------------------------------------------------------------------
 const HEADER_TITLE = 'Settings';
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
-const LOGIN_SECTION_TITLE = 'Login to your account';
-const ACTIVATION_SECTION_TITLE = 'Verify Email';
-const LOGOUT_SECTION_TITLE = `You are successfully logged in to ${APP_NAME}`;
 const LICENSE_SECTION_HEADER = 'Manage Licenses';
 
 //-----------------------------------------------------------------------------------------------
@@ -104,27 +101,12 @@ export const SettingsPage: SettingsPage = ({ email }) => {
     handlePrivacyChange,
   };
 
+  const isActivating = new URL(window.location.href).searchParams.get('auth_email');
+
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
-  const LoginSection = () =>
-    loginFeature ? (
-      <section>
-        <h2 className="title">
-          {
-            // prettier-ignore
-            storedEmail && storedToken
-            ? LOGOUT_SECTION_TITLE
-            : storedEmail
-              ? ACTIVATION_SECTION_TITLE
-              : LOGIN_SECTION_TITLE
-          }
-        </h2>
-        <div className="settings-section-content insight-row">
-          <LoginForm />
-        </div>
-      </section>
-    ) : null;
+  const LoginSection = () => (loginFeature ? <LoginForm /> : null);
 
   const PrivacySection = () => (
     <section>
@@ -198,7 +180,7 @@ export const SettingsPage: SettingsPage = ({ email }) => {
         <div className="sidebar-page-wrapper">
           <LoginSection />
           {(storedToken || !loginFeature) && <LicenseSection />}
-          <PrivacySection />
+          {!isActivating || (storedToken && <PrivacySection />)}
           <BookmarksSection />
         </div>
       </div>

@@ -51,6 +51,7 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
       note: e.target.value,
       slice: slice || prev.slice,
       key: prev.key,
+      date: new Date().toLocaleString(),
     }));
   };
 
@@ -65,6 +66,7 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
                 id: currentEditing || uuid(),
                 slice: slice || newSliceNote.slice,
                 key: newSliceNote.key,
+                date: new Date().toLocaleString(),
               }
             : {
                 ...item,
@@ -183,7 +185,7 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
             currentEditing === note.id || (slice && note.slice !== slice) ? null : (
               <Comment
                 key={note.id}
-                datetime={(!slice && note.slice) || ''}
+                datetime={`${(!slice && note.slice) + ' · ' || ''}${note.date}`}
                 author={note.external ? '' : 'You'}
                 actions={slice ? actions(note.id) : undefined}
                 avatar={avatar()}
