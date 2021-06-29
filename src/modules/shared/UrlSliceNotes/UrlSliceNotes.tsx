@@ -195,20 +195,25 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
               />
             ),
           )}
-          <TextArea
-            onChange={handleSliceNoteChange}
-            value={newSliceNote.note}
-            placeholder={URL_NOTE_PLACEHOLDER.replace('<placeholder>', slice || 'anything')}
-            rows={4}
-          />
-          <Button
-            type="primary"
-            block
-            onClick={handleAddSliceNoteUrl}
-            disabled={!newSliceNote.note.length}
-          >
-            {`${currentEditing ? EDIT_BUTTON_TEXT : ADD_BUTTON_TEXT} Note`}
-          </Button>
+          {slice && (
+            <>
+              {' '}
+              <TextArea
+                onChange={handleSliceNoteChange}
+                value={newSliceNote.note}
+                placeholder={URL_NOTE_PLACEHOLDER.replace('<placeholder>', slice || 'anything')}
+                rows={4}
+              />
+              <Button
+                type="primary"
+                block
+                onClick={handleAddSliceNoteUrl}
+                disabled={!newSliceNote.note.length}
+              >
+                {`${currentEditing ? EDIT_BUTTON_TEXT : ADD_BUTTON_TEXT} Note`}
+              </Button>
+            </>
+          )}
         </div>
         <Divider />
       </section>
