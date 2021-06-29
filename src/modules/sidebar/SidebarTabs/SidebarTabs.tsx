@@ -10,15 +10,7 @@ import message from 'antd/lib/message';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import UserManager from 'lib/user';
-import {
-  ActivePage,
-  BuilderPage,
-  GutterPage,
-  SettingsPage,
-  FeaturePage,
-  PublicationPage,
-  NotePage,
-} from 'modules/pages';
+import { ActivePage, BuilderPage, GutterPage, SettingsPage, FeaturePage } from 'modules/pages';
 import {
   ActionBar,
   SidebarHeader,
@@ -126,16 +118,6 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           if (msg.page === PAGE.SETTINGS && msg.email) {
             setPageData({ email: msg.email });
           }
-          if (msg.page === PAGE.PUBLICATION) {
-            setPageData({ info: msg.info, rating: msg.rating });
-          }
-          if (msg.page === PAGE.NOTES) {
-            setPageData({
-              url: msg.url,
-              publication: msg.publication,
-              forceCustom: msg.forceCustom,
-            });
-          }
           msg.page && setShowPage(msg.page);
           break;
         // LOGGING
@@ -208,16 +190,6 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                 return <SettingsPage email={pageData?.email} />;
               case PAGE.FEATURE:
                 return <FeaturePage />;
-              case PAGE.PUBLICATION:
-                return <PublicationPage info={pageData?.info} rating={pageData?.rating} />;
-              case PAGE.NOTES:
-                return (
-                  <NotePage
-                    url={pageData?.url}
-                    customUrl={pageData?.publication}
-                    forceCustom={pageData?.forceCustom}
-                  />
-                );
               default:
                 return null;
             }

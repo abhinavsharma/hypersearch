@@ -278,6 +278,22 @@ export const sanitizeUrl = (urlLike: string) => {
   return encodeURIComponent(urlLike.replace(/[\s]/gi, '_'));
 };
 
+export const getUrlSlices = (url: string) => {
+  return (
+    extractUrlProperties(url)
+      .full?.split('/')
+      .reduce((slices, slice, index) => {
+        if (slice.length) {
+          slices[index - 1]
+            ? slices.push([slices[index - 1], slice].join('/'))
+            : slices.push(slice);
+        }
+        return slices;
+      }, [] as string[])
+      .reverse() ?? []
+  );
+};
+
 /**
  * ! UTILITY
  */

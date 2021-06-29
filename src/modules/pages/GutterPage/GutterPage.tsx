@@ -6,7 +6,6 @@
 
 import React, { Suspense, useState } from 'react';
 import Button from 'antd/lib/button';
-import { Edit3 } from 'react-feather';
 import Tag from 'antd/lib/tag';
 import Divider from 'antd/lib/divider';
 import SidebarLoader from 'lib/sidebar';
@@ -51,7 +50,6 @@ const ADD_TO_AUGMENTATION_BUTTON_NEW_ACTION = 'Add as new action';
 const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new Lens that searches this domain';
 const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Lens';
 const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
-const OPEN_NOTE_BUTTON_TEXT = 'Open notes for this page';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
@@ -210,16 +208,6 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
     });
   };
 
-  const handleOpenNotes = () => {
-    chrome.runtime.sendMessage({
-      type: MESSAGE.OPEN_PAGE,
-      page: PAGE.NOTES,
-      url: domain,
-      publication: domain,
-      forceCustom: true,
-    });
-  };
-
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
@@ -235,10 +223,6 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       )}
       <div className="sidebar-page-wrapper">
         <section>
-          <Button className={'insight-create-note'} type="primary" block onClick={handleOpenNotes}>
-            <Edit3 width={16} height={16} />
-            {`\u00a0${OPEN_NOTE_BUTTON_TEXT}`}
-          </Button>
           <h3 className="domain-text">
             <code>{domain}</code>
           </h3>

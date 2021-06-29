@@ -1,7 +1,6 @@
-import { v4 as uuid } from 'uuid';
-import { INSTALLED_PREFIX, NOTE_TAB_TITLE } from './index';
-
 import {
+  INSTALLED_PREFIX,
+  NOTE_TAB_TITLE,
   ACTION_EVALUATION,
   ACTION_KEY,
   ACTION_LABEL,
@@ -13,7 +12,9 @@ import {
   LEGACY_ACTION_TYPE,
   LEGACY_CONDITION_TYPE,
   LEGACY_EVALUATION,
-} from './augmentations';
+} from 'constant';
+
+export const NOTE_AUGMENTATION_ID = `${INSTALLED_PREFIX}-note`
 
 export const EMPTY_AUGMENTATION = {
   actions: {
@@ -131,7 +132,7 @@ export const MY_TRUSTLIST_TEMPLATE = {
 
 export const createNote = (url: string) => ({
   ...EMPTY_AUGMENTATION,
-  id: `${INSTALLED_PREFIX}-note-${uuid()}`,
+  id: NOTE_AUGMENTATION_ID,
   name: NOTE_TAB_TITLE,
   enabled: true,
   conditions: {

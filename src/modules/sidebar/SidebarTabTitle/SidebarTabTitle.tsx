@@ -88,11 +88,11 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
       >
         {!tab.augmentation?.installed ? (
           <Tooltip title={SUGGESTED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
+            {tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
           </Tooltip>
         ) : (
           <Tooltip title={INSTALLED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
+            {tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
           </Tooltip>
         )}
       </span>
