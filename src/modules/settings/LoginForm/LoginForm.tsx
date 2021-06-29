@@ -10,7 +10,7 @@ import 'antd/lib/button/style/index.css';
 const { Text } = Typography;
 
 const EMAIL_INPUT_PLACEHOLDER = 'Email';
-const ACTIVATE_INPUT_PLACEHOLDER = 'Enter the code on the left here';
+const ACTIVATE_INPUT_PLACEHOLDER = 'Enter the code from your email here';
 const ACTIVATE_BUTTON_TEXT = 'Activate';
 const LOGIN_BUTTON_TEXT = 'Login';
 const LOGOUT_BUTTON_TEXT = 'Logout';
