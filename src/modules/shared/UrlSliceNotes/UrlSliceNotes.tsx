@@ -171,7 +171,7 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
         <div className="publication-notes-wrapper">
           {slice === publicationInfo.publication && (
             <>
-              {!!publicationInfo.tags.length && <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>}
+              {!!publicationInfo.tags?.length && <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>}
               {publicationInfo.tags.map((tag) => (
                 <Comment
                   key={uuid()}
@@ -208,7 +208,7 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
                 type="primary"
                 block
                 onClick={handleAddSliceNoteUrl}
-                disabled={!newSliceNote.note.length}
+                disabled={!newSliceNote.note?.length}
               >
                 {`${currentEditing ? EDIT_BUTTON_TEXT : ADD_BUTTON_TEXT} Note`}
               </Button>
