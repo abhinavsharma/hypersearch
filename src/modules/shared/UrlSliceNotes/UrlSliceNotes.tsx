@@ -168,18 +168,21 @@ export const UrlSliceNotes: UrlSliceNotes = ({ slice }) => {
             {PAGE_RATING_TEXT.replace('<placeholder>', String(averageRating))}
           </span>
         )}
-        <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>
         <div className="publication-notes-wrapper">
-          {slice === publicationInfo.publication &&
-            publicationInfo.tags.map((tag) => (
-              <Comment
-                key={uuid()}
-                avatar={avatar()}
-                content={`${PAGE_RATING_TEXT.replace('<placeholder>', String(tag.rating))}\u00a0${
-                  tag.text
-                }`}
-              />
-            ))}
+          {slice === publicationInfo.publication && (
+            <>
+              {!!publicationInfo.tags.length && <h2 className="title">{PAGE_REVIEWS_HEADER}</h2>}
+              {publicationInfo.tags.map((tag) => (
+                <Comment
+                  key={uuid()}
+                  avatar={avatar()}
+                  content={`${PAGE_RATING_TEXT.replace('<placeholder>', String(tag.rating))}\u00a0${
+                    tag.text
+                  }`}
+                />
+              ))}
+            </>
+          )}
           {sliceNotes.map((note) =>
             currentEditing === note.id || (slice && note.slice !== slice) ? null : (
               <Comment

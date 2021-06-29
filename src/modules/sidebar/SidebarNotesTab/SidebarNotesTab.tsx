@@ -8,11 +8,6 @@ import 'antd/lib/collapse/style/index.css';
 const { Panel } = Collapse;
 
 //-----------------------------------------------------------------------------------------------
-// ! Magics
-//-----------------------------------------------------------------------------------------------
-const ALL_NOTES_PANEL_HEADER = 'All Notes';
-
-//-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const SidebarNotesTab = () => {
@@ -29,9 +24,6 @@ export const SidebarNotesTab = () => {
             <UrlSliceNotes slice={slice} />
           </Panel>
         ))}
-        <Panel header={ALL_NOTES_PANEL_HEADER} key={urlSlices.length + 1}>
-          <UrlSliceNotes slice={''} />
-        </Panel>
       </Collapse>
     </>
   );

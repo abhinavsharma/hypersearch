@@ -118,16 +118,6 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
           if (msg.page === PAGE.SETTINGS && msg.email) {
             setPageData({ email: msg.email });
           }
-          if (msg.page === PAGE.PUBLICATION) {
-            setPageData({ info: msg.info, rating: msg.rating });
-          }
-          if (msg.page === PAGE.NOTES) {
-            setPageData({
-              url: msg.url,
-              publication: msg.publication,
-              forceCustom: msg.forceCustom,
-            });
-          }
           msg.page && setShowPage(msg.page);
           break;
         // LOGGING

@@ -81,6 +81,11 @@ export const Sidebar: Sidebar = () => {
   }, [publicationFeature]);
 
   useEffect(() => {
+    injectNotesTab();
+    setActiveKey(getFirstValidTabIndex(SidebarLoader.sidebarTabs));
+  }, [injectNotesTab]);
+
+  useEffect(() => {
     SidebarLoader.showPublicationRating = averageRating > 0;
     setRating(averageRating);
   }, [averageRating]);
@@ -117,7 +122,6 @@ export const Sidebar: Sidebar = () => {
   }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength, rating]);
 
   useEffect(() => {
-    injectNotesTab();
     chrome.runtime.onMessage.addListener((msg) => {
       switch (msg.type) {
         case UPDATE_SIDEBAR_TABS_MESSAGE:
