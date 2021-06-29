@@ -73,7 +73,7 @@ export const Sidebar: Sidebar = () => {
       noteUrl.href = SIDEBAR_TAB_NOTE_TAB;
       noteUrl.searchParams.append(URL_PARAM_TAB_TITLE_KEY, NOTE_TAB_TITLE);
       SidebarLoader.publicationSlices[NOTE_AUGMENTATION_ID] = Object.create(null);
-      SidebarLoader.sidebarTabs.push({
+      SidebarLoader.sidebarTabs.unshift({
         augmentation: createNote(SidebarLoader.url.href),
         url: noteUrl,
       });
