@@ -39,7 +39,7 @@ export const EmailFrame = () => {
   const handleEmailSubmit = async () => {
     if (loginFeature) {
       window.open(
-        `https://${EXTENSION_HOST}?auth_email=${encodeURIComponent(emailValue)}`,
+        `https://${EXTENSION_HOST}/verify?auth_email=${encodeURIComponent(emailValue)}`,
         '_blank',
       );
     } else {
