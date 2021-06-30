@@ -70,7 +70,7 @@ export const UserNotes: UserNotes = ({ slice }) => {
     let newSlices: NoteRecord[] = [];
     setSliceNotes((prev) => {
       newSlices = prev.filter(({ id }) => id !== deleteId);
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         [`${NOTE_PREFIX}-${encodeURIComponent(slice)}`]: newSlices,
       });
       return newSlices;
@@ -79,7 +79,7 @@ export const UserNotes: UserNotes = ({ slice }) => {
 
   const getSliceNotes = useCallback(async () => {
     const results = await new Promise<Record<string, NoteRecord[]>>((resolve) => {
-      chrome.storage.local.get(resolve);
+      chrome.storage.sync.get(resolve);
     }).then((data) =>
       Object.entries(data).reduce((notes, [key, note]) => {
         if (key.startsWith(`${NOTE_PREFIX}-${slice ? encodeURIComponent(slice) : ''}`)) {

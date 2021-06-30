@@ -78,7 +78,7 @@ export const UserNoteInput = () => {
         ),
       ];
       !currentEditing && newSlices.push({ ...newSliceNote, id: uuid() });
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         [`${NOTE_PREFIX}-${encodeURIComponent(newSliceNote.slice ?? slice)}`]: newSlices,
       });
       return newSlices;
