@@ -19,7 +19,7 @@ import './EmailFrame.scss';
 const TAB_TITLE = `${APP_NAME} - Email Address`;
 const PAGE_MAIN_HEADER = 'Sign in or sign up';
 const EMAIL_INPUT_PLACEHOLDER = 'your@emailaddress.com';
-const PRIVACY_NOTICE = 'Your email address is never linked to your search history';
+const PRIVACY_NOTICE = 'Your email address is never linked to your search history. \nAn account lets you share notes, trusted and blocked sources with collaborators.';
 const USE_LICENSE_BUTTON_TEXT = 'Next';
 const USE_UNLICENSED_BUTTON_TEXT = 'Skip';
 const BUTTON_CONTAINER_STYLE: React.CSSProperties = { width: '400px' };
