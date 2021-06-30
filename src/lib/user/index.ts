@@ -171,7 +171,7 @@ class User {
     );
     !this._licenses.length && (await this.addUserLicense(DEFAULT_LICENSE));
     this._email = email;
-    !this.getCognitoUser() && this.signup(email);
+    this.signup(email);
     this.getCognitoUser()?.setAuthenticationFlowType('CUSTOM_AUTH');
     const authDetails = new AuthenticationDetails({ Username: email });
     this.getCognitoUser()?.initiateAuth(authDetails, {
