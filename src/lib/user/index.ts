@@ -23,6 +23,7 @@ import {
   LEGACY_LOCAL_LICENSE,
   SYNC_PRIVACY_KEY,
   SYNC_LICENSE_KEY,
+  SYNC_USER_TAGS,
 } from 'constant';
 
 class User {
@@ -32,6 +33,7 @@ class User {
   private _privacy: boolean | undefined = undefined;
   private _cognitoUser: CognitoUser | undefined = undefined;
   private _token: TAccessToken | undefined = undefined;
+  private _tags: string[] = Array(0);
   private static _storage: Record<string, any> = Object.create(null);
 
   private static getStorageItem(key: string) {
@@ -100,6 +102,7 @@ class User {
       privacy: this._privacy,
       licenses: this._licenses,
       token: this._token,
+      tags: this._tags,
     };
   }
 
@@ -231,6 +234,21 @@ class User {
     );
   }
 
+  public async addUserTag(tag: string) {
+    this._tags.push(tag);
+    return new Promise<string[]>((resolve, reject) =>
+      chrome.storage.sync.set({ [SYNC_USER_TAGS]: this._tags }, () => {
+        const hasError = chrome.runtime.lastError;
+        if (hasError) {
+          debug('UserManager - Add User Tag - Error', hasError.message);
+          reject(null);
+        }
+        debug('UserManager - Add User Tag - Success', tag);
+        resolve(this._tags);
+      }),
+    );
+  }
+
   //-----------------------------------------------------------------------------------------------
   // ! Internal Implementation
   //-----------------------------------------------------------------------------------------------
@@ -261,6 +279,11 @@ class User {
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
     );
     this._privacy = storedUserPrivacy?.[SYNC_PRIVACY_KEY] === 'true';
+
+    const storedUserTags = await new Promise<Record<string, string[]> | undefined>((resolve) => {
+      chrome.storage.sync.get(SYNC_USER_TAGS, resolve);
+    }).then((data) => data?.[SYNC_USER_TAGS]);
+    this._tags = storedUserTags ?? [];
 
     if (!this._id) {
       this._id = uuid();

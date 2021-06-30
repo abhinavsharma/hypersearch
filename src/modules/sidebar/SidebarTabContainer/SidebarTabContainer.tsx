@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import SidebarLoader from 'lib/sidebar';
 import UserManager from 'lib/user';
 import Skeleton from 'antd/lib/skeleton';
-import { SidebarNotesTab } from 'modules/sidebar';
+import { UserNotesTab } from 'modules/notes';
 import { decodeSpace, triggerSerpProcessing } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
@@ -66,7 +66,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   }
 
   if (tab.url.href === SIDEBAR_TAB_NOTE_TAB && publicationFeature) {
-    return <SidebarNotesTab />;
+    return <UserNotesTab />;
   }
 
   return (
