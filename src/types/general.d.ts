@@ -139,11 +139,9 @@ declare type PublicationSlices = Record<string, Record<string, string[]>> &
 declare type NoteRecord = {
   id: string;
   note: string;
-  slice?: string;
-  key?: string;
-  external?: boolean;
-  date?: string;
-  tags?: string[];
+  slice: string;
+  date: string;
+  tags: string[];
 };
 
 declare type Prefix = TPrefix[keyof TPrefix];

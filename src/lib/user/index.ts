@@ -24,6 +24,7 @@ import {
   SYNC_PRIVACY_KEY,
   SYNC_LICENSE_KEY,
   SYNC_USER_TAGS,
+  SYNC_LAST_USED_TAGS,
 } from 'constant';
 
 class User {
@@ -34,6 +35,7 @@ class User {
   private _cognitoUser: CognitoUser | undefined = undefined;
   private _token: TAccessToken | undefined = undefined;
   private _tags: string[] = Array(0);
+  private _lastUsedTags: string[] = Array(0);
   private static _storage: Record<string, any> = Object.create(null);
 
   private static getStorageItem(key: string) {
@@ -103,6 +105,7 @@ class User {
       licenses: this._licenses,
       token: this._token,
       tags: this._tags,
+      lastUsedTags: this._lastUsedTags,
     };
   }
 
@@ -132,6 +135,11 @@ class User {
     });
   }
 
+  /**
+   * Create a Cognito account with the given email address
+   *
+   * @param email The email value
+   */
   public signup(email: string) {
     const customAttributes = [
       new CognitoUserAttribute({
@@ -145,6 +153,12 @@ class User {
     });
   }
 
+  /**
+   * Trigger the email verification after the user has signed in
+   *
+   * @param code The activation code
+   * @returns Cognito Token
+   */
   public async activate(code: string) {
     return await new Promise<TAccessToken | undefined>((resolve) =>
       chrome.storage.sync.set(
@@ -165,6 +179,12 @@ class User {
     );
   }
 
+  /**
+   * Initiate the user login process
+   *
+   * @param email The email value
+   * @returns Boolean
+   */
   public async login(email: string) {
     if (email && this._token) {
       return null;
@@ -249,6 +269,13 @@ class User {
     );
   }
 
+  public async changeLastUsedTags(tags: string[]) {
+    this._lastUsedTags = tags;
+    chrome.storage.sync.set({
+      [SYNC_LAST_USED_TAGS]: tags,
+    });
+  }
+
   //-----------------------------------------------------------------------------------------------
   // ! Internal Implementation
   //-----------------------------------------------------------------------------------------------
@@ -284,6 +311,13 @@ class User {
       chrome.storage.sync.get(SYNC_USER_TAGS, resolve);
     }).then((data) => data?.[SYNC_USER_TAGS]);
     this._tags = storedUserTags ?? [];
+
+    const storedLastUserTags = await new Promise<Record<string, string[]> | undefined>(
+      (resolve) => {
+        chrome.storage.sync.get(SYNC_LAST_USED_TAGS, resolve);
+      },
+    ).then((data) => data?.[SYNC_LAST_USED_TAGS]);
+    this._lastUsedTags = storedLastUserTags ?? [];
 
     if (!this._id) {
       this._id = uuid();
