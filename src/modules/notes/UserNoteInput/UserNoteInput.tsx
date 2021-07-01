@@ -5,7 +5,6 @@
  */
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
 import Tag from 'antd/lib/tag';
@@ -33,18 +32,18 @@ const TAG_AUTOCOMPLETE_PLACEHOLDER = 'Add tags to your note...';
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
-export const UserNoteInput = () => {
+export const UserNoteInput = ({ slice }: { slice: string }) => {
   const [userTags, setUserTags] = useState(Array(0));
   const dropdownRef = useRef<HTMLDivElement>(null);
   const {
     //prettier-ignore
-    slice,
     setNewSliceNote,
     sliceNotes,
     setSliceNotes,
     setCurrentEditing,
     newSliceNote,
     currentEditing,
+    setSearchedTag,
   } = useContext(NotesContext);
 
   //-----------------------------------------------------------------------------------------------
@@ -53,28 +52,33 @@ export const UserNoteInput = () => {
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewSliceNote((prev) => ({
       ...prev,
+      slice,
       note: e.target.value,
-      slice: prev.slice,
     }));
   };
 
   const handleSubmit = async () => {
+    if (newSliceNote.slice !== slice) {
+      return;
+    }
+
     let newSlices: NoteRecord[] = [];
     setSliceNotes((prev) => {
-      newSlices = [
-        ...prev.map((item) =>
+      newSlices = prev
+        .filter(({ slice: prevSlice }) => prevSlice === newSliceNote.slice)
+        .map((item) =>
           item.id === currentEditing
             ? {
                 ...newSliceNote,
                 date: new Date().toLocaleString(),
               }
             : item,
-        ),
-      ];
+        );
       !sliceNotes.find((note) => note.id === newSliceNote.id) &&
-        newSlices.push({ ...newSliceNote, id: uuid() });
+        newSliceNote.slice === slice &&
+        newSlices.push(newSliceNote);
       chrome.storage.sync.set({
-        [`${NOTE_PREFIX}-${encodeURIComponent(newSliceNote.slice ?? slice)}`]: newSlices,
+        [`${NOTE_PREFIX}-${encodeURIComponent(newSliceNote.slice)}`]: newSlices,
       });
       return newSlices;
     });
@@ -96,8 +100,15 @@ export const UserNoteInput = () => {
           maxCount: 3,
         });
 
-    setNewSliceNote({ note: '', key: '', slice: '', id: '', tags: UserManager.user.lastUsedTags });
+    setNewSliceNote({
+      note: '',
+      slice: '',
+      id: '',
+      tags: UserManager.user.lastUsedTags,
+      date: new Date().toLocaleString(),
+    });
     setCurrentEditing('');
+    setSearchedTag(newSliceNote.tags);
   };
 
   const handleTagChange = async (newTags: string[]) => {

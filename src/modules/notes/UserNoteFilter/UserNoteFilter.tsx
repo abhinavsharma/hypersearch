@@ -38,6 +38,11 @@ export const UserNoteFilter = () => {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.tags]);
 
+  useEffect(() => {
+    setSearchedTag(UserManager.user.lastUsedTags);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserManager.user.lastUsedTags]);
+
   const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
 
   const options = userTags.map((tag) => ({ value: tag }));
