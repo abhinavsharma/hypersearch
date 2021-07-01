@@ -29,7 +29,7 @@ export const BookmarksSyncButton: BookmarksSyncButton = ({ token }) => {
   //-----------------------------------------------------------------------------------------------
   const handleSync = async () => {
     setIsSyncing(true);
-    const token = (await UserManager.getUserToken())?.getJwtToken();
+    const token = await UserManager.getIdentityToken();
     chrome.runtime.sendMessage({ token, type: SYNC_START_MESSAGE });
   };
 

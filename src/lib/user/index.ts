@@ -33,7 +33,7 @@ class User {
   private _licenses: Array<string> = Array(0);
   private _privacy: boolean | undefined = undefined;
   private _cognitoUser: CognitoUser | undefined = undefined;
-  private _token: TAccessToken | undefined = undefined;
+  private _token: CognitoIdToken | undefined = undefined;
   private _tags: string[] = Array(0);
   private _lastUsedTags: string[] = Array(0);
   private static _storage: Record<string, any> = Object.create(null);
@@ -110,29 +110,23 @@ class User {
   }
 
   /**
-   * Gets the most recent user token and updates cached property.
+   * Refreshes user tokens and return its identity token.
    *
-   * @returns A promise of {@link CognitoIdToken} or `null`
+   * @returns A promise of `string` or `undefined`
    */
-  public getUserToken(): Promise<CognitoIdToken | null> {
-    return new Promise((resolve) => {
-      const user = this.getCognitoUser();
-      if (user) {
-        user.getSession((error: Error, session: TCognitoUserSession) => {
-          if (error) {
-            debug('AWS Cognito Authenticate Error', error);
-            return resolve(null);
-          }
-          debug('AWS Cognito Authenticate Success', session);
-          debug('AWS Cognito Token', session?.getIdToken());
-          this._token = session?.getIdToken();
-          resolve(this._token || null);
-        });
-        user.getSignInUserSession();
-      } else {
-        resolve(null);
-      }
-    });
+  public async getIdentityToken(): Promise<string | undefined> {
+    const session = await this.getSession();
+    return session?.getIdToken().getJwtToken();
+  }
+
+  /**
+   * Refreshes user tokens and return its access token.
+   *
+   * @returns A promise of `string` or `undefined`
+   */
+  public async getAccessToken(): Promise<string | undefined>  {
+    const session = await this.getSession();
+    return session?.getAccessToken().getJwtToken();
   }
 
   /**
@@ -333,7 +327,28 @@ class User {
       }),
     );
 
-    await this.getUserToken();
+    await this.getSession();
+  }
+
+  private async getSession(): Promise<TCognitoUserSession | null> {
+    return new Promise((resolve) => {
+      const user = this.getCognitoUser();
+      if (user) {
+        user.getSession((error: Error, session: TCognitoUserSession) => {
+          if (error) {
+            debug('AWS Cognito Authenticate Error', error);
+            return resolve(null);
+          }
+          debug('AWS Cognito Authenticate Success', session);
+          debug('AWS Cognito Token', session?.getIdToken());
+          this._token = session?.getIdToken();
+          resolve(session);
+        });
+        user.getSignInUserSession();
+      } else {
+        resolve(null);
+      }
+    });
   }
 }
 

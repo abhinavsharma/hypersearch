@@ -428,6 +428,7 @@ export const getAPI = async <T>(
  *
  * @param api - The API endpoint (eg: `subtabs`)
  * @param params - Specified query parameters
+ * @param headers - Specified request headers
  * @param body - Specified request body
  * @returns `HTTP-200` - Successful HTTP request. Note, that even if the request
  *  was successful, the function does not guarantee the expected response.
@@ -436,6 +437,7 @@ export const getAPI = async <T>(
 export const postAPI = async <T>(
   api: string,
   params: Record<string, any> = Object.create(null),
+  headers: Record<string, any> = Object.create(null),
   body: Record<string, any> = Object.create(null),
 ): Promise<T | null> => {
   try {
@@ -446,6 +448,7 @@ export const postAPI = async <T>(
       mode: 'cors',
       cache: 'no-cache',
       headers: {
+        ...headers,
         'Content-Type': 'application/json',
       },
       redirect: 'follow',

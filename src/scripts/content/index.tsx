@@ -36,7 +36,7 @@ import { URL_UPDATED_MESSAGE, TRIGGER_START_TRACK_TIMER_MESSAGE } from 'constant
     );
 
     const UserManager = (await import('lib/user')).default;
-    UserManager.initialize();
+    await UserManager.initialize();
 
     const SidebarLoader = (await import('lib/sidebar')).default;
     window.location.href.includes('http') && SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
