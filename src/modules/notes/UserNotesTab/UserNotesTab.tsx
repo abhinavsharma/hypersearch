@@ -8,8 +8,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Collapse from 'antd/lib/collapse';
 import SidebarLoader from 'lib/sidebar';
 import { UserNotes } from 'modules/notes';
-import { debug, getUrlSlices } from 'lib/helpers';
+import { debug, extractUrlProperties, getUrlSlices } from 'lib/helpers';
+import { FORCED_NOTE_PANEL_URLS } from 'constant';
 import 'antd/lib/collapse/style/index.css';
+import './UserNotesTab.scss';
 
 const { Panel } = Collapse;
 
@@ -29,12 +31,26 @@ export const UserNotesTab = () => {
   const testSlices = useCallback(async () => {
     const validSlices: string[] = [];
     for await (const slice of getUrlSlices(SidebarLoader.url.href)) {
+      if (
+        FORCED_NOTE_PANEL_URLS.includes(extractUrlProperties(`https://${slice}`).hostname ?? '')
+      ) {
+        validSlices.push(slice);
+        continue;
+      }
       try {
-        const { status } = await fetch(`https://${slice}`, { mode: 'no-cors' });
-        debug('UserNotesTab - Validate Slice', status);
-        status === 200 && validSlices.push(slice);
+        const { status: noCorsStatus, ok: noCorsOk } = await fetch(`https://${slice}`, {
+          mode: 'no-cors',
+        });
+        const { status: corsStatus, ok: corsOk } = await fetch(`https://${slice}`, {
+          mode: 'cors',
+        });
+        debug('UserNotesTab - Validate Slice - No-CORS', slice, noCorsStatus, noCorsOk);
+        debug('UserNotesTab - Validate Slice - CORS', slice, corsStatus, corsOk);
+
+        (corsOk || noCorsOk) && validSlices.push(slice);
       } catch (error) {
         debug('UserNotesTab - Validate Slice - Error', slice, error);
+        continue;
       }
     }
     setSlices(validSlices);
@@ -48,7 +64,7 @@ export const UserNotesTab = () => {
   // ! Render
   //-----------------------------------------------------------------------------------------------
   return (
-    <>
+    <div className="notes-panel-container">
       <Collapse accordion defaultActiveKey={defaultKey}>
         {slices.map((slice) => (
           <Panel header={slice} key={slice}>
@@ -59,6 +75,6 @@ export const UserNotesTab = () => {
           <UserNotes slice={''} />
         </Panel>
       </Collapse>
-    </>
+    </div>
   );
 };

@@ -40,6 +40,7 @@ export const UserNoteInput = () => {
     //prettier-ignore
     slice,
     setNewSliceNote,
+    sliceNotes,
     setSliceNotes,
     setCurrentEditing,
     newSliceNote,
@@ -53,9 +54,7 @@ export const UserNoteInput = () => {
     setNewSliceNote((prev) => ({
       ...prev,
       note: e.target.value,
-      slice: slice || prev.slice,
-      key: prev.key,
-      date: new Date().toLocaleString(),
+      slice: prev.slice,
     }));
   };
 
@@ -67,17 +66,13 @@ export const UserNoteInput = () => {
           item.id === currentEditing
             ? {
                 ...newSliceNote,
-                id: currentEditing || uuid(),
-                slice: slice || newSliceNote.slice,
                 date: new Date().toLocaleString(),
               }
-            : {
-                ...item,
-                slice: item.slice || slice,
-              },
+            : item,
         ),
       ];
-      !currentEditing && newSlices.push({ ...newSliceNote, id: uuid() });
+      !sliceNotes.find((note) => note.id === newSliceNote.id) &&
+        newSlices.push({ ...newSliceNote, id: uuid() });
       chrome.storage.sync.set({
         [`${NOTE_PREFIX}-${encodeURIComponent(newSliceNote.slice ?? slice)}`]: newSlices,
       });
@@ -101,7 +96,7 @@ export const UserNoteInput = () => {
           maxCount: 3,
         });
 
-    setNewSliceNote({ note: '', key: '', slice: '', id: '' });
+    setNewSliceNote({ note: '', key: '', slice: '', id: '', tags: UserManager.user.lastUsedTags });
     setCurrentEditing('');
   };
 
@@ -110,6 +105,7 @@ export const UserNoteInput = () => {
     setNewSliceNote((prev) => ({ ...prev, tags }));
     const newTag = tags.find((tag) => !userTags.includes(tag));
     newTag && (await UserManager.addUserTag(newTag));
+    await UserManager.changeLastUsedTags(tags);
   };
 
   useEffect(() => {

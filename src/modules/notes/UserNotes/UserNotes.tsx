@@ -11,6 +11,7 @@ import Comment from 'antd/lib/comment';
 import Divider from 'antd/lib/divider';
 import Tag from 'antd/lib/tag';
 import { UserNoteFilter, UserNoteInput } from 'modules/notes';
+import UserManager from 'lib/user';
 import { usePublicationInfo } from 'lib/publication';
 import { NOTE_PREFIX } from 'constant';
 import 'antd/lib/tag/style/index.css';
@@ -31,8 +32,8 @@ type TNoteContext = {
   setNewSliceNote: React.Dispatch<React.SetStateAction<NoteRecord>>;
   sliceNotes: NoteRecord[];
   setSliceNotes: React.Dispatch<React.SetStateAction<NoteRecord[]>>;
-  searchedTag: string;
-  setSearchedTag: React.Dispatch<React.SetStateAction<string>>;
+  searchedTag: string[];
+  setSearchedTag: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export const NotesContext = React.createContext<TNoteContext>(Object.create(null));
@@ -51,9 +52,14 @@ const DEFAULT_AUTHOR = 'You';
 export const UserNotes: UserNotes = ({ slice }) => {
   // When `slice` is falsy, it means we render all notes
 
-  const [searchedTag, setSearchedTag] = useState<string>('');
+  const [searchedTag, setSearchedTag] = useState<string[]>(Array(0));
   const [currentEditing, setCurrentEditing] = useState<string>('');
-  const [newSliceNote, setNewSliceNote] = useState<NoteRecord>(Object.create({ id: '', note: '' }));
+  const [newSliceNote, setNewSliceNote] = useState<NoteRecord>({
+    slice,
+    id: '',
+    note: '',
+    tags: UserManager.user.lastUsedTags,
+  });
   const [sliceNotes, setSliceNotes] = useState<NoteRecord[]>(Array(0));
   const { averageRating, publicationInfo } = usePublicationInfo(slice);
 
@@ -94,6 +100,11 @@ export const UserNotes: UserNotes = ({ slice }) => {
   useEffect(() => {
     getSliceNotes();
   }, [getSliceNotes]);
+
+  useEffect(() => {
+    setSearchedTag(UserManager.user.lastUsedTags);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserManager.user.lastUsedTags]);
 
   const context = {
     slice,
@@ -168,7 +179,10 @@ export const UserNotes: UserNotes = ({ slice }) => {
             )}
             {!slice && <UserNoteFilter />}
             {sliceNotes
-              .filter((note) => !searchedTag || note.tags?.includes(searchedTag))
+              .filter(
+                (note) =>
+                  !searchedTag.length || note.tags?.some((tag) => searchedTag.includes(tag)),
+              )
               .map((note) =>
                 currentEditing === note.id || (slice && note.slice !== slice) ? null : (
                   <>
