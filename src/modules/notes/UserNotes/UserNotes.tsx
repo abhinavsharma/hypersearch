@@ -33,6 +33,8 @@ type TNoteContext = {
   setSliceNotes: React.Dispatch<React.SetStateAction<NoteRecord[]>>;
   searchedTag: string[];
   setSearchedTag: React.Dispatch<React.SetStateAction<string[]>>;
+  filteredNotes: NoteRecord[];
+  setFilteredNotes: React.Dispatch<React.SetStateAction<NoteRecord[]>>;
 };
 
 export const NotesContext = React.createContext<TNoteContext>(Object.create(null));
@@ -49,8 +51,7 @@ const DEFAULT_AUTHOR = 'You';
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const UserNotes: UserNotes = ({ slice }) => {
-  // When `slice` is falsy, it means we render all notes
-
+  const [filteredNotes, setFilteredNotes] = useState<NoteRecord[]>(Array(0));
   const [searchedTag, setSearchedTag] = useState<string[]>(UserManager.user.lastUsedTags);
   const [currentEditing, setCurrentEditing] = useState<string>('');
   const [newSliceNote, setNewSliceNote] = useState<NoteRecord>({
@@ -95,6 +96,7 @@ export const UserNotes: UserNotes = ({ slice }) => {
       }, [] as NoteRecord[]),
     );
     setSliceNotes(results);
+    setFilteredNotes(results);
   }, [slice]);
 
   useEffect(() => {
@@ -115,6 +117,8 @@ export const UserNotes: UserNotes = ({ slice }) => {
     setSliceNotes,
     searchedTag,
     setSearchedTag,
+    filteredNotes,
+    setFilteredNotes,
   };
 
   //-----------------------------------------------------------------------------------------------
@@ -173,11 +177,12 @@ export const UserNotes: UserNotes = ({ slice }) => {
                 />
               ))}
             {!slice && <UserNoteFilter />}
-            {sliceNotes
-              .filter(
-                (note) =>
-                  !searchedTag.length ||
-                  (note.tags?.some((tag) => searchedTag.includes(tag)) && note.slice === slice),
+            {(slice ? sliceNotes : filteredNotes)
+              .filter((note) =>
+                !slice
+                  ? true
+                  : !searchedTag.length ||
+                    (searchedTag?.every((tag) => note.tags.includes(tag)) && note.slice === slice),
               )
               .map((note) =>
                 currentEditing === note.id || (slice && note.slice !== slice) ? null : (

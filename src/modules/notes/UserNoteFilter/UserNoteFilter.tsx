@@ -22,15 +22,20 @@ const SEARCH_BY_TAG_PLACEHOLDER = 'Filter notes by tags...';
 //-----------------------------------------------------------------------------------------------
 export const UserNoteFilter = () => {
   const [userTags, setUserTags] = useState(Array(0));
-  const { searchedTag, setSearchedTag } = useContext(NotesContext);
+  const { searchedTag, setSearchedTag, setFilteredNotes, sliceNotes } = useContext(NotesContext);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   //-----------------------------------------------------------------------------------------------
   // ! Handlers
   //-----------------------------------------------------------------------------------------------
-  const handleTagChange = async (newTags: string[]) => {
+  const handleTagChange = (newTags: string[]) => {
     const tags = Array.from(new Set(newTags));
     setSearchedTag(tags);
+    setFilteredNotes(
+      sliceNotes.filter(
+        (note) => !tags.length || searchedTag?.every((tag) => note.tags.includes(tag)),
+      ),
+    );
   };
 
   useEffect(() => {
@@ -39,7 +44,7 @@ export const UserNoteFilter = () => {
   }, [UserManager.user.tags]);
 
   useEffect(() => {
-    setSearchedTag(UserManager.user.lastUsedTags);
+    setUserTags(UserManager.user.lastUsedTags);
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.lastUsedTags]);
 
