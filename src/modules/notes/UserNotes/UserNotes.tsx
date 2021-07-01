@@ -4,13 +4,13 @@
  * @license (C) Insight
  */
 
-import React, { Suspense, useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import Avatar from 'antd/lib/avatar';
 import Comment from 'antd/lib/comment';
 import Divider from 'antd/lib/divider';
 import Tag from 'antd/lib/tag';
-import { UserNoteFilter, UserNoteInput } from 'modules/notes';
+import { NoteTabContext, UserNoteFilter, UserNoteInput } from 'modules/notes';
 import UserManager from 'lib/user';
 import { usePublicationInfo } from 'lib/publication';
 import { NOTE_PREFIX } from 'constant';
@@ -29,10 +29,6 @@ type TNoteContext = {
   setCurrentEditing: React.Dispatch<React.SetStateAction<string>>;
   newSliceNote: NoteRecord;
   setNewSliceNote: React.Dispatch<React.SetStateAction<NoteRecord>>;
-  sliceNotes: NoteRecord[];
-  setSliceNotes: React.Dispatch<React.SetStateAction<NoteRecord[]>>;
-  searchedTag: string[];
-  setSearchedTag: React.Dispatch<React.SetStateAction<string[]>>;
   filteredNotes: NoteRecord[];
   setFilteredNotes: React.Dispatch<React.SetStateAction<NoteRecord[]>>;
 };
@@ -52,8 +48,9 @@ const DEFAULT_AUTHOR = 'You';
 //-----------------------------------------------------------------------------------------------
 export const UserNotes: UserNotes = ({ slice }) => {
   const [filteredNotes, setFilteredNotes] = useState<NoteRecord[]>(Array(0));
-  const [searchedTag, setSearchedTag] = useState<string[]>(UserManager.user.lastUsedTags);
   const [currentEditing, setCurrentEditing] = useState<string>('');
+  const { averageRating, publicationInfo } = usePublicationInfo(slice);
+  const { sliceNotes, setSliceNotes, searchedTag, setSearchedTag } = useContext(NoteTabContext);
   const [newSliceNote, setNewSliceNote] = useState<NoteRecord>({
     slice,
     id: uuid(),
@@ -61,65 +58,70 @@ export const UserNotes: UserNotes = ({ slice }) => {
     date: new Date().toLocaleString(),
     tags: UserManager.user.lastUsedTags,
   });
-  const [sliceNotes, setSliceNotes] = useState<NoteRecord[]>(Array(0));
-  const { averageRating, publicationInfo } = usePublicationInfo(slice);
 
   //-----------------------------------------------------------------------------------------------
   // ! Handlers
   //-----------------------------------------------------------------------------------------------
   const handleEditSliceNote = (id: string) => {
     setCurrentEditing(id);
-    const editSlice = sliceNotes.find((note) => note.id === id && note.slice === slice);
+    const editSlice = sliceNotes[slice]?.find((note) => note.id === id && note.slice === slice);
     editSlice && setNewSliceNote(editSlice);
   };
 
   const handleDeleteSlice = (deleteId: string) => {
     let newSlices: NoteRecord[] = [];
     setSliceNotes((prev) => {
-      newSlices = prev.filter(({ id, slice: noteSlice }) => id !== deleteId && noteSlice === slice);
+      newSlices = prev[slice]?.filter(
+        ({ id, slice: noteSlice }) => id !== deleteId && noteSlice === slice,
+      );
       chrome.storage.sync.set({
         [`${NOTE_PREFIX}-${encodeURIComponent(slice)}`]: newSlices,
       });
-      return newSlices;
+      return { ...prev, [slice]: newSlices };
     });
   };
-
-  const getSliceNotes = useCallback(async () => {
-    const results = await new Promise<Record<string, NoteRecord[]>>((resolve) => {
-      chrome.storage.sync.get(resolve);
-    }).then((data) =>
-      Object.entries(data).reduce((notes, [key, note]) => {
-        if (key.startsWith(`${NOTE_PREFIX}-${slice ? encodeURIComponent(slice) : ''}`)) {
-          return notes.concat(note);
-        }
-        return notes;
-      }, [] as NoteRecord[]),
-    );
-    setSliceNotes(results);
-    setFilteredNotes(results);
-  }, [slice]);
-
-  useEffect(() => {
-    getSliceNotes();
-  }, [getSliceNotes]);
 
   useEffect(() => {
     setSearchedTag(UserManager.user.lastUsedTags);
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.lastUsedTags]);
 
+  useEffect(() => {
+    !slice &&
+      setFilteredNotes(
+        Object.values(sliceNotes)
+          .reduce((filtered, notes) => {
+            return filtered.concat(notes);
+          }, [] as NoteRecord[])
+          .filter(
+            (note) => !searchedTag.length || searchedTag?.every((tag) => note.tags.includes(tag)),
+          ),
+      );
+  }, [slice, sliceNotes, setFilteredNotes, searchedTag]);
+
+  useEffect(() => {
+    setNewSliceNote((prev) => ({
+      ...prev,
+      tags: searchedTag,
+    }));
+  }, [slice, searchedTag]);
+
   const context = {
     currentEditing,
     setCurrentEditing,
     newSliceNote,
     setNewSliceNote,
-    sliceNotes,
-    setSliceNotes,
-    searchedTag,
-    setSearchedTag,
     filteredNotes,
     setFilteredNotes,
   };
+
+  const notesToRender =
+    (slice ? sliceNotes[slice] : filteredNotes)?.filter((note) =>
+      slice ? true : !searchedTag.length || searchedTag.every((tag) => note.tags.includes(tag)),
+    ) ?? [];
+
+  const shouldRenderNote = (note: NoteRecord) =>
+    !slice || (currentEditing !== note.id && note.slice === slice);
 
   //-----------------------------------------------------------------------------------------------
   // ! Render
@@ -177,25 +179,18 @@ export const UserNotes: UserNotes = ({ slice }) => {
                 />
               ))}
             {!slice && <UserNoteFilter />}
-            {(slice ? sliceNotes : filteredNotes)
-              .filter((note) =>
-                !slice
-                  ? true
-                  : !searchedTag.length ||
-                    (searchedTag?.every((tag) => note.tags.includes(tag)) && note.slice === slice),
-              )
-              .map((note) =>
-                currentEditing === note.id || (slice && note.slice !== slice) ? null : (
-                  <Comment
-                    key={note.id}
-                    datetime={`${!slice ? `${note.slice}\u00a0·\u00a0 ` : ''}${note.date}`}
-                    author={DEFAULT_AUTHOR}
-                    actions={slice ? actions(note.id) : undefined}
-                    avatar={avatar()}
-                    content={noteContent(note.note, note.tags ?? [])}
-                  />
-                ),
-              )}
+            {notesToRender.map((note) =>
+              shouldRenderNote(note) ? (
+                <Comment
+                  key={note.id}
+                  datetime={`${!slice ? `${note.slice}\u00a0·\u00a0 ` : ''}${note.date}`}
+                  author={DEFAULT_AUTHOR}
+                  actions={slice ? actions(note.id) : undefined}
+                  avatar={avatar()}
+                  content={noteContent(note.note, note.tags)}
+                />
+              ) : null,
+            )}
             {slice && <UserNoteInput slice={slice} />}
           </div>
           <Divider />
