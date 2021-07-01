@@ -4,11 +4,10 @@
  * @license (C) Insight
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import Tag from 'antd/lib/tag';
 import Select from 'antd/lib/select';
-import { NotesContext } from 'modules/notes';
-import UserManager from 'lib/user';
+import { NoteTabContext } from 'modules/notes';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/select/style/index.css';
 
@@ -21,8 +20,7 @@ const SEARCH_BY_TAG_PLACEHOLDER = 'Filter notes by tags...';
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const UserNoteFilter = () => {
-  const [userTags, setUserTags] = useState(Array(0));
-  const { searchedTag, setSearchedTag, setFilteredNotes, sliceNotes } = useContext(NotesContext);
+  const { searchedTag, setSearchedTag, userTags } = useContext(NoteTabContext);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   //-----------------------------------------------------------------------------------------------
@@ -31,22 +29,7 @@ export const UserNoteFilter = () => {
   const handleTagChange = (newTags: string[]) => {
     const tags = Array.from(new Set(newTags));
     setSearchedTag(tags);
-    setFilteredNotes(
-      sliceNotes.filter(
-        (note) => !tags.length || searchedTag?.every((tag) => note.tags.includes(tag)),
-      ),
-    );
   };
-
-  useEffect(() => {
-    setUserTags(UserManager.user.tags);
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [UserManager.user.tags]);
-
-  useEffect(() => {
-    setUserTags(UserManager.user.lastUsedTags);
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [UserManager.user.lastUsedTags]);
 
   const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
 

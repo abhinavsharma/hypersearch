@@ -7,13 +7,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Collapse from 'antd/lib/collapse';
 import SidebarLoader from 'lib/sidebar';
+import UserManager from 'lib/user';
 import { UserNotes } from 'modules/notes';
 import { debug, extractUrlProperties, getUrlSlices } from 'lib/helpers';
-import { FORCED_NOTE_PANEL_URLS } from 'constant';
+import { FORCED_NOTE_PANEL_URLS, NOTE_PREFIX } from 'constant';
 import 'antd/lib/collapse/style/index.css';
 import './UserNotesTab.scss';
 
 const { Panel } = Collapse;
+
+type TNoteTabContext = {
+  userTags: string[];
+  searchedTag: string[];
+  setSearchedTag: React.Dispatch<React.SetStateAction<string[]>>;
+  sliceNotes: Record<string, NoteRecord[]>;
+  setSliceNotes: React.Dispatch<React.SetStateAction<Record<string, NoteRecord[]>>>;
+};
+
+export const NoteTabContext = React.createContext<TNoteTabContext>(Object.create(null));
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -25,8 +36,37 @@ const ALL_NOTES_PANEL_HEADER = 'All Notes';
 //-----------------------------------------------------------------------------------------------
 export const UserNotesTab = () => {
   const [slices, setSlices] = useState<string[]>(getUrlSlices(SidebarLoader.url.href));
+  const [searchedTag, setSearchedTag] = useState<string[]>(UserManager.user.lastUsedTags);
+  const [userTags, setUserTags] = useState(UserManager.user.tags);
+  const [sliceNotes, setSliceNotes] = useState<Record<string, NoteRecord[]>>(Object.create(null));
 
   const defaultKey = [slices[0]];
+
+  //-----------------------------------------------------------------------------------------------
+  // ! Handlers
+  //-----------------------------------------------------------------------------------------------
+  const getSliceNotes = useCallback(async (slicesToFetch: string[]) => {
+    const storedNoteSlices = Object.create(null);
+    const results = await new Promise<Record<string, NoteRecord[]>>((resolve) => {
+      chrome.storage.sync.get(resolve);
+    });
+    slicesToFetch.forEach((slice) => {
+      if (!slice) {
+        setSliceNotes(
+          Object.entries(results).reduce((allNotes, [key, notes]) => {
+            if (key.startsWith(NOTE_PREFIX)) {
+              allNotes['all'] ??= [];
+              allNotes['all'] = allNotes['all'].concat(notes);
+            }
+            return allNotes;
+          }, Object.create(null) as Record<string, NoteRecord[]>),
+        );
+      } else {
+        storedNoteSlices[slice] = results[`${NOTE_PREFIX}-${encodeURIComponent(slice)}`] ?? [];
+      }
+    });
+    setSliceNotes(storedNoteSlices);
+  }, []);
 
   const testSlices = useCallback(async () => {
     const validSlices: string[] = [];
@@ -53,28 +93,57 @@ export const UserNotesTab = () => {
         continue;
       }
     }
+
+    const currentURL = extractUrlProperties(window.location.href).fullWithParams ?? '';
+    !validSlices.includes(currentURL) && validSlices.push(currentURL);
+
+    const currentHost = extractUrlProperties(window.location.href).hostname ?? '';
+    !validSlices.includes(currentHost) && validSlices.push(currentHost);
+
     setSlices(validSlices);
-  }, []);
+
+    getSliceNotes(validSlices);
+  }, [getSliceNotes]);
 
   useEffect(() => {
     testSlices();
   }, [testSlices]);
+
+  useEffect(() => {
+    setUserTags(UserManager.user.tags);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserManager.user.tags]);
+
+  useEffect(() => {
+    setSearchedTag(UserManager.user.lastUsedTags);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserManager.user.lastUsedTags]);
+
+  const context = {
+    searchedTag,
+    setSearchedTag,
+    sliceNotes,
+    setSliceNotes,
+    userTags,
+  };
 
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
   return (
     <div className="notes-panel-container">
-      <Collapse accordion defaultActiveKey={defaultKey}>
-        {slices.map((slice) => (
-          <Panel header={slice} key={slice}>
-            <UserNotes slice={slice} />
+      <NoteTabContext.Provider value={context}>
+        <Collapse accordion defaultActiveKey={defaultKey}>
+          {slices.map((slice) => (
+            <Panel header={slice} key={slice}>
+              <UserNotes slice={slice} />
+            </Panel>
+          ))}
+          <Panel header={ALL_NOTES_PANEL_HEADER} key={slices.length + 1}>
+            <UserNotes slice={''} />
           </Panel>
-        ))}
-        <Panel header={ALL_NOTES_PANEL_HEADER} key={slices.length + 1}>
-          <UserNotes slice={''} />
-        </Panel>
-      </Collapse>
+        </Collapse>
+      </NoteTabContext.Provider>
     </div>
   );
 };

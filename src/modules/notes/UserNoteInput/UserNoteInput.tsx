@@ -4,14 +4,15 @@
  * @license (C) Insight
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
+import { v4 as uuid } from 'uuid';
 import Button from 'antd/lib/button';
 import Input from 'antd/lib/input';
 import Tag from 'antd/lib/tag';
 import Select from 'antd/lib/select';
 import message from 'antd/lib/message';
 import UserManager from 'lib/user';
-import { NotesContext } from 'modules/notes';
+import { NotesContext, NoteTabContext } from 'modules/notes';
 import { NOTE_PREFIX } from 'constant';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -33,18 +34,10 @@ const TAG_AUTOCOMPLETE_PLACEHOLDER = 'Add tags to your note...';
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const UserNoteInput = ({ slice }: { slice: string }) => {
-  const [userTags, setUserTags] = useState(Array(0));
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const {
-    //prettier-ignore
-    setNewSliceNote,
-    sliceNotes,
-    setSliceNotes,
-    setCurrentEditing,
-    newSliceNote,
-    currentEditing,
-    setSearchedTag,
-  } = useContext(NotesContext);
+  const { sliceNotes, setSliceNotes, setSearchedTag, userTags } = useContext(NoteTabContext);
+  const { setNewSliceNote, setCurrentEditing, newSliceNote, currentEditing } =
+    useContext(NotesContext);
 
   //-----------------------------------------------------------------------------------------------
   // ! Handlers
@@ -64,8 +57,8 @@ export const UserNoteInput = ({ slice }: { slice: string }) => {
 
     let newSlices: NoteRecord[] = [];
     setSliceNotes((prev) => {
-      newSlices = prev
-        .filter(({ slice: prevSlice }) => prevSlice === newSliceNote.slice)
+      newSlices = prev[slice]
+        ?.filter(({ slice: prevSlice }) => prevSlice === newSliceNote.slice)
         .map((item) =>
           item.id === currentEditing
             ? {
@@ -74,13 +67,13 @@ export const UserNoteInput = ({ slice }: { slice: string }) => {
               }
             : item,
         );
-      !sliceNotes.find((note) => note.id === newSliceNote.id) &&
+      !sliceNotes[slice]?.find((note) => note.id === newSliceNote.id) &&
         newSliceNote.slice === slice &&
         newSlices.push(newSliceNote);
       chrome.storage.sync.set({
         [`${NOTE_PREFIX}-${encodeURIComponent(newSliceNote.slice)}`]: newSlices,
       });
-      return newSlices;
+      return { ...prev, [slice]: newSlices };
     });
     const result = await new Promise<boolean>((resolve) => {
       if (chrome.runtime.lastError) {
@@ -103,8 +96,8 @@ export const UserNoteInput = ({ slice }: { slice: string }) => {
     setNewSliceNote({
       note: '',
       slice: '',
-      id: '',
-      tags: UserManager.user.lastUsedTags,
+      id: uuid(),
+      tags: newSliceNote.tags,
       date: new Date().toLocaleString(),
     });
     setCurrentEditing('');
@@ -118,11 +111,6 @@ export const UserNoteInput = ({ slice }: { slice: string }) => {
     newTag && (await UserManager.addUserTag(newTag));
     await UserManager.changeLastUsedTags(tags);
   };
-
-  useEffect(() => {
-    setUserTags(UserManager.user.tags);
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [UserManager.user.tags]);
 
   const getPopupContainer = () => dropdownRef.current as HTMLDivElement;
 
