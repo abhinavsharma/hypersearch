@@ -101,8 +101,6 @@ export const SettingsPage: SettingsPage = ({ email }) => {
     handlePrivacyChange,
   };
 
-  const isActivating = new URL(window.location.href).searchParams.get('auth_email');
-
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
@@ -180,8 +178,8 @@ export const SettingsPage: SettingsPage = ({ email }) => {
         <div className="sidebar-page-wrapper">
           <LoginSection />
           {(storedToken || !loginFeature) && <LicenseSection />}
-          {!isActivating || (storedToken && <PrivacySection />)}
-          <BookmarksSection />
+          {!storedEmail || (storedToken && <PrivacySection />)}
+          {storedToken && <BookmarksSection />}
         </div>
       </div>
     </SettingsContext.Provider>

@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react';
 
-declare module './UrlSliceNotes' {
+declare module './UserNotes' {
   type UrlSliceNotesProps = {
     slice: string;
   };
 
-  type UrlSliceNotes = FunctionComponent<UrlSliceNotesProps>;
+  type UserNotes = FunctionComponent<UrlSliceNotesProps>;
 }

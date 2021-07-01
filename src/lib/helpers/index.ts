@@ -162,6 +162,7 @@ export const extractUrlProperties = (urlLike: string) => {
   let hostname: string | undefined = undefined;
   let params: string[] | undefined = undefined;
   let full: string | undefined = undefined;
+  let fullWithParams: string | undefined = undefined;
   try {
     if (typeof urlLike !== 'string') {
       throw new TypeError(`URL like value must be string! Given type is ${typeof urlLike}`);
@@ -177,10 +178,11 @@ export const extractUrlProperties = (urlLike: string) => {
       .split('&')
       .map((i) => i.split('=')[0]);
     full = hostname + raw.pathname;
+    fullWithParams = removeProtocol(raw.href);
   } catch (err) {
     debug('extractUrlProperties - error', err, '\nGiven value', urlLike);
   }
-  return { hostname, params, full };
+  return { hostname, params, full, fullWithParams };
 };
 
 export const extractPublication = (urlLike: string) => {
@@ -281,7 +283,7 @@ export const sanitizeUrl = (urlLike: string) => {
 export const getUrlSlices = (url: string) => {
   return (
     extractUrlProperties(url)
-      .full?.split('/')
+      .fullWithParams?.split('/')
       .reduce((slices, slice, index) => {
         if (slice.length) {
           slices[index - 1]

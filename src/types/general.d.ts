@@ -143,6 +143,7 @@ declare type NoteRecord = {
   key?: string;
   external?: boolean;
   date?: string;
+  tags?: string[];
 };
 
 declare type Prefix = TPrefix[keyof TPrefix];
