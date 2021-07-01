@@ -988,15 +988,29 @@ class SidebarLoader {
   private async fetchSubtabs() {
     debug('fetchSubtabs - call\n');
     const getSubtabs = async (url = this.url.href) => {
+      const loginFeature = await new Promise<Record<string, Features>>((resolve) =>
+        chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
+      ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_login']);
+
       debug('\n---\n\tRequest API', url, '\n\tLicense', UserManager.user.licenses, '\n---');
+
+      let headers: Record<string, any> = {};
+      let body: Record<string, any> = {
+        uuid: UserManager.user.id,
+        client: 'desktop',
+      };
+
+      if (loginFeature) {
+        headers['authorization'] = await UserManager.getAccessToken();
+      } else {
+        body['license_keys'] = UserManager.user.licenses;
+      }
+
       return await postAPI<SubtabsResponse>(
         'subtabs',
         { url },
-        {
-          uuid: UserManager.user.id,
-          client: 'desktop',
-          license_keys: UserManager.user.licenses,
-        },
+        headers,
+        body,
       );
     };
     let response: SubtabsResponse = Object.create(null);
