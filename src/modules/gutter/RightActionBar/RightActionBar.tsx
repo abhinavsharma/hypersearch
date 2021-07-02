@@ -23,7 +23,7 @@ const HOVER_ACTION_TOOLTIP_TITLE = (
 );
 const ICON_UNSELECTED_COLOR = '#999';
 const TOOLTIP_CONTAINER_STYLE: React.CSSProperties = { zIndex: SIDEBAR_Z_INDEX + 1 };
-const SWITCH_TO_TAB_DELAY = 300; //ms
+const SWITCH_TO_TAB_DELAY = 700; //ms
 
 export const RightActionBar: RightActionBar = ({
   url,
