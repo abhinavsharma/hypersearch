@@ -306,7 +306,7 @@ export const getUrlSlices = (url: string) => {
  * @param args - The argument list for the console statement.
  */
 export const debug = (...args: any[]) => {
-  if (args && Symbol.iterator in Object(args) && IN_DEBUG_MODE) {
+  if (false && args && Symbol.iterator in Object(args) && IN_DEBUG_MODE) {
     /* eslint-disable-next-line no-console */
     console.log('INSIGHT DEBUG: ', ...args);
   }

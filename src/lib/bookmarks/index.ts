@@ -16,6 +16,9 @@ import {
   BOOKMARKS_REMOTE_TO_LOCAL_ID,
   LUMOS_API_URL,
   ENV,
+  SYNC_INTERVAL,
+  SYNC_TRIGGER_START_MESSAGE,
+  DEV_FEATURE_FLAGS,
 } from 'constant';
 
 //-----------------------------------------------------------------------------------------------
@@ -72,6 +75,7 @@ class Bookmarks {
   private _toDelete: string[];
   private _remoteToLocalId: Record<string, string>;
   private _isSyncing: boolean;
+  private _syncSchedule: any;
 
   constructor() {
     debug('Bookmarks - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -81,8 +85,52 @@ class Bookmarks {
     this._toDelete = [];
     this._remoteToLocalId = {};
     this._isSyncing = false;
+    this._syncSchedule = null;
     this._axios = axios.create({ baseURL: LUMOS_API_URL[ENV] });
     this.configure();
+  }
+
+  /**
+   * Schedules a sync operation for the near future, clearing
+   * any previosly schedule.
+   */
+  public scheduleSync() {
+    this.clearSchedule();
+
+    const triggerSync = () => {
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+        if (chrome.runtime.lastError?.message) {
+          debug('Chrome Last Error', chrome.runtime.lastError?.message);
+        }
+
+        for (let i = 0; i < tabs?.length ?? 0; ++i) {
+          chrome.tabs.sendMessage(tabs[i]?.id ?? -1, {
+            type: SYNC_TRIGGER_START_MESSAGE,
+          });
+        }
+
+        this.scheduleSync();
+      });
+    };
+
+    this._syncSchedule = setTimeout(async () => {
+      const bookmarksFeature = await new Promise<Record<string, Features>>((resolve) =>
+        chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
+      ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_bookmarks']);
+      
+      if (bookmarksFeature) {
+        triggerSync();
+      } else {
+        this.scheduleSync();
+      }
+    }, SYNC_INTERVAL);
+  }
+
+  /**
+   * Clears a scheduled sync operation, if any.
+   */
+   public clearSchedule() {
+    clearInterval(this._syncSchedule ?? -1);
   }
 
   /**
@@ -96,16 +144,27 @@ class Bookmarks {
       await this.startSync(apiToken);
     } else {
       return new Promise((resolve) => {
-        chrome.permissions.request(
-          {
-            permissions: [BOOKMARKS_PERMISSION],
-          },
-          async (granted) => {
-            if (!granted) return resolve(null);
-
+        chrome.permissions.contains({
+          permissions: [BOOKMARKS_PERMISSION],
+        }, (hasPermission) => {
+          if (hasPermission) {
             this.startSync(apiToken).then(resolve);
-          },
-        );
+          } else {
+            chrome.permissions.request(
+              {
+                permissions: [BOOKMARKS_PERMISSION],
+              },
+              async (granted) => {
+                if (!granted) {
+                  this.scheduleSync();
+                  return resolve(null)
+                };
+    
+                this.startSync(apiToken).then(resolve);
+              },
+            );
+          }
+        });
       });
     }
   }
@@ -113,6 +172,7 @@ class Bookmarks {
   private async startSync(apiToken: string) {
     if (this._isSyncing) return;
 
+    this.clearSchedule();
     this._isSyncing = true;
     debug('BookmarksSync - Start');
 
@@ -128,6 +188,7 @@ class Bookmarks {
       debug('BookmarksSync - Error', e.message);
     }
 
+    this.scheduleSync();
     this._isSyncing = false;
     debug('BookmarksSync - Finish');
   }

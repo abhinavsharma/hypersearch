@@ -9,7 +9,10 @@ import Button from 'antd/lib/button';
 import { RefreshCw } from 'react-feather';
 import UserManager from 'lib/user';
 import { FeatureGate } from 'lib/features';
-import { SYNC_END_MESSAGE, SYNC_START_MESSAGE } from 'constant';
+import {
+  SYNC_END_MESSAGE,
+  SYNC_TRIGGER_START_MESSAGE,
+} from 'constant';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -29,14 +32,18 @@ export const BookmarksSyncButton: BookmarksSyncButton = ({ token }) => {
   //-----------------------------------------------------------------------------------------------
   const handleSync = async () => {
     setIsSyncing(true);
-    const token = await UserManager.getIdentityToken();
-    chrome.runtime.sendMessage({ token, type: SYNC_START_MESSAGE });
+    UserManager.startSync();
   };
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === SYNC_END_MESSAGE) {
-        setIsSyncing(false);
+      switch (msg.type) {
+        case SYNC_TRIGGER_START_MESSAGE:
+          setIsSyncing(true)
+          break;
+        case SYNC_END_MESSAGE:
+          setIsSyncing(false);
+          break;
       }
     });
   }, []);
