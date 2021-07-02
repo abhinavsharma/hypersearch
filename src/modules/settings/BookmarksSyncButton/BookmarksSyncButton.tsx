@@ -9,10 +9,7 @@ import Button from 'antd/lib/button';
 import { RefreshCw } from 'react-feather';
 import UserManager from 'lib/user';
 import { FeatureGate } from 'lib/features';
-import {
-  SYNC_END_MESSAGE,
-  SYNC_TRIGGER_START_MESSAGE,
-} from 'constant';
+import { SYNC_END_MESSAGE, SYNC_TRIGGER_START_MESSAGE } from 'constant';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -39,7 +36,7 @@ export const BookmarksSyncButton: BookmarksSyncButton = ({ token }) => {
     chrome.runtime.onMessage.addListener((msg) => {
       switch (msg.type) {
         case SYNC_TRIGGER_START_MESSAGE:
-          setIsSyncing(true)
+          setIsSyncing(true);
           break;
         case SYNC_END_MESSAGE:
           setIsSyncing(false);

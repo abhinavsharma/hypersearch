@@ -11,15 +11,24 @@ import {
   TRIGGER_STOP_TRACK_TIMER_MESSAGE,
 } from 'constant';
 
+const TRACKED_EVENTS = ['mousedown', 'mousemove', 'keydown', 'scroll'];
+
+/**
+ * Activity Monitor
+ * --------------------------------------
+ * Track user interactions to start/stop publication time tracker
+ */
 export const activityMonitor = (document: Document): void => {
   if (!getPublicationUrl(window.location.href)) {
     return;
   }
+
   let cancelled = false;
   let secondsSinceLastActivity = 0;
 
+  // Tick every second and stop tracking if exceeds inactivity limit
   const handleMonitor = () => {
-    secondsSinceLastActivity++;
+    secondsSinceLastActivity += 1;
     if (secondsSinceLastActivity > MAX_INACTIVE_SECONDS) {
       chrome.runtime.sendMessage({
         type: TRIGGER_STOP_TRACK_TIMER_MESSAGE,
@@ -32,6 +41,8 @@ export const activityMonitor = (document: Document): void => {
 
   let monitor = setInterval(handleMonitor, 1000);
 
+  // Restart timer on user activity
+  // Continuos tracking handled in background script
   const activity = () => {
     if (cancelled) {
       cancelled = false;
@@ -44,8 +55,7 @@ export const activityMonitor = (document: Document): void => {
     secondsSinceLastActivity = 0;
   };
 
-  const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll'];
-  activityEvents.forEach(function (eventName) {
-    document.addEventListener(eventName, activity, true);
+  TRACKED_EVENTS.forEach((event) => {
+    document.addEventListener(event, activity, true);
   });
 };

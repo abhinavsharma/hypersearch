@@ -128,7 +128,7 @@ class User {
    *
    * @returns A promise of `string` or `undefined`
    */
-  public async getAccessToken(): Promise<string | undefined>  {
+  public async getAccessToken(): Promise<string | undefined> {
     const session = await this.getSession();
     return session?.getAccessToken().getJwtToken();
   }
@@ -374,7 +374,7 @@ class User {
   private notifyUserUpdated(authenticated: boolean) {
     chrome.runtime.sendMessage({
       type: USER_UPDATED_MESSAGE,
-      authenticated
+      authenticated,
     });
   }
 }

@@ -994,8 +994,8 @@ class SidebarLoader {
 
       debug('\n---\n\tRequest API', url, '\n\tLicense', UserManager.user.licenses, '\n---');
 
-      let headers: Record<string, any> = {};
-      let body: Record<string, any> = {
+      const headers: Record<string, any> = {};
+      const body: Record<string, any> = {
         uuid: UserManager.user.id,
         client: 'desktop',
       };
@@ -1006,12 +1006,7 @@ class SidebarLoader {
         body['license_keys'] = UserManager.user.licenses;
       }
 
-      return await postAPI<SubtabsResponse>(
-        'subtabs',
-        { url },
-        headers,
-        body,
-      );
+      return await postAPI<SubtabsResponse>('subtabs', { url }, headers, body);
     };
     let response: SubtabsResponse = Object.create(null);
     debug(

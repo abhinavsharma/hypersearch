@@ -78,6 +78,13 @@ class Engines {
     this.engines = Object.assign(remote, local);
   }
 
+  /**
+   * Create a custom search engine record in the local storage and add it to the available
+   * search engines.
+   *
+   * @param name The name of the search engine
+   * @param engine The search engine object
+   */
   public async createArbitraryEngine(name: string, engine: SearchEngineObject) {
     chrome.storage.sync.set({ [`${ARBITRARY_ENGINE_PREFIX}-${name}`]: engine });
     Object.assign(this.engines, { [name]: engine });
