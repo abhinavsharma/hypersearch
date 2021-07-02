@@ -212,6 +212,7 @@ import './hot';
         } else {
           BookmarksSynchronizer.clearSchedule();
         }
+        break;
       default:
         chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg);
         break;

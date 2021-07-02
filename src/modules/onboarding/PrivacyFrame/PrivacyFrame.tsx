@@ -39,6 +39,7 @@ export const PrivacyFrame = () => {
 
   useEffect(() => {
     setLicenses(UserManager.user.licenses);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.licenses]);
 
   return (

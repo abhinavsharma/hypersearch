@@ -21,6 +21,7 @@ import {
   EMPTY_AUGMENTATION,
   MESSAGE,
   PAGE,
+  PROTECTED_AUGMENTATIONS,
   SIDEBAR_Z_INDEX,
   TOUR_AUGMENTATION,
 } from 'constant';
@@ -75,7 +76,9 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
     !!augmentation.actions.action_list.find(({ key }) => key === ACTION_KEY.URL_NOTE),
   );
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
-  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const [isDisabled, setIsDisabled] = useState<boolean>(
+    !(PROTECTED_AUGMENTATIONS as readonly string[]).includes(augmentation.id),
+  );
 
   const [name, setName] = useState<string>(
     /* eslint-disable */
@@ -200,12 +203,13 @@ export const BuilderPage: BuilderPage = ({ augmentation = EMPTY_AUGMENTATION, is
 
   useEffect(() => {
     setIsDisabled(
-      !name ||
-        !actions.length ||
-        !conditions.length ||
-        !!actions?.filter((action) => !action.key).length,
+      !(PROTECTED_AUGMENTATIONS as readonly string[]).includes(augmentation.id) &&
+        (!name ||
+          !actions.length ||
+          !conditions.length ||
+          !!actions?.filter((action) => !action.key).length),
     );
-  }, [name, actions, conditions.length]);
+  }, [name, actions, conditions.length, augmentation.id]);
 
   useEffect(() => {
     setTourStep(SidebarLoader.tourStep);

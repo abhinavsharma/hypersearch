@@ -31,7 +31,7 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
   ) {
     const overlay = document.createElement('div');
     overlay.classList.add(`insight-${details.selectorString}-overlay`);
-    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 2};`);
+    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 3};`);
     overlay.classList.add('insight-hidden');
 
     const textWrapper = document.createElement('div');
@@ -59,7 +59,6 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
       }
     });
 
-    result.style.position = 'relative';
     result.style.maxHeight = '125px';
     result.style.overflow = 'hidden';
     result.insertBefore(overlay, result.firstChild);
