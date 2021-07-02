@@ -24,6 +24,7 @@ import {
   URL_UPDATED_MESSAGE,
   SYNC_START_MESSAGE,
   SYNC_END_MESSAGE,
+  USER_UPDATED_MESSAGE,
 } from 'constant';
 
 //-----------------------------------------------------------------------------------------------
@@ -205,6 +206,12 @@ import './hot';
         });
 
         break;
+      case USER_UPDATED_MESSAGE:
+        if (msg.authenticated) {
+          BookmarksSynchronizer.scheduleSync();
+        } else {
+          BookmarksSynchronizer.clearSchedule();
+        }
       default:
         chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg);
         break;

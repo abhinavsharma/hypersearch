@@ -25,6 +25,9 @@ import {
   SYNC_LICENSE_KEY,
   SYNC_USER_TAGS,
   SYNC_LAST_USED_TAGS,
+  USER_UPDATED_MESSAGE,
+  SYNC_START_MESSAGE,
+  SYNC_TRIGGER_START_MESSAGE,
 } from 'constant';
 
 class User {
@@ -88,6 +91,7 @@ class User {
    */
   public async initialize() {
     await this.getLocalUserData();
+    this.configureListeners();
     debug('User Initialized', this.user);
   }
 
@@ -162,6 +166,7 @@ class User {
             onSuccess: (session) => {
               debug('AWS Cognito Custom Challenge Success', session);
               this._token = session?.getAccessToken();
+              this.notifyUserUpdated(true);
               debug('AWS Cognito Token', this._token);
               resolve(this._token);
             },
@@ -209,6 +214,7 @@ class User {
     });
     this._email = '';
     this._token = undefined;
+    this.notifyUserUpdated(false);
   }
 
   public async setUserEmail(email: string) {
@@ -270,6 +276,11 @@ class User {
     });
   }
 
+  public async startSync() {
+    const token = await this.getIdentityToken();
+    chrome.runtime.sendMessage({ token, type: SYNC_START_MESSAGE });
+  }
+
   //-----------------------------------------------------------------------------------------------
   // ! Internal Implementation
   //-----------------------------------------------------------------------------------------------
@@ -327,7 +338,8 @@ class User {
       }),
     );
 
-    await this.getSession();
+    const session = await this.getSession();
+    this.notifyUserUpdated(!!session);
   }
 
   private async getSession(): Promise<TCognitoUserSession | null> {
@@ -348,6 +360,21 @@ class User {
       } else {
         resolve(null);
       }
+    });
+  }
+
+  private async configureListeners() {
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg.type === SYNC_TRIGGER_START_MESSAGE) {
+        this.startSync();
+      }
+    });
+  }
+
+  private notifyUserUpdated(authenticated: boolean) {
+    chrome.runtime.sendMessage({
+      type: USER_UPDATED_MESSAGE,
+      authenticated
     });
   }
 }
