@@ -35,7 +35,7 @@ import './hot';
 
 (() => {
   // ! PUBLICATION TRACKER
-  // Map of publication URLs and their timestamp of when the user started reading that page.
+  // Map of publication URLs and their timestamp when the user started reading that page.
   const trackData: Record<string, number> = Object.create(null);
   // Calculate how much time the user spent on a publication and store it's value in the storage.
   // After the value is stored, we fire an update message which will update the gutter unit.
@@ -212,6 +212,7 @@ import './hot';
         } else {
           BookmarksSynchronizer.clearSchedule();
         }
+        break;
       default:
         chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg);
         break;

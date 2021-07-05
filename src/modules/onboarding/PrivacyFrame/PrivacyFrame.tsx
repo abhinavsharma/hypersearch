@@ -32,6 +32,9 @@ export const INACTIVE_LICENSE_TEXT_CONTENT = (
 
 const { Title } = Typography;
 
+//-----------------------------------------------------------------------------------------------
+// ! Component
+//-----------------------------------------------------------------------------------------------
 export const PrivacyFrame = () => {
   const [licenses, setLicenses] = useState<string[]>(UserManager.user.licenses);
   const { setCurrentStep } = useContext(StepContext);
@@ -39,8 +42,12 @@ export const PrivacyFrame = () => {
 
   useEffect(() => {
     setLicenses(UserManager.user.licenses);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UserManager.user.licenses]);
 
+  //-----------------------------------------------------------------------------------------------
+  // ! Render
+  //-----------------------------------------------------------------------------------------------
   return (
     <>
       <Helmet>

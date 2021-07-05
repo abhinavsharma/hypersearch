@@ -117,7 +117,7 @@ class Bookmarks {
       const bookmarksFeature = await new Promise<Record<string, Features>>((resolve) =>
         chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
       ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_bookmarks']);
-      
+
       if (bookmarksFeature) {
         triggerSync();
       } else {
@@ -129,7 +129,7 @@ class Bookmarks {
   /**
    * Clears a scheduled sync operation, if any.
    */
-   public clearSchedule() {
+  public clearSchedule() {
     clearInterval(this._syncSchedule ?? -1);
   }
 
@@ -144,27 +144,30 @@ class Bookmarks {
       await this.startSync(apiToken);
     } else {
       return new Promise((resolve) => {
-        chrome.permissions.contains({
-          permissions: [BOOKMARKS_PERMISSION],
-        }, (hasPermission) => {
-          if (hasPermission) {
-            this.startSync(apiToken).then(resolve);
-          } else {
-            chrome.permissions.request(
-              {
-                permissions: [BOOKMARKS_PERMISSION],
-              },
-              async (granted) => {
-                if (!granted) {
-                  this.scheduleSync();
-                  return resolve(null)
-                };
-    
-                this.startSync(apiToken).then(resolve);
-              },
-            );
-          }
-        });
+        chrome.permissions.contains(
+          {
+            permissions: [BOOKMARKS_PERMISSION],
+          },
+          (hasPermission) => {
+            if (hasPermission) {
+              this.startSync(apiToken).then(resolve);
+            } else {
+              chrome.permissions.request(
+                {
+                  permissions: [BOOKMARKS_PERMISSION],
+                },
+                async (granted) => {
+                  if (!granted) {
+                    this.scheduleSync();
+                    return resolve(null);
+                  }
+
+                  this.startSync(apiToken).then(resolve);
+                },
+              );
+            }
+          },
+        );
       });
     }
   }

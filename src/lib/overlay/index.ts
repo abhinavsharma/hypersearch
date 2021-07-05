@@ -1,5 +1,5 @@
 /**
- * @module utils:createResultOverlay
+ * @module lib:overlay
  * @version 1.0.0
  * @license (C) Insight
  */
@@ -20,6 +20,7 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
   }
 
   if (!blockers?.length) {
+    // Assume the overlay triggered by the ad-blocker when blocker list is empty
     result.setAttribute('insight-ad-block', 'true');
   }
 
@@ -31,8 +32,10 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
   ) {
     const overlay = document.createElement('div');
     overlay.classList.add(`insight-${details.selectorString}-overlay`);
-    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 2};`);
     overlay.classList.add('insight-hidden');
+
+    // Z-Index must be one level below of other gutter units to properly show them
+    overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 3};`);
 
     const textWrapper = document.createElement('div');
     textWrapper.classList.add(`insight-${details.selectorString}-text-wrapper`);
@@ -48,18 +51,17 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
     overlay.addEventListener('click', (e) => {
       if (result.getAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`) !== 'true') {
         e.preventDefault();
-        const ol = (e.target as Element)?.closest('.insight-hidden');
-        if (ol?.parentElement) {
-          ol.parentElement.style.overflow = 'none';
+        const root = (e.target as Element)?.closest('.insight-hidden');
+        if (root?.parentElement) {
+          root.parentElement.style.overflow = 'none';
         }
-        if (ol?.parentNode) {
-          ol.parentNode.removeChild(ol);
+        if (root?.parentNode) {
+          root.parentNode.removeChild(root);
         }
         result.setAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`, 'true');
       }
     });
 
-    result.style.position = 'relative';
     result.style.maxHeight = '125px';
     result.style.overflow = 'hidden';
     result.insertBefore(overlay, result.firstChild);

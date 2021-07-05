@@ -22,6 +22,7 @@ import {
   INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
   INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
   INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR,
+  AUGMENTATION_ID,
 } from 'constant';
 
 const renderComponentToDocument = (
@@ -81,6 +82,23 @@ export const processSerpResults: ProcessSerpResults = (
 
     let blockers: Augmentation[] = [];
 
+    const isTrusted = augmentations?.search[publication].find(
+      ({ id }) => id === AUGMENTATION_ID.TRUSTLIST,
+    );
+
+    const isBlocked = augmentations?.block[publication].find(
+      ({ id }) => id === AUGMENTATION_ID.BLOCKLIST,
+    );
+
+    if (isTrusted && !isBlocked && !!augmentations) {
+      augmentations.block[publication] = Array(0);
+    }
+
+    if (isBlocked && !isTrusted && !!augmentations) {
+      augmentations.search[publication] = Array(0);
+      augmentations.feature[publication] = Array(0);
+    }
+
     const isSubtab = createdUrls.findIndex((url) =>
       escape(removeProtocol(url)).includes(escape(removeProtocol(resultLink).split('#')[0])),
     );
@@ -102,13 +120,13 @@ export const processSerpResults: ProcessSerpResults = (
 
     blockers = augmentations?.block[publication] ?? [];
 
-    if (augmentations?.block[publication]?.length || !augmentations) {
+    if (blockers.length || !augmentations) {
       createResultOverlay(serpResult, blockers, details);
     }
 
     serpResult.setAttribute(
       INSIGHT_BLOCKED_BY_SELECTOR,
-      augmentations?.block[publication].map(({ id }) => id).join(' ') ?? '',
+      blockers.map(({ id }) => id).join(' ') ?? '',
     );
 
     serpResult.setAttribute(
@@ -136,7 +154,6 @@ export const processSerpResults: ProcessSerpResults = (
 
       renderComponentToDocument(
         root,
-
         <PublicationTagRow publication={publication} container={containerSelector} />,
         INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
       );
