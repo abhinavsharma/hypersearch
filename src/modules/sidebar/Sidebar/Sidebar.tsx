@@ -7,7 +7,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import md5 from 'md5';
 import { useDebouncedFn } from 'beautiful-react-hooks';
-import { usePublicationInfo } from 'lib/publication';
 import UserManager from 'lib/user';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
@@ -30,8 +29,6 @@ import './Sidebar.scss';
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const Sidebar: Sidebar = () => {
-  const { publicationInfo, averageRating } = usePublicationInfo(window.location.hostname);
-  const [rating, setRating] = useState<number>(0);
   const [sidebarTabs, setSidebarTabs] = useState<SidebarTab[]>(SidebarLoader.sidebarTabs);
   const [activeKey, setActiveKey] = useState<string>(
     getFirstValidTabIndex(SidebarLoader.sidebarTabs),
@@ -58,11 +55,6 @@ export const Sidebar: Sidebar = () => {
       flipSidebar(document, 'show', SidebarLoader);
     }
   }, 300);
-
-  useEffect(() => {
-    SidebarLoader.showPublicationRating = averageRating > 0;
-    setRating(averageRating);
-  }, [averageRating]);
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
@@ -93,7 +85,7 @@ export const Sidebar: Sidebar = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength, rating]);
+  }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength]);
 
   const refreshTabs = useCallback(async () => {
     const newTabs = await SidebarLoader.getTabsAndAugmentations();
@@ -128,9 +120,7 @@ export const Sidebar: Sidebar = () => {
   }, [refreshTabs]);
 
   const tabsLength = !!sidebarTabs.filter(({ url }) => url?.href !== SIDEBAR_TAB_FAKE_URL).length;
-
-  const shouldShowButton =
-    !!publicationInfo.tags?.length || !!averageRating || !!tabsLength || !SidebarLoader.isSerp;
+  const shouldShowButton = !!tabsLength || !SidebarLoader.isSerp;
 
   //-----------------------------------------------------------------------------------------------
   // ! Render
@@ -140,9 +130,7 @@ export const Sidebar: Sidebar = () => {
       <div id="insight-sidebar-container" className="insight-full-size-fixed">
         <SidebarTabs tabs={sidebarTabs} activeKey={activeKey} setActiveKey={setActiveKey} />
       </div>
-      {shouldShowButton && (
-        <SidebarToggleButton tabs={sidebarTabs} rating={averageRating} info={publicationInfo} />
-      )}
+      {shouldShowButton && <SidebarToggleButton tabs={sidebarTabs} />}
     </>
   );
 };

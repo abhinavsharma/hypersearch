@@ -169,7 +169,7 @@ export const UserNotes: UserNotes = ({ slice }) => {
           )}
           <div className="publication-notes-wrapper">
             {slice === publicationInfo.publication &&
-              publicationInfo.tags.map((tag) => (
+              publicationInfo.tags?.map((tag) => (
                 <Comment
                   key={uuid()}
                   avatar={avatar()}

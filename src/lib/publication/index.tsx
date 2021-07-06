@@ -18,15 +18,17 @@ export const getPublicationInfo = async (url: string) => {
   const id = `${PUBLICATION_REDIRECT_URL}-${
     extractPublication(url) || extractUrlProperties(url).hostname
   }`;
+  const publication = extractPublication(url) || extractUrlProperties(url).hostname || url;
   const redirectData = await new Promise<Record<string, { from: string; to: string }>>((resolve) =>
     chrome.storage.local.get(id, resolve),
   ).then((data) => data[id]);
   const publicationInfos = await fetchPublicationInfo();
-  const publicationInfo = publicationInfos[redirectData?.from] ?? publicationInfos[url];
+  const publicationInfo =
+    publicationInfos[redirectData?.from] ?? publicationInfos[url] ?? publicationInfos[publication];
   return {
     ...publicationInfo,
     url: redirectData?.from,
-    publication: redirectData?.to,
+    publication: redirectData?.to ?? url,
   } as PublicationInfo;
 };
 
@@ -49,5 +51,5 @@ export const usePublicationInfo = (publication: string) => {
     getInfo();
   }, [getInfo]);
 
-  return { publicationInfo, averageRating };
+  return { publicationInfo, averageRating: Number(averageRating.toFixed(2)) };
 };
