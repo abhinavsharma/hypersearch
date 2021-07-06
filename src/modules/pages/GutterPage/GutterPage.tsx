@@ -25,6 +25,7 @@ import 'antd/lib/divider/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tag/style/index.css';
 import './GutterPage.scss';
+import { extractPublication, extractUrlProperties, removeProtocol } from 'lib/helpers';
 
 const PlusOutlined = React.lazy(
   async () => await import('@ant-design/icons/PlusOutlined').then((mod) => mod),
@@ -224,7 +225,9 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
       <div className="sidebar-page-wrapper">
         <section>
           <h3 className="domain-text">
-            <code>{domain}</code>
+            <code>
+              {extractPublication(domain) || extractUrlProperties(domain) || removeProtocol(domain)}
+            </code>
           </h3>
           <DomainStateCheckbox domain={domain} />
         </section>
