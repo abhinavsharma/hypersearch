@@ -62,8 +62,14 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
       }
     });
 
+    result.style.position = 'relative';
     result.style.maxHeight = '125px';
     result.style.overflow = 'hidden';
+
+    if (blockers?.length) {
+      result.style.marginLeft = '-100px';
+      result.style.paddingLeft = '100px';
+    }
     result.insertBefore(overlay, result.firstChild);
   }
 };
