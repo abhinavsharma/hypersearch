@@ -226,7 +226,9 @@ export const GutterPage: GutterPage = ({ hidingAugmentations = [], domain, inlin
         <section>
           <h3 className="domain-text">
             <code>
-              {extractPublication(domain) || extractUrlProperties(domain) || removeProtocol(domain)}
+              {extractPublication(domain) ||
+                extractUrlProperties(domain).full ||
+                removeProtocol(domain)}
             </code>
           </h3>
           <DomainStateCheckbox domain={domain} />
