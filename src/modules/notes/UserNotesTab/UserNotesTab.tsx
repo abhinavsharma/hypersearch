@@ -51,19 +51,7 @@ export const UserNotesTab = () => {
       chrome.storage.sync.get(resolve);
     });
     slicesToFetch.forEach((slice) => {
-      if (!slice) {
-        setSliceNotes(
-          Object.entries(results).reduce((allNotes, [key, notes]) => {
-            if (key.startsWith(NOTE_PREFIX)) {
-              allNotes['all'] ??= [];
-              allNotes['all'] = allNotes['all'].concat(notes);
-            }
-            return allNotes;
-          }, Object.create(null) as Record<string, NoteRecord[]>),
-        );
-      } else {
-        storedNoteSlices[slice] = results[`${NOTE_PREFIX}-${encodeURIComponent(slice)}`] ?? [];
-      }
+      storedNoteSlices[slice] = results[`${NOTE_PREFIX}-${encodeURIComponent(slice)}`] ?? [];
     });
     setSliceNotes(storedNoteSlices);
   }, []);
