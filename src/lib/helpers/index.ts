@@ -177,7 +177,11 @@ export const extractUrlProperties = (urlLike: string) => {
       .toString()
       .split('&')
       .map((i) => i.split('=')[0]);
-    full = hostname + raw.pathname;
+    full =
+      hostname +
+      (raw.pathname.slice(-1) === '/'
+        ? raw.pathname.slice(0, raw.pathname.length - 1)
+        : raw.pathname);
     fullWithParams = removeProtocol(raw.href);
   } catch (err) {
     debug('extractUrlProperties - error', err, '\nGiven value', urlLike);
