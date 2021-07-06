@@ -177,11 +177,7 @@ export const extractUrlProperties = (urlLike: string) => {
       .toString()
       .split('&')
       .map((i) => i.split('=')[0]);
-    full =
-      hostname +
-      (raw.pathname.slice(-1) === '/'
-        ? raw.pathname.slice(0, raw.pathname.length - 1)
-        : raw.pathname);
+    full = hostname + removeTrailingSlash(raw.pathname);
     fullWithParams = removeProtocol(raw.href);
   } catch (err) {
     debug('extractUrlProperties - error', err, '\nGiven value', urlLike);
@@ -201,6 +197,10 @@ export const extractPublication = (urlLike: string) => {
     ? full.match(DOMAINS_TO_RELEVANT_SLICE[hostname])?.[0] ?? hostname
     : null;
   return publication;
+};
+
+export const removeTrailingSlash = (urlLike: string) => {
+  return urlLike.slice(-1) === '/' ? urlLike.slice(0, urlLike.length - 1) : urlLike;
 };
 
 /**

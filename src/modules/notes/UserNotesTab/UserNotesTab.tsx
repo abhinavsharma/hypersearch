@@ -9,8 +9,8 @@ import Collapse from 'antd/lib/collapse';
 import SidebarLoader from 'lib/sidebar';
 import UserManager from 'lib/user';
 import { UserNotes } from 'modules/notes';
-import { debug, extractUrlProperties, getUrlSlices } from 'lib/helpers';
-import { FORCED_NOTE_PANEL_URLS, NOTE_PREFIX } from 'constant';
+import { debug, extractUrlProperties, getUrlSlices, removeTrailingSlash } from 'lib/helpers';
+import { NOTE_PREFIX } from 'constant';
 import 'antd/lib/collapse/style/index.css';
 import './UserNotesTab.scss';
 
@@ -71,12 +71,6 @@ export const UserNotesTab = () => {
   const testSlices = useCallback(async () => {
     const validSlices: string[] = [];
     for await (const slice of getUrlSlices(SidebarLoader.url.href)) {
-      if (
-        FORCED_NOTE_PANEL_URLS.includes(extractUrlProperties(`https://${slice}`).hostname ?? '')
-      ) {
-        validSlices.push(slice);
-        continue;
-      }
       try {
         const { status: noCorsStatus, ok: noCorsOk } = await fetch(`https://${slice}`, {
           mode: 'no-cors',
@@ -94,10 +88,14 @@ export const UserNotesTab = () => {
       }
     }
 
-    const currentURL = extractUrlProperties(window.location.href).fullWithParams ?? '';
+    const currentURL = removeTrailingSlash(
+      extractUrlProperties(window.location.href).fullWithParams ?? '',
+    );
     !validSlices.includes(currentURL) && validSlices.push(currentURL);
 
-    const currentHost = extractUrlProperties(window.location.href).hostname ?? '';
+    const currentHost = removeTrailingSlash(
+      extractUrlProperties(window.location.href).hostname ?? '',
+    );
     !validSlices.includes(currentHost) && validSlices.push(currentHost);
 
     setSlices(validSlices);
