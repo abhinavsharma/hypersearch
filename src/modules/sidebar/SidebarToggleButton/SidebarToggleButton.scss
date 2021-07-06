@@ -22,6 +22,10 @@
   .ant-list {
     width: 100%;
 
+    .ant-spin-container {
+      width: $sidebar_toggle_rating_width;
+    }
+
     .ant-list-items {
       list-style-type: none;
       width: 100%;
