@@ -18,6 +18,7 @@ const { Panel } = Collapse;
 
 type TNoteTabContext = {
   userTags: string[];
+  setUserTags: React.Dispatch<React.SetStateAction<string[]>>;
   searchedTag: string[];
   setSearchedTag: React.Dispatch<React.SetStateAction<string[]>>;
   sliceNotes: Record<string, NoteRecord[]>;
@@ -111,6 +112,7 @@ export const UserNotesTab = () => {
     sliceNotes,
     setSliceNotes,
     userTags,
+    setUserTags,
   };
 
   //-----------------------------------------------------------------------------------------------

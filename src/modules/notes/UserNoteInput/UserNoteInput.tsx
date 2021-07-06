@@ -108,7 +108,9 @@ export const UserNoteInput = ({ slice }: { slice: string }) => {
     const tags = Array.from(new Set(newTags));
     setNewSliceNote((prev) => ({ ...prev, tags }));
     const newTag = tags.find((tag) => !userTags.includes(tag));
-    newTag && (await UserManager.addUserTag(newTag));
+    if (newTag) {
+      await UserManager.addUserTag(newTag);
+    }
     await UserManager.changeLastUsedTags(tags);
   };
 

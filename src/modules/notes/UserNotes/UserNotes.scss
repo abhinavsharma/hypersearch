@@ -24,6 +24,10 @@
 
     .ant-comment {
       .ant-comment-inner {
+        .ant-comment-content-author-time {
+          white-space: normal;
+        }
+
         .ant-comment-avatar {
           .ant-avatar {
             .anticon > svg {

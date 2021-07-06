@@ -1,7 +1,10 @@
+@use 'styles/variables' as *;
+
 .notes-panel-container {
   display: block;
   position: absolute;
-  height: 100%;
+  top: $sidebar_header_height;
+  bottom: 0;
   width: 100%;
   overflow: auto;
 }

@@ -4,13 +4,17 @@
   .sidebar-page-wrapper {
     .settings-section-content {
       width: calc(100% - (2 * #{$sidebar_space_larger}));
-      padding: $sidebar_space_larger;
+      padding: $sidebar_space_medium;
 
       h2 {
         margin: $sidebar_space_medium 0;
       }
 
       button {
+        &.ant-btn-link {
+          padding-left: 0;
+        }
+
         span {
           justify-content: center;
         }
@@ -28,7 +32,7 @@
         animation-timing-function: linear;
         display: inline-block;
       }
-      
+
       @keyframes spin-animation {
         0% {
           transform: rotate(0deg);
