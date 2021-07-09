@@ -138,17 +138,25 @@ class User {
    *
    * @param email The email value
    */
-  public signup(email: string) {
+  public async signup(email: string): Promise<void> {
     const customAttributes = [
       new CognitoUserAttribute({
         Name: 'email',
         Value: email,
       }),
     ];
-    this.getCognitoPool()?.signUp(email, uuid(), customAttributes, [], (error, result) => {
-      result && debug('AWS Cognito Sign Up Success', result);
-      error && debug('AWS Cognito Sign Up Error', error);
+    return new Promise((resolve) => {
+      if (!this.getCognitoPool()) {
+        return resolve();
+      }
+
+      this.getCognitoPool().signUp(email, uuid(), customAttributes, [], (error, result) => {
+        result && debug('AWS Cognito Sign Up Success', result);
+        error && debug('AWS Cognito Sign Up Error', error);
+        resolve();
+      });
     });
+    
   }
 
   /**
@@ -193,7 +201,17 @@ class User {
     );
     !this._licenses.length && (await this.addUserLicense(DEFAULT_LICENSE));
     this._email = email;
-    this.signup(email);
+    
+    await this.signup(email);
+
+    this._cognitoUser = new CognitoUser({
+      Pool: this.getCognitoPool(),
+      Username: this._email,
+      Storage: User.STORAGE,
+    });
+
+    debug('Current Cognito User Set', this._cognitoUser);
+
     this.getCognitoUser()?.setAuthenticationFlowType('CUSTOM_AUTH');
     const authDetails = new AuthenticationDetails({ Username: email });
     this.getCognitoUser()?.initiateAuth(authDetails, {
