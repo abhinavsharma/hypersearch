@@ -8,4 +8,14 @@
     height: 100%;
     transition: 100ms all ease-in-out;
   }
+
+  .publication-rating {
+    display: inline-flex;
+    align-items: center;
+
+    ul {
+      margin-left: 4px;
+      font-size: 16px;
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import React, { MutableRefObject, useEffect, useRef } from 'react';
+import Rate from 'antd/lib/rate';
 import { useFeature } from 'lib/features';
 import { usePublicationInfo } from 'lib/publication';
 import {
@@ -7,11 +8,12 @@ import {
   SIDEBAR_Z_INDEX,
 } from 'constant';
 import './PublicationTagRow.scss';
+import 'antd/lib/rate/style/index.css';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
-const RATING_SEPARATOR = '\u00a0⭐\u00a0·\u00a0';
+const RATING_SEPARATOR = '\u00a0·\u00a0';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
@@ -98,8 +100,13 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
   return ratingFeature ? (
     <div className="insight-row publication-tag-container" ref={containerRef}>
       {averageRating > 0 && (
-        <span>
+        <span className="publication-rating">
           {averageRating}
+          <Rate
+            allowHalf
+            value={averageRating}
+            disabled
+          />
           {RATING_SEPARATOR}
         </span>
       )}
