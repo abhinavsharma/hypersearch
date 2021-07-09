@@ -61,9 +61,7 @@ export const SettingsPage: SettingsPage = ({ email }) => {
 
   const handlePrivacyChange = useCallback(async (value: boolean | undefined) => {
     setUseServerSuggestions(value);
-    await new Promise((resolve) =>
-      chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: value }, () => resolve(true)),
-    );
+    UserManager.updateUserPrivacy(value === false);
   }, []);
 
   const getPrivacy = useCallback(async () => {

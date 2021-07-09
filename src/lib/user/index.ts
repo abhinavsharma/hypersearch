@@ -269,6 +269,13 @@ class User {
     );
   }
 
+  public async updateUserPrivacy(privacy: boolean) {
+    this._privacy = !privacy;
+    await new Promise((resolve) =>
+      chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: !privacy }, () => resolve(true)),
+    );
+  }
+
   public async changeLastUsedTags(tags: string[]) {
     this._lastUsedTags = tags;
     chrome.storage.sync.set({
@@ -307,10 +314,10 @@ class User {
       new Set(storedLicense ? [storedLicense, ...(storedLicenses ?? [])] : storedLicenses ?? []),
     );
 
-    const storedUserPrivacy = await new Promise<Record<string, string> | undefined>((resolve) =>
+    const storedUserPrivacy = await new Promise<Record<string, any> | undefined>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
     );
-    this._privacy = storedUserPrivacy?.[SYNC_PRIVACY_KEY] === 'true';
+    this._privacy = String(storedUserPrivacy?.[SYNC_PRIVACY_KEY]) !== 'true';
 
     const storedUserTags = await new Promise<Record<string, string[]> | undefined>((resolve) => {
       chrome.storage.sync.get(SYNC_USER_TAGS, resolve);
