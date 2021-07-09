@@ -45,6 +45,7 @@ export const LoginForm = () => {
     useServerSuggestions,
     handlePrivacyChange,
   } = useContext(SettingsContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isReadyToActivate, setIsReadyToActivate] = useState<boolean>(false);
   const [emailValue, setEmailValue] = useState<string>('');
   const [activationCode, setActivationCode] = useState<string>('');
@@ -63,7 +64,6 @@ export const LoginForm = () => {
 
   const handleLogin = async () => {
     await UserManager.login(emailValue);
-    setStoredEmail(emailValue);
     setIsReadyToActivate(true);
   };
 
@@ -78,9 +78,12 @@ export const LoginForm = () => {
   };
 
   const handleActivation = async () => {
+    setIsLoading(true);
     // set auth token in window.storage
     const token = await UserManager.activate(activationCode);
+    setIsLoading(false);
     setStoredToken(token);
+    setStoredEmail(emailValue);
     if (useServerSuggestions === undefined) {
       // enable server suggestions by default. see spec
       handlePrivacyChange(true);
@@ -127,7 +130,7 @@ export const LoginForm = () => {
           placeholder={ACTIVATE_INPUT_PLACEHOLDER}
           onChange={handleActivationCodeChange}
         />
-        <Button type="primary" onClick={handleActivation}>
+        <Button type="primary" onClick={handleActivation} disabled={isLoading}>
           {ACTIVATE_BUTTON_TEXT}
         </Button>
       </div>
@@ -166,7 +169,7 @@ export const LoginForm = () => {
           // prettier-ignore
           storedToken
           ? logoutInput
-          : !storedEmail
+          : !emailValue
             ? loginInput
             : isReadyToActivate
               ? activateInput
