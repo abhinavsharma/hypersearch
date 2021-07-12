@@ -101,7 +101,6 @@ export const PublicationTagRow: PublicationTagRow = ({ publication, container })
     <div className="insight-row publication-tag-container" ref={containerRef}>
       {averageRating > 0 && (
         <span className="publication-rating">
-          {averageRating}
           <Rate
             allowHalf
             value={averageRating}
