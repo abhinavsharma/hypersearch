@@ -65,10 +65,10 @@ export const SettingsPage: SettingsPage = ({ email }) => {
   }, []);
 
   const getPrivacy = useCallback(async () => {
-    const isServerSuggestionsEnabled = await new Promise<Record<string, boolean>>((resolve) =>
+    const isStrongPrivacy = await new Promise<Record<string, boolean>>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),
     ).then((result) => result?.[SYNC_PRIVACY_KEY]);
-    setUseServerSuggestions(isServerSuggestionsEnabled);
+    setUseServerSuggestions(!isStrongPrivacy);
   }, []);
 
   useEffect(() => {
