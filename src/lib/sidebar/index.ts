@@ -998,12 +998,11 @@ class SidebarLoader {
       const body: Record<string, any> = {
         uuid: UserManager.user.id,
         client: 'desktop',
+        license_keys: UserManager.user.licenses,
       };
 
       if (loginFeature) {
         headers['authorization'] = await UserManager.getAccessToken();
-      } else {
-        body['license_keys'] = UserManager.user.licenses;
       }
 
       return await postAPI<SubtabsResponse>('subtabs', { url }, headers, body);

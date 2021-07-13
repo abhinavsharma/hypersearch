@@ -619,7 +619,9 @@ class AugmentationManager {
     const body = {
       url: domain,
       toggle,
+      licenseKeys: UserManager.user.licenses,
     };
+
     await fetch(`${LUMOS_API_URL[ENV]}toggleList/${endpoint}`, {
       method: 'POST',
       headers: {
