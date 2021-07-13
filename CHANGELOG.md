@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.94](https://github.com/lumosbrowser/lumos-extension/compare/v0.0.93...v0.0.94) (2021-07-13)
+
+
+### Features
+
+* **multiple license:** add multiple license form ([217965b](https://github.com/lumosbrowser/lumos-extension/commit/217965be1e6ed8bee39a5b862b31af7f36366911))
+* **publication reviews:** add ability to handle different publication url on redirect ([3ad1b37](https://github.com/lumosbrowser/lumos-extension/commit/3ad1b37eb60a35c50bcb934d4682b265c2038e1e))
+* **publication reviews:** add publication tag gutter unit ([b1ce22a](https://github.com/lumosbrowser/lumos-extension/commit/b1ce22adf939b55419c0917afff5c0f5c5787ffc))
+* **remote trust/block lists:** add ability to record trust/block URL actions ([#404](https://github.com/lumosbrowser/lumos-extension/issues/404)) ([78912e0](https://github.com/lumosbrowser/lumos-extension/commit/78912e07570824360151002481dcf1b8001b58d6))
+* **trust/block list:** force trustlist/blocklist state to overwrite suggested lists ([bb16c97](https://github.com/lumosbrowser/lumos-extension/commit/bb16c974f52faa4f4bc96085a626d3532757de29))
+* **user notes:** add ability to add tags to notes and filter notes by tag ([6b1382a](https://github.com/lumosbrowser/lumos-extension/commit/6b1382abbfee4ac501ea999dfd07f6e0883eac4f))
+* **user notes:** add ability to create/edit/store user notes depending on URL slices ([c0c057a](https://github.com/lumosbrowser/lumos-extension/commit/c0c057a6fa03a673d8253c1e9f7bcac9f0942c4d))
+* **user notes:** show related notes on publication review page ([71db2c3](https://github.com/lumosbrowser/lumos-extension/commit/71db2c331bc80266f73b4bd4b5e262328b0d808d))
+
+
+### Bug Fixes
+
+* **email activation:** left align text content on verification page ([e5135bf](https://github.com/lumosbrowser/lumos-extension/commit/e5135bf7fa63ded98978e11120cb4588be82e33a))
+* **notes:** auto expand most relevant panel ([b060e5a](https://github.com/lumosbrowser/lumos-extension/commit/b060e5a6fa643bc9a4a3f01d13f476698878ccbf))
+* **notes:** hide textare in all notes panel ([270b01d](https://github.com/lumosbrowser/lumos-extension/commit/270b01d1e925b403e72654ac26c7f7422994c0f6))
+* **notes:** show notes only on non-serp pages ([35bca84](https://github.com/lumosbrowser/lumos-extension/commit/35bca84800ff0622a0d66d2a98ada23ca515fee6))
+* **publication notes:** show notes for all url slices ([21dd8a6](https://github.com/lumosbrowser/lumos-extension/commit/21dd8a667d620ee2d5f562b032a3d2aac2d06b7d))
+* **publication ratings:** use publication instead url when rendering nub ratings ([a8a3136](https://github.com/lumosbrowser/lumos-extension/commit/a8a3136516efb6d5b3a53be068773c28d144f5a6))
+* **user notes:** allow params in url slices ([26eb437](https://github.com/lumosbrowser/lumos-extension/commit/26eb43706e6c2bf427463ed17787a842b6edec7d))
+* **user notes:** prefill last used tags, add check to cors fetch ([d704b82](https://github.com/lumosbrowser/lumos-extension/commit/d704b8254edb99ad224f12f12b9e8222d7ca94c4))
+* **user notes:** switch to last used tags on search input ([6ac309f](https://github.com/lumosbrowser/lumos-extension/commit/6ac309fba4e05d7b5f801708090425acbe5cbbc9))
+* **user-notes:** filter note panels which not return HTTP200 when fetching ([ea36264](https://github.com/lumosbrowser/lumos-extension/commit/ea362646a6e2135daa030d5b888ca30e071e35e3))
+* **user-notes:** show created tags when filtering notes ([5d2125a](https://github.com/lumosbrowser/lumos-extension/commit/5d2125a877e2fae7a07b983728164664c22732ae))
+* add note timestamps, remove privacy section from activation, show email on login ([2a79dc3](https://github.com/lumosbrowser/lumos-extension/commit/2a79dc343db43a3f042507ef54746fe325635397))
+* move url notes tab to first place ([e41a8a4](https://github.com/lumosbrowser/lumos-extension/commit/e41a8a45431f06af60c7dfbf008276b1e9350289))
+* show notes tab when there are no other tabs instead active page ([d05b086](https://github.com/lumosbrowser/lumos-extension/commit/d05b086ed07b0b413d78d2fb23fa1da8e2da0352))
+
 ### [0.0.93](https://github.com/lumosbrowser/lumos-extension/compare/v0.0.92...v0.0.93) (2021-06-18)
 
 

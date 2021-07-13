@@ -2,30 +2,50 @@
   "manifest_version": 2,
   "name": "Insight",
   "description": "Insight supercharges search with fast previews, trusted sources, muting and lenses that offer unique and useful perspectives.",
-  "version": "0.0.93",
-  "web_accessible_resources": ["*.png", "*.svg", "*.html", "*.css"],
+  "version": "0.0.94",
+  "web_accessible_resources": [
+    "*.png",
+    "*.svg",
+    "*.html",
+    "*.css"
+  ],
   "icons": {
     "128": "logo128.png"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["js/insight_content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/insight_content.js"
+      ],
       "run_at": "document_start",
       "all_frames": true
     },
     {
-      "matches": ["<all_urls>"],
-      "css": ["index.css"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "css": [
+        "index.css"
+      ]
     },
     {
-      "matches": ["<all_urls>"],
-      "css": ["overwrite.css", "bundle.css"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "css": [
+        "overwrite.css",
+        "bundle.css"
+      ],
       "all_frames": true
     }
   ],
   "background": {
-    "scripts": ["js/insight_background.js"]
+    "scripts": [
+      "js/insight_background.js"
+    ]
   },
   "browser_action": {
     "default_title": "Insight"
@@ -38,5 +58,7 @@
     "webRequestBlocking",
     "webNavigation"
   ],
-  "optional_permissions": ["bookmarks"]
+  "optional_permissions": [
+    "bookmarks"
+  ]
 }
