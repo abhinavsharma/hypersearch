@@ -611,7 +611,7 @@ class AugmentationManager {
   private recordTrustBlock = async (type: 'TRUST' | 'BLOCK', domain: string, toggle: boolean) => {
     const authorization = await UserManager.getAccessToken();
 
-    if (UserManager.user.privacy !== false || !authorization) {
+    if (UserManager.user.privacy || !authorization) {
       return;
     }
 
