@@ -340,14 +340,14 @@ class AugmentationManager {
       matchingDomainsCondition
         .map(
           (domain) =>
-            !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
+            !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${this.escapeRegExp(domain)}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length > 0 &&
       // exclude if too much overlap
       matchingDomainsAction
         .map(
           (domain) =>
-            !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${domain}`, 'gi')) > -1),
+            !!SidebarLoader.domains?.find((e) => e?.search(new RegExp(`^${this.escapeRegExp(domain)}`, 'gi')) > -1),
         )
         .filter((isMatch) => !!isMatch).length <
         (hasAnyPageCondition || !!SidebarLoader.url.searchParams.get('insight-tour')
@@ -629,6 +629,10 @@ class AugmentationManager {
       body: JSON.stringify(body),
     });
   };
+
+  private escapeRegExp(string: string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
 }
 
 /**
