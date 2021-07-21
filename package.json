@@ -1,6 +1,6 @@
 {
   "name": "@insight/browser-extension",
-  "version": "0.0.94",
+  "version": "0.0.95",
   "description": "Insight supercharges Google search with results from expert and community trusted sources for any field.",
   "main": "index.js",
   "scripts": {
