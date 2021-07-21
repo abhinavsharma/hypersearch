@@ -36,7 +36,7 @@ export const RightActionBar: RightActionBar = ({
 
   const isFeatured = !!featuringAugmentations.length;
   const isSearched = !!searchingAugmentations.length;
-  const iconRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
+  const iconWrapperRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const rootRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const resultRef = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   const tooltipContainer = useRef<HTMLDivElement>(null);
@@ -66,8 +66,8 @@ export const RightActionBar: RightActionBar = ({
         }, SWITCH_TO_TAB_DELAY);
       }
 
-      if (iconRef.current) {
-        iconRef.current.style.opacity = '1';
+      if (iconWrapperRef.current) {
+        iconWrapperRef.current.style.opacity = '1';
       }
 
       if (rootRef.current) {
@@ -79,8 +79,8 @@ export const RightActionBar: RightActionBar = ({
 
   const handleMouseLeave = useCallback((): any => {
     if (isSearched || isFeatured) return null;
-    if (iconRef.current) {
-      iconRef.current.style.opacity = '0';
+    if (iconWrapperRef.current) {
+      iconWrapperRef.current.style.opacity = '0';
     }
 
     if (rootRef.current) {
@@ -90,40 +90,18 @@ export const RightActionBar: RightActionBar = ({
   }, [isSearched, isFeatured]);
 
   useEffect(() => {
-    const handleAlterOpen = () => {
-      const element =
-        window.location.href.search(/duckduckgo\.com/gi) > -1
-          ? rootRef.current.parentElement?.querySelector(container)
-          : resultRef.current;
-      if (
-        window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
-        element?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
-      ) {
-        const element = rootRef.current as HTMLDivElement;
-        element.style.cursor = 'wait';
-        timeoutRef.current = setTimeout(() => {
-          chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
-          chrome.runtime.sendMessage({
-            type: SWITCH_TO_TAB,
-            url,
-          });
-          element.style.cursor = 'pointer';
-        }, SWITCH_TO_TAB_DELAY);
-      }
-    };
-
     const handleClick = (e: MouseEvent) => {
       e.stopPropagation();
       window.open(url, '_blank');
     };
 
-    if (iconRef.current) {
+    if (iconWrapperRef.current) {
       if (isSearched || isFeatured) {
-        iconRef.current.style.opacity = '1';
+        iconWrapperRef.current.style.opacity = '1';
       }
 
       rootRef.current =
-        rootRef.current ?? iconRef.current.closest(`.${INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR}`);
+        rootRef.current ?? iconWrapperRef.current.closest(`.${INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR}`);
 
       // prettier-ignore
       const newResult =
@@ -161,13 +139,11 @@ export const RightActionBar: RightActionBar = ({
       }
 
       rootRef.current?.addEventListener('click', handleClick);
-      rootRef.current?.addEventListener('mouseenter', handleAlterOpen);
       resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
       resultRef.current?.addEventListener('mouseleave', handleMouseLeave);
 
       return () => {
         rootRef.current?.removeEventListener('click', handleClick);
-        rootRef.current?.removeEventListener('mouseenter', handleAlterOpen);
         resultRef.current?.removeEventListener('mouseenter', handleMouseEnter);
         resultRef.current?.removeEventListener('mouseleave', handleMouseLeave);
       };
@@ -181,6 +157,28 @@ export const RightActionBar: RightActionBar = ({
     url,
     blockingAugmentations.length,
   ]);
+
+  const handleAlterOpen = () => {
+    const element =
+      window.location.href.search(/duckduckgo\.com/gi) > -1
+        ? rootRef.current.parentElement?.querySelector(container)
+        : resultRef.current;
+    if (
+      window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH &&
+      element?.getAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR) === 'true'
+    ) {
+      const element = rootRef.current as HTMLDivElement;
+      element.style.cursor = 'wait';
+      timeoutRef.current = setTimeout(() => {
+        chrome.runtime.sendMessage({ type: TRIGGER_GUTTER_HOVEROPEN_MESSAGE, url });
+        chrome.runtime.sendMessage({
+          type: SWITCH_TO_TAB,
+          url,
+        });
+        element.style.cursor = 'pointer';
+      }, SWITCH_TO_TAB_DELAY);
+    }
+  };
 
   useEffect(() => {
     const { current } = resultRef;
@@ -202,7 +200,7 @@ export const RightActionBar: RightActionBar = ({
   return (
     <div
       className={`gutter-icon-container ${hasTab ? 'has-overlay' : ''}`}
-      ref={iconRef}
+      ref={iconWrapperRef}
       style={containerStyle}
     >
       {hasTab && (
@@ -215,10 +213,10 @@ export const RightActionBar: RightActionBar = ({
               placement="right"
               overlayClassName="gutter-tooltip"
             >
-              <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />
+              <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} onMouseEnter={handleAlterOpen}/>
             </Tooltip>
           ) : (
-            <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} />
+            <HoverOpenIcon color={ICON_UNSELECTED_COLOR} width={30} onMouseEnter={handleAlterOpen}/>
           )}
         </>
       )}

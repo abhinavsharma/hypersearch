@@ -170,10 +170,12 @@ import {
             firstSearchedResult?.getAttribute(INSIGHT_RESULT_URL_SELECTOR);
 
             if (firstSearchedResult) {
-              chrome.runtime.sendMessage({
-                type: SWITCH_TO_TAB,
-                url: firstSearchedResult.getAttribute(INSIGHT_RESULT_URL_SELECTOR),
-              });
+              setTimeout(() => {
+                chrome.runtime.sendMessage({
+                  type: SWITCH_TO_TAB,
+                  url: firstSearchedResult.getAttribute(INSIGHT_RESULT_URL_SELECTOR),
+                });
+              }, 250);
             }
           }
         });

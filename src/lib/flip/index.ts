@@ -1,6 +1,8 @@
 import { SIDEBAR_TAB_FAKE_URL, SIDEBAR_Z_INDEX } from 'constant';
 import variables from 'styles/variables.scss';
 
+let animationTimeout: any = -1;
+
 export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOverlay) => {
   const maxAvailableWidth = loader.maxAvailableSpace;
   const tabsLength = loader.sidebarTabs.filter(
@@ -32,17 +34,21 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
     sidebarOverlay.setAttribute(
       'style',
       `
-    z-index: ${SIDEBAR_Z_INDEX + 3};
-    background: #F9F9F9;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 1px;
-    opacity: 1;
-    transition: opacity 250ms ease-out;
-  `,
+        z-index: ${SIDEBAR_Z_INDEX + 3};
+        background: #F9F9F9;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        opacity: 1;
+        transition: opacity 250ms ease-out;
+        width: ${actualWidth - 30}px;
+      `,
     );
+
+    if (force === 'hide') {
+      sidebarOverlay.style.left = '1px';
+    }
   }
 
   if (!sidebarContainer) return null;
@@ -62,10 +68,16 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
 
   if (innerDocument.classList.contains('insight-expanded')) return;
 
+  const sidebarRootIframe = outerDocument.getElementById('sidebar-root-iframe');
+  if (sidebarRootIframe) {
+    sidebarRootIframe.style.boxShadow = '';
+  }
+
+  clearTimeout(animationTimeout);
   if (force === 'hide') {
     sidebarContainer.style.width = '0px';
     // We need the timeout to ensure the proper animation
-    setTimeout(() => {
+    animationTimeout = setTimeout(() => {
       tabsContainer.style.visibility = 'hidden';
       outerDocument.getElementById('sidebar-root')?.setAttribute(
         'style',
@@ -105,60 +117,67 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
       showButton.style.flexDirection = 'row';
       if (!preventOverlay) {
         sidebarOverlay.style.opacity = '0';
-        setTimeout(() => {
+        animationTimeout = setTimeout(() => {
           sidebarOverlay.parentElement?.removeChild(sidebarOverlay);
         }, 150);
       }
     }, 500);
   } else {
+    const sidebarWidth = actualWidth - 30;
+
     sidebarContainer.style.visibility = 'visible';
     showButton.style.display = 'none';
     showButton.style.visibility = 'hidden';
     ratingButton.style.display = 'none';
     ratingButton.style.visibility = 'hidden';
-    sidebarContainer.style.width = `${actualWidth - 30}px`;
-    sidebarContainer.style.maxWidth = `${variables.sidebarStretchedMaxWidth}px`;
+    sidebarContainer.style.width = `${sidebarWidth}px`;
+    sidebarContainer.style.maxWidth = `${variables.sidebarStretchedMaxWidth}`;
     tabsContainer.style.visibility = 'visible';
     outerDocument.getElementById('sidebar-root')?.setAttribute(
       'style',
       `
-      display: block;
-      width: ${actualWidth}px;
-      max-width: ${variables.sidebarStretchedMaxWidth}px;
-      transition-property: width;
-      transition-duration: 0.5s;
-      transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-  `,
+          display: block;
+          width: ${sidebarWidth}px;
+          max-width: ${variables.sidebarStretchedMaxWidth};
+          transition-property: width;
+          transition-duration: 0.5s;
+          transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+      `,
     );
     outerDocument.getElementById('sidebar-root-iframe')?.setAttribute(
       'style',
       `
-      position: fixed;
-      display: block !important;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      width: ${actualWidth}px;
-      max-width: ${variables.sidebarStretchedMaxWidth}px;
-      min-height: 200px;
-      height: 100%;
-      background: transparent;
-      border-width: 0 !important;
-      transition-property: width;
-      transition-duration: 0.5s;
-      transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-      z-index: ${SIDEBAR_Z_INDEX};
-    `,
+        position: fixed;
+        display: block !important;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: ${sidebarWidth}px;
+        max-width: ${variables.sidebarStretchedMaxWidth};
+        min-height: 200px;
+        height: 100%;
+        background: transparent;
+        border-width: 0 !important;
+        transition-property: width;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        z-index: ${SIDEBAR_Z_INDEX};
+        box-shadow: -1px -1px 6px 1px rgb(0 0 0 / 20%);
+      `,
     );
+
     // We need the timeout to ensure the proper animation
-    setTimeout(() => {
+    animationTimeout = setTimeout(() => {
       if (!preventOverlay) {
-        setTimeout(() => {
+        animationTimeout = setTimeout(() => {
           sidebarOverlay.style.opacity = '0';
-          setTimeout(() => {
+          animationTimeout = setTimeout(() => {
             sidebarOverlay.parentElement?.removeChild(sidebarOverlay);
           }, 250);
         }, 350);
+      } else if (sidebarOverlay) {
+        sidebarOverlay.style.opacity = '0';
+        sidebarOverlay.parentElement?.removeChild(sidebarOverlay);
       }
     }, 300);
   }

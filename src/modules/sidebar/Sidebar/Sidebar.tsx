@@ -59,8 +59,10 @@ export const Sidebar: Sidebar = () => {
   useEffect(() => {
     window.addEventListener('resize', handleResize);
 
-    if (shouldPreventExpand && !SidebarLoader.isPreview) {
-      flipSidebar(document, 'hide', SidebarLoader);
+    if (shouldPreventExpand) {
+      if (!SidebarLoader.isPreview) {
+        flipSidebar(document, 'hide', SidebarLoader);
+      }
     } else {
       flipSidebar(document, 'show', SidebarLoader, SidebarLoader.isPreview);
       SidebarLoader.isPreview ??= true;
