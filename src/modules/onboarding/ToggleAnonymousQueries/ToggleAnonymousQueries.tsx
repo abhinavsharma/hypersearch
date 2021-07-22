@@ -55,7 +55,7 @@ export const CHECKED_PRIVACY_EXPLAINER_CONTENT = (
   </>
 );
 // * UNCHECKED STATE
-export const UNCHECKED_SWITCH_TEXT = 'Do not use sever suggestions';
+export const UNCHECKED_SWITCH_TEXT = 'Do not use server suggestions';
 export const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
   <>
     <p>Only recommended for local use.</p>
