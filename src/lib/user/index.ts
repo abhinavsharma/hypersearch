@@ -28,6 +28,7 @@ import {
   USER_UPDATED_MESSAGE,
   SYNC_START_MESSAGE,
   SYNC_TRIGGER_START_MESSAGE,
+  REFRESH_SIDEBAR_TABS_MESSAGE,
 } from 'constant';
 
 class User {
@@ -177,6 +178,8 @@ class User {
               this.notifyUserUpdated(true);
               debug('AWS Cognito Token', this._token);
               resolve(this._token);
+
+              chrome.runtime.sendMessage({ type: REFRESH_SIDEBAR_TABS_MESSAGE });
             },
             onFailure: (error) => {
               debug('AWS Cognito Custom Challenge Error', error), resolve(undefined);

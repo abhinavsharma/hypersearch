@@ -60,6 +60,8 @@ import {
   NOTE_AUGMENTATION_ID,
   createNote,
   DEV_FEATURE_FLAGS,
+  REFRESH_SIDEBAR_TABS_MESSAGE,
+  UPDATE_SIDEBAR_TABS_MESSAGE,
 } from 'constant';
 import UserManager from 'lib/user';
 
@@ -284,6 +286,8 @@ class SidebarLoader {
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
     this.showPublicationRating = false;
+
+    this.addListeners();
   }
 
   public get maxAvailableSpace() {
@@ -1121,6 +1125,29 @@ class SidebarLoader {
         type: SEND_LOG_MESSAGE,
       });
     }
+  }
+
+  /**
+   * Refresh subtabs by making a new request.
+   */
+  private async refreshSubtabs() {
+    const response = await this.fetchSubtabs();
+    await this.handleSubtabApiResponse(response);
+
+    chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
+  }
+
+  /**
+   * Setup message listeners.
+   */
+  private async addListeners() {
+    chrome.runtime.onMessage.addListener((msg) => {
+      switch (msg.type) {
+        case REFRESH_SIDEBAR_TABS_MESSAGE:
+          this.refreshSubtabs();
+        break;
+      }
+    });
   }
 }
 
