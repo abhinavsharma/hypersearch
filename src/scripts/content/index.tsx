@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { render } from 'react-dom';
-import { activityMonitor } from 'lib/activity';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   debug,
@@ -14,7 +13,7 @@ import {
   replaceLocation,
   runFunctionWhenDocumentReady,
 } from 'lib/helpers';
-import { URL_UPDATED_MESSAGE, TRIGGER_START_TRACK_TIMER_MESSAGE } from 'constant';
+import { URL_UPDATED_MESSAGE } from 'constant';
 
 (async (window: Window, document: Document, location: Location) => {
   if (window.location.href !== window.top.location.href) {
@@ -68,12 +67,5 @@ import { URL_UPDATED_MESSAGE, TRIGGER_START_TRACK_TIMER_MESSAGE } from 'constant
           break;
       }
     });
-
-    chrome.runtime.sendMessage({
-      type: TRIGGER_START_TRACK_TIMER_MESSAGE,
-      url: LOCAL_URL,
-    });
-
-    activityMonitor(document);
   }
 })(window, document, location);

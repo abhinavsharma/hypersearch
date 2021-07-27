@@ -7,7 +7,7 @@
 import axios from 'axios';
 import SearchEngineManager from 'lib/engines';
 import BookmarksSynchronizer from 'lib/bookmarks';
-import { debug, getPublicationUrl, sanitizeUrl } from 'lib/helpers';
+import { debug } from 'lib/helpers';
 import {
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
@@ -17,10 +17,6 @@ import {
   OPEN_SETTINGS_PAGE_MESSAGE,
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
-  SYNC_PUBLICATION_TIME_TRACK_KEY,
-  TRIGGER_PUBLICATION_TIMER_MESSAGE,
-  TRIGGER_START_TRACK_TIMER_MESSAGE,
-  TRIGGER_STOP_TRACK_TIMER_MESSAGE,
   URL_UPDATED_MESSAGE,
   SYNC_START_MESSAGE,
   SYNC_END_MESSAGE,
@@ -34,70 +30,6 @@ import './headers';
 import './hot';
 
 (() => {
-  // ! PUBLICATION TRACKER
-  // Map of publication URLs and their timestamp when the user started reading that page.
-  const trackData: Record<string, number> = Object.create(null);
-  // Calculate how much time the user spent on a publication and store it's value in the storage.
-  // After the value is stored, we fire an update message which will update the gutter unit.
-  const stopTrackingTimer = async (skippedPublication = '') => {
-    const stored =
-      (await new Promise<Record<string, Record<string, number>>>((resolve) =>
-        chrome.storage.sync.get(SYNC_PUBLICATION_TIME_TRACK_KEY, resolve),
-      ).then((value) => value?.[SYNC_PUBLICATION_TIME_TRACK_KEY])) ?? Object.create(null);
-
-    Object.entries(trackData).forEach(([publication, startTime]) => {
-      if (trackData[publication] && publication !== skippedPublication) {
-        const storedTime = stored[sanitizeUrl(publication)] ?? 0;
-        const currentTime = storedTime + Math.trunc((Date.now() - startTime) / 1000 / 60);
-        trackData[publication] = 0;
-        debug('publicationTracking - end - ', publication, `${currentTime} minutes`);
-        chrome.storage.sync.set({
-          [SYNC_PUBLICATION_TIME_TRACK_KEY]: {
-            ...(stored ?? Object.create(null)),
-            [sanitizeUrl(publication)]: currentTime,
-          },
-        });
-        chrome.tabs.query({ currentWindow: true }, (tabs) => {
-          if (chrome.runtime.lastError) {
-            debug('Chrome Last Error', chrome.runtime.lastError);
-          }
-          tabs?.forEach((tab) => {
-            chrome.tabs.sendMessage(tab.id ?? -1, {
-              currentTime,
-              domain: publication,
-              type: TRIGGER_PUBLICATION_TIMER_MESSAGE,
-            });
-          });
-        });
-      }
-    });
-  };
-  // Event listener invoked when the user changes the current tab. If the new tab matches
-  // a known publication, we start to track the time spent on this tab. Switching to another
-  // tab or STOP message from the frontend will stop the timer and add the tracked time to
-  // the stored value of the corresponding publication. Spent time calculated by subtracting
-  // the start time from the current time (timestamps in milliseconds converted to minutes).
-  chrome.tabs.onActivated.addListener(({ tabId }) => {
-    chrome.tabs.query({}, async (tabs) => {
-      if (chrome.runtime.lastError) {
-        debug('Chrome Last Error', chrome.runtime.lastError);
-      }
-      const currentTab = tabs?.find(({ id }) => id == tabId);
-      const publication = getPublicationUrl(currentTab?.url ?? '');
-      await stopTrackingTimer(publication ?? '');
-      if (publication && !trackData[publication]) {
-        debug('publicationTracking - start - ', publication, trackData);
-        trackData[publication] = Date.now();
-        tabs?.forEach((tab) =>
-          chrome.tabs.sendMessage(tab.id ?? -1, {
-            type: TRIGGER_START_TRACK_TIMER_MESSAGE,
-            url: currentTab?.url ?? '',
-          }),
-        );
-      }
-    });
-  });
-
   // ! NAVIGATION LISTENERS
   // Send a message whenever the URL of the current tab is updated, to let the React app know that it should update
   // the contents of the sidebar according to the change that happened.
@@ -151,21 +83,6 @@ import './hot';
   // page. By default it will forward any message as is to the client.
   chrome.runtime.onMessage.addListener((msg, sender) => {
     switch (msg.type) {
-      case TRIGGER_STOP_TRACK_TIMER_MESSAGE: {
-        const publication = getPublicationUrl(msg.url ?? '');
-        if (publication && trackData[publication]) {
-          (async () => await stopTrackingTimer())();
-        }
-        break;
-      }
-      case TRIGGER_START_TRACK_TIMER_MESSAGE: {
-        const publication = getPublicationUrl(msg.url ?? '');
-        if (publication && !trackData[publication]) {
-          debug('publicationTracking - start - ', publication);
-          trackData[publication] = Date.now();
-        }
-        break;
-      }
       case OPEN_NEW_TAB_MESSAGE:
         chrome.tabs.create({ url: msg.url });
         break;

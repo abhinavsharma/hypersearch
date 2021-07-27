@@ -8,7 +8,6 @@ import React, { MutableRefObject, useCallback, useEffect, useRef, useState } fro
 import Button from 'antd/lib/button';
 import Tooltip from 'antd/lib/tooltip';
 import { EyeOff, Star, Menu } from 'react-feather';
-import { PublicationTimeTracker } from 'modules/gutter';
 import SidebarLoader from 'lib/sidebar';
 import {
   AUGMENTATION_ID,
@@ -196,7 +195,6 @@ export const LeftActionBar: LeftActionBar = ({
   return (
     <>
       <div className="gutter-icon-container" ref={iconRef} style={containerStyle}>
-        <PublicationTimeTracker key={publication} domain={publication} />
         <Tooltip
           title={`${
             featuringAugmentations.length
