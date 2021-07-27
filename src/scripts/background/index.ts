@@ -116,7 +116,7 @@ import './hot';
         }
         break;
       case SYNC_START_MESSAGE:
-        BookmarksSynchronizer.sync(msg.token).then(() => {
+        BookmarksSynchronizer.sync(msg.token, msg.userInitiated).then(() => {
           chrome.tabs.sendMessage(sender.tab?.id ?? -1, {
             type: SYNC_END_MESSAGE,
           });

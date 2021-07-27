@@ -304,9 +304,13 @@ class User {
     });
   }
 
-  public async startSync() {
+  public async startSync(userInitiated: boolean) {
     const token = await this.getIdentityToken();
-    chrome.runtime.sendMessage({ token, type: SYNC_START_MESSAGE });
+    chrome.runtime.sendMessage({
+      token,
+      userInitiated,
+      type: SYNC_START_MESSAGE
+    });
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -394,7 +398,7 @@ class User {
   private async configureListeners() {
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.type === SYNC_TRIGGER_START_MESSAGE) {
-        this.startSync();
+        this.startSync(false);
       }
     });
   }
