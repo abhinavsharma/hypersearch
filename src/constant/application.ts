@@ -89,11 +89,6 @@ export const NUM_DOMAINS_TO_EXCLUDE = 3;
 export const SUBTABS_CACHE_EXPIRE_MIN = 30;
 
 /**
- * The number of seconds to wait before cancel activity monitoring service
- */
-export const MAX_INACTIVE_SECONDS = 10;
-
-/**
  * The minimum width of the browser window to trigger sidebar on page load finish
  */
 export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
