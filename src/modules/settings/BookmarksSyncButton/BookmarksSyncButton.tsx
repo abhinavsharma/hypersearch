@@ -29,7 +29,7 @@ export const BookmarksSyncButton: BookmarksSyncButton = ({ token }) => {
   //-----------------------------------------------------------------------------------------------
   const handleSync = async () => {
     setIsSyncing(true);
-    UserManager.startSync();
+    UserManager.startSync(true);
   };
 
   useEffect(() => {

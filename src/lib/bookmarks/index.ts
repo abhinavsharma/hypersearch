@@ -117,8 +117,9 @@ class Bookmarks {
       const bookmarksFeature = await new Promise<Record<string, Features>>((resolve) =>
         chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
       ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_bookmarks']);
+      const hasPermission = await this.hasPermission();
 
-      if (bookmarksFeature) {
+      if (bookmarksFeature && hasPermission) {
         triggerSync();
       } else {
         this.scheduleSync();
@@ -133,46 +134,61 @@ class Bookmarks {
     clearInterval(this._syncSchedule ?? -1);
   }
 
-  /**
-   * Starts the bookmarks sync process, first fetching and applying
-   * remote changes and then uploading local changes to the server.
-   *
-   * @param apiToken User token to access API.
-   */
-  public async sync(apiToken: string) {
-    if (isFirefox()) {
-      await this.startSync(apiToken);
-    } else {
-      return new Promise((resolve) => {
+  private async hasPermission() {
+    return new Promise((resolve) => {
+      if (isFirefox()) {
+        resolve(true);
+      } else {
         chrome.permissions.contains(
           {
             permissions: [BOOKMARKS_PERMISSION],
           },
           (hasPermission) => {
-            if (hasPermission) {
-              this.startSync(apiToken).then(resolve);
-            } else {
-              chrome.permissions.request(
-                {
-                  permissions: [BOOKMARKS_PERMISSION],
-                },
-                async (granted) => {
-                  if (!granted) {
-                    this.scheduleSync();
-                    return resolve(null);
-                  }
-
-                  this.startSync(apiToken).then(resolve);
-                },
-              );
-            }
+            resolve(hasPermission);
           },
         );
-      });
+      }
+    });
+  }
+
+  /**
+   * Starts the bookmarks sync process, first fetching and applying
+   * remote changes and then uploading local changes to the server.
+   *
+   * @param apiToken User token to access API.
+   * @param userInitiated if the sync operation was started by the user.
+   */
+  public async sync(apiToken: string, userInitiated: boolean) {
+    if (isFirefox()) {
+      await this.startSync(apiToken);
+    } else {
+      const hasPermission = await this.hasPermission();
+      if (hasPermission) {
+        await this.startSync(apiToken);
+      } else {
+        if (!userInitiated) return;
+
+        return new Promise((resolve) => {
+          chrome.permissions.request(
+            {
+              permissions: [BOOKMARKS_PERMISSION],
+            },
+            async (granted) => {
+              if (!granted) {
+                this.scheduleSync();
+                return resolve(null);
+              }
+
+              this.startSync(apiToken).then(resolve);
+            },
+          );
+        });
+      }
     }
   }
 
   private async startSync(apiToken: string) {
+    if (true) return;
     if (this._isSyncing) return;
 
     this.clearSchedule();
