@@ -197,9 +197,11 @@ export const RightActionBar: RightActionBar = ({
     ? Object.create(null)
     : { display: 'none', visibility: 'hidden' };
 
+  const isDark = document.body.getAttribute('data-dt') === '1';
+
   return (
     <div
-      className={`gutter-icon-container ${hasTab ? 'has-overlay' : ''}`}
+      className={`gutter-icon-container ${hasTab ? 'has-overlay' : ''} ${isDark ? 'dark' : ''}`}
       ref={iconWrapperRef}
       style={containerStyle}
     >

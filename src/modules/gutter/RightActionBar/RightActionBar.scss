@@ -30,6 +30,10 @@
 
     &.has-overlay {
       background-color: $color_background_lightest;
+
+      &.dark {
+        background-color: $color_background_darker;
+      }
     }
 
     .tooltip-container {
