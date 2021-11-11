@@ -4,12 +4,11 @@
  * @license (C) Insight
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
 import Button from 'antd/lib/button';
 import Typography from 'antd/lib/typography';
-import { StepContext, ToggleAnonymousQueries } from 'modules/onboarding';
-import UserManager from 'lib/user';
+import { StepContext } from 'modules/onboarding';
 import { APP_NAME } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/typography/style/index.css';
@@ -36,14 +35,8 @@ const { Title } = Typography;
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const PrivacyFrame = () => {
-  const [licenses, setLicenses] = useState<string[]>(UserManager.user.licenses);
   const { setCurrentStep } = useContext(StepContext);
   const handleNext = () => setCurrentStep(3);
-
-  useEffect(() => {
-    setLicenses(UserManager.user.licenses);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [UserManager.user.licenses]);
 
   //-----------------------------------------------------------------------------------------------
   // ! Render
@@ -54,17 +47,8 @@ export const PrivacyFrame = () => {
         <title>{TAB_TITLE}</title>
       </Helmet>
       <div id="privacy-frame-container">
-        {licenses.length ? (
-          <>
-            <Title level={2}>{ACTIVE_LICENSE_MAIN_HEADER}</Title>
-            <ToggleAnonymousQueries />
-          </>
-        ) : (
-          <>
-            <Title level={2}>{INACTIVE_LICENSE_MAIN_HEADER}</Title>
-            <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
-          </>
-        )}
+        <Title level={2}>{INACTIVE_LICENSE_MAIN_HEADER}</Title>
+        <div className="privacy-explainer">{INACTIVE_LICENSE_TEXT_CONTENT}</div>
         <div>
           <Button
             type="ghost"

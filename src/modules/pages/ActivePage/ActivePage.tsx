@@ -86,7 +86,7 @@ export const ActivePage: ActivePage = () => {
           type: SWITCH_TO_TAB,
           index: '1000',
         });
-      } else {
+      } else if (window.top?.document) {
         flipSidebar(window.top.document, 'hide', SidebarLoader, true);
       }
     } else {

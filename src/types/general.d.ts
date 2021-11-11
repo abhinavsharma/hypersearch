@@ -58,6 +58,19 @@ declare type SearchIntentResults = {
   intentElements: HTMLElement[];
 };
 
+// ! Extension
+
+declare type EncodedSuggestion = {
+  id: string;
+  name: string;
+  platformSpecific: string;
+  keySubstring: string;
+  base64: string;
+  augmentation: Augmentation,
+  defaultEnabled: string;
+  tag: string;
+}
+
 //-----------------------------------------------------------------------------------------------
 // ! Subtabs
 //-----------------------------------------------------------------------------------------------

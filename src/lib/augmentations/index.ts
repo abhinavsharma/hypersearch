@@ -27,8 +27,6 @@ import {
   CONDITION_KEY,
   AUGMENTATION_ID,
   DISABLED_KEYS,
-  LUMOS_API_URL,
-  ENV,
 } from 'constant';
 
 class AugmentationManager {
@@ -91,8 +89,6 @@ class AugmentationManager {
     this.addOrEditAugmentation(blockList, {
       actions: newActionList,
     });
-
-    this.recordTrustBlock('BLOCK', domain, true);
   }
 
   /**
@@ -118,8 +114,6 @@ class AugmentationManager {
       SidebarLoader.sendLogMessage(EXTENSION_BLOCKLIST_REMOVE_DOMAIN, {
         domain,
       });
-
-    this.recordTrustBlock('BLOCK', domain, false);
   }
 
   /**
@@ -143,8 +137,6 @@ class AugmentationManager {
         },
       ],
     });
-
-    this.recordTrustBlock('TRUST', domain, !existingDomain);
   }
 
   /**
@@ -607,30 +599,6 @@ class AugmentationManager {
       '\n---',
     );
   }
-
-  private recordTrustBlock = async (type: 'TRUST' | 'BLOCK', domain: string, toggle: boolean) => {
-    const authorization = await UserManager.getAccessToken();
-
-    if (UserManager.user.privacy || !authorization) {
-      return;
-    }
-
-    const endpoint = type === 'TRUST' ? 'trust' : 'block';
-    const body = {
-      url: domain,
-      toggle,
-      licenseKeys: UserManager.user.licenses,
-    };
-
-    await fetch(`${LUMOS_API_URL[ENV]}toggleList/${endpoint}`, {
-      method: 'POST',
-      headers: {
-        authorization,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-  };
 
   private escapeRegExp(string: string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

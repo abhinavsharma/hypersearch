@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SidebarLoader from 'lib/sidebar';
-import UserManager from 'lib/user';
 import Skeleton from 'antd/lib/skeleton';
 import { UserNotesTab } from 'modules/notes';
 import { decodeSpace, triggerSerpProcessing } from 'lib/helpers';
@@ -48,7 +47,6 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
     SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
       query: SidebarLoader.query,
       filter_name: tab.augmentation.name,
-      license_keys: UserManager.user.licenses,
       domains_to_search: SidebarLoader.domainsToSearch[tab.augmentation.id],
     });
   };

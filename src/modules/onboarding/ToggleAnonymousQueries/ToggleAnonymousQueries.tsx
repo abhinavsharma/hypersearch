@@ -7,7 +7,7 @@
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Switch from 'antd/lib/switch';
 import Typography from 'antd/lib/typography';
-import { SYNC_LICENSE_KEY, SYNC_PRIVACY_KEY } from 'constant';
+import { SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
 import './ToggleAnonymousQueries.scss';
@@ -85,11 +85,7 @@ export const ToggleAnonymousQueries = () => {
   const [checked, setChecked] = useState<boolean>();
 
   const getStorageValue = useCallback(async () => {
-    const { license, privacy } = await getStoredUserSettings();
-    if (license === undefined) {
-      chrome.storage.sync.set({ [SYNC_PRIVACY_KEY]: true });
-      setChecked(true);
-    }
+    const { privacy } = await getStoredUserSettings();
     privacy && setChecked(privacy);
   }, []);
 
@@ -99,15 +95,13 @@ export const ToggleAnonymousQueries = () => {
 
   const handleToggle = async (value: boolean) => {
     setChecked(value);
-    const { privacy, license } = await new Promise<Record<string, boolean>>((resolve) =>
-      chrome.storage.sync.get([SYNC_PRIVACY_KEY, SYNC_LICENSE_KEY], resolve),
+    const { privacy } = await new Promise<Record<string, boolean>>((resolve) =>
+      chrome.storage.sync.get([SYNC_PRIVACY_KEY], resolve),
     ).then((result) => ({
       privacy: result?.[SYNC_PRIVACY_KEY],
-      license: result?.[SYNC_LICENSE_KEY],
     }));
     chrome.storage.sync.set({
       [SYNC_PRIVACY_KEY]: value ?? privacy ?? true,
-      [SYNC_LICENSE_KEY]: license,
     });
   };
 

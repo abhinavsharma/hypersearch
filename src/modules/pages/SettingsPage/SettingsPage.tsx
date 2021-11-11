@@ -20,7 +20,7 @@ import {
   UNCHECKED_PRIVACY_EXPLAINER_CONTENT,
   UNCHECKED_SWITCH_TEXT,
 } from 'modules/onboarding';
-import { BookmarksSyncButton, LicenseForm, LoginForm } from 'modules/settings';
+import { BookmarksSyncButton, LoginForm } from 'modules/settings';
 import { MESSAGE, PAGE, SYNC_PRIVACY_KEY } from 'constant';
 import 'antd/lib/switch/style/index.css';
 import 'antd/lib/typography/style/index.css';
@@ -36,7 +36,6 @@ export const SettingsContext = React.createContext<SettingsContext>(Object.creat
 //-----------------------------------------------------------------------------------------------
 const HEADER_TITLE = 'Settings';
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
-const LICENSE_SECTION_HEADER = 'Manage Licenses';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component
@@ -142,15 +141,6 @@ export const SettingsPage: SettingsPage = ({ email }) => {
     </section>
   );
 
-  const LicenseSection = () => (
-    <section>
-      <h2 className="title">{LICENSE_SECTION_HEADER}</h2>
-      <div className="settings-section-content">
-        <LicenseForm />
-      </div>
-    </section>
-  );
-
   const BookmarksSection = () => (
     <section>
       <div className="settings-section-content">
@@ -175,7 +165,6 @@ export const SettingsPage: SettingsPage = ({ email }) => {
         <Header />
         <div className="sidebar-page-wrapper">
           <LoginSection />
-          {(storedToken || !loginFeature) && <LicenseSection />}
           {!storedEmail || (storedToken && <PrivacySection />)}
           {storedToken && <BookmarksSection />}
         </div>
