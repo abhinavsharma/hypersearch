@@ -11,7 +11,6 @@ import {
   WelcomeFrame,
   PrivacyFrame,
   QueriesFrame,
-  LicenseFrame,
   EmailFrame,
 } from 'modules/onboarding';
 import { useFeature } from 'lib/features';
@@ -26,7 +25,6 @@ const { Step } = Steps;
 //-----------------------------------------------------------------------------------------------
 const TAB_TITLE = `Welcome to ${APP_NAME}`;
 const WELCOME_SECTION_TITLE = 'Welcome';
-const LICENSE_SECTION_TITLE = 'License';
 const EMAIL_SECTION_TITLE = 'Email';
 const PRIVACY_SECTION_TITLE = 'Privacy';
 const FINISHED_SECTION_TITLE = 'Done';
@@ -65,11 +63,6 @@ export const IntroductionPage: IntroductionPage = () => {
       disabled: undefined,
     },
     {
-      title: loginFeature ? EMAIL_SECTION_TITLE : LICENSE_SECTION_TITLE,
-      component: loginFeature ? <EmailFrame key={1} /> : <LicenseFrame key={1} />,
-      disabled: undefined,
-    },
-    {
       title: PRIVACY_SECTION_TITLE,
       component: <PrivacyFrame key={2} />,
       disabled: undefined,
@@ -80,6 +73,14 @@ export const IntroductionPage: IntroductionPage = () => {
       disabled: currentStep !== 2 && !finished,
     },
   ];
+
+  if (loginFeature) {
+    STEPS.splice(1, 0, {
+      title: EMAIL_SECTION_TITLE,
+      component: <EmailFrame key={1} />,
+      disabled: undefined,
+    });
+  }
 
   //-----------------------------------------------------------------------------------------------
   // ! Handlers

@@ -9,7 +9,6 @@ import Tabs from 'antd/lib/tabs';
 import message from 'antd/lib/message';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
-import UserManager from 'lib/user';
 import { ActivePage, BuilderPage, GutterPage, SettingsPage, FeaturePage } from 'modules/pages';
 import {
   ActionBar,
@@ -49,7 +48,6 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
         SidebarLoader.sendLogMessage(EXTENSION_SERP_LINK_CLICKED, {
           query: SidebarLoader.query,
           url: msg.url,
-          license_keys: UserManager.user.licenses,
           position_in_serp:
             SidebarLoader.publicationSlices['original']?.indexOf(
               extractUrlProperties(msg.url).full ?? '',
@@ -73,7 +71,6 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
             SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LINK_CLICKED, {
               query: SidebarLoader.query,
               url: msg.url,
-              license_keys: UserManager.user.licenses,
               filter_name: sourceTab.augmentation.name,
               position_in_serp:
                 SidebarLoader.publicationSlices[sourceTab.augmentation.id][

@@ -1,6 +1,5 @@
 export * from './EmailFrame/EmailFrame';
 export * from './IntroductionPage/IntroductionPage';
-export * from './LicenseFrame/LicenseFrame';
 export * from './PrivacyFrame/PrivacyFrame';
 export * from './QueriesFrame/QueriesFrame';
 export * from './ToggleAnonymousQueries/ToggleAnonymousQueries';

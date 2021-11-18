@@ -17,12 +17,9 @@ import {
   AWS_COGNITO_CLIENT_ID,
   AWS_COGNITO_POOL_ID,
   ENV,
-  DEFAULT_LICENSE,
   SYNC_DISTINCT_KEY,
   SYNC_EMAIL_KEY,
-  LEGACY_LOCAL_LICENSE,
   SYNC_PRIVACY_KEY,
-  SYNC_LICENSE_KEY,
   SYNC_USER_TAGS,
   SYNC_LAST_USED_TAGS,
   USER_UPDATED_MESSAGE,
@@ -34,7 +31,6 @@ import {
 class User {
   private _id: string | undefined = undefined;
   private _email: string | undefined = undefined;
-  private _licenses: Array<string> = Array(0);
   private _privacy: boolean | undefined = undefined;
   private _cognitoUser: CognitoUser | undefined = undefined;
   private _token: CognitoIdToken | undefined = undefined;
@@ -107,7 +103,6 @@ class User {
       id: this._id,
       email: this._email,
       privacy: this._privacy,
-      licenses: this._licenses,
       token: this._token,
       tags: this._tags,
       lastUsedTags: this._lastUsedTags,
@@ -168,24 +163,20 @@ class User {
    */
   public async activate(code: string) {
     return await new Promise<TAccessToken | undefined>((resolve) =>
-      chrome.storage.sync.set(
-        { [LEGACY_LOCAL_LICENSE]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
-        () =>
-          this.getCognitoUser()?.sendCustomChallengeAnswer(code, {
-            onSuccess: (session) => {
-              debug('AWS Cognito Custom Challenge Success', session);
-              this._token = session?.getAccessToken();
-              this.notifyUserUpdated(true);
-              debug('AWS Cognito Token', this._token);
-              resolve(this._token);
+      this.getCognitoUser()?.sendCustomChallengeAnswer(code, {
+        onSuccess: (session) => {
+          debug('AWS Cognito Custom Challenge Success', session);
+          this._token = session?.getAccessToken();
+          this.notifyUserUpdated(true);
+          debug('AWS Cognito Token', this._token);
+          resolve(this._token);
 
-              chrome.runtime.sendMessage({ type: REFRESH_SIDEBAR_TABS_MESSAGE });
-            },
-            onFailure: (error) => {
-              debug('AWS Cognito Custom Challenge Error', error), resolve(undefined);
-            },
-          }),
-      ),
+          chrome.runtime.sendMessage({ type: REFRESH_SIDEBAR_TABS_MESSAGE });
+        },
+        onFailure: (error) => {
+          debug('AWS Cognito Custom Challenge Error', error), resolve(undefined);
+        },
+      }),
     );
   }
 
@@ -202,7 +193,6 @@ class User {
     await new Promise((resolve) =>
       chrome.storage.sync.set({ [SYNC_EMAIL_KEY]: email }, () => resolve(true)),
     );
-    !this._licenses.length && (await this.addUserLicense(DEFAULT_LICENSE));
     this._email = email;
     
     await this.signup(email);
@@ -242,36 +232,6 @@ class User {
     this._email = email;
     await new Promise((resolve) =>
       chrome.storage.sync.set({ [SYNC_EMAIL_KEY]: email }, () => resolve(true)),
-    );
-  }
-
-  public async replaceUserLicenses(licenses: string[]) {
-    return new Promise<string[] | null>((resolve, reject) =>
-      chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: licenses }, () => {
-        const hasError = chrome.runtime.lastError;
-        if (hasError) {
-          debug('UserManager - Add User License - Error', hasError.message);
-          reject(null);
-        }
-        this._licenses = licenses;
-        debug('UserManager - Add User License - Success', licenses);
-        resolve(this._licenses);
-      }),
-    );
-  }
-
-  public async addUserLicense(license: string) {
-    this._licenses.push(license);
-    return new Promise<string[] | null>((resolve, reject) =>
-      chrome.storage.sync.set({ [SYNC_LICENSE_KEY]: this._licenses }, () => {
-        const hasError = chrome.runtime.lastError;
-        if (hasError) {
-          debug('UserManager - Add User License - Error', hasError.message);
-          reject(null);
-        }
-        debug('UserManager - Add User License - Success', license);
-        resolve(this._licenses);
-      }),
     );
   }
 
@@ -327,17 +287,6 @@ class User {
       chrome.storage.sync.get(SYNC_EMAIL_KEY, resolve),
     );
     this._email = storedEmail?.[SYNC_EMAIL_KEY] ?? '';
-
-    const storedLicense = await new Promise<Record<string, string> | undefined>((resolve) =>
-      chrome.storage.sync.get(LEGACY_LOCAL_LICENSE, resolve),
-    ).then((data) => data?.[LEGACY_LOCAL_LICENSE]);
-    const storedLicenses = await new Promise<Record<string, string[]> | undefined>((resolve) =>
-      chrome.storage.sync.get(SYNC_LICENSE_KEY, resolve),
-    ).then((data) => data?.[SYNC_LICENSE_KEY]);
-
-    this._licenses = Array.from(
-      new Set(storedLicense ? [storedLicense, ...(storedLicenses ?? [])] : storedLicenses ?? []),
-    );
 
     const storedUserPrivacy = await new Promise<Record<string, any> | undefined>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),

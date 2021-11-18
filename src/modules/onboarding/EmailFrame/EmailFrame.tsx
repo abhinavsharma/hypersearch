@@ -11,7 +11,6 @@ import {
   EXTENSION_HOST,
   MAILCHIMP_API_KEY,
   MAILCHIMP_URL,
-  LEGACY_LOCAL_LICENSE,
 } from 'constant';
 import './EmailFrame.scss';
 
@@ -41,13 +40,6 @@ export const EmailFrame = () => {
       window.open(
         `https://${EXTENSION_HOST}/verify?auth_email=${encodeURIComponent(emailValue)}`,
         '_blank',
-      );
-    } else {
-      await new Promise((resolve) =>
-        chrome.storage.sync.set(
-          { [LEGACY_LOCAL_LICENSE]: 'ABHINAV-FRIENDS-FAMILY-SPECIAL-ACCESS-K' },
-          () => resolve(true),
-        ),
       );
     }
     UserManager.setUserEmail(emailValue);

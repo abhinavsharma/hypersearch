@@ -22,16 +22,6 @@ export const DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX = 'google.com/search';
 export const SAFARI_FALLBACK_URL = 'https://www.ecosia.org/search';
 
 /**
- * The URL sent as query parameter to subtabs API when strong privacy is enabled
- */
-export const DUMMY_SUBTABS_URL = 'https://www.google.com/search?q=react';
-
-/**
- * The URL sent as query parameter to subtabs API when strong privacy is enabled on Amazon websites
- */
-export const DUMMY_AMAZON_SUBTABS_URL = 'https://www.amazon.com/s?k=dummy';
-
-/**
  * The User Agent string appended to sidebar tab requests when {@link SPECIAL_URL_JUNK_STRING junk string} also present
  */
 export const CUSTOM_UA_STRING = 'Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36';
@@ -84,11 +74,6 @@ export const NUM_DOMAINS_TO_CONSIDER = 5;
 export const NUM_DOMAINS_TO_EXCLUDE = 3;
 
 /**
- * The number of minutes after the cached subtabs response considered invalid
- */
-export const SUBTABS_CACHE_EXPIRE_MIN = 30;
-
-/**
  * The minimum width of the browser window to trigger sidebar on page load finish
  */
 export const WINDOW_REQUIRED_MIN_WIDTH = 1200;
@@ -102,4 +87,4 @@ export const HOVER_EXPAND_REQUIRED_MIN_WIDTH = 1000;
 // ! Development
 //-----------------------------------------------------------------------------------------------
 export const ENV = process.env.mode === 'development' ? 'DEV' : 'PROD';
-export const IN_DEBUG_MODE = ENV === 'DEV' || window.top.INSIGHT_FORCE_DEBUG;
+export const IN_DEBUG_MODE = ENV === 'DEV' || window.top?.INSIGHT_FORCE_DEBUG;

@@ -13,7 +13,6 @@ import AugmentationManager from 'lib/augmentations';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   extractUrlProperties,
-  postAPI,
   runFunctionWhenDocumentReady,
   debug,
   removeProtocol,
@@ -26,8 +25,6 @@ import {
   NUM_DOMAINS_TO_CONSIDER,
   SEND_LOG_MESSAGE,
   IN_DEBUG_MODE,
-  DUMMY_SUBTABS_URL,
-  SUBTABS_CACHE_EXPIRE_MIN,
   BANNED_DOMAINS,
   SIDEBAR_TAB_FAKE_URL,
   IGNORED_PREFIX,
@@ -36,7 +33,6 @@ import {
   USE_COUNT_PREFIX,
   GOOGLE_SERP_RESULT_DOMAIN_SELECTOR_FULL,
   INSTALLED_PREFIX,
-  DUMMY_AMAZON_SUBTABS_URL,
   MY_TRUSTLIST_TEMPLATE,
   MY_BLOCKLIST_TEMPLATE,
   SPECIAL_URL_JUNK_STRING,
@@ -46,7 +42,6 @@ import {
   FORCE_FALLBACK_CSE,
   URL_PARAM_TAB_TITLE_KEY,
   URL_PARAM_NO_COOKIE_KEY,
-  CACHED_SUBTABS_KEY,
   CONDITION_KEY,
   DEDICATED_SERP_REGEX,
   URL_PARAM_POSSIBLE_SERP_RESULT,
@@ -62,6 +57,7 @@ import {
   DEV_FEATURE_FLAGS,
   REFRESH_SIDEBAR_TABS_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
+  SUGGESTED_AUGMENTATIONS,
 } from 'constant';
 import UserManager from 'lib/user';
 
@@ -703,7 +699,7 @@ class SidebarLoader {
     const existing = this.document.getElementById('sidebar-root');
     existing && this.document.body.removeChild(existing);
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
-    const response = await this.fetchSubtabs();
+    const response = await this.fetchSuggestions();
     this.customSearchEngine = await SearchEngineManager.getSearchEngineObject(this.url.href);
     this.query =
       new URLSearchParams(this.document.location.search).get(
@@ -738,10 +734,9 @@ class SidebarLoader {
         this.sendLogMessage(EXTENSION_SERP_LOADED, {
           query: this.query,
           url: this.url,
-          license_keys: UserManager.user.licenses,
         });
       }
-      await this.handleSubtabApiResponse(response);
+      await this.handleSuggestionsApiResponse(response);
       this.createSidebar();
 
       const openCssLinks = this.sidebarTabs
@@ -933,140 +928,83 @@ class SidebarLoader {
   }
 
   /**
-   * Process the results from Subtabs API, by filtering out the matching
+   * Process suggested results, by filtering out the matching
    * augmentations then append sidebar tabs with matching subtabs. Subtabs
    * could be custom augmentations or readable contents.
    *
-   * @param response - The Subtabs API response object
+   * @param response - The suggestions response object
    * @private
    * @method
    * @memberof SidebarLoader
    */
-  private async handleSubtabApiResponse(response: SubtabsResponse): Promise<void> {
-    debug('handleSubtabApiResponse - call');
+   private async handleSuggestionsApiResponse(response: EncodedSuggestion[]): Promise<void> {
+    debug('handleSuggestionApiResponse - call');
     if (!(this.url && response)) return;
     await this.getLocalAugmentations();
     await this.getTabsAndAugmentations([
       ...this.installedAugmentations,
       ...this.enabledOtherAugmentations,
-      ...(response.suggested_augmentations ?? []).reduce((a, augmentation) => {
-        if (!this.pinnedAugmentations.find(({ id }) => id === augmentation.id)) {
-          a.push({
-            ...augmentation,
-            id: augmentation.id.startsWith(INSTALLED_PREFIX)
-              ? augmentation.id.replace(INSTALLED_PREFIX, CSE_PREFIX)
-              : augmentation.id,
-            installed: false,
-          });
-        }
-        return a;
+      ...response.reduce((result, { augmentation }) => {
+        
+        try {
+          if (!this.pinnedAugmentations.find(({ id }) => id === augmentation.id)) {
+            result.push({
+              ...augmentation,
+              id: augmentation.id.startsWith(INSTALLED_PREFIX)
+                ? augmentation.id.replace(INSTALLED_PREFIX, CSE_PREFIX)
+                : augmentation.id,
+              installed: false,
+            });
+          }
+        } catch {}
+
+        return result;
       }, [] as Augmentation[]),
     ]);
-    /*
-    !DEV DISABLED BY DEV-45[https://bit.ly/3x8tMaD]
-    TODO: handle custom url subtabs and readable content
-    const subtabs: SidebarTab[] = response.subtabs
-      .slice(1, response.subtabs.length)
-      .map((subtab, i, a) => ({
-        id: subtab.title,
-        title: subtab.title ?? 'Readable Content',
-        url: subtab.url && new URL(subtab.url),
-        readable: subtab.readable_content,
-        default: !this.sidebarTabs.length && i === 0 && !a[i + 1],
-        isCse: false,
-      }));
-    this.sidebarTabs = [...this.sidebarTabs, ...subtabs];
-    debug('handleSubtabApiResponse - processed', '\n---\n\tMatched Subtabs', subtabs, '\n---');
-    ! END DISABLED */
-    debug('handleSubtabApiResponse - processed');
+    debug('handleSuggestionApiResponse - processed');
   }
 
   /**
-   * Fetch the Subtabs API according to the current location.
+   * Fetch the suggested extensions.
    *
-   * @returns - The result from Subtabs API
    * @private
    * @method
    * @memberof SidebarLoader
    */
-  private async fetchSubtabs() {
-    debug('fetchSubtabs - call\n');
-    const getSubtabs = async (url = this.url.href) => {
-      const loginFeature = await new Promise<Record<string, Features>>((resolve) =>
-        chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
-      ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_login']);
-
-      debug('\n---\n\tRequest API', url, '\n\tLicense', UserManager.user.licenses, '\n---');
-
-      const headers: Record<string, any> = {};
-      const body: Record<string, any> = {
-        uuid: UserManager.user.id,
-        client: 'desktop',
-        license_keys: UserManager.user.licenses,
-      };
-
-      if (loginFeature) {
-        headers['authorization'] = await UserManager.getAccessToken();
-      }
-
-      return await postAPI<SubtabsResponse>('subtabs', { url }, headers, body);
+   private async fetchSuggestions() {
+    debug('fetchSuggestions - call\n');
+    const getSuggestions = async () => {
+      debug('\n---\n\tSuggestion Request API\n---');
+      const raw = await fetch(SUGGESTED_AUGMENTATIONS, {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return await raw.json();
     };
-    let response: SubtabsResponse = Object.create(null);
-    debug(
-      '\n---\n\tIs strong privacy enabled --- ',
-      UserManager.user.privacy ? 'Yes' : 'No',
-      '\n---',
-    );
-    if (UserManager.user.privacy) {
-      const cache = await new Promise<Record<string, { data: SubtabsResponse; expire: number }>>(
-        (resolve) => chrome.storage.local.get(CACHED_SUBTABS_KEY, resolve),
-      ).then((value) => value[CACHED_SUBTABS_KEY]);
-      if (cache && cache.expire > Date.now()) {
-        debug(
-          '\n---\n\tValid cache data found',
-          cache.data,
-          '\n\tExpires',
-          new Date(cache.expire).toLocaleString(),
-          '\n---',
-        );
-        response = cache.data;
-      } else {
-        debug('\n---\n\tCache not found or expired...\n---');
-        const { suggested_augmentations: defaultResponse } =
-          (await getSubtabs(DUMMY_SUBTABS_URL)) ?? (Object.create(null) as SubtabsResponse);
-        const { suggested_augmentations: amazonResponse } =
-          (await getSubtabs(DUMMY_AMAZON_SUBTABS_URL)) ?? (Object.create(null) as SubtabsResponse);
 
-        const suggested_augmentations = defaultResponse
-          ?.concat(amazonResponse ?? [])
-          .reduce((result: Augmentation[], suggestion: Augmentation) => {
-            if (!result.find(({ id }) => id === suggestion.id)) {
-              result.push(suggestion);
-            }
-            return result;
-          }, []);
+    const decodeUnicode = (str: string) => {
+      return decodeURIComponent(atob(decodeURIComponent(str)).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    };
 
-        response = {
-          subtabs: [],
-          suggested_augmentations,
-        };
+    let response: EncodedSuggestion[] = (await getSuggestions()) ?? [];
 
-        await new Promise((resolve) =>
-          chrome.storage.local.set(
-            {
-              [CACHED_SUBTABS_KEY]: {
-                data: response,
-                expire: Date.now() + SUBTABS_CACHE_EXPIRE_MIN * 60 * 1000,
-              },
-            },
-            () => resolve('Stored'),
-          ),
-        );
-      }
-    } else {
-      response = (await getSubtabs()) ?? (Object.create(null) as SubtabsResponse);
-    }
-    debug('fetchSubtabs - success\n---\n\tSubtabs Response', response, '\n---');
+    response = response.map((r) => {
+      let encoded = r;
+
+      try {
+        encoded.augmentation = JSON.parse(decodeUnicode(r.base64));
+      } catch {};
+
+      return encoded;
+    });
+
+    debug('fetchSuggestions - success\n---\n\tResponse', response, '\n---');
     return response;
   }
 
@@ -1117,7 +1055,7 @@ class SidebarLoader {
       '\n---',
     );
 
-    if (!IN_DEBUG_MODE && UserManager.user.licenses.length) {
+    if (!IN_DEBUG_MODE) {
       chrome.runtime.sendMessage({
         event,
         properties,
@@ -1128,11 +1066,11 @@ class SidebarLoader {
   }
 
   /**
-   * Refresh subtabs by making a new request.
+   * Refresh suggestions by making a new request.
    */
-  private async refreshSubtabs() {
-    const response = await this.fetchSubtabs();
-    await this.handleSubtabApiResponse(response);
+  private async refreshSuggestions() {
+    const response = await this.fetchSuggestions();
+    await this.handleSuggestionsApiResponse(response);
 
     chrome.runtime.sendMessage({ type: UPDATE_SIDEBAR_TABS_MESSAGE });
   }
@@ -1144,7 +1082,7 @@ class SidebarLoader {
     chrome.runtime.onMessage.addListener((msg) => {
       switch (msg.type) {
         case REFRESH_SIDEBAR_TABS_MESSAGE:
-          this.refreshSubtabs();
+          this.refreshSuggestions();
         break;
       }
     });

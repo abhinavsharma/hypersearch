@@ -8,9 +8,7 @@ import {
   CONDITION_KEY,
   AUGMENTATION_ID,
   LUMOS_APP_BASE_URL,
-  ENV,
   SYNC_PRIVACY_KEY,
-  SYNC_LICENSE_KEY,
   SPECIAL_URL_JUNK_STRING,
   CUSTOM_UA_STRING,
   URL_PARAM_NO_COOKIE_KEY,
@@ -99,7 +97,7 @@ export const triggerSerpProcessing = (
   const augmentation = loader.sidebarTabs.map(({ augmentation }) => augmentation);
   const createdUrls = loader.sidebarTabs.map(({ url }) => url.href);
   !subtabsOnly &&
-    window.top.postMessage(
+    window.top?.postMessage(
       {
         customLink,
         createdUrls,
@@ -115,7 +113,7 @@ export const triggerSerpProcessing = (
       },
       '*',
     );
-  window.top.postMessage(
+  window.top?.postMessage(
     {
       createdUrls,
       augmentation,
@@ -427,45 +425,6 @@ export const getAPI = async <T>(
   }
 };
 
-/**
- * Send a POST request to a specified API endpoint with the given parameters and request body.
- *
- * @param api - The API endpoint (eg: `subtabs`)
- * @param params - Specified query parameters
- * @param headers - Specified request headers
- * @param body - Specified request body
- * @returns `HTTP-200` - Successful HTTP request. Note, that even if the request
- *  was successful, the function does not guarantee the expected response.
- * @returns `HTTP-500` - Failed HTTP request, throws an exception
- */
-export const postAPI = async <T>(
-  api: string,
-  params: Record<string, any> = Object.create(null),
-  headers: Record<string, any> = Object.create(null),
-  body: Record<string, any> = Object.create(null),
-): Promise<T | null> => {
-  try {
-    const url: URL = new URL(LUMOS_API_URL[ENV] + api);
-    Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
-    const raw = await fetch(url.href, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-      },
-      redirect: 'follow',
-      body: JSON.stringify(body),
-    });
-    const data = await raw.json();
-    return data ? swapUrlsForDebuggingInJsonResponse<T>(data) : Object.create(null);
-  } catch (err) {
-    debug('postAPI error', err);
-    return Object.create(null);
-  }
-};
-
 // TODO #1 END
 
 // TODO #2: decouple to SidebarManager
@@ -599,10 +558,9 @@ export const getLastValidTabIndex = (tabs: SidebarTab[]) => {
 
 export const getStoredUserSettings = async () =>
   await new Promise<Record<string, boolean>>((resolve) =>
-    chrome.storage.sync.get([SYNC_PRIVACY_KEY, SYNC_LICENSE_KEY], resolve),
+    chrome.storage.sync.get([SYNC_PRIVACY_KEY], resolve),
   ).then((result) => ({
     privacy: result?.[SYNC_PRIVACY_KEY],
-    license: (result?.[SYNC_LICENSE_KEY] ?? '') || undefined,
   }));
 
 export const CustomStorage = {
