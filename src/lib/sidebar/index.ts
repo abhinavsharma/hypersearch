@@ -10,6 +10,7 @@ import { render } from 'react-dom';
 import { Sidebar } from 'modules/sidebar';
 import SearchEngineManager from 'lib/engines';
 import AugmentationManager from 'lib/augmentations';
+import Darkmode from 'lib/darkmode';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   extractUrlProperties,
@@ -19,6 +20,7 @@ import {
   isSafari,
   compareTabs,
   triggerSerpProcessing,
+  isDark,
 } from 'lib/helpers';
 import {
   EXTENSION_SERP_LOADED,
@@ -793,13 +795,15 @@ class SidebarLoader {
       link.setAttribute('type', 'text/css');
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', chrome.runtime.getURL('bundle.css'));
+      link.onload = () => isDark() && Darkmode.enable(doc);
       doc.head.appendChild(link);
+      doc.body.className = isDark() ? 'dark' : '';
       doc.body.id = 'insight-sidebar';
       doc.documentElement.setAttribute('style', 'overflow: hidden;');
       const div = document.createElement('div');
       const root = doc.body.appendChild(div);
       render(reactEl, root);
-      debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');
+      debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');      
     };
     // Firefox is a special case, we need to set IFrame source to make it work.
     // Here we add an empty HTML file as source, so the browser won't complain.

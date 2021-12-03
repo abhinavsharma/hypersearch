@@ -1,3 +1,11 @@
+#insight-sidebar {
+  --animation-background-color: #ccc;
+
+  &.dark {
+    --animation-background-color: #212121;
+  }
+}
+
 @keyframes shake {
   0% {
     transform: translate(1px, 1px) rotate(0deg);
@@ -16,7 +24,7 @@
   }
   15% {
     transform: translate(-1px, 4px) rotate(-1deg);
-    background: #ccc;
+    background: var(--animation-background-color);
   }
   18% {
     transform: translate(-6px, 1px) rotate(0deg);

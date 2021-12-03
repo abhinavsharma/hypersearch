@@ -21,6 +21,8 @@ import {
   SYNC_START_MESSAGE,
   SYNC_END_MESSAGE,
   USER_UPDATED_MESSAGE,
+  FETCH_REQUEST_MESSAGE,
+  IS_TOP_WINDOW_DARK_MESSAGE,
 } from 'constant';
 
 //-----------------------------------------------------------------------------------------------
@@ -81,7 +83,7 @@ import './hot';
   });
   // The content script does not support the `tabs` property yet, so we have to pass the messages through the background
   // page. By default it will forward any message as is to the client.
-  chrome.runtime.onMessage.addListener((msg, sender) => {
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     switch (msg.type) {
       case OPEN_NEW_TAB_MESSAGE:
         chrome.tabs.create({ url: msg.url });
@@ -130,6 +132,31 @@ import './hot';
           BookmarksSynchronizer.clearSchedule();
         }
         break;
+      case FETCH_REQUEST_MESSAGE:
+        (async () => {
+          let data;
+
+          try {
+            const url = msg.data.url;
+            const headers = msg.data;
+            const result = await fetch(url, { headers });
+
+            if (!headers || headers.responseType === 'text') {
+              data = await result.text();
+            } else if (headers.responseType === 'data-url') {
+              data = await result.blob();
+            }
+          } catch (e) {}
+
+          sendResponse(data);
+        })();
+
+        return true;
+
+      case IS_TOP_WINDOW_DARK_MESSAGE:
+        chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg, sendResponse)
+
+        return true;
       default:
         chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg);
         break;
