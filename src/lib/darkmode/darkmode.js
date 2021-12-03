@@ -1831,24 +1831,24 @@ module.exports = (thisDocument) => {
   async function bgFetch(request) {
     // Lumos modified
     return await new Promise((resolve) => {
-      // chrome.runtime.sendMessage({ type: MessageType.CS_FETCH, data: request }, resolve);
+      chrome?.runtime?.sendMessage({ type: MessageType.CS_FETCH, data: request }, resolve);
     });
   }
-  // chrome.runtime.onMessage.addListener(function (_a) {
-  //   var type = _a.type, data = _a.data, error = _a.error, id = _a.id;
-  //   if (type === MessageType.BG_FETCH_RESPONSE) {
-  //     var resolve = resolvers$1.get(id);
-  //     var reject = rejectors.get(id);
-  //     resolvers$1.delete(id);
-  //     rejectors.delete(id);
-  //     if (error) {
-  //       reject && reject(error);
-  //     }
-  //     else {
-  //       resolve && resolve(data);
-  //     }
-  //   }
-  // });
+  chrome?.runtime?.onMessage?.addListener(function (_a) {
+    var type = _a.type, data = _a.data, error = _a.error, id = _a.id;
+    if (type === MessageType.BG_FETCH_RESPONSE) {
+      var resolve = resolvers$1.get(id);
+      var reject = rejectors.get(id);
+      resolvers$1.delete(id);
+      rejectors.delete(id);
+      if (error) {
+        reject && reject(error);
+      }
+      else {
+        resolve && resolve(data);
+      }
+    }
+  });
 
   var AsyncQueue = (function () {
     function AsyncQueue() {
@@ -2075,7 +2075,6 @@ module.exports = (thisDocument) => {
     return null;
   }
   function getModifiedUserAgentStyle(theme, isIFrame, styleSystemControls) {
-    console.log('--> test iframe2', isIFrame)
     var lines = [];
     if (!isIFrame) {
       lines.push('html {');
@@ -3428,15 +3427,11 @@ module.exports = (thisDocument) => {
   var metaThemeColorSelector = "meta[name=\"" + metaThemeColorName + "\"]";
   var srcMetaThemeColor = null;
   var observer = null;
-  console.log('--> meta')
   function changeMetaThemeColor(meta, theme) {
-    console.log('--> meta', meta, theme)
     srcMetaThemeColor = srcMetaThemeColor || meta.content;
     try {
       var color = parse(srcMetaThemeColor);
-      console.log('--> meta color', color)
       meta.content = modifyBackgroundColor(color, theme);
-      console.log('--> meta bg', modifyBackgroundColor(color, theme))
     }
     catch (err) {
       logWarn(err);
@@ -3444,7 +3439,6 @@ module.exports = (thisDocument) => {
   }
   function changeMetaThemeColorWhenAvailable(theme) {
     var meta = thisDocument.querySelector(metaThemeColorSelector);
-    console.log('--> meta change')
     if (meta) {
       changeMetaThemeColor(meta, theme);
     }
@@ -3840,7 +3834,6 @@ module.exports = (thisDocument) => {
       }
     }
     function createSyncStyle() {
-      console.log('will create sync style')
       syncStyle = element instanceof SVGStyleElement ?
         thisDocument.createElementNS('http://www.w3.org/2000/svg', 'style') :
         thisDocument.createElement('style');
@@ -3927,8 +3920,6 @@ module.exports = (thisDocument) => {
     }
     var forceRenderStyle = false;
     function render(theme, ignoreImageAnalysis) {
-      console.log('--> test render')
-
       var rules = getRulesSync();
       if (!rules) {
         return;
@@ -3949,7 +3940,6 @@ module.exports = (thisDocument) => {
         }
       }
       function prepareOverridesSheet() {
-        console.log('--> test prepare');
         if (!syncStyle) {
           createSyncStyle();
         }
@@ -3972,7 +3962,6 @@ module.exports = (thisDocument) => {
         return syncStyle.sheet;
       }
       function buildOverrides() {
-        console.log('--> test build')
         var force = forceRenderStyle;
         forceRenderStyle = false;
         sheetModifier.modifySheet({
@@ -4746,12 +4735,8 @@ module.exports = (thisDocument) => {
     }
   }
   function createDynamicStyleOverrides() {
-    console.log('--> test dyn style')
     cancelRendering();
     var allStyles = getManageableStyles(thisDocument);
-
-    console.log('--> test all style', allStyles)
-
     var newManagers = allStyles
       .filter(function (style) { return !styleManagers.has(style); })
       .map(function (style) { return createManager(style); });
@@ -4766,7 +4751,6 @@ module.exports = (thisDocument) => {
       variablesStore.putRootVars(thisDocument.head.querySelector('.darkreader--root-vars'), filter);
     });
     variablesStore.putRootVars(thisDocument.head.querySelector('.darkreader--root-vars'), filter);
-    console.log('--> test render 1', styleManagers)
     styleManagers.forEach(function (manager) { return manager.render(filter, ignoredImageAnalysisSelectors); });
     if (loadingStyles.size === 0) {
       cleanFallbackStyle();
@@ -4816,9 +4800,7 @@ module.exports = (thisDocument) => {
       manager.render(filter, ignoredImageAnalysisSelectors);
     }
     var manager = manageStyle(element, { update: update, loadingStart: loadingStart, loadingEnd: loadingEnd });
-    console.log('--> test set manager')
     styleManagers.set(element, manager);
-    console.log('--> test set manager', styleManagers)
     return manager;
   }
   function removeManager(element) {
@@ -4837,7 +4819,6 @@ module.exports = (thisDocument) => {
     throttledRenderAllStyles.cancel();
   };
   function onDOMReady() {
-    console.log('--> test 4')
     if (loadingStyles.size === 0) {
       cleanFallbackStyle();
       return;
@@ -4848,9 +4829,7 @@ module.exports = (thisDocument) => {
   var didDocumentShowUp = !thisDocument.hidden;
   function watchForDocumentVisibility(callback) {
     var alreadyWatching = Boolean(documentVisibilityListener);
-    console.log('--> test already', alreadyWatching)
     documentVisibilityListener = function () {
-      console.log('--> test vis changed')
       if (!thisDocument.hidden) {
         stopWatchingForDocumentVisibility();
         callback();
@@ -4866,18 +4845,15 @@ module.exports = (thisDocument) => {
     documentVisibilityListener = null;
   }
   function createThemeAndWatchForUpdates() {
-    console.log('--> test 1')
     createStaticStyleOverrides();
     function runDynamicStyle() {
       createDynamicStyleOverrides();
       watchForUpdates();
     }
     if (thisDocument.hidden) {
-      console.log('--> test invisible')
       watchForDocumentVisibility(runDynamicStyle);
     }
     else {
-      console.log('--> test visible')
       runDynamicStyle();
     }
     changeMetaThemeColorWhenAvailable(filter);
@@ -4934,11 +4910,9 @@ module.exports = (thisDocument) => {
         forEach(inlineStyleElements, function (el) { return overrideInlineStyle(el, filter, ignoredInlineSelectors, ignoredImageAnalysisSelectors); });
       }
     });
-    console.log('--> test 3')
     addDOMReadyListener(onDOMReady);
   }
   function stopWatchingForUpdates() {
-    console.log('--> test stiop')
     styleManagers.forEach(function (manager) { return manager.pause(); });
     stopStylePositionWatchers();
     stopWatchingForStyleChanges();
@@ -4964,10 +4938,8 @@ module.exports = (thisDocument) => {
     return false;
   }
   function createOrUpdateDynamicTheme(filterConfig, dynamicThemeFixes, iframe) {
-    console.log('--> test iframe', iframe)
     filter = filterConfig;
     fixes = dynamicThemeFixes;
-    console.log('--> test 1')
     if (fixes) {
       ignoredImageAnalysisSelectors = Array.isArray(fixes.ignoreImageAnalysis) ? fixes.ignoreImageAnalysis : [];
       ignoredInlineSelectors = Array.isArray(fixes.ignoreInlineStyle) ? fixes.ignoreInlineStyle : [];
@@ -4991,7 +4963,6 @@ module.exports = (thisDocument) => {
         thisDocument.documentElement.appendChild(fallbackStyle);
         fallbackStyle.textContent = getModifiedFallbackStyle(filter, { strict: true });
       }
-      console.log('--> test observer')
       var headObserver_1 = new MutationObserver(function () {
         if (thisDocument.head) {
           headObserver_1.disconnect();
@@ -5091,14 +5062,11 @@ module.exports = (thisDocument) => {
             addStaticCSS('.darkreader--invert', 'Invert Style');
             addStaticCSS('.darkreader--variables', 'Variables Style');
             modifiedCSS = [];
-            console.log('--> test sync 1')
             thisDocument.querySelectorAll('.darkreader--sync').forEach(function (element) {
               forEach(element.sheet.cssRules, function (rule) {
-                console.log('--> test rule', rule)
                 rule && rule.cssText && modifiedCSS.push(rule.cssText);
               });
             });
-            console.log('--> test sync 2')
             if (!modifiedCSS.length) return [3, 2];
             formattedCSS = formatCSS(modifiedCSS.join('\n'));
             css.push('/* Modified CSS */');
@@ -5119,13 +5087,10 @@ module.exports = (thisDocument) => {
   var isDarkReaderEnabled = false;
   var forceIFrame = false;
   var isIFrame = (function () {
-    console.log('--> test is iframe')
     try {
-      console.log('--> test window.self', window.self, window.top, window.self !== window.top)
       return window.self !== window.top;
     }
     catch (err) {
-      console.warn(err);
       return true;
     }
   })();
@@ -5153,7 +5118,6 @@ module.exports = (thisDocument) => {
     fixes: null,
   };
   function handleColorScheme() {
-    console.log('--> test auto', darkScheme.matches)
     if (darkScheme.matches) {
       enable(store.themeOptions, store.fixes, forceIFrame);
     }
@@ -5166,7 +5130,6 @@ module.exports = (thisDocument) => {
     if (fixes === void 0) { fixes = null; }
     if (forceIFrame !== undefined) { forceIFrame = forceIsFrame; }
     if (themeOptions) {
-      console.log('--> test auto')
       store = { themeOptions: themeOptions, fixes: fixes };
       handleColorScheme();
       if (isMatchMediaChangeEventListenerSupported) {
@@ -5197,23 +5160,6 @@ module.exports = (thisDocument) => {
     });
   }
   var setFetchMethod = setFetchMethod$1;
-
-  window.addEventListener('message', (msg) => {
-    if (msg && msg.data && msg.data.abc) {
-      console.log('--> test this doc', thisDocument);
-
-      const meta = thisDocument.querySelector('meta[name="darkreader"]');
-
-      console.log('--> test meta', meta);
-
-      meta.parentElement.removeChild(meta);
-
-      console.log('--> test sheet', document.querySelectorAll('[rel="stylesheet"]')[0].sheet);
-
-      INSTANCE_ID = generateUID();
-      enable();
-    }
-  });
 
   return {
     auto,
