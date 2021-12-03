@@ -643,3 +643,11 @@ export const applyRequestHeaderMutations = (
     shouldRewriteUA && (requestHeader.value = CUSTOM_UA_STRING);
     return requestHeader;
   });
+
+export const isDark = () => {
+  if (window.document.location.hostname.includes('google')) {
+    return document.body.getAttribute('data-dt') === '1';
+  }
+
+  return matchMedia('(prefers-color-scheme: dark)');
+};

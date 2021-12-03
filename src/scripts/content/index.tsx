@@ -10,13 +10,33 @@ import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   debug,
   extractPublication,
+  isDark,
   replaceLocation,
   runFunctionWhenDocumentReady,
 } from 'lib/helpers';
-import { URL_UPDATED_MESSAGE } from 'constant';
+import { IS_TOP_WINDOW_DARK_MESSAGE, URL_UPDATED_MESSAGE } from 'constant';
+import darkmode from 'lib/darkmode';
+
+const enableDarkMode = () => {
+  return new Promise(() => {
+    chrome.runtime.sendMessage({ type: IS_TOP_WINDOW_DARK_MESSAGE }, (isDark) => {
+      console.log('top is dark', isDark)
+      isDark && darkmode.enable(document);
+    });
+  });
+};
 
 (async (window: Window, document: Document, location: Location) => {
-  if (window.location.href !== window.top.location.href) {
+  let isTop = false;
+
+  try {
+    isTop = window.location.href === window.top?.location.href;
+  } catch {}
+
+  console.log('--> loaded', isTop)
+  if (!isTop) {
+    console.log('--> check top is dark')
+    enableDarkMode();
     const LOAD_ASYNC_SCRIPTS_TO_SIDEBAR_ONLY = async () => {
       await import('./frame');
       await import('./reorder');
@@ -26,7 +46,7 @@ import { URL_UPDATED_MESSAGE } from 'constant';
     runFunctionWhenDocumentReady(document, LOAD_ASYNC_SCRIPTS_TO_SIDEBAR_ONLY);
   }
 
-  if (window.location.href === window.top.location.href) {
+  if (isTop) {
     const LOCAL_URL = replaceLocation(location) ?? new URL(location.href);
 
     debug(
@@ -40,7 +60,7 @@ import { URL_UPDATED_MESSAGE } from 'constant';
     const SidebarLoader = (await import('lib/sidebar')).default;
     window.location.href.includes('http') && SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
 
-    if (window.top.location.href.includes('extension://')) {
+    if (window.top?.location.href.includes('extension://')) {
       const IntroductionPage = (await import('modules/onboarding')).IntroductionPage;
       const root = document.getElementById('root');
       render(<IntroductionPage />, root);
@@ -59,11 +79,23 @@ import { URL_UPDATED_MESSAGE } from 'constant';
     document.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('keyup', handleKeyUp, true);
 
-    chrome.runtime.onMessage.addListener(async (msg) => {
+    chrome.runtime.onMessage.addListener(async (msg, _, sendResponse) => {
       switch (msg.type) {
         case URL_UPDATED_MESSAGE:
           window.location.href.includes('http') &&
             (await SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL));
+          break;
+        case IS_TOP_WINDOW_DARK_MESSAGE:
+          try {
+            if (window.location.href === window.top?.location.href) {
+              sendResponse(isDark());
+            } else {
+              sendResponse(false);
+            }
+          } catch {
+            sendResponse(false);
+          }
+
           break;
       }
     });

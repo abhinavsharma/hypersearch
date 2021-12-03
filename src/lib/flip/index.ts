@@ -1,4 +1,5 @@
 import { SIDEBAR_TAB_FAKE_URL, SIDEBAR_Z_INDEX } from 'constant';
+import { isDark } from 'lib/helpers';
 import variables from 'styles/variables.scss';
 
 let animationTimeout: any = -1;
@@ -35,7 +36,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
       'style',
       `
         z-index: ${SIDEBAR_Z_INDEX + 3};
-        background: #F9F9F9;
+        background: ${isDark() ? '#1b1e1f' : '#F9F9F9'};
         position: absolute;
         top: 0;
         bottom: 0;
@@ -47,7 +48,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
     );
 
     if (force === 'hide') {
-      sidebarOverlay.style.left = '1px';
+      sidebarOverlay.style.left = '0px';
     }
   }
 
