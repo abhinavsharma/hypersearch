@@ -63,7 +63,7 @@ declare type SearchIntentResults = {
 declare type EncodedSuggestion = {
   id: string;
   name: string;
-  platformSpecific: string;
+  platform_specific: string;
   keySubstring: string;
   base64: string;
   augmentation: Augmentation,

@@ -994,7 +994,9 @@ class SidebarLoader {
 
     let response: EncodedSuggestion[] = (await getSuggestions()) ?? [];
 
-    response = response.map((r) => {
+    response = response
+      .filter((r) => !r.platform_specific || r.platform_specific === 'desktop')
+      .map((r) => {
       let encoded = r;
 
       try {
