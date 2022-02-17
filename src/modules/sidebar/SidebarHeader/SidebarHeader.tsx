@@ -9,12 +9,12 @@ import { flipSidebar } from 'lib/flip';
 import { expandSidebar } from 'lib/expand';
 import {
   AIRTABLE_IMPROVE_SEARCH_LINK,
-  APP_NAME_LONG,
   FULLSCREEN_KEY,
   MESSAGE,
   PAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SHRINK_KEY,
+  APP_NAME,
 } from 'constant';
 import 'antd/lib/typography/style/index.css';
 import 'antd/lib/button/style/index.css';
@@ -71,7 +71,7 @@ export const SidebarHeader: SidebarHeader = () => {
     <div id="sidebar-header">
       <div className="app-name-and-feedback">
         <Title className="app-name" level={5}>
-          {APP_NAME_LONG}
+          {APP_NAME}
         </Title>
         <div>
           <a

@@ -4,8 +4,7 @@
  * @license (C) Insight
  */
 
-export const APP_NAME = 'Insight';
-export const APP_NAME_LONG = 'Insight Lenses';
+export const APP_NAME = 'Hypersearch';
 
 //-----------------------------------------------------------------------------------------------
 // ! Engine
