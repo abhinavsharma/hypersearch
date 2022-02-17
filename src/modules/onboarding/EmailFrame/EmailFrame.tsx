@@ -59,7 +59,6 @@ export const EmailFrame = () => {
   };
 
   const handleFreeTier = async () => {
-    await UserManager.logout();
     handleNext();
   };
 

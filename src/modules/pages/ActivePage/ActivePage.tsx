@@ -214,11 +214,11 @@ export const ActivePage: ActivePage = () => {
           {HEADER_LEFT_BUTTON_TEXT}
         </Button>
         <span className="page-title">{HEADER_TITLE}</span>
-        <Button type="text" className="right-button" onClick={handleOpenSettings}>
+        { false && <Button type="text" className="right-button" onClick={handleOpenSettings}>
           <Suspense fallback={null}>
             <Settings stroke={SETTINGS_ICON_COLOR} size={20} />
           </Suspense>
-        </Button>
+        </Button> }
       </header>
       <div className="sidebar-page-wrapper">
         {!SidebarLoader.isSerp && (

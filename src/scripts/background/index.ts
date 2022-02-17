@@ -6,7 +6,6 @@
 
 import axios from 'axios';
 import SearchEngineManager from 'lib/engines';
-import BookmarksSynchronizer from 'lib/bookmarks';
 import { debug } from 'lib/helpers';
 import {
   FRESHPAINT_API_ENDPOINT,
@@ -18,9 +17,6 @@ import {
   SEND_FRAME_INFO_MESSAGE,
   SEND_LOG_MESSAGE,
   URL_UPDATED_MESSAGE,
-  SYNC_START_MESSAGE,
-  SYNC_END_MESSAGE,
-  USER_UPDATED_MESSAGE,
   FETCH_REQUEST_MESSAGE,
   IS_TOP_WINDOW_DARK_MESSAGE,
 } from 'constant';
@@ -115,21 +111,6 @@ import './hot';
           });
         } catch (e) {
           debug('handleLogSend - error\n---\n\tError', e, '\n---');
-        }
-        break;
-      case SYNC_START_MESSAGE:
-        BookmarksSynchronizer.sync(msg.token, msg.userInitiated).then(() => {
-          chrome.tabs.sendMessage(sender.tab?.id ?? -1, {
-            type: SYNC_END_MESSAGE,
-          });
-        });
-
-        break;
-      case USER_UPDATED_MESSAGE:
-        if (msg.authenticated) {
-          BookmarksSynchronizer.scheduleSync();
-        } else {
-          BookmarksSynchronizer.clearSchedule();
         }
         break;
       case FETCH_REQUEST_MESSAGE:
