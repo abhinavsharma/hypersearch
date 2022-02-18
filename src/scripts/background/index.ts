@@ -88,6 +88,9 @@ import './hot';
         chrome.tabs.create({ url: chrome.runtime.getURL('introduction.html') });
         break;
       case SEND_LOG_MESSAGE:
+        // Disabling logs
+        if (true) { return; }
+
         debug('handleLogSend - call');
         try {
           const data: FreshpaintTrackEvent = {

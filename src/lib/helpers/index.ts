@@ -4,10 +4,8 @@ import {
   SIDEBAR_TAB_FAKE_URL,
   PROCESS_SERP_OVERLAY_MESSAGE,
   DOMAINS_TO_RELEVANT_SLICE,
-  LUMOS_API_URL,
   CONDITION_KEY,
   AUGMENTATION_ID,
-  LUMOS_APP_BASE_URL,
   SYNC_PRIVACY_KEY,
   SPECIAL_URL_JUNK_STRING,
   CUSTOM_UA_STRING,
@@ -369,60 +367,6 @@ export const validateEmail = (email: string) => {
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
-};
-
-// TODO #1: extract to API manager class
-
-/**
- * Changes existing production URL to development URL (localhost) in a HTTP response
- *
- * @param json The HTTP response body
- * @returns
- */
-const swapUrlsForDebuggingInJsonResponse = <T>(json: T): T => {
-  try {
-    return IN_DEBUG_MODE
-      ? JSON.parse(
-          JSON.stringify(json).replace(LUMOS_APP_BASE_URL['PROD'], LUMOS_APP_BASE_URL['DEV']),
-        )
-      : json;
-  } catch (err) {
-    debug('swapUrlsForDebuggingInJsonResponse - error', err);
-    return Object.create(null);
-  }
-};
-
-/**
- * Send a GET request to a specified API endpoint with the given parameters.
- *
- * @param api - The API endpoint (eg: `subtabs`)
- * @param params - Specified query parameters
- * @returns `HTTP-200` - Successful HTTP request. Note, that even if the request
- *  was successful, the function does not guarantee the expected response.
- * @returns `HTTP-500` - Failed HTTP request, throws an exception
- */
-export const getAPI = async <T>(
-  api: string,
-  params: Record<string, any> = Object.create(null),
-): Promise<T | null> => {
-  try {
-    const url: URL = new URL(LUMOS_API_URL + api);
-    Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
-    const raw = await fetch(url.href, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      redirect: 'follow',
-    });
-    const data = await raw.json();
-    return data ? swapUrlsForDebuggingInJsonResponse<T>(data) : Object.create(null);
-  } catch (err) {
-    debug('getAPI error', err);
-    return null;
-  }
 };
 
 // TODO #1 END

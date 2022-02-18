@@ -1061,7 +1061,7 @@ class SidebarLoader {
       '\n---',
     );
 
-    if (!IN_DEBUG_MODE) {
+    if (false && !IN_DEBUG_MODE) {
       chrome.runtime.sendMessage({
         event,
         properties,
