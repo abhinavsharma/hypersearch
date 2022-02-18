@@ -11,9 +11,7 @@ import {
   WelcomeFrame,
   PrivacyFrame,
   QueriesFrame,
-  EmailFrame,
 } from 'modules/onboarding';
-import { useFeature } from 'lib/features';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'constant';
 import 'antd/lib/steps/style/index.css';
 import './IntroductionPage.scss';
@@ -25,7 +23,6 @@ const { Step } = Steps;
 //-----------------------------------------------------------------------------------------------
 const TAB_TITLE = `Welcome to ${APP_NAME}`;
 const WELCOME_SECTION_TITLE = 'Welcome';
-const EMAIL_SECTION_TITLE = 'Email';
 const PRIVACY_SECTION_TITLE = 'Privacy';
 const FINISHED_SECTION_TITLE = 'Done';
 
@@ -54,8 +51,6 @@ export const IntroductionPage: IntroductionPage = () => {
   CONTEXT_VALUE.finished = finished;
   CONTEXT_VALUE.setFinished = setFinished;
 
-  const [loginFeature] = useFeature('desktop_login');
-
   const STEPS = [
     {
       title: WELCOME_SECTION_TITLE,
@@ -64,24 +59,16 @@ export const IntroductionPage: IntroductionPage = () => {
     },
     {
       title: PRIVACY_SECTION_TITLE,
-      component: <PrivacyFrame key={2} />,
+      component: <PrivacyFrame key={1} />,
       disabled: undefined,
     },
     {
       title: FINISHED_SECTION_TITLE,
-      component: <QueriesFrame key={3} />,
+      component: <QueriesFrame key={2} />,
       disabled: currentStep !== 2 && !finished,
     },
   ];
-
-  if (loginFeature) {
-    STEPS.splice(1, 0, {
-      title: EMAIL_SECTION_TITLE,
-      component: <EmailFrame key={1} />,
-      disabled: undefined,
-    });
-  }
-
+console.log(currentStep)
   //-----------------------------------------------------------------------------------------------
   // ! Handlers
   //-----------------------------------------------------------------------------------------------
@@ -91,7 +78,7 @@ export const IntroductionPage: IntroductionPage = () => {
     ).then((result) => !!result?.[SYNC_FINISHED_KEY]);
     setFinished(stored);
     if (stored) {
-      setCurrentStep(3);
+      setCurrentStep(2);
     }
   }, []);
 

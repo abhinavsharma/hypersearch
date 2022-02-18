@@ -1,4 +1,3 @@
-export * from './EmailFrame/EmailFrame';
 export * from './IntroductionPage/IntroductionPage';
 export * from './PrivacyFrame/PrivacyFrame';
 export * from './QueriesFrame/QueriesFrame';
