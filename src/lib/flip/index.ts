@@ -98,7 +98,7 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
         'style',
         `
         position: fixed;
-        min-height: ${tabsLength === 0 ? (!loader.showPublicationRating ? '0' : '100px') : '100px'};
+        min-height: ${tabsLength === 0 ? (!loader.showPublicationRating ? '0' : '120px') : '120px'};
         height: ${
           loader.showPublicationRating ? '150' : showButton.getAttribute('data-height') ?? '0'
         }px;

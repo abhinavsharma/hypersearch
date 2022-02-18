@@ -113,27 +113,37 @@ import './hot';
           debug('handleLogSend - error\n---\n\tError', e, '\n---');
         }
         break;
-      case FETCH_REQUEST_MESSAGE:
-        (async () => {
-          let data;
-
-          try {
-            const url = msg.data.url;
-            const headers = msg.data;
-            const result = await fetch(url, { headers });
-
-            if (!headers || headers.responseType === 'text') {
-              data = await result.text();
-            } else if (headers.responseType === 'data-url') {
-              data = await result.blob();
-            }
-          } catch (e) {}
-
-          sendResponse(data);
-        })();
-
-        return true;
-
+        case FETCH_REQUEST_MESSAGE:
+          (async () => {
+            let data;
+  
+            try {
+              const url = msg.data.url;
+              const headers = msg.data;
+              const result = await fetch(url, { headers });
+  
+              if (!headers || headers.responseType === 'text') {
+                data = await result.text();
+              } else if (headers.responseType === 'data-url') {
+                const blob = await result.blob();
+                data = await new Promise((resolve) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve(reader.result);
+                  reader.readAsDataURL(blob);
+                });
+  
+                if (typeof data === 'string' && data.includes('svg+xml')) {
+                  try {
+                    data = decodeURIComponent(data)
+                  } catch {}
+                }
+              }
+            } catch (e) {}
+  
+            sendResponse(data);
+          })();
+  
+          return true;
       case IS_TOP_WINDOW_DARK_MESSAGE:
         chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg, sendResponse)
 

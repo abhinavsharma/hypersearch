@@ -4559,7 +4559,7 @@ module.exports = (thisDocument) => {
     }
     function proxyDocumentStyleSheets() {
       var docSheets = documentStyleSheetsDescriptor.get.call(this);
-      var filtered = __spreadArray([], __read(docSheets), false).filter(function (styleSheet) {
+      var filtered = [ ...docSheets ].filter(function (styleSheet) {
         return !styleSheet.ownerNode.classList.contains('darkreader');
       });
       return Object.setPrototypeOf(filtered, StyleSheetList.prototype);
@@ -4569,7 +4569,7 @@ module.exports = (thisDocument) => {
       var getCurrentElementValue = function () {
         var elements = getElementsByTagNameDescriptor.value.call(_this, tagName);
         if (tagName === 'style') {
-          elements = Object.setPrototypeOf(__spreadArray([], __read(elements), false).filter(function (element) {
+          elements = Object.setPrototypeOf([ ...elements ].filter(function (element) {
             return !element.classList.contains('darkreader');
           }), NodeList.prototype);
         }

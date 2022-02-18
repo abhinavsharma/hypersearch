@@ -8,6 +8,7 @@ declare type Augmentation = {
   id: string;
   name: string;
   description: string;
+  icon?: AugmentationIcon;
   conditions: Condition;
   actions: Action;
   installed?: boolean;
@@ -67,6 +68,19 @@ declare type ActionKey = TActionKey[keyof TActionKey];
 declare type ActionLabel = TActionLabel[keyof TActionLabel];
 declare type ActionType = TActionType[keyof TActionType];
 declare type ActionValue = Array<string | Record<string, any>>;
+
+//-----------------------------------------------------------------------------------------------
+// ! Icon
+//-----------------------------------------------------------------------------------------------
+
+declare type FontTypes = 'font-awesome';
+
+declare type AugmentationIcon = {
+  name: string;
+  unicode?: string;
+  style?: string;
+  font: FontTypes;
+}
 
 //-----------------------------------------------------------------------------------------------
 // ! Condition

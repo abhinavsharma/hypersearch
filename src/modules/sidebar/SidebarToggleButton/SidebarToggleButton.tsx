@@ -24,6 +24,7 @@ import 'antd/lib/tooltip/style/index.css';
 import 'antd/lib/list/style/index.css';
 import './SidebarToggleButton.scss';
 import { usePublicationInfo } from 'lib/publication';
+import { handleIcon } from 'lib/icon';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -85,15 +86,24 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
-  const ListItem = (item: SidebarTab) => (
-    <List.Item>
-      <List.Item.Meta
-        title={
-          item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.augmentation.name)
-        }
-      />
-    </List.Item>
-  );
+  const ListItem = (item: SidebarTab) => {
+    const icon = item.augmentation.icon ? handleIcon(item.augmentation.icon) : null;
+    const title = (
+      <span>
+        { icon }{ `${ icon ? ' ' : '' }${(item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.augmentation.name)).trim()}` }
+      </span>
+    )
+
+    return (
+      <List.Item>
+        <List.Item.Meta
+          title={
+            title
+          }
+        />
+      </List.Item>
+    )
+  };
 
   return (
     <>

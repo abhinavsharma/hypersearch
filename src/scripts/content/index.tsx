@@ -20,7 +20,6 @@ import darkmode from 'lib/darkmode';
 const enableDarkMode = () => {
   return new Promise(() => {
     chrome.runtime.sendMessage({ type: IS_TOP_WINDOW_DARK_MESSAGE }, (isDark) => {
-      console.log('top is dark', isDark)
       isDark && darkmode.enable(document);
     });
   });
@@ -33,9 +32,7 @@ const enableDarkMode = () => {
     isTop = window.location.href === window.top?.location.href;
   } catch {}
 
-  console.log('--> loaded', isTop)
   if (!isTop) {
-    console.log('--> check top is dark')
     enableDarkMode();
     const LOAD_ASYNC_SCRIPTS_TO_SIDEBAR_ONLY = async () => {
       await import('./frame');
