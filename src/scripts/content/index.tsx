@@ -14,7 +14,7 @@ import {
   replaceLocation,
   runFunctionWhenDocumentReady,
 } from 'lib/helpers';
-import { IS_TOP_WINDOW_DARK_MESSAGE, URL_UPDATED_MESSAGE } from 'constant';
+import { IS_TOP_WINDOW_DARK_MESSAGE, MESSAGE, PAGE, URL_UPDATED_MESSAGE } from 'constant';
 import darkmode from 'lib/darkmode';
 
 const enableDarkMode = () => {
@@ -75,6 +75,16 @@ const enableDarkMode = () => {
     const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
     document.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('keyup', handleKeyUp, true);
+
+    window.addEventListener('message', ({ data }) => {
+      if (data.name === MESSAGE.ADD_EXTERNAL_AUGMENTATION) {
+        chrome.runtime.sendMessage({
+          type: MESSAGE.OPEN_PAGE,
+          page: PAGE.BUILDER,
+          augmentation: data.result,
+        });
+      }
+    });
 
     chrome.runtime.onMessage.addListener(async (msg, _, sendResponse) => {
       switch (msg.type) {
