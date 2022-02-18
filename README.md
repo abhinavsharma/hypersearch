@@ -51,10 +51,6 @@ Introduction flow with license registration and privacy settings
 
 Main UI module injected to the browser tabs in an `iframe`
 
-### Authentication
-
-AWS Cognito based custom authentication (passwordless + email verification code)
-
 ### Engines
 
 Search Results Page (SERP) mutations (extract results URLs, reordering, gutter units and overlays)
