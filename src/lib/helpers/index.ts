@@ -410,6 +410,17 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     bConditions.indexOf(CONDITION_KEY.ANY_SEARCH_ENGINE) > -1 ||
     bConditions.indexOf(CONDITION_KEY.ANY_URL) > -1;
 
+  // Special case
+  if (a.augmentation.id === AUGMENTATION_ID.SITES_DOUBLE_CHECK) {
+    if (b.augmentation.pinned) { return 1; }
+    return -1;
+  }
+
+  if (b.augmentation.id === AUGMENTATION_ID.SITES_DOUBLE_CHECK) {
+    if (a.augmentation.pinned) { return -1; }
+    return 1;
+  }
+
   // Trivial cases that can be handled by checking tab types:
   // Pinned > Installed > Suggested > Any URL
   if (a.augmentation?.pinned && !b.augmentation?.pinned) return -1;

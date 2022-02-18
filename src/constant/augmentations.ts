@@ -4,7 +4,7 @@
  * @license (C) Insight
  */
 
-import { INSTALLED_PREFIX } from '.';
+import { CSE_PREFIX, INSTALLED_PREFIX } from '.';
 
 export const AUGMENTATION_TITLE = {
   NEW: '🎉 My Lens',
@@ -28,6 +28,7 @@ export const AUGMENTATION_VALUE = {
 };
 
 export const AUGMENTATION_ID = {
+  SITES_DOUBLE_CHECK: `${CSE_PREFIX}-sitestodoublecheck`,
   TOURLENS: `${INSTALLED_PREFIX}-tourlens`,
   TRUSTLIST: `${INSTALLED_PREFIX}-my-trust-list`,
   BLOCKLIST: `${INSTALLED_PREFIX}-my-block-list`,
