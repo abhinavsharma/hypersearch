@@ -8,7 +8,6 @@ import { v4 as uuid } from 'uuid';
 import { debug } from 'lib/helpers';
 import {
   SYNC_DISTINCT_KEY,
-  SYNC_EMAIL_KEY,
   SYNC_PRIVACY_KEY,
   SYNC_USER_TAGS,
   SYNC_LAST_USED_TAGS,
@@ -16,7 +15,6 @@ import {
 
 class User {
   private _id: string | undefined = undefined;
-  private _email: string | undefined = undefined;
   private _privacy: boolean | undefined = undefined;
   private _tags: string[] = Array(0);
   private _lastUsedTags: string[] = Array(0);
@@ -38,18 +36,10 @@ class User {
   public get user() {
     return {
       id: this._id,
-      email: this._email,
       privacy: this._privacy,
       tags: this._tags,
       lastUsedTags: this._lastUsedTags,
     };
-  }
-
-  public async setUserEmail(email: string) {
-    this._email = email;
-    await new Promise((resolve) =>
-      chrome.storage.sync.set({ [SYNC_EMAIL_KEY]: email }, () => resolve(true)),
-    );
   }
 
   public async addUserTag(tag: string) {
@@ -90,11 +80,6 @@ class User {
       chrome.storage.sync.get(SYNC_DISTINCT_KEY, resolve),
     );
     this._id = storedUserId?.[SYNC_DISTINCT_KEY] ?? '';
-
-    const storedEmail = await new Promise<Record<string, string> | undefined>((resolve) =>
-      chrome.storage.sync.get(SYNC_EMAIL_KEY, resolve),
-    );
-    this._email = storedEmail?.[SYNC_EMAIL_KEY] ?? '';
 
     const storedUserPrivacy = await new Promise<Record<string, any> | undefined>((resolve) =>
       chrome.storage.sync.get(SYNC_PRIVACY_KEY, resolve),

@@ -67,7 +67,8 @@ import {
   //-----------------------------------------------------------------------------------------------
   chrome.webRequest.onBeforeSendHeaders.addListener(
     ({ requestHeaders = [], url, frameId }) => {
-      if (url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1) {
+      if (url.search(/https:\/\/extensions\.insightbrowser\.com\/extend\/[\w]*/gi) > -1 ||
+          url.search(/https:\/\/extensions\.hyperweb\.app\/extend\/[\w]*/gi) > -1) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           if (chrome.runtime.lastError?.message) {
             debug('Chrome Last Error', chrome.runtime.lastError?.message);

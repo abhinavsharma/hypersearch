@@ -26,8 +26,7 @@ const HEADER_LEFT_BUTTON_TEXT = 'Close';
 //-----------------------------------------------------------------------------------------------
 // ! Component
 //-----------------------------------------------------------------------------------------------
-export const SettingsPage: SettingsPage = ({ email }) => {
-  const [storedEmail, setStoredEmail] = useState<string>(UserManager.user.email ?? '');
+export const SettingsPage: SettingsPage = () => {
   const [useServerSuggestions, setUseServerSuggestions] = useState<boolean | undefined>(false);
 
   //-----------------------------------------------------------------------------------------------
@@ -57,18 +56,8 @@ export const SettingsPage: SettingsPage = ({ email }) => {
     getPrivacy();
   }, [getPrivacy]);
 
-  useEffect(() => {
-    setStoredEmail(UserManager.user.email ?? '');
-    // Singleton instance not reinitialized on rerender.
-    // ! Be careful when updating the dependency list!
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [UserManager.user.email]);
-
   const context = {
-    email,
-    storedEmail,
     useServerSuggestions,
-    setStoredEmail,
     handlePrivacyChange,
   };
 
