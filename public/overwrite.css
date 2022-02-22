@@ -36,6 +36,16 @@ body {
   background: linear-gradient(hsla(0, 0%, 100%, 0.9) 0%, #fff);
 }
 
+.insight-blocked {
+  position: relative !important;
+  max-height: 125px !important;
+  overflow: hidden !important;
+}
+
+.insight-blocked-ad-overlay.insight-dark {
+  background: linear-gradient(hsla(0, 0%, 10%, 0.95) 0%, #111);
+}
+
 .insight-blocked-ad-text-wrapper {
   position: absolute;
   left: 20px;
@@ -43,6 +53,10 @@ body {
   font-weight: bold;
   font-size: 24px;
   color: #444;
+}
+
+.insight-dark .insight-blocked-ad-text-wrapper {
+  color: #DDD;
 }
 
 .insight-blocked-ad-inner-text {
@@ -61,10 +75,18 @@ body {
   background: linear-gradient(rgb(255 255 255 / 95%) 0%, rgb(255 255 255));
 }
 
+.insight-hidden-domain-overlay.insight-dark {
+  background: linear-gradient(hsla(0, 0%, 10%, 0.95) 0%, #222);
+}
+
 .insight-hidden-domain-text-wrapper {
   bottom: 50%;
   font-size: 14px;
   color: #777;
+}
+
+.insight-dark .insight-hidden-domain-text-wrapper {
+  color: #DDD;
 }
 
 .insight-hidden-domain-inner-text {

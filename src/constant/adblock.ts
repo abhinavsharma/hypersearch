@@ -14,6 +14,7 @@ export const BLOCKED_ADS = [
     site: 'duckduckgo.com',
     adText: 'Ad',
     adElementSelector: '#ads',
+    delay: 1000,
   },
   {
     site: 'bing.com',

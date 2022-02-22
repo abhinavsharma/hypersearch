@@ -52,6 +52,7 @@ export const processSerpResults: ProcessSerpResults = (
   augmentations,
   createdUrls = [],
   processAsOpenPage?: boolean,
+  processAsAdBlock?: boolean,
 ) => {
   for (const node of results) {
     if (!(node instanceof HTMLElement)) continue;
@@ -61,6 +62,11 @@ export const processSerpResults: ProcessSerpResults = (
     if (containerSelector) {
       serpResult = node.closest(containerSelector) as HTMLElement;
       if (!(serpResult instanceof HTMLElement)) continue;
+    }
+
+    if (processAsAdBlock) {
+      createResultOverlay(serpResult, [], details);
+      return;
     }
 
     const resultLink = node.hasAttribute('href')

@@ -4,7 +4,8 @@
  * @license (C) Insight
  */
 
-import { INSIGHT_HIDDEN_RESULT_SELECTOR, SIDEBAR_Z_INDEX } from 'constant';
+import { INSIGHT_BLOCKED, INSIGHT_HIDDEN_RESULT_SELECTOR, SIDEBAR_Z_INDEX } from 'constant';
+import { isDark } from 'lib/helpers';
 
 /**
  * Create Result Overlay
@@ -25,6 +26,7 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
   }
 
   result.setAttribute(INSIGHT_HIDDEN_RESULT_SELECTOR, 'true');
+  result.classList.add(INSIGHT_BLOCKED);
 
   if (
     !result.querySelectorAll('.insight-hidden').length &&
@@ -33,6 +35,10 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
     const overlay = document.createElement('div');
     overlay.classList.add(`insight-${details.selectorString}-overlay`);
     overlay.classList.add('insight-hidden');
+
+    if (isDark()) {
+      overlay.classList.add('insight-dark');
+    }
 
     // Z-Index must be one level below of other gutter units to properly show them
     overlay.setAttribute('style', `z-index: ${SIDEBAR_Z_INDEX - 3};`);
@@ -59,12 +65,9 @@ export const createResultOverlay: CreateResultOverlay = (result, blockers, detai
           root.parentNode.removeChild(root);
         }
         result.setAttribute(`${INSIGHT_HIDDEN_RESULT_SELECTOR}-protected`, 'true');
+        result.classList.remove(INSIGHT_BLOCKED);
       }
     });
-
-    result.style.position = 'relative';
-    result.style.maxHeight = '125px';
-    result.style.overflow = 'hidden';
 
     if (blockers?.length) {
       result.style.marginLeft = '-100px';

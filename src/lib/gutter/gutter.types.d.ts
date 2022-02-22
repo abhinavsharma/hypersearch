@@ -5,4 +5,5 @@ declare type ProcessSerpResults = (
   augmentations: Record<'block' | 'search' | 'feature', Record<string, Augmentation[]>> | null,
   createdUrls?: string[],
   processAsOpenPage?: boolean,
+  processAsAdBlock?: boolean,
 ) => void;

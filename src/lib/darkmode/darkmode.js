@@ -2221,7 +2221,6 @@
         if (theme.selectionColor) {
             lines.push(getModifiedSelectionStyle(theme));
         }
-        console.log(lines.join('\n'))
         return lines.join('\n');
     }
     function getSelectionColor(theme) {
