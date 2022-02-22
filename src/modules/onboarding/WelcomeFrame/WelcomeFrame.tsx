@@ -10,8 +10,7 @@ import 'antd/lib/button/style/index.css';
 import './WelcomeFrame.scss';
 
 const TAB_TITLE = `Welcome to ${APP_NAME}`;
-const PAGE_MAIN_HEADER = 'Ready to supercharge search?';
-const NEXT_BUTTON_TEXT = 'Yes';
+const NEXT_BUTTON_TEXT = 'Next';
 const TYPIST_TEXT = 'Hello';
 // ! See: https://www.npmjs.com/package/react-typist#typist-props
 const TYPIST_CONFIG = {
@@ -39,7 +38,7 @@ export const WelcomeFrame = () => {
           </Typist>
         </Title>
         <div id="fade-section" className={titleLoaded ? 'fade-section-visible' : ''}>
-          <Title level={2}>{PAGE_MAIN_HEADER}</Title>
+          <Title level={2}>{TAB_TITLE}</Title>
           <Button
             type="ghost"
             shape="round"
