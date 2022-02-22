@@ -64,7 +64,7 @@ export const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
     </p>
 
     <ul>
-      <li>The number of times lenses were used so we can track license key usage.</li>
+      <li>The number of times filters were used so we can track license key usage.</li>
       <li>
         We <b>do not send URLs visited to our servers</b>. There&apos;s no way we can know what
         pages were visited.
@@ -72,7 +72,7 @@ export const UNCHECKED_PRIVACY_EXPLAINER_CONTENT = (
     </ul>
 
     <p>
-      <b>What are the drawbacks?</b> With this mode we can only suggest simpler lenses that
+      <b>What are the drawbacks?</b> With this mode we can only suggest simpler filters that
       don&apos;t use data-intensive algorithms.
     </p>
   </>

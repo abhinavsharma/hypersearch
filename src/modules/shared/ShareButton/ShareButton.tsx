@@ -45,7 +45,7 @@ const CLICK_TO_COPY_TEXT = 'Click to Copy';
 const COPIED_TEXT = 'Copied';
 const SUBMIT_TO_BAZAAR_BUTTON_TEXT = 'Submit to Bazaar';
 const BROWSE_BAZAAR_BUTTON_TEXT = 'Browse Bazaar';
-const SHARE_AUGMENTATION_BUTTON_TITLE = 'Share Lens';
+const SHARE_AUGMENTATION_BUTTON_TITLE = 'Share Filter';
 const POPOVER_TITLE = 'Share <placeholder>';
 const POPOVER_CLOSE_BUTTON_TEXT = 'Close';
 

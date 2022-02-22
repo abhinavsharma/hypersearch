@@ -25,17 +25,17 @@ const ZoomInOutlined = React.lazy(
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
-const HEADER_TITLE = 'Lenses';
+const HEADER_TITLE = 'Filters';
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
-const INSTALLED_SECTION_TITLE = 'Your Local Lenses for This Page';
-const PINNED_SECTION_TITLE = 'Currently Pinned Lenses';
+const INSTALLED_SECTION_TITLE = 'Your Local Filters for This Page';
+const PINNED_SECTION_TITLE = 'Currently Pinned Filters';
 const SUGGESTED_SECTION_TITLE = 'Suggested for This Page';
-const SUGGESTED_SECTION_SUBTITLE = `Lenses suggested by ${APP_NAME} for this page.`;
+const SUGGESTED_SECTION_SUBTITLE = `Filters suggested by ${APP_NAME} for this page.`;
 const HIDDEN_SECTION_TITLE = ' Hidden';
-const HIDDEN_SECTION_SUBTITLE = 'Lenses you have hidden.';
-const UNMATCHED_SECTION_TITLE = 'Unmatched Lenses';
-const UNMATCHED_SECTION_SUBTITLE = 'Lenses not matching this page.';
-const CREATE_LENS_BUTTON_TEXT = 'Create New Lens';
+const HIDDEN_SECTION_SUBTITLE = 'Filters you have hidden.';
+const UNMATCHED_SECTION_TITLE = 'Unmatched Filters';
+const UNMATCHED_SECTION_SUBTITLE = 'Filters not matching this page.';
+const CREATE_LENS_BUTTON_TEXT = 'Create New Filter';
 const SETTINGS_ICON_COLOR = '#999999';
 
 //-----------------------------------------------------------------------------------------------

@@ -22,12 +22,12 @@ import './ActionBar.scss';
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
-const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit local lens';
-const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork: Duplicate lens and edit locally';
-const PIN_AUGMENTATION_BUTTON_TEXT = 'Temporarily pin this lens';
-const UNPIN_AUGMENTATION_BUTTON_TEXT = 'Unpin this lens';
-const DISABLE_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Disable local lens';
-const DISABLE_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Hide lens';
+const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit local filter';
+const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork: Duplicate filter and edit locally';
+const PIN_AUGMENTATION_BUTTON_TEXT = 'Temporarily pin this filter';
+const UNPIN_AUGMENTATION_BUTTON_TEXT = 'Unpin this filter';
+const DISABLE_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Disable local filter';
+const DISABLE_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Hide filter';
 const ICON_SELECTED_COLOR = 'rgb(23, 191, 99)';
 const ICON_UNSELECTED_COLOR = '#999';
 

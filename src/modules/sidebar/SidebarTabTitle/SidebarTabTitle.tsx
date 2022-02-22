@@ -19,8 +19,8 @@ import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabTitle.scss';
 
 /** MAGICS **/
-const SUGGESTED_TOOLTIP_TEXT = `Lens suggested by ${APP_NAME}`;
-const INSTALLED_TOOLTIP_TEXT = 'Local Lens';
+const SUGGESTED_TOOLTIP_TEXT = `Filters suggested by ${APP_NAME}`;
+const INSTALLED_TOOLTIP_TEXT = 'Local Filters';
 
 export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setActiveKey }) => {
   const handleHoverOpenLog = useDebouncedFn(

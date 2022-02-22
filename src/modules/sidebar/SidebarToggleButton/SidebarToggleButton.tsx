@@ -29,7 +29,7 @@ import { handleIcon } from 'lib/icon';
 //-----------------------------------------------------------------------------------------------
 // ! Magics
 //-----------------------------------------------------------------------------------------------
-const TOOLTIP_TEXT = `Preview lenses ("${EXPAND_KEY.KEY}" key)`;
+const TOOLTIP_TEXT = `Preview Filters ("${EXPAND_KEY.KEY}" key)`;
 const MORE_TABS_TEXT = '<placeholder> more';
 const LIST_STYLE = { paddingRight: 5 };
 const MAX_TAB_LENGTH = 3;

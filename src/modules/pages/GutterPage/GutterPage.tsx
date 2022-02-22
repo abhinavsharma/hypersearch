@@ -36,21 +36,21 @@ const PlusOutlined = React.lazy(
 //-----------------------------------------------------------------------------------------------
 const HEADER_LEFT_BUTTON_TEXT = 'Close';
 const HEADER_TITLE = 'Domain Settings';
-const INSTALLED_SECTION_TITLE = 'Add this domain to a local lens';
-const INSTALLED_SECTION_SUBTITLE = 'When this lens is triggered then this domain will be searched';
-const HIDING_SECTION_TITLE = 'Lenses that block this domain';
+const INSTALLED_SECTION_TITLE = 'Add this domain to a local Filters';
+const INSTALLED_SECTION_SUBTITLE = 'When this filter is triggered then this domain will be searched';
+const HIDING_SECTION_TITLE = 'Filters that block this domain';
 const HIDING_SECTION_SUBTITLE = '';
-const SEARCHING_SECTION_TITLE = 'Lenses that search this domain';
+const SEARCHING_SECTION_TITLE = 'Filters that search this domain';
 const SEARCHING_SECTION_SUBTITLE = '';
-const DISABLED_SUGGESTED_BUTTON_TEXT = 'Disable Lens';
-const REMOVE_FROM_INSTALLED_BUTTON_TEXT = 'Remove from Lens';
-const ADD_TO_AUGMENTATION_BUTTON_TEXT = 'Add to Lens';
+const DISABLED_SUGGESTED_BUTTON_TEXT = 'Disable Filter';
+const REMOVE_FROM_INSTALLED_BUTTON_TEXT = 'Remove from Filters';
+const ADD_TO_AUGMENTATION_BUTTON_TEXT = 'Add to Filters';
 const ADD_TO_TRUSTLIST_BUTTON_SUBTITLE = 'Mark domains as trusted source';
 const ADD_TO_AUGMENTATION_BUTTON_SUBTITLE = 'Currently searches';
 const ADD_TO_AUGMENTATION_BUTTON_NEW_ACTION = 'Add as new action';
-const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new Lens that searches this domain';
-const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Lens';
-const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Lens';
+const CREATE_NEW_SEARCHING_AUGMENTATION_BUTTON_TEXT = 'Create new filter that searches this domain';
+const EDIT_SUGGESTED_AUGMENTATION_BUTTON_TEXT = 'Fork Filter';
+const EDIT_INSTALLED_AUGMENTATION_BUTTON_TEXT = 'Edit Filter';
 
 //-----------------------------------------------------------------------------------------------
 // ! Component

@@ -7,7 +7,7 @@
 import { CSE_PREFIX, INSTALLED_PREFIX } from '.';
 
 export const AUGMENTATION_TITLE = {
-  NEW: '🎉 My Lens',
+  NEW: '🎉 My Filter',
   FORKED: ' / Forked',
   TOURLENS: '🗞 My Trusted News',
   TRUSTLIST: '🤝 Sites I Trust',

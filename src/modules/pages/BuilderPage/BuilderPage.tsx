@@ -39,25 +39,25 @@ const { Title } = Typography;
 //-----------------------------------------------------------------------------------------------
 const NO_CONDTION_TEXT = 'There are no conditions for the specified action';
 const HEADER_LEFT_BUTTON = 'Cancel';
-const HEADER_ADD_TITLE = 'Add Local Lens';
-const HEADER_EDIT_TITLE = 'Edit Local Lens';
+const HEADER_ADD_TITLE = 'Add Local Filter';
+const HEADER_EDIT_TITLE = 'Edit Local Filter';
 const HEADER_ADD_RIGHT_BUTTON = 'Add';
 const HEADER_EDIT_RIGHT_BUTTON = 'Save';
 // * WHEN
 const WHEN_HEADER_TEXT = 'When';
-const WHEN_TOUR_POPUP_TITLE = 'When this lens triggers';
-const WHEN_TOUR_POPUP_CONTENT = 'Here, you can set the conditions for when this lens is shown';
+const WHEN_TOUR_POPUP_TITLE = 'When this filter triggers';
+const WHEN_TOUR_POPUP_CONTENT = 'Here, you can set the conditions for when this filter is shown';
 // * THEN
 const THEN_HEADER_TEXT = 'Then';
-const THEN_TOUR_POPUP_TITLE = 'What this lens does';
+const THEN_TOUR_POPUP_TITLE = 'What this filter does';
 const THEN_TOUR_POPUP_TEXT =
-  'We’re going to create a lens that searches only some domains. Click here to see all the different types of lens actions.';
+  'We’re going to create a filter that searches only some domains. Click here to see all the different types of filter actions.';
 // * META
 const META_HEADER_TEXT = 'About';
 const META_TOUR_POPUP_TITLE = 'Metadata';
 
 const META_TOUR_POPUP_TEXT = `
-From here you can rename your lens, disable it temporarily or share it.
+From here you can rename your filter, disable it temporarily or share it.
 ` as const;
 
 const TOUR_TOOLTIP_STYLE: React.CSSProperties = {
