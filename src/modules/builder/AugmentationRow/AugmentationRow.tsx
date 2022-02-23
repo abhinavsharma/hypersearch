@@ -12,6 +12,8 @@ import { MESSAGE, PAGE, PROTECTED_AUGMENTATIONS } from 'constant';
 import 'antd/lib/tag/style/index.css';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
+import { handleIcon } from 'lib/icon';
+import { removeEmoji } from 'lib/helpers';
 
 //-----------------------------------------------------------------------------------------------
 // ! Magics
@@ -57,6 +59,16 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
     });
   };
 
+  const augmentationName = () => {
+    const icon = augmentation.icon ? handleIcon(augmentation.icon) : null;
+    const name = icon ? removeEmoji(augmentation.name) : augmentation.name
+    return (
+      <span>
+        { icon }{ `${ icon ? ' ' : '' }${ name.trim() }` }
+      </span>
+    );
+  };
+
   const keepParent = { keepParent: false };
 
   //-----------------------------------------------------------------------------------------------
@@ -67,7 +79,7 @@ export const AugmentationRow: AugmentationRow = ({ augmentation, ignored, pinned
       <div className="insight-augmentation-row-name">
         {augmentation.installed ? (
           <Tooltip title={LOCAL_AUGMENTATION_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {augmentation.name}
+            { augmentationName() }
           </Tooltip>
         ) : (
           augmentation.name

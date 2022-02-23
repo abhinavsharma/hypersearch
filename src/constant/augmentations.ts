@@ -28,6 +28,8 @@ export const AUGMENTATION_VALUE = {
 };
 
 export const AUGMENTATION_ID = {
+  HACKER_NEWS: `${CSE_PREFIX}-hackernews`,
+  REDDIT: `${CSE_PREFIX}-reddit`,
   SITES_DOUBLE_CHECK: `${CSE_PREFIX}-sitestodoublecheck`,
   TOURLENS: `${INSTALLED_PREFIX}-tourlens`,
   TRUSTLIST: `${INSTALLED_PREFIX}-my-trust-list`,

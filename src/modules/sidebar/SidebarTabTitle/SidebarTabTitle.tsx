@@ -4,7 +4,7 @@ import { useDebouncedFn } from 'beautiful-react-hooks';
 import Tooltip from 'antd/lib/tooltip';
 import SidebarLoader from 'lib/sidebar';
 import UserManager from 'lib/user';
-import { decodeSpace, extractUrlProperties, removeProtocol } from 'lib/helpers';
+import { decodeSpace, extractUrlProperties, removeEmoji, removeProtocol } from 'lib/helpers';
 import {
   APP_NAME,
   EXTENSION_SERP_LINK_HOVEROPEN,
@@ -17,6 +17,7 @@ import {
 } from 'constant';
 import 'antd/lib/tooltip/style/index.css';
 import './SidebarTabTitle.scss';
+import { handleIcon } from 'lib/icon';
 
 /** MAGICS **/
 const SUGGESTED_TOOLTIP_TEXT = `Filters suggested by ${APP_NAME}`;
@@ -73,6 +74,16 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
     });
   }, [tab.url.href, tab.augmentation.name, handleHoverOpenLog]);
 
+  const tabName = () => {
+    const icon = tab.augmentation.icon ? handleIcon(tab.augmentation.icon) : null;
+    const name = tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) ?? icon ? removeEmoji(tab.augmentation.name) : tab.augmentation.name
+    return (
+      <span>
+        { icon }{ `${ icon ? ' ' : '' }${name.trim()}` }
+      </span>
+    );
+  };
+
   const keepParent = { keepParent: false };
 
   return (
@@ -85,15 +96,9 @@ export const SidebarTabTitle: SidebarTabTitle = ({ tab, index, activeKey, setAct
           activeKey === '0' ? 'hidden' : ''
         }`}
       >
-        {!tab.augmentation?.installed ? (
-          <Tooltip title={SUGGESTED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
-          </Tooltip>
-        ) : (
-          <Tooltip title={INSTALLED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
-            {tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) ?? tab.augmentation.name}
-          </Tooltip>
-        )}
+        <Tooltip title={!tab.augmentation?.installed ? SUGGESTED_TOOLTIP_TEXT : INSTALLED_TOOLTIP_TEXT} destroyTooltipOnHide={keepParent}>
+          { tabName() }
+        </Tooltip>
       </span>
     </div>
   );

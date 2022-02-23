@@ -411,14 +411,18 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     bConditions.indexOf(CONDITION_KEY.ANY_URL) > -1;
 
   // Special case
-  if (a.augmentation.id === AUGMENTATION_ID.SITES_DOUBLE_CHECK) {
-    if (b.augmentation.pinned) { return 1; }
-    return -1;
-  }
-
-  if (b.augmentation.id === AUGMENTATION_ID.SITES_DOUBLE_CHECK) {
-    if (a.augmentation.pinned) { return -1; }
-    return 1;
+  const specialCases = [ AUGMENTATION_ID.HACKER_NEWS, AUGMENTATION_ID.REDDIT ];
+  
+  for (let specialCase of specialCases) {
+    if (a.augmentation.id === specialCase) {
+      if (b.augmentation.pinned) { return 1; }
+      return -1;
+    }
+  
+    if (b.augmentation.id === specialCase) {
+      if (a.augmentation.pinned) { return -1; }
+      return 1;
+    }
   }
 
   // Trivial cases that can be handled by checking tab types:

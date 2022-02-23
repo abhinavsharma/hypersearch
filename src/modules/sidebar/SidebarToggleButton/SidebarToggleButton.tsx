@@ -92,7 +92,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
       <span>
         { icon }{ `${ icon ? ' ' : '' }${(item.url.searchParams.get(URL_PARAM_TAB_TITLE_KEY) ?? removeEmoji(item.augmentation.name)).trim()}` }
       </span>
-    )
+    );
 
     return (
       <List.Item>
