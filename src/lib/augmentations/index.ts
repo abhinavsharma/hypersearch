@@ -154,21 +154,40 @@ class AugmentationManager {
     }
     if (actionString.indexOf('%u') > -1) url = url.replace('%u', SidebarLoader.url.href);
     if (actionString.search(/%sr[\d]{1,}/gi) > -1) {
-      const domainIndices = url.match(/%sr[\d]*/gi) ?? [];
+      const domainIndices = url.match(/%sr[\d]+/gi) ?? [];
       domainIndices.forEach((actionString) => {
         const index = actionString.split('%sr')[1];
-        url = url.replaceAll(
-          `%sr${index}`,
+        url = url.replace(
+          new RegExp(`%sr${index}`, 'gi'),
           SidebarLoader.publicationSlices['original']?.[Number(index) - 1],
         );
       });
+
+      if (url.search(/%sr/gi) > 0) {
+        url = url.replace(
+          /%sr/gi,
+          SidebarLoader.publicationSlices['original']?.[0],
+        );
+      }
     }
     if (actionString.search(/%m[\d]{1,}/gi) > -1) {
-      const domainIndices = url.match(/%m[\d]*/gi) ?? [];
+      const domainIndices = url.match(/%m[\d]+/gi) ?? [];
       domainIndices.forEach((actionString) => {
         const index = actionString.split('%m')[1];
-        url = url.replaceAll(`%m${index}`, regexGroups[Number(index) - 1]);
+        url = url.replace(
+          new RegExp(`%m${index}`, 'gi'),
+          regexGroups[Number(index) - 1]
+        );
       });
+    }
+    if (actionString.search(/%m/gi) > -1) {
+      const domainIndices = url.match(/%m/gi) ?? [];
+      domainIndices.forEach(() => {
+        url = url.replace(/%m/gi, regexGroups[0]);
+      });
+    }
+    if (actionString.search(/%d/gi) > -1) {
+      url = url.replace('%d', SidebarLoader.url.hostname);
     }
     return new URL(url);
   }

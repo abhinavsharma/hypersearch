@@ -363,12 +363,6 @@ export const b64EncodeUnicode = (stringLike: string) => {
   return btoa(escapedString.replace(/%([0-9A-F]{2})/g, replacerFunction));
 };
 
-export const validateEmail = (email: string) => {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-};
-
 // TODO #1 END
 
 // TODO #2: decouple to SidebarManager
@@ -521,25 +515,6 @@ export const getStoredUserSettings = async () =>
   ).then((result) => ({
     privacy: result?.[SYNC_PRIVACY_KEY],
   }));
-
-export const CustomStorage = {
-  getItem(key: string) {
-    let result: string | null | undefined;
-    chrome.storage.local.get(key, (data) => {
-      result = data[key] || null;
-    });
-    return result ?? null;
-  },
-  removeItem(key: string) {
-    chrome.storage.local.remove(key);
-  },
-  setItem(key: string, value: any) {
-    chrome.storage.local.set({ [key]: value });
-  },
-  clear() {
-    //
-  },
-};
 
 export const processCookieString = (header: string) => {
   if (header.search(/__sso\.key/g) > -1) {
