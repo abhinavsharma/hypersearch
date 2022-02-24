@@ -405,7 +405,7 @@ export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[])
     bConditions.indexOf(CONDITION_KEY.ANY_URL) > -1;
 
   // Special case
-  const specialCases = [ AUGMENTATION_ID.HACKER_NEWS, AUGMENTATION_ID.REDDIT ];
+  const specialCases = [ AUGMENTATION_ID.REDDIT, AUGMENTATION_ID.HACKER_NEWS ];
   
   for (let specialCase of specialCases) {
     if (a.augmentation.id === specialCase) {

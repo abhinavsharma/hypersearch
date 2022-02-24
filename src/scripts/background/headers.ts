@@ -82,23 +82,6 @@ import {
         });
       }
 
-      chrome.cookies.getAll({ name: '_sso.key' }, (cookies) => {
-        const ssoCookie = cookies[0];
-        if (ssoCookie) {
-          chrome.cookies.set({
-            domain: ssoCookie.domain,
-            expirationDate: ssoCookie.expirationDate,
-            httpOnly: true,
-            name: '_sso.key',
-            path: '/',
-            value: ssoCookie.value,
-            url: 'https://bookface.ycombinator.com',
-            sameSite: 'no_restriction',
-            secure: true,
-          });
-        }
-      });
-
       return { requestHeaders: applyRequestHeaderMutations(requestHeaders, url, frameId) };
     },
     OPTIONS,

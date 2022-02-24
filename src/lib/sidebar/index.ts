@@ -980,12 +980,8 @@ class SidebarLoader {
     const getSuggestions = async () => {
       debug('\n---\n\tSuggestion Request API\n---');
       const raw = await fetch(SUGGESTED_AUGMENTATIONS, {
-        method: 'GET',
         mode: 'cors',
         cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
       return await raw.json();
     };
