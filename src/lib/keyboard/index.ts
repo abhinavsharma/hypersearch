@@ -40,6 +40,7 @@ export const keyboardHandler = (event: KeyboardEvent, loader: TSidebarLoader) =>
       buffer = [];
       break;
     case EXPAND_KEY.CODE:
+      loader.isPreview = true;
       loader.isExpanded && handleToggle();
       flipSidebar(document, 'show', loader);
       buffer = [];

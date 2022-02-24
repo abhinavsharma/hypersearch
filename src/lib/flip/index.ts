@@ -28,6 +28,10 @@ export const flipSidebar: FlipSidebar = (outerDocument, force, loader, preventOv
 
   const sidebarContainer = document.getElementById('insight-sidebar-container');
 
+  if (force === 'show' && sidebarContainer?.style.width && sidebarContainer?.style.width !== '0px') {
+    return;
+  }
+
   const existingOverlay = document.getElementById('sidebar-overlay');
   const sidebarOverlay = existingOverlay || document.createElement('div');
   if (!preventOverlay) {
