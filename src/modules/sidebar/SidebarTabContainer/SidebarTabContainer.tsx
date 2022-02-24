@@ -15,7 +15,8 @@ import {
 import 'antd/lib/skeleton/style/index.css';
 import { useFeature } from 'lib/features';
 
-export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
+export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) => {
+  const [canLoad, setCanLoad] = useState(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [publicationFeature] = useFeature('desktop_ratings');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,10 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const handleKeyDown = (event: KeyboardEvent) => keyboardHandler(event, SidebarLoader);
   const handleKeyUp = (event: KeyboardEvent) => keyUpHandler(event);
+
+  useEffect(() => {
+    isSelected && setCanLoad(true);
+  }, [isSelected]);
 
   useEffect(() => {
     const { current: frame } = frameRef;
@@ -69,7 +74,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
 
   return (
     <div ref={containerRef} className="insight-tab-iframe-container">
-      <iframe
+      {canLoad && <iframe
         key={decodeSpace(tab.url.href)}
         ref={frameRef}
         sandbox="allow-forms allow-presentation allow-scripts allow-same-origin allow-popups"
@@ -81,7 +86,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab }) => {
         className="insight-tab-iframe"
         onError={handleError}
         onLoad={handleLoad}
-      />
+      />}
       {!isLoaded && tab.url.searchParams?.get(URL_PARAM_TAB_TITLE_KEY) && (
         <div className="insight-frame-overlay" ref={overlayRef} style={OVERLAY_STYLE}>
           {Array(Math.trunc(window.innerHeight / 120))
