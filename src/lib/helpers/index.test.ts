@@ -248,8 +248,8 @@ describe('Helper tests', () => {
       // Then
       expect(sorted.length).toBe(5);
       expect(sorted[0].augmentation.id).toBe('some_id_2');
-      expect(sorted[1].augmentation.id).toBe(AUGMENTATION_ID.HACKER_NEWS);
-      expect(sorted[2].augmentation.id).toBe(AUGMENTATION_ID.REDDIT);
+      expect(sorted[1].augmentation.id).toBe(AUGMENTATION_ID.REDDIT);
+      expect(sorted[2].augmentation.id).toBe(AUGMENTATION_ID.HACKER_NEWS);
     });
 
     test('augmentation with any condition should be low priority', () => {
@@ -279,8 +279,8 @@ describe('Helper tests', () => {
       // Then
       expect(sorted.length).toBe(6);
       expect(sorted[0].augmentation.id).toBe('some_id_3');
-      expect(sorted[1].augmentation.id).toBe(AUGMENTATION_ID.HACKER_NEWS);
-      expect(sorted[2].augmentation.id).toBe(AUGMENTATION_ID.REDDIT);
+      expect(sorted[1].augmentation.id).toBe(AUGMENTATION_ID.REDDIT);
+      expect(sorted[2].augmentation.id).toBe(AUGMENTATION_ID.HACKER_NEWS);
       expect(sorted[3].augmentation.id).toBe('some_id_2');
       expect(sorted[4].augmentation.id).toBe('some_id_1');
       expect(sorted[5].augmentation.id).toBe('some_id_0');

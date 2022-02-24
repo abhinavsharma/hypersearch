@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
- const Darkmode = require('./darkmode')
+const Darkmode = require('./darkmode');
 
 class DarkMode {
 

@@ -7,7 +7,8 @@
     "watch": "rimraf ./build && TS_NODE_PROJECT=\"./tasks/tsconfig.json\" ts-node tasks/scripts/watch.ts",
     "build": "rimraf ./dist && TS_NODE_PROJECT=\"./tasks/tsconfig.json\" ts-node tasks/scripts/build.ts",
     "release": "standard-version && npm run build && cd dist && web-ext build && cd .. && ts-node tasks/scripts/post_release.ts",
-    "test": "npx jest"
+    "test": "npx jest",
+    "test-coverage": "npx jest --coverage"
   },
   "repository": {
     "type": "git",
