@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import Collapse from 'antd/lib/collapse';
 import List from 'antd/lib/list';
 import Typography from 'antd/lib/typography';
 import { StepContext } from 'modules/onboarding';
 import { APP_NAME, SYNC_FINISHED_KEY } from 'constant';
-import 'antd/lib/button/style/index.css';
 import 'antd/lib/collapse/style/index.css';
 import 'antd/lib/list/style/index.css';
 import 'antd/lib/typography/style/index.css';
@@ -25,9 +25,29 @@ const LIST_DATA: QueryList = {
     { text: 'how to hire engineers' },
     { text: 'how to hire marketers' },
   ],
+
+  'Dev: see sources trusted by engineers, designers, data scientists': [
+    { text: 'best js framework' },
+    { text: 'best machine learning books' },
+  ],
+
+  "Shopping: see real people's perspectives and trusted review sites": [
+    { text: 'best car insurance' },
+    { text: 'best baby monitor' },
+    { text: 'best ev to buy 2021' },
+  ],
+
+  'News: see different perspectives': [{ text: 'will trump run in 2024' }],
+
+  'Misc: learn new things better & faster with insider trusted sources': [
+    { text: 'how to build a bunker' },
+    { text: 'best crypto books' },
+    { text: 'best red wines for beginners' },
+  ],
 };
 
 const { Title } = Typography;
+const { Panel } = Collapse;
 
 const entries = Object.entries(LIST_DATA);
 
@@ -41,10 +61,6 @@ export const QueriesFrame = () => {
     }
   }, [stepContext]);
 
-  const [key, value] = entries[0];
-
-  const header = <Title level={3}>{key}</Title>;
-
   const item = (item: QueryListItem) => (
     <List.Item>
       <a
@@ -57,6 +73,14 @@ export const QueriesFrame = () => {
     </List.Item>
   );
 
+  const panelItem = (panel: [ string, QueryListItem[] ], index: number) => {
+    return (
+      <Panel header={ panel[0] } key={ String(index) }>
+        <List dataSource={ panel[1] } renderItem={ item } />
+      </Panel>
+    );
+  };
+
   return (
     <>
       <Helmet>
@@ -64,7 +88,9 @@ export const QueriesFrame = () => {
       </Helmet>
       <div id="queries-frame-container">
         <Title level={2}>{PAGE_MAIN_HEADER_TEXT}</Title>
-        <List header={header} dataSource={value} renderItem={item} />
+        <Collapse accordion defaultActiveKey={['0']}>
+          { entries.map(panelItem) }
+        </Collapse>
       </div>
     </>
   );

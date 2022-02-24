@@ -15596,9 +15596,6 @@ textarea.ant-input {
   text-align: center;
 }
 .ant-list-split .ant-list-item {
-  border-bottom: 1px solid #303030;
-}
-.ant-list-split .ant-list-item:last-child {
   border-bottom: none;
 }
 .ant-list-split .ant-list-header {
