@@ -396,7 +396,7 @@ class SidebarLoader {
         // OPEN_URL_ACTION will open a custom URL as sidebar tab and interpolates the matchers (%s, %u...etc).
         case ACTION_KEY.NO_COOKIE:
         case ACTION_KEY.OPEN_URL:
-          action.value.forEach((value) => {
+          action.value?.forEach((value) => {
             const regexGroups = augmentation.conditions.condition_list.reduce(
               (groups, condition) => {
                 if (
