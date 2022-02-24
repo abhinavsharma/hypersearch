@@ -21,9 +21,42 @@
   }
 
   .insight-tab-iframe-container {
+    position: relative;
     display: flex;
     flex-grow: 1;
     justify-content: center;
+
+    @keyframes insight-tab-loader-out {
+      from {
+        opacity: 1.0;
+      }
+    
+      to {
+        opacity: 0.0;
+      }
+    }
+
+    .insight-tab-loader {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $color_background_saturated;
+
+      .ant-spin {
+        padding-bottom: 20%;
+      }
+
+      &.insight-loader-hide {
+        animation-duration: 0.15s;
+        animation-delay: 0s;
+        animation-name: insight-tab-loader-out;
+        animation-timing-function: ease-out;
+        animation-fill-mode: forwards;
+      }
+    }
 
     .insight-tab-iframe {
       display: flex;

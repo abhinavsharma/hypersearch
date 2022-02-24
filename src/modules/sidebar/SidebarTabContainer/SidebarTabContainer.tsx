@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Spin from 'antd/lib/spin';
 import SidebarLoader from 'lib/sidebar';
 import Skeleton from 'antd/lib/skeleton';
 import { UserNotesTab } from 'modules/notes';
@@ -7,12 +8,12 @@ import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   EXTENSION_SERP_FILTER_LOADED,
   SIDEBAR_TAB_FAKE_URL,
-  HIDE_FRAME_OVERLAY_MESSAGE,
   URL_PARAM_TAB_TITLE_KEY,
   EXTERNAL_PDF_RENDERER_URL,
   SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/skeleton/style/index.css';
+import 'antd/lib/spin/style/index.css';
 import { useFeature } from 'lib/features';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) => {
@@ -32,12 +33,6 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) =>
   useEffect(() => {
     const { current: frame } = frameRef;
 
-    chrome.runtime.onMessage.addListener((msg) => {
-      if (msg.type === HIDE_FRAME_OVERLAY_MESSAGE) {
-        setIsLoaded(true);
-      }
-    });
-
     frame?.contentWindow?.addEventListener('keydown', handleKeyDown);
     frame?.contentWindow?.addEventListener('keyup', handleKeyUp);
     return () => {
@@ -47,7 +42,7 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) =>
   }, []);
 
   const handleLoad = () => {
-    setIsLoaded(true);
+    setTimeout(() => setIsLoaded(true), 100);
     triggerSerpProcessing(SidebarLoader, true);
     SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
       query: SidebarLoader.query,
@@ -72,11 +67,17 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) =>
     return <UserNotesTab />;
   }
 
+  console.log('is', isSelected, isLoaded, isLoaded ? 0 : 1)
+
   return (
     <div ref={containerRef} className="insight-tab-iframe-container">
+      <div className={ `insight-tab-loader${ isLoaded ? ' insight-loader-hide' : '' }` }>
+        <Spin size="large" />
+      </div>
       {canLoad && <iframe
         key={decodeSpace(tab.url.href)}
         ref={frameRef}
+        style={{ opacity: isLoaded ? 1 : 0 }}
         sandbox="allow-forms allow-presentation allow-scripts allow-same-origin allow-popups"
         src={
           tab.url.pathname?.match(/\.pdf$/)
