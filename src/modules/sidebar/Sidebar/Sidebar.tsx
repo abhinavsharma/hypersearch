@@ -89,9 +89,15 @@ export const Sidebar: Sidebar = () => {
     };
   }, [handleResize, firstValidTab, isKpPage, shouldPreventExpand, validTabsLength]);
 
-  const refreshTabs = useCallback(async () => {
-    const newTabs = await SidebarLoader.getTabsAndAugmentations();
-    setSidebarTabs(newTabs);
+  const refreshTabs = useCallback(() => {
+    let isMounted = true;
+
+    SidebarLoader.getTabsAndAugmentations()
+      .then((newTabs) => {
+        isMounted && setSidebarTabs(newTabs);
+      });
+
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
