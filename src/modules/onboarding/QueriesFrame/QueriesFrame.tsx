@@ -24,7 +24,7 @@ const LIST_DATA: QueryList = {
   "Shopping: see real people's perspectives and trusted review sites": [
     { text: 'best car insurance' },
     { text: 'best baby monitor' },
-    { text: 'best ev to buy 2021' },
+    { text: `best ev to buy ${ new Date().getFullYear() }` },
   ],
 
   'Startups: sources trusted by top founders & investors': [
