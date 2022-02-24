@@ -20,6 +20,13 @@ const PAGE_MAIN_HEADER_TEXT = 'Ready, Set, Search!';
 const QUERIES_REFERENCE_URL = 'https://www.google.com/search?q=<placeholder>';
 // * QUERY LIST
 const LIST_DATA: QueryList = {
+
+  "Shopping: see real people's perspectives and trusted review sites": [
+    { text: 'best car insurance' },
+    { text: 'best baby monitor' },
+    { text: 'best ev to buy 2021' },
+  ],
+
   'Startups: sources trusted by top founders & investors': [
     { text: 'how to raise a seed round' },
     { text: 'how to hire engineers' },
@@ -30,14 +37,6 @@ const LIST_DATA: QueryList = {
     { text: 'best js framework' },
     { text: 'best machine learning books' },
   ],
-
-  "Shopping: see real people's perspectives and trusted review sites": [
-    { text: 'best car insurance' },
-    { text: 'best baby monitor' },
-    { text: 'best ev to buy 2021' },
-  ],
-
-  'News: see different perspectives': [{ text: 'will trump run in 2024' }],
 
   'Misc: learn new things better & faster with insider trusted sources': [
     { text: 'how to build a bunker' },
