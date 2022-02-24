@@ -31,7 +31,7 @@ export const PrivacyFrame = () => {
   const { setCurrentStep } = useContext(StepContext);
   const handleNext = () => setCurrentStep(2);
 
-  const OPEN_SOURCE_LINK = <a href="">open source</a>;
+  const OPEN_SOURCE_LINK = <a target="_blank" href="https://github.com/abhinavsharma/hypersearch">open source</a>;
 
   const INACTIVE_LICENSE_TEXT_CONTENT = (
     <>
