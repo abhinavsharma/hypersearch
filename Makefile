@@ -8,7 +8,7 @@ ship:
 	npm run release
 	git add .
 	git commit -m "chore: add release artifacts" --no-verify
-	git push --follow-tags origin master
+	git push --follow-tags origin main
 	RELEASE_FOLDER=releases/${$(date +"%Y-%m-%d-%H-%M")}/source.zip
 	zip -r $RELEASE_FOLDER src public "Insight Extension" tasks
 	zip -D $RELEASE_FOLDER ./* .*
