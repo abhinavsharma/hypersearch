@@ -54,7 +54,7 @@ class Engines {
   }
 
   /**
-   * Get remotely stored search intents blob and store them in the public `intents` property.
+   * Get remotely stored search engines blob and store them in the public `engines` property.
    * This method will be called at instantiation time and available when the sidebar loads.
    */
   private async getEngines() {
@@ -62,18 +62,6 @@ class Engines {
     const remote = await raw.json();
     const local = await new Promise<Record<string, any>>((resolve) =>
       chrome.storage.sync.get(null, resolve),
-    ).then((items) =>
-      Object.entries(items).reduce((acc, [key, value]) => {
-        if (key.startsWith(ARBITRARY_ENGINE_PREFIX) || key.startsWith(DEDICATED_ENGINE_PREFIX)) {
-          Object.assign(acc, {
-            [key
-              .replace(ARBITRARY_ENGINE_PREFIX, '')
-              .replace(DEDICATED_ENGINE_PREFIX, '')
-              .substr(1)]: value,
-          });
-        }
-        return acc;
-      }, Object.create(null) as Record<string, SearchEngineObject>),
     );
     this.engines = Object.assign(remote, local);
   }
@@ -174,14 +162,14 @@ class Engines {
 
             if (!(storedItem.querySelector && storedItem.search_engine_json)) {
               // Check if stored value has the required structure
-              await this.deleteItem(key);
+              return await this.deleteItem(key);
             }
             // Get matching item from the remote JSON blob
             const remoteItem = Object.values(this.remoteBlob).find(
               ({ querySelector }) =>
                 querySelector?.desktop !== undefined &&
                 querySelector?.desktop === storedItem?.querySelector?.desktop &&
-                !querySelector?.featured.find(
+                !querySelector?.featured?.find(
                   (item) => !storedItem?.querySelector?.featured.includes(item),
                 ) &&
                 querySelector?.pad === storedItem?.querySelector?.pad &&
@@ -191,7 +179,7 @@ class Engines {
             );
             // Remove item from storage if its not present in the remote
             if (!remoteItem) {
-              await this.deleteItem(key, 'Property mismatch in local item');
+              return await this.deleteItem(key, 'Property mismatch in local item');
             }
             // Remove item if required params are not matching
             const paramsMismatch = !storedItem?.search_engine_json?.required_params?.every((c) =>
@@ -199,7 +187,7 @@ class Engines {
             );
 
             if (paramsMismatch) {
-              await this.deleteItem(key, 'Required params mismatch');
+              return await this.deleteItem(key, 'Required params mismatch');
             }
             // Remove item if required prefix is not matching
             if (
@@ -207,7 +195,7 @@ class Engines {
                 remoteItem?.search_engine_json?.required_prefix &&
               remoteItem?.search_engine_json?.required_prefix !== undefined
             ) {
-              await this.deleteItem(key, 'Required prefix mismatch');
+              return await this.deleteItem(key, 'Required prefix mismatch');
             }
           },
         );

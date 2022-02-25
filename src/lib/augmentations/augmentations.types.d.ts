@@ -5,5 +5,4 @@ declare type AugmentationData = {
   description?: string;
   name?: string;
   isActive?: boolean;
-  isPinning?: boolean;
 };

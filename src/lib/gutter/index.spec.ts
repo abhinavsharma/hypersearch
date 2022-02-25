@@ -1,7 +1,7 @@
 import { INSIGHT_BLOCKED_BY_SELECTOR, INSIGHT_FEATURED_BY_SELECTOR, INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, INSIGHT_RESULT_URL_SELECTOR, INSIGHT_SEARCHED_DOMAIN_SELECTOR, INSIGHT_SEARCH_BY_SELECTOR } from "constant";
 import { processSerpResults } from ".";
 
-describe.only('Gutter tests', () => {
+describe('Gutter tests', () => {
 
   beforeEach(() => {
     (global.matchMedia as any) = () => false;

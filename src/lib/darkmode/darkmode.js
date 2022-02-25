@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * Dark Reader v4.9.44
  * https://darkreader.org/

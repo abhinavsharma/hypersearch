@@ -542,14 +542,13 @@ class AugmentationManager {
       description,
       name,
       isActive,
-      isPinning,
     }: AugmentationData,
   ) {
     const customId = `${INSTALLED_PREFIX}-${
       augmentation.id !== '' ? augmentation.id : name?.replace(/[\s]/g, '_').toLowerCase()
     }-${uuid()}`;
     const id =
-      augmentation.id.startsWith(`${INSTALLED_PREFIX}-`) && !isPinning ? augmentation.id : customId;
+      augmentation.id.startsWith(`${INSTALLED_PREFIX}-`) ? augmentation.id : customId;
     const updated = {
       ...augmentation,
       id,
