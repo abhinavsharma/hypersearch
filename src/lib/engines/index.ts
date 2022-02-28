@@ -105,7 +105,7 @@ class Engines {
       const hasAllMatchingParams = !customSearchEngine.search_engine_json?.required_params.filter(
         (i) => !params?.includes(i),
       ).length;
-      const hasRequiredPrefix = !!url.match(customSearchEngine.search_engine_json.required_prefix)
+      const hasRequiredPrefix = customSearchEngine.search_engine_json && !!url.match(customSearchEngine.search_engine_json.required_prefix)
         ?.length;
       if (hasAllMatchingParams && hasRequiredPrefix) {
         validEntry = Object.assign(EMPTY_CUSTOM_SEARCH_ENGINE_BLOB, customSearchEngine);
