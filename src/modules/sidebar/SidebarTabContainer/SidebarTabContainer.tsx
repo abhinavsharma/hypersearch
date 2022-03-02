@@ -3,7 +3,7 @@ import Spin from 'antd/lib/spin';
 import SidebarLoader from 'lib/sidebar';
 import Skeleton from 'antd/lib/skeleton';
 import { UserNotesTab } from 'modules/notes';
-import { decodeSpace, triggerSerpProcessing } from 'lib/helpers';
+import { debug, decodeSpace, triggerSerpProcessing } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   EXTENSION_SERP_FILTER_LOADED,
@@ -16,7 +16,7 @@ import 'antd/lib/skeleton/style/index.css';
 import 'antd/lib/spin/style/index.css';
 import { useFeature } from 'lib/features';
 
-export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) => {
+export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected, index }) => {
   const [canLoad, setCanLoad] = useState(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [publicationFeature] = useFeature('desktop_ratings');
@@ -42,6 +42,8 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) =>
   }, []);
 
   const handleLoad = () => {
+    debug('--> Test: tab loaded', 'index:', index, SidebarLoader.time())
+
     setTimeout(() => setIsLoaded(true), 100);
     triggerSerpProcessing(SidebarLoader, true);
     SidebarLoader.sendLogMessage(EXTENSION_SERP_FILTER_LOADED, {
@@ -66,8 +68,6 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected }) =>
   if (tab.url.href === SIDEBAR_TAB_NOTE_TAB && publicationFeature) {
     return <UserNotesTab />;
   }
-
-  console.log('is', isSelected, isLoaded, isLoaded ? 0 : 1)
 
   return (
     <div ref={containerRef} className="insight-tab-iframe-container">

@@ -216,7 +216,7 @@ export const SidebarTabs: SidebarTabs = ({ activeKey, setActiveKey, tabs }) => {
                   <SidebarTabMeta tab={tab} />
                 </>
               )}
-              {tab.url && <SidebarTabContainer tab={tab} isSelected={ activeKey === String(i + 1) } />}
+              {tab.url && <SidebarTabContainer tab={tab} isSelected={ activeKey === String(i + 1) } index={ String(i + 1) } />}
             </TabPane>
           );
         })}

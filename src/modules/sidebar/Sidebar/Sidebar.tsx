@@ -11,7 +11,7 @@ import UserManager from 'lib/user';
 import SidebarLoader from 'lib/sidebar';
 import AugmentationManager from 'lib/augmentations';
 import { flipSidebar } from 'lib/flip';
-import { getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'lib/helpers';
+import { debug, getFirstValidTabIndex, isKnowledgePage, triggerSerpProcessing } from 'lib/helpers';
 import { SidebarTabs, SidebarToggleButton } from 'modules/sidebar';
 import {
   DISABLE_SUGGESTED_AUGMENTATION,
@@ -58,6 +58,8 @@ export const Sidebar: Sidebar = () => {
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
+
+    debug('--> Test: sidebar', 'shouldPreventExpand:', shouldPreventExpand, SidebarLoader.time())
 
     if (shouldPreventExpand) {
       if (!SidebarLoader.isPreview) {

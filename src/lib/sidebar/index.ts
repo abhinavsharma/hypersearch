@@ -14,7 +14,6 @@ import Darkmode from 'lib/darkmode';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
   extractUrlProperties,
-  runFunctionWhenDocumentReady,
   debug,
   removeProtocol,
   isSafari,
@@ -60,6 +59,7 @@ import {
   REFRESH_SIDEBAR_TABS_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SUGGESTED_AUGMENTATIONS,
+  GET_SIDEBAR_CSS_MESSAGE,
 } from 'constant';
 import UserManager from 'lib/user';
 
@@ -247,6 +247,8 @@ class SidebarLoader {
    */
   public preventAutoExpand: boolean;
 
+  public timer: number;
+
   /**
    * Maps the corresponding usage statistics for an augmentation.
    *
@@ -264,6 +266,8 @@ class SidebarLoader {
   public tourStep!: string;
 
   public showPublicationRating: boolean;
+
+  private sidebarCss: Promise<string>;
 
   constructor() {
     debug('SidebarLoader - initialize\n---\n\tSingleton Instance', this, '\n---');
@@ -284,6 +288,10 @@ class SidebarLoader {
     this.hideDomains = [];
     this.matchingDisabledInstalledAugmentations = [];
     this.showPublicationRating = false;
+    this.timer = 0;
+    this.sidebarCss = new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: GET_SIDEBAR_CSS_MESSAGE}, resolve);
+    });
 
     this.addListeners();
   }
@@ -700,8 +708,12 @@ class SidebarLoader {
     }
     const existing = this.document.getElementById('sidebar-root');
     existing && this.document.body.removeChild(existing);
+
+    this.timer = Date.now();
     // When the user applies strong privacy, we load the (existing) cached results of subtabs.
+    debug('--> Test: start fetch suggestions', this.time())
     const response = await this.fetchSuggestions();
+    debug('--> Test: end fetch suggestions', this.time())
     this.customSearchEngine = await SearchEngineManager.getSearchEngineObject(this.url.href);
     this.query =
       new URLSearchParams(this.document.location.search).get(
@@ -709,6 +721,7 @@ class SidebarLoader {
       ) ?? '';
     this.tourStep = new URLSearchParams(this.document.location.href).get('insight-tour') ?? '';
     const prepareDocument = async () => {
+      debug('--> Test: document prepared', this.time())
       this.document.documentElement.style.setProperty('color-scheme', 'none');
       this.domains = this.getDomains(document) ?? [];
       this.publicationSlices['original'] = this.getDomains(document, true);
@@ -738,7 +751,9 @@ class SidebarLoader {
           url: this.url,
         });
       }
+      debug('--> Test: handle suggestions', this.time())
       await this.handleSuggestionsApiResponse(response);
+      debug('--> Test: createSidebar', this.time())
       this.createSidebar();
 
       const openCssLinks = this.sidebarTabs
@@ -760,7 +775,18 @@ class SidebarLoader {
         });
       }
     };
-    response && runFunctionWhenDocumentReady(this.document, prepareDocument);
+    if (response) {
+      const waitForBody = () => {
+        if (document.body) {
+          prepareDocument()
+        }
+        else {
+          setTimeout(waitForBody, 10);
+        }
+      };
+
+      waitForBody();
+    }
   }
 
   /**
@@ -791,19 +817,23 @@ class SidebarLoader {
         debug('reactInjector - error - Frame document unaccessible');
         return null;
       }
-      const link = doc.createElement('link');
-      link.setAttribute('type', 'text/css');
-      link.setAttribute('rel', 'stylesheet');
-      link.setAttribute('href', chrome.runtime.getURL('bundle.css'));
-      link.onload = () => isDark() && Darkmode.enable(doc);
-      doc.head.appendChild(link);
-      doc.body.className = isDark() ? 'dark' : '';
-      doc.body.id = 'insight-sidebar';
-      doc.documentElement.setAttribute('style', 'overflow: hidden;');
-      const div = document.createElement('div');
-      const root = doc.body.appendChild(div);
-      render(reactEl, root);
-      debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');      
+
+      debug('--> Test: bundle will be fetched', this.time())
+      this.sidebarCss.then((css) => {
+        const link = doc.createElement('style');
+        link.setAttribute('id', 'test');
+        link.innerHTML = css;
+        debug('--> Test: response', this.time())
+        link.onload = () => isDark() && Darkmode.enable(doc)
+        doc.head.appendChild(link);
+        doc.body.className = isDark() ? 'dark' : '';
+        doc.body.id = 'insight-sidebar';
+        doc.documentElement.setAttribute('style', 'overflow: hidden;');
+        const div = document.createElement('div');
+        const root = doc.body.appendChild(div);
+        render(reactEl, root);
+        debug('reactInjector - processed\n---\n\tInjected Element', root, '\n---');
+      });
     };
     // Firefox is a special case, we need to set IFrame source to make it work.
     // Here we add an empty HTML file as source, so the browser won't complain.
@@ -830,9 +860,7 @@ class SidebarLoader {
     const logPinned: any[] = [];
     const locals: Record<string, Augmentation & number> =
       (await new Promise((resolve) => chrome.storage.local.get(resolve))) ?? Object.create(null);
-    const syncs: Record<string, Augmentation & number> =
-      (await new Promise((resolve) => chrome.storage.sync.get(resolve))) ?? Object.create(null);
-    [...Object.entries(locals), ...Object.entries(syncs)].forEach(([key, value]) => {
+    [...Object.entries(locals) ].forEach(([key, value]) => {
       const { isRelevant, isHidden } = AugmentationManager.getAugmentationRelevancy(value);
       const flag = key.split('-')[0];
       switch (flag) {
@@ -1088,6 +1116,10 @@ class SidebarLoader {
         break;
       }
     });
+  }
+
+  public time() {
+    return (Date.now() - this.timer) / 1000;
   }
 }
 

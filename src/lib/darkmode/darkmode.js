@@ -3861,7 +3861,7 @@
 
     var STYLE_SELECTOR = 'style, link[rel*="stylesheet" i]:not([disabled])';
     function shouldManageStyle(element) {
-        return (((element instanceof HTMLStyleElement) ||
+        return (((element.nodeName === 'STYLE' || element instanceof HTMLStyleElement) || // Lumos modified
             (element instanceof SVGStyleElement) ||
             ((element.nodeName === 'LINK' || element instanceof HTMLLinkElement) && // Lumos modified
                 element.rel &&
@@ -4735,7 +4735,7 @@
     }
 
     function injectProxy(enableStyleSheetsProxy) {
-        document.dispatchEvent(new CustomEvent('__darkreader__inlineScriptsAllowed'));
+        window.document.dispatchEvent(new CustomEvent('__darkreader__inlineScriptsAllowed'));
         var addRuleDescriptor = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'addRule');
         var insertRuleDescriptor = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'insertRule');
         var deleteRuleDescriptor = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'deleteRule');
@@ -4750,8 +4750,8 @@
             Object.defineProperty(CSSStyleSheet.prototype, 'insertRule', insertRuleDescriptor);
             Object.defineProperty(CSSStyleSheet.prototype, 'deleteRule', deleteRuleDescriptor);
             Object.defineProperty(CSSStyleSheet.prototype, 'removeRule', removeRuleDescriptor);
-            document.removeEventListener('__darkreader__cleanUp', cleanUp);
-            document.removeEventListener('__darkreader__addUndefinedResolver', addUndefinedResolver);
+            window.document.removeEventListener('__darkreader__cleanUp', cleanUp);
+            window.document.removeEventListener('__darkreader__addUndefinedResolver', addUndefinedResolver);
             if (enableStyleSheetsProxy) {
                 Object.defineProperty(Document.prototype, 'styleSheets', documentStyleSheetsDescriptor);
             }
@@ -4761,11 +4761,11 @@
         };
         var addUndefinedResolver = function (e) {
             customElements.whenDefined(e.detail.tag).then(function () {
-                document.dispatchEvent(new CustomEvent('__darkreader__isDefined', { detail: { tag: e.detail.tag } }));
+                window.document.dispatchEvent(new CustomEvent('__darkreader__isDefined', { detail: { tag: e.detail.tag } }));
             });
         };
-        document.addEventListener('__darkreader__cleanUp', cleanUp);
-        document.addEventListener('__darkreader__addUndefinedResolver', addUndefinedResolver);
+        window.document.addEventListener('__darkreader__cleanUp', cleanUp);
+        window.document.addEventListener('__darkreader__addUndefinedResolver', addUndefinedResolver);
         var updateSheetEvent = new Event('__darkreader__updateSheet');
         function proxyAddRule(selector, style, index) {
             addRuleDescriptor.value.call(this, selector, style, index);

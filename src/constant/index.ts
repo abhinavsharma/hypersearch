@@ -104,6 +104,7 @@ export const ACTIVATE_EMAIL_MESSAGE = 'ACTIVATE_EMAIL_MESSAGE';
 export const POST_TAB_UPDATE_MESSAGE = 'POST_TAB_UPDATE_MESSAGE';
 export const FETCH_REQUEST_MESSAGE = 'FETCH_REQUEST_MESSAGE';
 export const IS_TOP_WINDOW_DARK_MESSAGE = 'IS_TOP_WINDOW_DARK_MESSAGE';
+export const GET_SIDEBAR_CSS_MESSAGE = 'GET_SIDEBAR_CSS_MESSAGE';
 
 //-----------------------------------------------------------------------------------------------
 // ! Logging

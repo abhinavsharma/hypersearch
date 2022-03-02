@@ -19,6 +19,7 @@ import {
   URL_UPDATED_MESSAGE,
   FETCH_REQUEST_MESSAGE,
   IS_TOP_WINDOW_DARK_MESSAGE,
+  GET_SIDEBAR_CSS_MESSAGE,
 } from 'constant';
 
 //-----------------------------------------------------------------------------------------------
@@ -28,6 +29,17 @@ import './headers';
 import './hot';
 
 (() => {
+  let cachedCSS: string | null = null;
+
+  const cacheCSS = async () => {
+    try {
+      const result = await fetch(chrome.runtime.getURL('bundle.css'));
+      cachedCSS = await result.text();
+    } catch {}
+  };
+
+  cacheCSS();
+
   // ! NAVIGATION LISTENERS
   // Send a message whenever the URL of the current tab is updated, to let the React app know that it should update
   // the contents of the sidebar according to the change that happened.
@@ -146,6 +158,16 @@ import './hot';
             sendResponse(data);
           })();
   
+          return true;
+      case GET_SIDEBAR_CSS_MESSAGE:
+          if (cachedCSS) {
+            sendResponse(cachedCSS);
+          } else {
+            (async () => {
+              await cacheCSS();
+              sendResponse(cachedCSS);
+            })();
+          }
           return true;
       case IS_TOP_WINDOW_DARK_MESSAGE:
         chrome.tabs.sendMessage(sender.tab?.id ?? -1, msg, sendResponse)
