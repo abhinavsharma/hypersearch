@@ -32,12 +32,10 @@ export const handleIcon = (icon?: AugmentationIcon, emoji?: string, fallbackElem
     return fontForIcon(icon);
   }
 
-  if (!icon) {
-    if (fallbackElement) {
-      const FallbackElement = fallbackElement;
-      return <FallbackElement />;
-    } else {
-      return emoji;
-    }
+  if (fallbackElement) {
+    const FallbackElement = fallbackElement;
+    return <FallbackElement />;
+  } else {
+    return emoji;
   }
 };
