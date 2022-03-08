@@ -1,4 +1,4 @@
-[![Commit rate](https://img.shields.io/github/commit-activity/m/abhinavsharma/hyperweb?label=Commits)](https://github.com/abhinavsharma/hyperweb/commits/master)
+
 [![Issues](https://img.shields.io/github/issues/abhinavsharma/hypersearch)](https://github.com/abhinavsharma/hypersearch/issues)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/abhinavsharma/hyperweb/blob/master/LICENSE.txt)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/rating/feojagelicdlhnmldaiplbppfbolnnag?label=Chrome)](https://chrome.google.com/webstore/detail/hypersearch/feojagelicdlhnmldaiplbppfbolnnag?hl=en&authuser=2)
@@ -15,7 +15,7 @@ Hypersearch
 
 <p align="center">
 <!-- <a href="https://addons.mozilla.org/firefox/addon/ublock-origin/"><img src="https://user-images.githubusercontent.com/585534/107280546-7b9b2a00-6a26-11eb-8f9f-f95932f4bfec.png" alt="Get uBlock Origin for Firefox"></a>  -->
-<a href="https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm"><img src="https://user-images.githubusercontent.com/585534/107280622-91a8ea80-6a26-11eb-8d07-77c548b28665.png" alt="Get uBlock Origin for Chromium"></a>
+<a href="https://chrome.google.com/webstore/detail/ublock-origin/feojagelicdlhnmldaiplbppfbolnnag"><img src="https://user-images.githubusercontent.com/585534/107280622-91a8ea80-6a26-11eb-8d07-77c548b28665.png" alt="Get uBlock Origin for Chromium"></a>
 <!-- <a href="https://microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak"><img src="https://user-images.githubusercontent.com/585534/107280673-a5ece780-6a26-11eb-9cc7-9fa9f9f81180.png" alt="Get uBlock Origin for Microsoft Edge"></a>
 <a href="https://addons.opera.com/extensions/details/ublock/"><img src="https://user-images.githubusercontent.com/585534/107280692-ac7b5f00-6a26-11eb-85c7-088926504452.png" alt="Get uBlock Origin for Opera"></a> -->
       <br><sub>Coming soon for Firefox and Opera. Microsoft Edge users can install from the Chrome store.</a></sub>
@@ -66,9 +66,9 @@ This is the underlying core philosophy behind Hypersearch.
 
  We do not try to replace your search engine, but instead augment your existing search engine with results from your trusted sources and block results from sites you don't trust.
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/xQuqlW8Q/5eb45376-04df-4bd4-8e9d-f54de7259824.jpg" />
+<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/L1uR5QED/0ea31f4e-a8ad-4c55-9e49-fc306b2fc174.jpg?v=8313d9300f936ae92b0d364b37d376ea" />
 
-We provide often useful filters out of the box, e.g. Reddit, HackerNews, but you as the user are free to customize your filters to your liking.
+We provide often useful filters out of the box, e.g. Reddit, Hacker News, but you as the user are free to customize your filters to your liking.
 
 ### **BYO search engine**
 
