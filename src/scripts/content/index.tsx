@@ -54,6 +54,10 @@ const enableDarkMode = () => {
     const UserManager = (await import('lib/user')).default;
     await UserManager.initialize();
 
+    if (!window.top?.location.href.includes('extension://')) {
+      await import('./results');
+    }
+
     const SidebarLoader = (await import('lib/sidebar')).default;
     window.location.href.includes('http') && SidebarLoader.loadOrUpdateSidebar(document, LOCAL_URL);
 
@@ -65,7 +69,6 @@ const enableDarkMode = () => {
       const LOAD_ASYNC_SCRIPTS_TO_ROOT_PAGE = async () => {
         await import('./block');
         await import('./frame');
-        await import('./results');
       };
 
       runFunctionWhenDocumentReady(document, LOAD_ASYNC_SCRIPTS_TO_ROOT_PAGE);
