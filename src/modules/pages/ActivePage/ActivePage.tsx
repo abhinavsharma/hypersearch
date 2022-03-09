@@ -16,7 +16,6 @@ import { flipSidebar } from 'lib/flip';
 import { APP_NAME, MESSAGE, EMPTY_AUGMENTATION, PAGE, SWITCH_TO_TAB, ACTION_KEY } from 'constant';
 import 'antd/lib/button/style/index.css';
 import 'antd/lib/divider/style/index.css';
-import { usePublicationInfo } from 'lib/publication';
 
 const ZoomInOutlined = React.lazy(
   async () => await import('@ant-design/icons/ZoomInOutlined').then((mod) => mod),
@@ -43,7 +42,6 @@ const SETTINGS_ICON_COLOR = '#999999';
 //-----------------------------------------------------------------------------------------------
 export const ActivePage: ActivePage = () => {
   const domain = extractUrlProperties(SidebarLoader.url.href).hostname ?? '';
-  const { publicationInfo } = usePublicationInfo(window.location.href);
 
   const [tourStep, setTourStep] = useState<string>(SidebarLoader.tourStep);
   const [hidingAugmentations, setHidingAugmentations] = useState<Augmentation[]>(
@@ -223,7 +221,7 @@ export const ActivePage: ActivePage = () => {
       <div className="sidebar-page-wrapper">
         {!SidebarLoader.isSerp && (
           <GutterPage
-            domain={publicationInfo.publication ?? publicationInfo.url ?? domain}
+            domain={domain}
             hidingAugmentations={hidingAugmentations}
             inline
           />

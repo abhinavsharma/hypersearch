@@ -4,7 +4,7 @@
  * @license (C) Insight
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import List from 'antd/lib/list';
 import Tooltip from 'antd/lib/tooltip';
 import SidebarLoader from 'lib/sidebar';
@@ -23,7 +23,6 @@ import 'antd/lib/button/style/index.css';
 import 'antd/lib/tooltip/style/index.css';
 import 'antd/lib/list/style/index.css';
 import './SidebarToggleButton.scss';
-import { usePublicationInfo } from 'lib/publication';
 import { handleIcon } from 'lib/icon';
 
 //-----------------------------------------------------------------------------------------------
@@ -38,9 +37,7 @@ const MAX_TAB_LENGTH = 3;
 // ! Component
 //-----------------------------------------------------------------------------------------------
 export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
-  const [rating, setRating] = useState<number>(0);
   const tooltipContainer = useRef<HTMLDivElement>(null);
-  const { publicationInfo, averageRating } = usePublicationInfo(SidebarLoader.url.href);
 
   const handleClick = () => {
     SidebarLoader.isPreview = true;
@@ -78,11 +75,6 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   const containerStyle = { zIndex: SIDEBAR_Z_INDEX + 1 };
   const keepParent = { keepParent: false };
 
-  useEffect(() => {
-    SidebarLoader.showPublicationRating = averageRating > 0;
-    setRating(averageRating);
-  }, [averageRating]);
-
   //-----------------------------------------------------------------------------------------------
   // ! Render
   //-----------------------------------------------------------------------------------------------
@@ -108,7 +100,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
   return (
     <>
       <Tooltip
-        title={publicationInfo.tags?.[0]?.text ?? TOOLTIP_TEXT}
+        title={TOOLTIP_TEXT}
         destroyTooltipOnHide={keepParent}
       >
         <div
@@ -120,11 +112,6 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
             <span className="insight-sidebar-toggle-appname-text">{APP_NAME}</span>
           </div>
           <div className="insight-list">
-            {!!rating && (
-              <div className="insight-sidebar-publication-rating-nub">
-                <h3>{rating}&nbsp;⭐</h3>
-              </div>
-            )}
             {!!dataSource.length && (
               <List
                 style={LIST_STYLE}
