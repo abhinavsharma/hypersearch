@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Hypersearch",
   "description": "Hypersearch supercharges search with fast previews, trusted sources, muting and filters that offer unique and useful perspectives.",
-  "version": "0.0.102",
+  "version": "0.0.103",
   "web_accessible_resources": [
     "*.png",
     "*.svg",
