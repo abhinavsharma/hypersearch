@@ -12,7 +12,6 @@ declare module './GutterPage' {
     hidingAugmentations: Augmentation[];
     domain: string;
     inline?: boolean;
-    usePublicationInfo?: boolean;
   };
 
   type GutterPage = FunctionComponent<GutterPageProps>;

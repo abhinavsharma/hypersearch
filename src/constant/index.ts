@@ -29,7 +29,6 @@ export const SYNC_FINISHED_KEY = 'hasFinishedIntro';
 export const SYNC_DISTINCT_KEY = 'distinctId';
 export const SYNC_USER_TAGS = "user_tags";
 export const SYNC_LAST_USED_TAGS = "last_user_tags"
-export const NOTE_PREFIX = "note-";
 export const ARBITRARY_ENGINE_PREFIX = 'arbitrary-cse';
 export const DEV_FEATURE_FLAGS = 'devFeatures';
 export const USE_COUNT_PREFIX = 'augmentationUseCount';
@@ -129,7 +128,6 @@ export const EXTENSION_SERP_LINK_HOVEROPEN = 'EXTENSION_SERP_LINK_HOVEROPEN';
 
 export const INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR = 'insight-gutter-action-bar-left';
 export const INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR = 'insight-gutter-action-bar-right';
-export const INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR = 'insight-gutter-publication-tag';
 export const INSIGHT_SHOW_GUTTER_ICON_SELECTOR = 'insight-show-gutter-icon';
 export const INSIGHT_SEARCH_BY_SELECTOR = 'insight-searched-by';
 export const INSIGHT_SEARCHED_DOMAIN_SELECTOR = 'insight-searched-domain';

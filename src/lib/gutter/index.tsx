@@ -10,7 +10,6 @@ import { v4 as uuid } from 'uuid';
 import { extractPublication, extractUrlProperties, removeProtocol } from 'lib/helpers';
 import { LeftActionBar } from 'modules/gutter/LeftActionBar/LeftActionBar';
 import { RightActionBar } from 'modules/gutter/RightActionBar/RightActionBar';
-import { PublicationTagRow } from 'modules/gutter/PublicationTagRow/PublicationTagRow';
 import { createResultOverlay } from 'lib/overlay';
 import {
   INSIGHT_BLOCKED_BY_SELECTOR,
@@ -19,7 +18,6 @@ import {
   INSIGHT_HAS_CREATED_SUBTAB_SELECTOR,
   INSIGHT_RESULT_URL_SELECTOR,
   INSIGHT_SEARCHED_DOMAIN_SELECTOR,
-  INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
   INSIGHT_GUTTER_ACTION_BAR_LEFT_SELECTOR,
   INSIGHT_GUTTER_ACTION_BAR_RIGHT_SELECTOR,
   AUGMENTATION_ID,
@@ -157,12 +155,6 @@ export const processSerpResults: ProcessSerpResults = (
       if (!(root instanceof HTMLElement)) {
         continue;
       }
-
-      renderComponentToDocument(
-        root,
-        <PublicationTagRow publication={publication} container={containerSelector} />,
-        INSIGHT_GUTTER_PUBLICATION_TAG_SELECTOR,
-      );
 
       renderComponentToDocument(
         root,

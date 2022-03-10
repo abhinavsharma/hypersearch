@@ -41,7 +41,6 @@ export const STRIPPED_RESPONSE_HEADERS = [
 //-----------------------------------------------------------------------------------------------
 export const SPECIAL_URL_JUNK_STRING = 'qhfabdyvaykdf';
 
-export const SIDEBAR_TAB_NOTE_TAB = 'sidebar-note-tab';
 export const SIDEBAR_TAB_FAKE_URL = 'https://sidebar-fake-tab/';
 
 export const URL_PARAM_TAB_TITLE_KEY = 'insight-tab-title';

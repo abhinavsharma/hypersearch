@@ -51,11 +51,6 @@ import {
   PAGE,
   AUGMENTATION_ID,
   DISABLED_AUGMENTATIONS,
-  NOTE_TAB_TITLE,
-  SIDEBAR_TAB_NOTE_TAB,
-  NOTE_AUGMENTATION_ID,
-  createNote,
-  DEV_FEATURE_FLAGS,
   REFRESH_SIDEBAR_TABS_MESSAGE,
   UPDATE_SIDEBAR_TABS_MESSAGE,
   SUGGESTED_AUGMENTATIONS,
@@ -386,13 +381,6 @@ class SidebarLoader {
 
       const customSearchUrl = emptyUrl();
       switch (action.key) {
-        case ACTION_KEY.URL_NOTE: {
-          const fakeUrl = emptyUrl();
-          fakeUrl.href = SIDEBAR_TAB_NOTE_TAB;
-          augmentation.name = NOTE_TAB_TITLE;
-          this.url.href.includes(action.value[0] + '') && urls.push(fakeUrl);
-          break;
-        }
         // We don't create tabs for SEARCH_HIDE_DOMAIN_ACTION, instead if the augmentation also have
         // SEARCH_DOMAINS_ACTION(s), we process them and create the sidebar URL using their values.
         case ACTION_KEY.SEARCH_HIDE_DOMAIN:
@@ -650,20 +638,6 @@ class SidebarLoader {
 
     this.sidebarTabs = newTabs.sort((a, b) => compareTabs(a, b, this.domains));
 
-    const publicationFeature = await new Promise<Record<string, Features>>((resolve) =>
-      chrome.storage.local.get(DEV_FEATURE_FLAGS, resolve),
-    ).then((data) => data[DEV_FEATURE_FLAGS]?.['desktop_ratings']);
-
-    if (publicationFeature && !this.isSerp) {
-      const noteUrl = new URL(`https://${DEFAULT_FALLBACK_SEARCH_ENGINE_PREFIX}`);
-      noteUrl.href = SIDEBAR_TAB_NOTE_TAB;
-      noteUrl.searchParams.append(URL_PARAM_TAB_TITLE_KEY, NOTE_TAB_TITLE);
-      this.publicationSlices[NOTE_AUGMENTATION_ID] = Object.create(null);
-      this.sidebarTabs.unshift({
-        augmentation: createNote(this.url.href),
-        url: noteUrl,
-      });
-    }
     /** DEV START **/
     IN_DEBUG_MODE &&
       debug(

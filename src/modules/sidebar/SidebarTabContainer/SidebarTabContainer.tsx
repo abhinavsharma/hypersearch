@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import Spin from 'antd/lib/spin';
 import SidebarLoader from 'lib/sidebar';
 import Skeleton from 'antd/lib/skeleton';
-import { UserNotesTab } from 'modules/notes';
 import { debug, decodeSpace, triggerSerpProcessing } from 'lib/helpers';
 import { keyboardHandler, keyUpHandler } from 'lib/keyboard';
 import {
@@ -10,16 +9,13 @@ import {
   SIDEBAR_TAB_FAKE_URL,
   URL_PARAM_TAB_TITLE_KEY,
   EXTERNAL_PDF_RENDERER_URL,
-  SIDEBAR_TAB_NOTE_TAB,
 } from 'constant';
 import 'antd/lib/skeleton/style/index.css';
 import 'antd/lib/spin/style/index.css';
-import { useFeature } from 'lib/features';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected, index }) => {
   const [canLoad, setCanLoad] = useState(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [publicationFeature] = useFeature('desktop_ratings');
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -63,10 +59,6 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected, inde
 
   if (tab.url.href === SIDEBAR_TAB_FAKE_URL) {
     return null;
-  }
-
-  if (tab.url.href === SIDEBAR_TAB_NOTE_TAB && publicationFeature) {
-    return <UserNotesTab />;
   }
 
   return (
