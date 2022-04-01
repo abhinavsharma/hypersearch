@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Hypersearch",
   "description": "Hypersearch enhances search with fast previews, trusted sources, muting and filters with useful perspectives. 100% Open Source.",
-  "version": "0.0.106",
+  "version": "0.0.107",
   "web_accessible_resources": [
     "*.png",
     "*.svg",
