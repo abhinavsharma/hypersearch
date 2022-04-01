@@ -62,8 +62,8 @@ export const NOTE_TAB_TITLE = 'Notes';
 // ! Extension
 //-----------------------------------------------------------------------------------------------
 
-export const EXTENSION_HOST = 'extensions.hyperweb.app';
-export const EXTENSION_SHARE_URL = 'https://extensions.hyperweb.app/extend?text=';
+export const EXTENSION_HOST = 'enhance.hyperweb.app';
+export const EXTENSION_SHARE_URL = 'https://enhance.hyperweb.app/extend?text=';
 
 //-----------------------------------------------------------------------------------------------
 // ! Logging

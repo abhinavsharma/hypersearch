@@ -6,7 +6,7 @@
 
 import axios from 'axios';
 import SearchEngineManager from 'lib/engines';
-import { debug } from 'lib/helpers';
+import { debug, isFirefox } from 'lib/helpers';
 import {
   FRESHPAINT_API_ENDPOINT,
   FRESHPAINT_API_TOKEN,
@@ -195,6 +195,6 @@ import './hot';
     {
       urls: ['<all_urls>'],
     },
-    ['blocking', 'responseHeaders', 'extraHeaders'],
+    ['blocking', 'responseHeaders'].concat(isFirefox() ? [] : ['extraHeaders']),
   );
 })();
