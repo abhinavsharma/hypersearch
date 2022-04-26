@@ -585,7 +585,7 @@ describe('Helper tests', () => {
         },
         {
           name: 'cookie',
-          value: 'cookie Secure SameSite=None',
+          value: 'cookie',
         },
         {
           name: 'user-agent',
