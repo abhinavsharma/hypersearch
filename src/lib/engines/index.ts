@@ -96,7 +96,8 @@ class Engines {
 
     const storedValue: Record<string, SearchEngineObject> =
       (await new Promise((res) => chrome.storage.sync.get(dedicatedKey, res))) ??
-      (await new Promise((res) => chrome.storage.sync.get(arbitraryKey, res)));
+      (await new Promise((res) => chrome.storage.sync.get(arbitraryKey, res))) ??
+      {};
 
     let validEntry: SearchEngineObject | null =
       (storedValue[dedicatedKey] || storedValue[arbitraryKey]) ?? null;

@@ -563,20 +563,23 @@ export const applyRequestHeaderMutations = (
   requestHeaders: chrome.webRequest.HttpHeader[],
   url: string,
   frameId: number,
-) =>
-  requestHeaders?.map((requestHeader) => {
+) =>{
+  // Should not modify requests for the main frame
+  if (frameId === 0) { return requestHeaders; }
+
+  return requestHeaders?.map((requestHeader) => {
     const isCookieHeader = requestHeader.name.toLowerCase() === 'cookie';
     isCookieHeader && (requestHeader.value = processCookieString(requestHeader.value ?? ''));
     const specialUrl = url.includes(SPECIAL_URL_JUNK_STRING);
     const urlMatchesSearchPattern = specialUrl;
     const shouldRewriteUA =
       urlMatchesSearchPattern &&
-      frameId > 0 &&
       requestHeader.name.toLowerCase() === 'user-agent' &&
       url.search(/ecosia\.org/gi) < 1;
     shouldRewriteUA && (requestHeader.value = CUSTOM_UA_STRING);
     return requestHeader;
-  });
+  })
+}
 
 export const isDark = () => {
   if (window.document.location.hostname.includes('google')) {

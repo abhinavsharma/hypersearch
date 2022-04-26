@@ -52,7 +52,7 @@ export const SidebarToggleButton: SidebarToggleButton = ({ tabs }) => {
         const titleLength =
           tab.augmentation.name.length * 8 < 50 ? 50 : tab.augmentation.name.length * 8; // 1 ch is approximately 8 px
         const titleSpace = 50; // space for one line
-        return a + Math.abs(titleLength / titleSpace) * 30; // average height of a line
+        return a + Math.ceil(Math.abs(titleLength / titleSpace)) * 32; // average height of a line
       }, 0)
     : 0;
 
