@@ -113,14 +113,8 @@ export const processSerpResults: ProcessSerpResults = (
     }
 
     serpResult.setAttribute(INSIGHT_RESULT_URL_SELECTOR, resultLink);
-
     serpResult.setAttribute(INSIGHT_HAS_CREATED_SUBTAB_SELECTOR, String(isSubtab > -1));
-
     serpResult.setAttribute(INSIGHT_SEARCHED_DOMAIN_SELECTOR, publication);
-
-    if (window.location.href.search(/duckduckgo\.com/gi) > -1) {
-      serpResult.style.pointerEvents = 'none';
-    }
 
     blockers = augmentations?.block[publication] ?? [];
 
@@ -147,10 +141,7 @@ export const processSerpResults: ProcessSerpResults = (
       window.location === window.parent.location &&
       serpResult.getAttribute('insight-ad-block') !== 'true'
     ) {
-      const root =
-        window.location.href.search(/duckduckgo\.com/gi) > -1
-          ? serpResult.parentElement
-          : serpResult;
+      const root = serpResult;
 
       if (!(root instanceof HTMLElement)) {
         continue;
