@@ -4,7 +4,7 @@
  * @license (C) Insight
  */
 
-export const APP_NAME = 'Hypersearch';
+export const APP_NAME = 'Hyperweb';
 
 //-----------------------------------------------------------------------------------------------
 // ! Engine

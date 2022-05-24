@@ -9,14 +9,14 @@
 <sub>
 <img  src="https://github.com/abhinavsharma/hypersearch/raw/main/public/logo128.png" height="38" width="38">
 </sub>
-Hypersearch
+Hyperweb
 </h1>
 
 
 <p align="center">
 <!-- <a href="https://addons.mozilla.org/firefox/addon/ublock-origin/"><img src="https://user-images.githubusercontent.com/585534/107280546-7b9b2a00-6a26-11eb-8f9f-f95932f4bfec.png" alt="Get uBlock Origin for Firefox"></a>  -->
-<a href="https://chrome.google.com/webstore/detail/ublock-origin/feojagelicdlhnmldaiplbppfbolnnag"><img src="https://user-images.githubusercontent.com/585534/107280622-91a8ea80-6a26-11eb-8d07-77c548b28665.png" alt="Get uBlock Origin for Chromium"></a>
-  <a href="https://addons.mozilla.org/en-US/firefox/addon/hypersearch-desktop/"><img src="https://user-images.githubusercontent.com/585534/107280546-7b9b2a00-6a26-11eb-8f9f-f95932f4bfec.png" alt="Get Hypersearch for Firefox"></a> 
+<a href="https://chrome.google.com/webstore/detail/ublock-origin/feojagelicdlhnmldaiplbppfbolnnag"><img src="https://user-images.githubusercontent.com/585534/107280622-91a8ea80-6a26-11eb-8d07-77c548b28665.png" alt="Get Hyperweb for Chromium"></a>
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/hypersearch-desktop/"><img src="https://user-images.githubusercontent.com/585534/107280546-7b9b2a00-6a26-11eb-8f9f-f95932f4bfec.png" alt="Get Hyperweb for Firefox"></a> 
 <!-- <a href="https://microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak"><img src="https://user-images.githubusercontent.com/585534/107280673-a5ece780-6a26-11eb-9cc7-9fa9f9f81180.png" alt="Get uBlock Origin for Microsoft Edge"></a>
 <a href="https://addons.opera.com/extensions/details/ublock/"><img src="https://user-images.githubusercontent.com/585534/107280692-ac7b5f00-6a26-11eb-85c7-088926504452.png" alt="Get uBlock Origin for Opera"></a> -->
       <br><sub>Coming soon for Firefox and Opera. Microsoft Edge users can install from the Chrome store.</a></sub>
@@ -24,7 +24,7 @@ Hypersearch
 
 ***
 
-**Hypersearch enhances all major search engines (Google, DuckDuckGo, Amazon, etc.) with results from trusted sources in the sidebar and removing results from blocked sources**
+**Hyperweb enhances all major search engines (Google, DuckDuckGo, Amazon, etc.) with results from trusted sources in the sidebar and removing results from blocked sources**
 
 
 
@@ -61,7 +61,7 @@ But tail queries, often the most important queries users make, are declining in 
 We don't think it's easy to make an alternative search engine that's much better, but we do think that there are **clever ways to use existing search engines to get to the best content.**
 
 
-This is the underlying core philosophy behind Hypersearch.
+This is the underlying core philosophy behind Hyperweb.
 
 ### **Don't re-invent another search engine with the same incentives. Instead, augment search for power users**
 
@@ -73,7 +73,7 @@ We provide often useful filters out of the box, e.g. Reddit, Hacker News, but yo
 
 ### **BYO search engine**
 
-We designed Hypersearch to be compatible with as many search engines as possible, with support out of the box for many major search engines.
+We designed Hyperweb to be compatible with as many search engines as possible, with support out of the box for many major search engines.
 
 <img src="https://p42.f3.n0.cdn.getcloudapp.com/items/GGulXR1D/a9c027e1-cd0d-4b95-971a-45c7c6e3c0f2.jpg?source=viewer&v=68d9ea56a06bc2cdeb0d55ba53a392eb" />
 
@@ -92,7 +92,7 @@ If we don't yet support a search engine you'd like to see, please [raise an issu
 
 Search is ultimately about making decisions, and that doesn't just happen on a page with links. 
 
-Hypersearch augments non-search pages with useful information like review vetting and price checks to help you make decisions better
+Hyperweb augments non-search pages with useful information like review vetting and price checks to help you make decisions better
 
 <img src="https://p42.f3.n0.cdn.getcloudapp.com/items/DOu4WxN4/6aef86a1-07cf-44c9-ac17-b8f36b33c1fe.jpg?v=59419f40b56f940ecd72d749f7180243" />
 
@@ -105,7 +105,7 @@ As we learnt how to filter search results well, we build certain popular filters
 
 ### **Create your own rules**
 
-Hypersearch has the ability to create custom filters for any website.
+Hyperweb has the ability to create custom filters for any website.
 
 <img src="https://p42.f3.n0.cdn.getcloudapp.com/items/rRu1J7Nr/1fcc1c71-f1c6-4f54-9980-a9204cab4cd5.jpg?source=viewer&v=58cbd88487de484c3cbe1154cf59ff87" />
 
@@ -116,7 +116,7 @@ The schema is based on our mobile app [Hyperweb](https://hyperweb.app) and filte
 
 ## Installation
 
-Hypersearch is [currently available on the Chrome Web Store](https://img.shields.io/chrome-web-store/rating/feojagelicdlhnmldaiplbppfbolnnag?label=Chrome) for Chrome and Edge users. 
+Hyperweb is [currently available on the Chrome Web Store](https://img.shields.io/chrome-web-store/rating/feojagelicdlhnmldaiplbppfbolnnag?label=Chrome) for Chrome and Edge users. 
 
 ## License
 
@@ -124,13 +124,13 @@ Hypersearch is [currently available on the Chrome Web Store](https://img.shields
 
 ## Privacy
 
-Hypersearch does not collect any data by default.
+Hyperweb does not collect any data by default.
 
 [Privacy Policy](https://github.com/abhinavsharma/hyperweb/blob/master/PRIVACY.md).
 
 ## FAQs
 
-**Hypersearch asks for access to all sites, how can I trust it?**
+**Hyperweb asks for access to all sites, how can I trust it?**
 
 We've tried to maximize your trust by
 
@@ -145,9 +145,9 @@ If you have are any other questions or we can do more to assure you, you can [ra
 
 Usually, these go away after a few times of solving the CAPTCHAs. Loading a search result page followed by another similar one very quickly is an unusual pattern and Google finds it suspicious.
 
-**How is Hypersearch funded?**
+**How is Hyperweb funded?**
 
-We make paid iOS apps [Hyperweb](https://hyperweb.app) and Insight Browser that bring in revenue. Hypersearch is a free and open source project we've built for the desktop community.
+We make paid iOS apps [Hyperweb](https://hyperweb.app) and Insight Browser that bring in revenue. Hyperweb is a free and open source project we've built for the desktop community.
 # Development Notes
 
 Even though the project is open source, the current group of developers is small. If you'd like to help, feel free to reach out to me directly - abhinav@laso.ai
