@@ -67,7 +67,7 @@ This is the underlying core philosophy behind Hyperweb.
 
  We do not try to replace your search engine, but instead augment your existing search engine with results from your trusted sources and block results from sites you don't trust.
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/L1uR5QED/0ea31f4e-a8ad-4c55-9e49-fc306b2fc174.jpg?v=8313d9300f936ae92b0d364b37d376ea" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/07.png?raw=true" width="1400"/>
 
 We provide often useful filters out of the box, e.g. Reddit, Hacker News, but you as the user are free to customize your filters to your liking.
 
@@ -75,15 +75,15 @@ We provide often useful filters out of the box, e.g. Reddit, Hacker News, but yo
 
 We designed Hyperweb to be compatible with as many search engines as possible, with support out of the box for many major search engines.
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/GGulXR1D/a9c027e1-cd0d-4b95-971a-45c7c6e3c0f2.jpg?source=viewer&v=68d9ea56a06bc2cdeb0d55ba53a392eb" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/01.png?raw=true" width="1400"/>
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/NQuNEr6n/1c81e1ad-c443-4722-aff7-161513451774.jpg?v=06a3ad8258735d57cf7a802ff4e68171" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/02.png?raw=true" width="1400"/>
 
 
 
 This includes vertical specific search engines like Amazon for shopping.
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/JruOlgkN/6956dab1-5a7c-42b2-b848-5bc64651fe31.jpg?v=5ed5abf306536c35f5efe6d7f5ac3b98" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/03.png?raw=true" width="1400"/>
 
 If we don't yet support a search engine you'd like to see, please [raise an issue](/abhinavsharma/hyperweb/issues).
 
@@ -94,20 +94,20 @@ Search is ultimately about making decisions, and that doesn't just happen on a p
 
 Hyperweb augments non-search pages with useful information like review vetting and price checks to help you make decisions better
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/DOu4WxN4/6aef86a1-07cf-44c9-ac17-b8f36b33c1fe.jpg?v=59419f40b56f940ecd72d749f7180243" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/04.png?raw=true" width="1400"/>
 
 ### **Suggested filters but full customizability**
 
 As we learnt how to filter search results well, we build certain popular filters into the extension by default, such as Reddit, Hacker News, domain-specific filters such as "Sources Doctors Read but the user is free to disable these default sources as well as create their own filters.
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/yAuKPbyw/83b4fc52-65a6-43f5-a34f-0ccaaf1a15a2.jpg?v=906453f78bd1d3c1861cae25594ec6cc" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/06.png?raw=true" width="1400"/>
 
 
 ### **Create your own rules**
 
 Hyperweb has the ability to create custom filters for any website.
 
-<img src="https://p42.f3.n0.cdn.getcloudapp.com/items/rRu1J7Nr/1fcc1c71-f1c6-4f54-9980-a9204cab4cd5.jpg?source=viewer&v=58cbd88487de484c3cbe1154cf59ff87" />
+<img src="https://github.com/abhinavsharma/hypersearch/blob/main/assets/05.png?raw=true" width="1400"/>
 
 The schema is based on our mobile app [Hyperweb](https://hyperweb.app) and filters made in one are usually (though not always) compatible with the other.
 
