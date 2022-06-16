@@ -98,7 +98,6 @@ export const LeftActionBar: LeftActionBar = ({
     (e.target as HTMLElement).classList.add('bounceIn');
     setIsTrusted((prev) => !prev);
     chrome.runtime.sendMessage({ type: TOGGLE_TRUSTED_DOMAIN_MESSAGE, publication });
-    handleOpenBuilder(e);
   };
 
   const handleMouseLeave = useCallback((): any => {

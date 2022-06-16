@@ -14,6 +14,7 @@ import 'antd/lib/skeleton/style/index.css';
 import 'antd/lib/spin/style/index.css';
 
 export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected, index }) => {
+  const [loadedTab, setLoadedTab] = useState<SidebarTab | null>(null);
   const [canLoad, setCanLoad] = useState(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,13 @@ export const SidebarTabContainer: SidebarTabContainer = ({ tab, isSelected, inde
   useEffect(() => {
     isSelected && setCanLoad(true);
   }, [isSelected]);
+
+  useEffect(() => {
+    if (loadedTab === null || tab.augmentation.id !== loadedTab.augmentation.id) {
+      setLoadedTab(loadedTab);
+      setIsLoaded(false);
+    }
+  }, [tab]);
 
   useEffect(() => {
     const { current: frame } = frameRef;

@@ -381,8 +381,8 @@ export const isSafari = () => {
 export const isFirefox = () => typeof InstallTrigger !== 'undefined';
 
 export const compareTabs = (a: SidebarTab, b: SidebarTab, serpDomains: string[]) => {
-  if (a.augmentation?.id === AUGMENTATION_ID.TRUSTLIST) return 1;
-  if (b.augmentation?.id === AUGMENTATION_ID.TRUSTLIST) return -1;
+  if (a.augmentation?.id === AUGMENTATION_ID.TRUSTLIST) return -1;
+  if (b.augmentation?.id === AUGMENTATION_ID.TRUSTLIST) return 1;
 
   const aConditions = Array.from(
     new Set(a.augmentation?.conditions.condition_list.map(({ key }) => key)),
