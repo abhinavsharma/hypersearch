@@ -18,7 +18,7 @@ import './RightActionBar.scss';
 const HOVER_ACTION_TOOLTIP_TITLE = (
   <span>
     {/* &#8288; === word-joiner U+2060 See: https://unicode-table.com/en/2060/ */}
-    Hovering here will preview this page in the Insight sidebar if your screen is wider than 1200px.
+    Hovering here will preview this page in the Hyperweb sidebar if your screen is wider than 1200px.
   </span>
 );
 const ICON_UNSELECTED_COLOR = '#999';
@@ -118,7 +118,6 @@ export const RightActionBar: RightActionBar = ({
       rootRef.current?.setAttribute(
         'style',
         `
-        z-index: ${SIDEBAR_Z_INDEX - 2};
         margin-top: -${resultRef.current?.offsetHeight}px;
         height: ${resultRef.current?.offsetHeight}px;
         right: ${
@@ -129,7 +128,6 @@ export const RightActionBar: RightActionBar = ({
               ? '47px'
               : '0'
         };
-        cursor: pointer;
         `,
       );
 
@@ -207,7 +205,7 @@ export const RightActionBar: RightActionBar = ({
     >
       {hasTab && (
         <>
-          {window.innerWidth < HOVER_EXPAND_REQUIRED_MIN_WIDTH ? (
+          {window.innerWidth >= HOVER_EXPAND_REQUIRED_MIN_WIDTH ? (
             <Tooltip
               title={HOVER_ACTION_TOOLTIP_TITLE}
               destroyTooltipOnHide={keepParent}
