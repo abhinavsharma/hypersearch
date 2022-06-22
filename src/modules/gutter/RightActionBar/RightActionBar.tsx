@@ -136,6 +136,8 @@ export const RightActionBar: RightActionBar = ({
         resultRef.current.style.paddingRight = '100px';
       }
 
+      if (!hasTab) { return; }
+
       rootRef.current?.addEventListener('click', handleClick);
       resultRef.current?.addEventListener('mouseenter', handleMouseEnter);
       resultRef.current?.addEventListener('mouseleave', handleMouseLeave);
@@ -152,6 +154,7 @@ export const RightActionBar: RightActionBar = ({
     handleMouseLeave,
     isSearched,
     isFeatured,
+    hasTab,
     url,
     blockingAugmentations.length,
   ]);
